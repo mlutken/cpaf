@@ -1,0 +1,31 @@
+INCLUDE (${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+IF( CBS_QT4 )
+	FIND_LIB_SIMPLE ( 	QtQml 
+						LIB_NAME QtQml LINUX QtQml4 CBS_WINDOWS_RELEASE QtQmld4 CBS_WINDOWS_DEBUG
+						HEADER_FILES QtQml  
+						HEADER_PATHS ${QT_HDR_DIR}/QtQml /usr/include/qt4/QtQml /usr/include/QtQml
+						LIB_PATHS ${QT_LIB_DIR} /usr/lib
+						PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtQml ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+						DEPENDS_ON QtCore
+						)
+ELSE( CBS_QT4 )
+	IF (WINDOWS)
+		FIND_LIB_SIMPLE ( 	QtQml 
+							LIB_NAME QtQml LINUX Qt5Qml CBS_WINDOWS_RELEASE Qt5Qmld CBS_WINDOWS_DEBUG
+							HEADER_FILES QtQml  
+							HEADER_PATHS ${QT_HDR_DIR}/QtQml /usr/include/qt5/QtQml /usr/include/QtQml
+							LIB_PATHS ${QT_LIB_DIR} /usr/lib
+							PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtQml ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+							DEPENDS_ON QtCore
+							)
+	ELSE (WINDOWS)
+		FIND_LIB_SIMPLE ( 	QtQml 
+							LIB_NAME Qt5Qml 
+							HEADER_FILES QtQml  
+							HEADER_PATHS ${QT_HDR_DIR}/QtQml /usr/include/qt5/QtQml
+							)
+	ENDIF (WINDOWS)						
+ENDIF( CBS_QT4 )
+
+
+

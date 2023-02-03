@@ -1,0 +1,27 @@
+INCLUDE (${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+IF( CBS_QT4 )
+	FIND_LIB_SIMPLE ( 	QtWidgets 
+						LIB_NAME QtWidgets LINUX QtWidgets4 CBS_WINDOWS_RELEASE QtWidgetsd4 CBS_WINDOWS_DEBUG
+						HEADER_FILES QtWidgets 
+						HEADER_PATHS ${QT_HDR_DIR}/QtWidgets /usr/include/qt4/QtWidgets /usr/include/QtWidgets
+						LIB_PATHS ${QT_LIB_DIR} /usr/lib
+						PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtWidgets ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+						)
+ELSE( CBS_QT4 )
+	IF (WINDOWS)
+		FIND_LIB_SIMPLE ( 	QtWidgets
+							LIB_NAME QtWidgets LINUX Qt5Widgets CBS_WINDOWS_RELEASE Qt5Widgetsd CBS_WINDOWS_DEBUG
+							HEADER_FILES QtWidgets 
+							HEADER_PATHS ${QT_HDR_DIR}/QtWidgets /usr/include/qt5/QtWidgets /usr/include/QtWidgets
+							LIB_PATHS ${QT_LIB_DIR} /usr/lib
+							PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtWidgets ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+							)
+	ELSE (WINDOWS)
+		FIND_LIB_SIMPLE ( 	QtWidgets 
+							LIB_NAME Qt5Widgets 
+							HEADER_FILES QtWidgets  
+							HEADER_PATHS ${QT_HDR_DIR}/QtWidgets /usr/include/qt5/QtWidgets
+							)
+	ENDIF (WINDOWS)						
+ENDIF( CBS_QT4 )
+

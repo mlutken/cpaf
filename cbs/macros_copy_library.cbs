@@ -1,0 +1,129 @@
+# ------------------------------
+# --- Get library name macro ---
+# ------------------------------
+
+# Gets the "real" library name from a base name.
+# - PARAMETERS -
+# completeNameOut	[out] : Result value with complete library name.
+# 
+#
+
+MACRO( GET_LIBRARY_NAME completeNameOut baseLibName )  
+#    MESSAGE( STATUS "GET_LIBRARY_NAME, baseLibName:           "${baseLibName} )
+	IF ( ${ARGC} EQUAL 3 )
+		SET ( linkType	${ARGV2}	)
+	ELSE ( ${ARGC} EQUAL 3 )
+		SET ( linkType	${${baseLibName}_LINK_TYPE}	)	# Auto detectect type
+	ENDIF ( ${ARGC} EQUAL 3 )
+   
+    SET (library_prefix         "lib"   )
+    SET (library_postfix        ".a"    )
+    
+    IF ( WINDOWS	) 
+        SET (library_prefix         ""   )
+        IF ( ${linkType} STREQUAL "SHARED" )
+            SET (library_postfix        ".dll"   )
+        ELSE ( ${linkType} STREQUAL "SHARED" )
+            SET (library_postfix        ".lib"   )
+        ENDIF ( ${linkType} STREQUAL "SHARED" )
+    ELSE ( WINDOWS	)
+        IF ( ${linkType} STREQUAL "SHARED" )
+            SET (library_postfix        ".so"   )
+        ENDIF ( ${linkType} STREQUAL "SHARED" )
+    ENDIF (WINDOWS	)
+    
+    # Set "return value" : 'completeNameOut'
+    SET ( ${completeNameOut} ${library_prefix}${baseLibName}${library_postfix} )
+#    MESSAGE( STATUS "GET_LIBRARY_NAME, baseLibName:           "${baseLibName} )
+    
+ENDMACRO( GET_LIBRARY_NAME )
+
+
+
+
+# --------------------------
+# --- Copy library macro ---
+# --------------------------
+
+# Copies a library from a system or prebuilt path 
+# to destination dir, which typically is the current 
+# library output path. For example to the 
+# build_cbs/libs/shared/debug directory.
+# Also supportig files like a windows .lib file or .pdb
+# file are copied.
+# - PARAMETERS -
+# targetName 	: 
+# 
+#
+MACRO ( COPY_LIBRARY baseLibName sourceDir destDir	)  
+	GET_LIBRARY_NAME ( completeMainLibName ${baseLibName} )	# .dll, .so, .a, lib ...
+# 	MESSAGE ( STATUS "PPPP baseLibName          : ${baseLibName}"				)
+# 	MESSAGE ( STATUS "PPPP sourceDir            : ${sourceDir}" 				)
+# 	MESSAGE ( STATUS "PPPP destDir              : ${destDir}" 					)
+# 	MESSAGE ( STATUS "PPPP completeMainLibName  : ${completeMainLibName}"			)
+# 	MESSAGE ( STATUS "PPPP CMAKE_BUILD_TYPE     : ${CMAKE_BUILD_TYPE}"			)
+# 	MESSAGE ( STATUS "PPPP LINK_TYPE            : ${${baseLibName}_LINK_TYPE}"	)	
+	
+	SET ( completeLibLibName		"CBS_NOT_ON_THIS_PLATFORM"	)	# WINDOWS Only: Just initialized to a very unlikely filename to exist in source folder.
+	SET ( completePdbLibName		"CBS_NOT_ON_THIS_PLATFORM"	)	# WINDOWS Only: Just initialized to a very unlikely filename to exist in source folder.
+	SET ( completeIlkLibName		"CBS_NOT_ON_THIS_PLATFORM"	)	# WINDOWS Only: Just initialized to a very unlikely filename to exist in source folder.
+	SET ( completeExpLibName		"CBS_NOT_ON_THIS_PLATFORM"	)	# WINDOWS Only: Just initialized to a very unlikely filename to exist in source folder.
+	SET ( completeIdbLibName		"CBS_NOT_ON_THIS_PLATFORM"	)	# WINDOWS Only: Just initialized to a very unlikely filename to exist in source folder.
+	
+	IF ( EXISTS ${sourceDir}/${completeMainLibName} )
+	
+		
+		# --- Windows have some additional files we we also need to copy ---
+		IF ( 	WINDOWS	)
+			SET ( completeLibLibName		"CBS_NOT_ON_THIS_PLATFORM"	)	# WINDOWS Only: Just initialized to a very unlikely filename to exist in source folder.
+			IF ( "${${baseLibName}_LINK_TYPE}" STREQUAL "SHARED" 	)
+				SET ( completeLibLibName		${baseLibName}.lib		)	
+				SET ( completePdbLibName		${baseLibName}.pdb		)	
+				SET ( completeIlkLibName		${baseLibName}.ilk		)	
+				SET ( completeExpLibName		${baseLibName}.exp		)	
+				SET ( completeIdbLibName		${baseLibName}.idb		)	
+			ELSE ( "${${baseLibName}_LINK_TYPE}" STREQUAL "SHARED" 	)
+				SET ( completePdbLibName		${baseLibName}.pdb		)	
+				SET ( completeIdbLibName		${baseLibName}.idb		)	
+			ENDIF ( "${${baseLibName}_LINK_TYPE}" STREQUAL "SHARED"	)
+		ENDIF ( WINDOWS	)
+		
+		IF (    UNIX	)
+		ENDIF ( UNIX	)
+		
+		IF ( 	LINUX	)
+		ENDIF ( LINUX	)
+	
+		IF ( 	DARWIN	)
+		ENDIF ( DARWIN	)
+		
+		# --- Copy files if they exist for the given platform ---
+		IF ( EXISTS ${sourceDir}/${completeMainLibName} )
+			CONFIGURE_FILE ( ${sourceDir}/${completeMainLibName} ${destDir}/${completeMainLibName} COPYONLY ) 
+		ENDIF ( EXISTS ${sourceDir}/${completeMainLibName} )
+		
+		IF ( EXISTS ${sourceDir}/${completeLibLibName} )
+			CONFIGURE_FILE ( ${sourceDir}/${completeLibLibName} ${destDir}/${completeLibLibName} COPYONLY ) 
+		ENDIF ( EXISTS ${sourceDir}/${completeLibLibName} )
+
+		IF ( EXISTS ${sourceDir}/${completePdbLibName} )
+			CONFIGURE_FILE ( ${sourceDir}/${completePdbLibName} ${destDir}/${completePdbLibName} COPYONLY ) 
+		ENDIF ( EXISTS ${sourceDir}/${completePdbLibName} )
+
+		IF ( EXISTS ${sourceDir}/${completeIlkLibName} )
+			CONFIGURE_FILE ( ${sourceDir}/${completeIlkLibName} ${destDir}/${completeIlkLibName} COPYONLY ) 
+		ENDIF ( EXISTS ${sourceDir}/${completeIlkLibName} )
+
+		IF ( EXISTS ${sourceDir}/${completeExpLibName} )
+			CONFIGURE_FILE ( ${sourceDir}/${completeExpLibName} ${destDir}/${completeExpLibName} COPYONLY ) 
+		ENDIF ( EXISTS ${sourceDir}/${completeExpLibName} )
+
+		IF ( EXISTS ${sourceDir}/${completeIdbLibName} )
+			CONFIGURE_FILE ( ${sourceDir}/${completeIdbLibName} ${destDir}/${completeIdbLibName} COPYONLY ) 
+		ENDIF ( EXISTS ${sourceDir}/${completeIdbLibName} )
+	
+	ELSE ( EXISTS ${sourceDir}/${completeMainLibName} )
+		MESSAGE ( "ERROR Library '${sourceDir}/${completeMainLibName}' NOT found!" )
+	ENDIF ( EXISTS ${sourceDir}/${completeMainLibName} )
+ENDMACRO( COPY_LIBRARY )
+

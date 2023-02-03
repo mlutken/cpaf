@@ -1,0 +1,343 @@
+# ************************************
+# *** CBS common cmake build file ***
+# ************************************
+# TODO: Write more detailed description here.
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# TODO: Perhaps use -nostdinc flag on GCC
+# - Default build type ---
+
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+  message(STATUS "Setting build type to 'Debug' as none was specified.")
+  set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build." FORCE)
+  # Set the possible values of build type for cmake-gui
+  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
+endif()
+
+MESSAGE( STATUS "CMAKE_BUILD_TYPE:                 ${CMAKE_BUILD_TYPE}" )
+
+# Make sure that this file only gets included once
+IF ( NOT CBS_COMMON_RULES_INCLUDED )
+	SET ( CBS_COMMON_RULES_INCLUDED                 ON          )
+
+	# Compatibility backwards
+#	IF ( ${CMAKE_MAJOR_VERSION} GREATER 1 AND ${CMAKE_MINOR_VERSION} GREATER 6 )
+        cmake_policy(SET CMP0002 OLD)
+		cmake_policy(SET CMP0005 OLD)
+		cmake_policy(SET CMP0002 OLD)
+		cmake_policy(SET CMP0003 NEW)
+		cmake_policy(SET CMP0011 NEW)
+		cmake_policy(SET CMP0013 OLD)
+        cmake_policy(SET CMP0014 NEW)
+		cmake_policy(SET CMP0015 OLD)
+        cmake_policy(SET CMP0022 OLD)
+        cmake_policy(SET CMP0026 OLD)
+        cmake_policy(SET CMP0038 NEW)
+        cmake_policy(SET CMP0046 OLD)
+        cmake_policy(SET CMP0048 OLD)
+		cmake_policy(SET CMP0050 OLD)
+		
+	
+		IF ( ${CMAKE_MAJOR_VERSION} GREATER 1 )	           # Eg. 2 and up	
+			IF ( ${CMAKE_MINOR_VERSION} GREATER 7 )	       # Eg. 8 and up	
+				IF ( ${CMAKE_PATCH_VERSION} GREATER 11 )   # Eg. 12 and up	
+					cmake_policy(SET CMP0022 OLD)
+				ENDIF ( ${CMAKE_PATCH_VERSION} GREATER 11 )
+			ENDIF ( ${CMAKE_MINOR_VERSION} GREATER 7 )
+		ENDIF ( ${CMAKE_MAJOR_VERSION} GREATER 1 )		
+		
+		
+		MESSAGE ( "CMAKE_MAJOR_VERSION: ${CMAKE_MAJOR_VERSION}" )
+		MESSAGE ( "CMAKE_MINOR_VERSION: ${CMAKE_MINOR_VERSION}" )
+		MESSAGE ( "CMAKE_PATCH_VERSION: ${CMAKE_PATCH_VERSION}" )
+#	ENDIF ( ${CMAKE_MAJOR_VERSION} GREATER 1 AND ${CMAKE_MINOR_VERSION} GREATER 6 )
+
+    IF ( NOT CBS_ROOT_DIR )
+        SET ( CBS_ROOT_DIR           "$ENV{CBS_ROOT_DIR}"       )
+        IF ( ${CBS_ROOT_DIR} STREQUAL "" )
+            MESSAGE( ERROR "CBS_ROOT_DIR not set. Please set it! Either as environment variable on in cmake file wich includes this"  )
+        ENDIF ( ${CBS_ROOT_DIR} STREQUAL "" )
+    ELSE ( NOT CBS_ROOT_DIR )
+        SET ( ENV{CBS_ROOT_DIR}           "${CBS_ROOT_DIR}"       )
+    ENDIF ( NOT CBS_ROOT_DIR )
+    
+    # - Set CMake Modules path -
+    SET     ( CMAKE_MODULE_PATH    ${CBS_ROOT_DIR}/Modules      )
+    SET 	( CBS_LIB_TYPE_TO_BUILD	"STATIC"	)
+    SET 	( CBS_BUILD	"ON"	)
+    SET 	( CBS_CROSS_COMPILING	"NO"	)
+    
+
+    INCLUDE ( ${CBS_ROOT_DIR}/macros_util.cbs					)
+	INCLUDE ( ${CBS_ROOT_DIR}/macros_set.cbs					)
+     # --- Detect some standard stuff ---
+    INCLUDE ( ${CBS_ROOT_DIR}/detect_cbs_system_values.cbs 		)
+    INCLUDE ( ${CBS_ROOT_DIR}/am_common_defines.cbs 			)
+   
+    # - Include some common helper macros -
+    INCLUDE ( ${CBS_ROOT_DIR}/get_library_relative_path.cbs		)
+	
+	INCLUDE ( ${CBS_ROOT_DIR}/macros_add.cbs					)
+	INCLUDE ( ${CBS_ROOT_DIR}/macros_build.cbs					)
+##	INCLUDE ( ${CBS_ROOT_DIR}/macros_configure.cbs				)
+	INCLUDE ( ${CBS_ROOT_DIR}/macros_install.cbs				)
+	INCLUDE ( ${CBS_ROOT_DIR}/macros_set.cbs					)
+	INCLUDE ( ${CBS_ROOT_DIR}/macros_copy_library.cbs			)
+
+    INCLUDE ( ${CBS_ROOT_DIR}/macros_warning_disable.cbs		)
+    INCLUDE ( ${CBS_ROOT_DIR}/macros_add_generated_source.cbs	)
+    INCLUDE ( ${CBS_ROOT_DIR}/macros_add_swig_source.cbs		)
+    INCLUDE ( ${CBS_ROOT_DIR}/macros_debug.cbs					)
+    INCLUDE ( ${CBS_ROOT_DIR}/macros_get_nearest_path.cbs		)
+
+    # ********************************
+    # *** Set some default options ***
+    # ********************************
+    SET ( CBS_BUILD_LIBRARY_CMAKE           ${CBS_ROOT_DIR}/build_library.cbs     	)
+    SET ( CBS_BUILD_MODULE_CMAKE            ${CBS_ROOT_DIR}/build_module.cbs      	)
+    SET ( CBS_BUILD_EXECUTABLE_CMAKE        ${CBS_ROOT_DIR}/build_executable.cbs  	)
+    SET ( CBS_BUILD_PROJECT_CMAKE           ${CBS_ROOT_DIR}/build_project.cbs     	)
+    
+    SET ( CBS_BUILD_EXAMPLES                ON                               		)
+    SET ( CBS_BUILD_TESTS                   ON                                      )
+    
+    # --- Set default use type to DISABLED. Except when no config file is found ---
+    #     in which case it's set to BUILD. See/search for: 
+    #     'Correct default use type to BUILD' later in this file. 
+    SET ( CBS_DEFAULT_USE_TYPE              "DISABLED"                              )
+    
+    
+    # - Default build type ---
+    SET ( CMAKE_BUILD_TYPE Release CACHE STRING  "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."  )
+    
+    # - Default value of CBS_LIBRARY_ROOT_DIR -
+    SET ( CBS_LIBRARY_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/build_cbs/libs )
+    
+    # TODO: Er dette smart at sætte en default current projekt ??
+    SET ( CBS_CURRENT_PROJECT       ${CMAKE_PROJECT_NAME} )
+#    SET ( cbs_root_prj_USE_TYPE     ENABLED )
+  
+  
+#    # --- Detect some standard stuff ---
+#    INCLUDE ( ${CBS_ROOT_DIR}/detect_cbs_user.cbs 				)
+#    INCLUDE ( ${CBS_ROOT_DIR}/detect_cbs_system_values.cbs 		)
+#    INCLUDE ( ${CBS_ROOT_DIR}/set_cbs_system_values.cbs 		)
+#    INCLUDE ( ${CBS_ROOT_DIR}/am_common_defines.cbs 			)
+    
+    
+    
+    # ***********************************
+    # *** Set System Specific Defines ***
+    # ***********************************
+    
+    # ------------
+    # - WINDOWS -
+    # ------------
+    IF ( ${CBS_SYSTEM_FAMILY} STREQUAL "CBS_SYSTEM_FAMILY_WINDOWS" )
+        # Disable confusing VC8 "deprecated" warnings for string functions like warning c4996, http://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=101187
+        add_definitions( -DWINDOWS -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE -D_SCL_SECURE_NO_DEPRECATE -D_USE_32BI_T_TIME_T) 
+    ENDIF ( ${CBS_SYSTEM_FAMILY} STREQUAL "CBS_SYSTEM_FAMILY_WINDOWS" )
+    
+    # ---------
+    # - LINUX -
+    # ---------
+    IF ( ${CBS_SYSTEM_FAMILY} STREQUAL  "CBS_SYSTEM_FAMILY_LINUX" )
+        SET ( CMAKE_SHARED_MODULE_C_FLAGS     " ${CMAKE_SHARED_LIBRARY_C_FLAGS}    -fvisibility=hidden" )
+        SET ( CMAKE_SHARED_MODULE_CXX_FLAGS    "${CMAKE_SHARED_LIBRARY_CXX_FLAGS}  -fvisibility=hidden" )
+        SET ( CMAKE_STATIC_LIBRARY_C_FLAGS     "${CMAKE_STATIC_LIBRARY_C_FLAGS}    -fPIC" )    # We need these in case we link a shared module agains a static library. At least on AMD 64 bit platform
+        SET ( CMAKE_STATIC_LIBRARY_CXX_FLAGS   "${CMAKE_STATIC_LIBRARY_CXX_FLAGS}  -fPIC" )
+        add_definitions(-DLINUX) 
+    ENDIF( ${CBS_SYSTEM_FAMILY} STREQUAL "CBS_SYSTEM_FAMILY_LINUX" )
+
+    # -------
+    # - OSX -
+    # -------
+    IF ( ${CBS_SYSTEM_FAMILY} STREQUAL  "CBS_SYSTEM_FAMILY_OSX" )
+        IF ( CBS_ENDIANNESS  STREQUAL "CBS_ENDIANNESS_BIG" )
+            add_definitions(-DDARWIN=1 -Dppc -Dmacintosh=1) 
+        ELSE ( CBS_ENDIANNESS STREQUAL "CBS_ENDIANNESS_BIG" )
+            add_definitions(-DDARWIN=1 -Di386=1)
+        ENDIF ( CBS_ENDIANNESS STREQUAL "CBS_ENDIANNESS_BIG" )
+    ENDIF( ${CBS_SYSTEM_FAMILY} STREQUAL  "CBS_SYSTEM_FAMILY_OSX" )
+   
+    
+    
+    # **********************************************************************************************
+    # *** Look for (and include if present) local, project or explicit build configuration files ***
+    # Note: The order of looking for files are, project-wide, local, explicit.
+    # This means that e.g. a local or explicit defined configuration, can make use of project
+    # wide build settings, but can also choose to override them completely.
+    # The explicit configuration file option is mainly thought of as being used for automated 
+    # builds or similar conditions where you want a very specific and predictable set of 
+    # build options. 
+    # The local build configuration file is mainly for private users (non source controlled) own
+    # build configuration file.
+    # --- Names ---
+    # Project specific config file: "PRJNAME.BuildConfig.cbs" (project top dir: "PRJNAME")
+    # Local (user) configuration file: "local.BuildConfig.cbs" (project top dir: "PRJNAME")
+    # Explicit configuration file: invoke like: "build.py -c test_explicit_build_configuration_file"
+    # **********************************************************************************************
+    
+    SET ( bFoundConfigFile   FALSE )
+    # --- Project Config file ---
+    SET ( PROJECT_CONFIG ${CMAKE_CURRENT_SOURCE_DIR}/${CMAKE_PROJECT_NAME}.BuildConfig.cbs )
+    IF ( EXISTS ${PROJECT_CONFIG} )
+        INCLUDE ( ${PROJECT_CONFIG} )
+        MESSAGE ( STATUS "CONFIG PROJECT:   ${PROJECT_CONFIG}" )
+        SET ( bFoundConfigFile   TRUE )
+    ENDIF( EXISTS ${PROJECT_CONFIG} )
+    
+    # --- Current user's/developper's 'private' config file ---
+    SET ( USER_CONFIG ${CMAKE_CURRENT_SOURCE_DIR}/developper_settings/${CBS_USER}/user.BuildConfig.cbs )
+    IF ( EXISTS ${USER_CONFIG} )
+        INCLUDE ( ${USER_CONFIG} )
+        MESSAGE ( STATUS "CONFIG USER/DEVELOPPER:  ${USER_CONFIG}" )
+        SET ( bFoundConfigFile   TRUE )
+    ENDIF( EXISTS ${USER_CONFIG} )
+    
+    # --- Local Config file ---
+    SET ( LOCAL_CONFIG ${CMAKE_CURRENT_SOURCE_DIR}/local.BuildConfig.cbs )
+    IF ( EXISTS ${LOCAL_CONFIG} )
+        INCLUDE ( ${LOCAL_CONFIG} )
+        MESSAGE ( STATUS "CONFIG LOCAL:  ${LOCAL_CONFIG}" )
+        SET ( bFoundConfigFile   TRUE )
+    ENDIF( EXISTS ${LOCAL_CONFIG} )
+    
+    # - Look for explicit specified configuration file -
+    IF ( CBS_BUILD_CONFIG_FILE )
+        SET ( SPECIFIC_CONFIG   ${CMAKE_CURRENT_SOURCE_DIR}/${CBS_BUILD_CONFIG_FILE} )
+        IF ( EXISTS ${SPECIFIC_CONFIG} )
+            INCLUDE ( ${SPECIFIC_CONFIG} )
+            MESSAGE ( STATUS "CONFIG EXPLICIT:  ${SPECIFIC_CONFIG}" )
+            SET ( bFoundConfigFile   TRUE )
+        ELSE( EXISTS ${SPECIFIC_CONFIG} )
+            MESSAGE ( STATUS "ERROR: Build config file not found:   ${SPECIFIC_CONFIG}" )
+        ENDIF( EXISTS ${SPECIFIC_CONFIG} )
+    ENDIF ( CBS_BUILD_CONFIG_FILE )
+    
+    INCLUDE ( ${CBS_ROOT_DIR}/set_executable_paths.cbs 		)
+    
+	# --- Correct default use type to BUILD in case no config file at all is found ---
+	IF    ( ${bFoundConfigFile} STREQUAL FALSE )
+		SET ( CBS_DEFAULT_USE_TYPE              "BUILD"     )
+	ENDIF ( ${bFoundConfigFile} STREQUAL FALSE  )
+	
+	
+    # --------------------------------
+    # --- GCC user requested flags ---
+    # --------------------------------
+	IF ( COMPILER_GCC )
+		IF ( COMPILE_FLAG_GCC_SHORT_WCHAR ) 
+			add_definitions( -fshort-wchar ) 
+		ENDIF ( COMPILE_FLAG_GCC_SHORT_WCHAR ) 
+	ENDIF ( COMPILER_GCC )
+    
+	
+	# ---------------------------
+	# --- Include Directories ---
+	# ---------------------------
+	SET( CBS_INCLUDE_DIR        ${CBS_ROOT_DIR}                         )
+	SET( CBS_INCLUDE_DIRS       ${CMAKE_BINARY_DIR} ${CBS_INCLUDE_DIR}  ) 
+	IF ( COMPILER_MSVC )
+		SET( CBS_INCLUDE_DIRS	"${CBS_INCLUDE_DIRS}" "${CBS_ROOT_DIR}/compatibility/msvc"  ) 
+	ENDIF ( COMPILER_MSVC )
+	include_directories (       ${CBS_INCLUDE_DIRS}                     )
+	
+	        
+    
+    # ----------------------------------
+    # --- CBS libraries search paths ---
+    # ----------------------------------
+    GET_LIBRARY_RELATIVE_PATH_PREBUILD ( CBS_SHARED_LIBRARY_RELATIVE_PATH_PREBUILD "SHARED" 	${CMAKE_BUILD_TYPE} )
+    GET_LIBRARY_RELATIVE_PATH ( CBS_SHARED_LIBRARY_RELATIVE_PATH 	"SHARED" 					${CMAKE_BUILD_TYPE} )
+    GET_LIBRARY_RELATIVE_PATH ( CBS_LIBRARY_RELATIVE_PATH 			${CBS_LIB_TYPE_TO_BUILD} 	${CMAKE_BUILD_TYPE} )
+    SET ( CBS_SHARED_LIBRARY_PATH_PREBUILD	${CBS_LIBRARY_ROOT_DIR}/${CBS_SHARED_LIBRARY_RELATIVE_PATH_PREBUILD}	)
+    SET ( CBS_SHARED_LIBRARY_PATH			${CBS_LIBRARY_ROOT_DIR}/${CBS_SHARED_LIBRARY_RELATIVE_PATH}	)
+    SET ( CBS_LIBRARY_PATH      			${CBS_LIBRARY_ROOT_DIR}/${CBS_LIBRARY_RELATIVE_PATH} 		)
+    
+    # TODO: This variable 'LIBRARY_OUTPUT_PATH' should no longer be used as of CMake 2.6. Use the ARCHIVE_OUTPUT_DIRECTORY, LIBRARY_OUTPUT_DIRECTORY, and RUNTIME_OUTPUT_DIRECTORY target properties instead. They will override this variable if they are set.
+    SET ( LIBRARY_OUTPUT_PATH   ${CBS_LIBRARY_PATH} )   # Set default library output path 
+    link_directories (          ${CBS_LIBRARY_PATH} )
+	
+	# TODO: This 'EXECUTABLE_OUTPUT_PATH' variable should no longer be used as of CMake 2.6. Use the RUNTIME_OUTPUT_DIRECTORY target property instead. It will override this variable if it is set.
+	IF ( WIN32 )
+	    SET ( EXECUTABLE_OUTPUT_PATH	${CBS_SHARED_LIBRARY_PATH}	)   # Set default executable output path 
+#	    SET ( EXECUTABLE_OUTPUT_PATH	${CBS_LIBRARY_PATH}	)   # Set default executable output path 
+	ENDIF ( WIN32 )
+
+    
+		# --- Set release and debug variables ---
+	IF ( ${CMAKE_BUILD_TYPE} STREQUAL Release  ) 
+		SET( CBS_RELEASE TRUE )
+		SET( CBS_DEBUG "" )
+		IF ( WINDOWS )
+			SET( CBS_WINDOWS_RELEASE TRUE )
+			SET( CBS_WINDOWS_DEBUG "" )
+		ENDIF ( WINDOWS )
+	ENDIF ( ${CMAKE_BUILD_TYPE} STREQUAL Release  ) 
+	
+	IF ( ${CMAKE_BUILD_TYPE} STREQUAL Debug  ) 
+		SET( CBS_RELEASE "" )
+		SET( CBS_DEBUG TRUE )
+		IF ( WINDOWS )
+			SET( CBS_WINDOWS_RELEASE "" )
+			SET( CBS_WINDOWS_DEBUG TRUE )
+		ENDIF ( WINDOWS )
+	ENDIF ( ${CMAKE_BUILD_TYPE} STREQUAL Debug  ) 
+
+    # ------------------------------------
+    # --- Configure cbs_config.h file ---
+    # ------------------------------------
+    CONFIGURE_FILE ( ${CBS_INCLUDE_DIR}/cbs_config.h.in ${CMAKE_BINARY_DIR}/cbs_config.h )
+    
+    
+    # -----------------------------
+    # --- Info messages to user ---
+    # -----------------------------
+#    MESSAGE( STATUS "CMAKE_PROJECT_DIR:                ${CMAKE_TOP_DIR}" )
+#    MESSAGE( STATUS "CMAKE_PROJECT_NAME:               ${CMAKE_PROJECT_NAME}" )
+#    MESSAGE( STATUS "CMAKE_CURRENT_SOURCE_DIR:         ${CMAKE_CURRENT_SOURCE_DIR}" )
+#    MESSAGE( STATUS "CMAKE_SYSTEM_NAME:                ${CMAKE_SYSTEM_NAME}" )
+    MESSAGE( STATUS "CMAKE_BUILD_TYPE:                 ${CMAKE_BUILD_TYPE}" )
+#    MESSAGE( STATUS "CMAKE_BINARY_DIR:                 ${CMAKE_BINARY_DIR}" )
+#    MESSAGE( STATUS "CMAKE_MODULE_PATH:                ${CMAKE_MODULE_PATH}" )
+#    MESSAGE( STATUS "CBS_USER:                         ${CBS_USER}" )
+#    MESSAGE( STATUS "CBS_CROSS_COMPILING:              ${CBS_CROSS_COMPILING}" )
+#    MESSAGE( STATUS "CBS_SYSTEM_FAMILY:                ${CBS_SYSTEM_FAMILY}" )
+#    MESSAGE( STATUS "CBS_SYSTEM_SUB_TYPE:              ${CBS_SYSTEM_SUB_TYPE}" )
+#    MESSAGE( STATUS "CBS_LIBRARY_PATH       :          ${CBS_LIBRARY_PATH}" )
+#    MESSAGE( STATUS "CBS_SHARED_LIBRARY_PATH:          ${CBS_SHARED_LIBRARY_PATH}" )
+#    MESSAGE( STATUS "CBS_LIBRARY_PATH:                 ${CBS_LIBRARY_PATH}" )
+#    MESSAGE( STATUS "CBS_INCLUDE_DIR:                  ${CBS_INCLUDE_DIR}" )
+#    MESSAGE( STATUS "CBS_ROOT_DIR:                     ${CBS_ROOT_DIR}" )
+#    MESSAGE( STATUS "CBS_DEFAULT_USE_TYPE:             ${CBS_DEFAULT_USE_TYPE}" )
+#    MESSAGE( STATUS "CMAKE_CURRENT_BINARY_DIR:         ${CMAKE_CURRENT_BINARY_DIR}" )
+    
+	
+    
+    IF    ( ${bFoundConfigFile} STREQUAL FALSE )
+        MESSAGE( "" )
+        MESSAGE( "NOTE: No config file/files found !!" )
+        MESSAGE(  "      Setting default use type (CBS_DEFAULT_USE_TYPE) " )
+        MESSAGE(  "      to 'BUILD' meaning all projects will be built. " )
+        MESSAGE(  "      To change this behaviour add a '${CMAKE_PROJECT_NAME}.BuildConfig.cbs', a " )
+        MESSAGE(  "      'local.BuildConfig.cbs' or a specific config file specified using the " )
+        MESSAGE(  "      'CBS_BUILD_CONFIG_FILE' cache variable on the command line to cmake. The " )
+        MESSAGE(  "      'last can also be achived by the 'cbmake.py --configfile my_config.cbs' " )
+        MESSAGE( "" )
+    ENDIF ( ${bFoundConfigFile} STREQUAL FALSE  )
+
+# --------------------------------------------------------------------------------------------------------
+# --- CBS_NAMED_INHERIT_VARS: List of (postFix) names of vars to make an explicit inherited version of ---
+# --------------------------------------------------------------------------------------------------------
+# See set_inherit_xxx_vars.cbs
+# Example: 	We inherit ${CBS_CURRENT_PROJECT}_INSTALL_PREFIX_INHERITED from ${CBS_PARENT_PROJECT}_INSTALL_PREFIX_INHERITED
+#			And if this results in an empty valu we try to inherit from ${CBS_PARENT_PROJECT}_INSTALL_PREFIX
+SET( CBS_NAMED_INHERIT_VARS	${CBS_NAMED_INHERIT_VARS}	_INSTALL_PREFIX			)
+SET( CBS_NAMED_INHERIT_VARS	${CBS_NAMED_INHERIT_VARS}	_MAJOR_VERSION			)
+#SET( CBS_NAMED_INHERIT_VARS	${CBS_NAMED_INHERIT_VARS}	_MINOR_VERSION			)
+#SET( CBS_NAMED_INHERIT_VARS	${CBS_NAMED_INHERIT_VARS}	_MICRO_VERSION			)
+
+
+ENDIF ( NOT CBS_COMMON_RULES_INCLUDED )

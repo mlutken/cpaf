@@ -1,0 +1,63 @@
+
+# --------------------------------------------
+# --- Inherit/add parent project's DEFINES ---
+# --------------------------------------------
+SET ( ${CBS_CURRENT_PROJECT}_COMPILER_OPTIONS 	${${CBS_CURRENT_PROJECT}_COMPILER_OPTIONS}	${${CBS_PARENT_PROJECT}_COMPILER_OPTIONS}	)
+SET ( ${CBS_CURRENT_PROJECT}_DEFINES 			${${CBS_CURRENT_PROJECT}_DEFINES}			${${CBS_PARENT_PROJECT}_DEFINES}			)
+SET ( ${CBS_CURRENT_PROJECT}_C_FLAGS 			${${CBS_CURRENT_PROJECT}_C_FLAGS}			${${CBS_PARENT_PROJECT}_C_FLAGS}			)
+SET ( ${CBS_CURRENT_PROJECT}_CXX_FLAGS	 		${${CBS_CURRENT_PROJECT}_CXX_FLAGS}			${${CBS_PARENT_PROJECT}_CXX_FLAGS}			)
+SET ( ${CBS_CURRENT_PROJECT}_XDEFINES 			${${CBS_CURRENT_PROJECT}_XDEFINES}			${${CBS_PARENT_PROJECT}_XDEFINES}			)
+SET ( ${CBS_CURRENT_PROJECT}_XC_FLAGS 			${${CBS_CURRENT_PROJECT}_XC_FLAGS}			${${CBS_PARENT_PROJECT}_XC_FLAGS}			)
+SET ( ${CBS_CURRENT_PROJECT}_XCXX_FLAGS	 		${${CBS_CURRENT_PROJECT}_XCXX_FLAGS}		${${CBS_PARENT_PROJECT}_XCXX_FLAGS}			)
+LIST_APPEND_UNIQUE ( ${CBS_CURRENT_PROJECT}_XDEPENDS_ON 	${${CBS_PARENT_PROJECT}_XDEPENDS_ON}			)
+LIST_APPEND_UNIQUE ( ${CBS_CURRENT_PROJECT}_INCLUDE_DIRS	${${CBS_PARENT_PROJECT}_INCLUDE_DIRS} 		) 
+LIST_APPEND_UNIQUE ( ${CBS_CURRENT_PROJECT}_XINCLUDE_DIRS	${${CBS_PARENT_PROJECT}_XINCLUDE_DIRS} 		) 
+LIST_APPEND_UNIQUE ( ${CBS_CURRENT_PROJECT}_XLINK_DIRS 		${${CBS_PARENT_PROJECT}_XLINK_DIRS} 		) 
+LIST_APPEND_UNIQUE ( ${CBS_CURRENT_PROJECT}_XLINK_LIBRARIES	${${CBS_PARENT_PROJECT}_XLINK_LIBRARIES}	)
+
+#    message ( "varNamePostFix: ${varNamePostFix}, CBS_DEFAULT${varNamePostFix}: ${CBS_DEFAULT${varNamePostFix}} " )
+
+FOREACH( varNamePostFix ${CBS_NAMED_INHERIT_VARS} )
+    ## -----------------------------------------------
+    ## --- Determine project DEFAULT var postfix ---
+    ## -----------------------------------------------
+    # Use Parent project's only if not set for current project
+    IF ( NOT ${CBS_CURRENT_PROJECT}_DEFAULT${varNamePostFix} OR ${CBS_CURRENT_PROJECT}_DEFAULT${varNamePostFix} STREQUAL "" )
+        SET ( ${CBS_CURRENT_PROJECT}_DEFAULT${varNamePostFix}    "${${CBS_PARENT_PROJECT}_DEFAULT${varNamePostFix}}" )    # Use parent project setting 
+    ENDIF ( NOT ${CBS_CURRENT_PROJECT}_DEFAULT${varNamePostFix} OR ${CBS_CURRENT_PROJECT}_DEFAULT${varNamePostFix} STREQUAL "" )
+
+    # If DEFAULT still not set use global CBS_DEFAULT_
+    IF ( NOT ${CBS_CURRENT_PROJECT}_DEFAULT${varNamePostFix} OR ${CBS_CURRENT_PROJECT}_DEFAULT${varNamePostFix} STREQUAL "" )
+        SET ( ${CBS_CURRENT_PROJECT}_DEFAULT${varNamePostFix}    "${CBS_DEFAULT${varNamePostFix}}" )    # Use global default
+    ENDIF ( NOT ${CBS_CURRENT_PROJECT}_DEFAULT${varNamePostFix} OR ${CBS_CURRENT_PROJECT}_DEFAULT${varNamePostFix} STREQUAL "" )
+
+
+    ## ----------------------------------------
+    ## --- Determine project var postfix ---
+    ## ----------------------------------------
+
+    ## Use Parent project's only if not set for current project
+    IF ( NOT ${CBS_CURRENT_PROJECT}${varNamePostFix} OR ${CBS_CURRENT_PROJECT}${varNamePostFix} STREQUAL "" )
+        SET ( ${CBS_CURRENT_PROJECT}${varNamePostFix}    "${${CBS_PARENT_PROJECT}${varNamePostFix}}" )    # Use parent project setting 
+    ENDIF ( NOT ${CBS_CURRENT_PROJECT}${varNamePostFix} OR ${CBS_CURRENT_PROJECT}${varNamePostFix} STREQUAL "" )
+
+    ## --- use project_DEFAULT${varNamePostFix} in case var postfix still not set ---
+    IF ( NOT ${CBS_CURRENT_PROJECT}${varNamePostFix} OR "${${CBS_CURRENT_PROJECT}${varNamePostFix}}" STREQUAL "" )
+        SET ( ${CBS_CURRENT_PROJECT}${varNamePostFix}    "${${CBS_CURRENT_PROJECT}_DEFAULT${varNamePostFix}}" )            # For unknown to CBS_DEFAULT${varNamePostFix}_TYPE 
+    ENDIF ( NOT ${CBS_CURRENT_PROJECT}${varNamePostFix} OR "${${CBS_CURRENT_PROJECT}${varNamePostFix}}" STREQUAL "" )
+
+    ## --- Add chosen installPrefix'es to cache variable ---    
+    SET ( ${CBS_CURRENT_PROJECT}_DEFAULT${varNamePostFix}     ${${CBS_CURRENT_PROJECT}_DEFAULT${varNamePostFix}}      CACHE STRING "" FORCE )
+    SET ( ${CBS_CURRENT_PROJECT}${varNamePostFix}             ${${CBS_CURRENT_PROJECT}${varNamePostFix}}      CACHE STRING "" FORCE )
+
+    # --- Determine project var postfix ---
+    SET ( ${CBS_CURRENT_PROJECT}${varNamePostFix}    "${${CBS_PARENT_PROJECT}${varNamePostFix}}" CACHE STRING "" FORCE )    # Use parent project setting 
+
+    # # --- Inherit var postfix ---
+    SET ( ${CBS_CURRENT_PROJECT}${varNamePostFix}_INHERITED    "${${CBS_PARENT_PROJECT}${varNamePostFix}_INHERITED}" CACHE STRING "" FORCE )        # Try first inherited parent project setting 
+    IF ( NOT ${CBS_CURRENT_PROJECT}${varNamePostFix}_INHERITED OR "${${CBS_CURRENT_PROJECT}${varNamePostFix}_INHERITED}" STREQUAL "" )
+        SET ( ${CBS_CURRENT_PROJECT}${varNamePostFix}_INHERITED    "${${CBS_PARENT_PROJECT}${varNamePostFix}}" CACHE STRING "" FORCE )          # Use parent project setting 
+    ENDIF ( NOT ${CBS_CURRENT_PROJECT}${varNamePostFix}_INHERITED OR "${${CBS_CURRENT_PROJECT}${varNamePostFix}_INHERITED}" STREQUAL "" )
+ENDFOREACH( varNamePostFix )
+
+

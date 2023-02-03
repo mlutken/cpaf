@@ -1,0 +1,22 @@
+INCLUDE (${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+IF( CBS_QT4 )
+	FIND_LIB_SIMPLE ( 	QtUiTools 
+						LIB_NAME QtUiTools LINUX QtUiTools4 CBS_WINDOWS_RELEASE QtUiToolsd4 CBS_WINDOWS_DEBUG
+						HEADER_FILES QUiToolsWidget  
+						HEADER_PATHS ${QT_HDR_DIR}/QtUiTools /usr/include/qt4/QtUiTools /usr/include/QtUiTools
+						LIB_PATHS ${QT_LIB_DIR} /usr/lib
+						PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtUiTools ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+						DEPENDS_ON QtGui 
+						)
+ELSE( CBS_QT4 )
+	FIND_LIB_SIMPLE ( 	QtUiTools 
+						LIB_NAME QtUiTools LINUX Qt5UiTools CBS_WINDOWS_RELEASE Qt5UiToolsd CBS_WINDOWS_DEBUG
+						HEADER_FILES QUiToolsWidget  
+						HEADER_PATHS ${QT_HDR_DIR}/QtUiTools /usr/include/qt5/QtUiTools /usr/include/QtUiTools
+						LIB_PATHS ${QT_LIB_DIR} /usr/lib
+						PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtUiTools ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+						DEPENDS_ON QtGui 
+						)
+ENDIF( CBS_QT4 )
+
+

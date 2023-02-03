@@ -1,0 +1,25 @@
+# *** @TYPE_TO_BUILD@: '@PRJTGT_NAME@' main cbs file. ***
+
+# -----------------------
+# --- Configure files ---
+# -----------------------
+CONFIGURE_FILE ( ${CMAKE_CURRENT_SOURCE_DIR}/cbs_config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h 	)
+
+# -------------------
+# --- Build setup ---
+# -------------------
+ADDX_DEPENDS_ON ( mylib	)
+
+ADDX_INCLUDE_DIR ( ${CMAKE_CURRENT_SOURCE_DIR}			)
+ADDX_INCLUDE_DIR ( ${CMAKE_CURRENT_SOURCE_DIR}/myinclude	)
+ADDX_INCLUDE_DIR ( ${CMAKE_CURRENT_BINARY_DIR}			)
+
+ADD_DEFINE ( MY_DEFINE 				1	) 
+
+
+# -----------------------------------------------
+# --- Add subdirectories (targets/subprojects ---
+# -----------------------------------------------
+ADD_SUBDIR ( mysubdir			)
+
+

@@ -1,0 +1,31 @@
+INCLUDE (${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+IF( CBS_QT4 )
+	FIND_LIB_SIMPLE ( 	QtMultimediaWidgets 
+						LIB_NAME QtMultimediaWidgets LINUX QtMultimediaWidgets4 CBS_WINDOWS_RELEASE QtMultimediaWidgetsd4 CBS_WINDOWS_DEBUG
+						HEADER_FILES QtMultimediaWidgets  
+						HEADER_PATHS ${QT_HDR_DIR}/QtMultimediaWidgets /usr/include/qt4/QtMultimediaWidgets /usr/include/QtMultimediaWidgets
+						LIB_PATHS ${QT_LIB_DIR} /usr/lib
+						PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtMultimediaWidgets ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+						DEPENDS_ON QtCore
+						)
+ELSE( CBS_QT4 )
+	IF (WINDOWS)
+		FIND_LIB_SIMPLE ( 	QtMultimediaWidgets 
+							LIB_NAME QtMultimediaWidgets LINUX Qt5MultimediaWidgets CBS_WINDOWS_RELEASE Qt5MultimediaWidgetsd CBS_WINDOWS_DEBUG
+							HEADER_FILES QtMultimediaWidgets  
+							HEADER_PATHS ${QT_HDR_DIR}/QtMultimediaWidgets /usr/include/qt4/QtMultimediaWidgets /usr/include/QtMultimediaWidgets
+							LIB_PATHS ${QT_LIB_DIR} /usr/lib
+							PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtMultimediaWidgets ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+							DEPENDS_ON QtCore
+							)
+	ELSE (WINDOWS)
+		FIND_LIB_SIMPLE ( 	QtMultimediaWidgets 
+							LIB_NAME Qt5MultimediaWidgets 
+							HEADER_FILES QtMultimediaWidgets  
+							HEADER_PATHS ${QT_HDR_DIR}/QtMultimediaWidgets /usr/include/qt5/QtMultimediaWidgets
+							)
+	ENDIF (WINDOWS)						
+ENDIF( CBS_QT4 )
+
+
+

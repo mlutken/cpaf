@@ -1,0 +1,15 @@
+# -------------------
+# --- Build setup ---
+# -------------------
+#ADDX_DEPENDS_ON ( cpaf_utils 				)
+ADDX_DEPENDS_ON ( cpaf_filesystem 			)
+ADDX_DEPENDS_ON ( boost_program_options 	)
+
+ 
+# -------------------
+# --- Add sources ---
+# -------------------
+ADD_SOURCE_FILE ( dircomp.cpp )
+
+
+

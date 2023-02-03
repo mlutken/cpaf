@@ -1,0 +1,27 @@
+INCLUDE (${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+IF( CBS_QT4 )
+	FIND_LIB_SIMPLE ( 	QtCore 
+						LIB_NAME QtCore LINUX QtCore4 CBS_WINDOWS_RELEASE QtCored4 CBS_WINDOWS_DEBUG
+						HEADER_FILES qatomic.h 
+						HEADER_PATHS ${QT_HDR_DIR}/QtCore /usr/include/qt4/QtCore /usr/include/QtCore
+						LIB_PATHS ${QT_LIB_DIR} /usr/lib
+						PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtCore ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+						)
+ELSE( CBS_QT4 )
+	IF(WINDOWS)
+		FIND_LIB_SIMPLE ( 	QtCore
+							LIB_NAME QtCore LINUX Qt5Core CBS_WINDOWS_RELEASE Qt5Cored CBS_WINDOWS_DEBUG
+							HEADER_FILES qatomic.h 
+							HEADER_PATHS ${QT_HDR_DIR}/QtCore /usr/include/qt5/QtCore /usr/include/QtCore
+							LIB_PATHS ${QT_LIB_DIR} /usr/lib
+							PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtCore ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+							)
+	ELSE(WINDOWS)
+		FIND_LIB_SIMPLE ( 	QtCore 
+							LIB_NAME Qt5Core 
+							HEADER_FILES QtCore  
+							HEADER_PATHS ${QT_HDR_DIR}/QtCore /usr/include/qt5/QtCore
+							)
+	ENDIF (WINDOWS)						
+ENDIF( CBS_QT4 )
+

@@ -1,0 +1,4 @@
+
+INCLUDE ( ${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+##FIND_LIB_SIMPLE ( png HEADER_FILES png.h DEPENDS_ON z bz2 )
+FIND_LIB_SIMPLE ( png HEADER_FILES png.h DEPENDS_ON z )

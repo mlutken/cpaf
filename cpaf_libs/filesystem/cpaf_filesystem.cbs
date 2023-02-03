@@ -1,0 +1,18 @@
+# -------------------
+# --- Build setup ---
+# -------------------
+ADDX_DEPENDS_ON ( cpaf_utils		)
+ADDX_DEPENDS_ON ( boost_regex		)
+ADDX_DEPENDS_ON ( boost_filesystem	)
+ADDX_DEPENDS_ON ( boost_system      )
+
+ADDX_INCLUDE_DIR ( ${CMAKE_CURRENT_SOURCE_DIR} ) 
+
+
+# -------------------
+# --- Add sources ---
+# -------------------
+ADD_SOURCE_FILE ( cpaf_file_directory_functions.cpp    )
+ADD_SOURCE_FILE ( cpaf_special_dirs.cpp                )
+
+

@@ -1,0 +1,23 @@
+INCLUDE (${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+IF( CBS_QT4 )
+	FIND_LIB_SIMPLE ( 	QtQmlDevTools 
+						LIB_NAME QtQmlDevTools LINUX QtQmlDevTools4 CBS_WINDOWS_RELEASE QtQmlDevToolsd4 CBS_WINDOWS_DEBUG
+						HEADER_FILES QQmlDevToolsable  
+						HEADER_PATHS ${QT_HDR_DIR}/QtQmlDevTools /usr/include/qt4/QtQmlDevTools /usr/include/QtQmlDevTools
+						LIB_PATHS ${QT_LIB_DIR} /usr/lib
+						PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtQmlDevTools ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+						DEPENDS_ON QtCore
+						)
+ELSE( CBS_QT4 )
+	FIND_LIB_SIMPLE ( 	QtQmlDevTools 
+						LIB_NAME QtQmlDevTools LINUX Qt5QmlDevTools CBS_WINDOWS_RELEASE Qt5QmlDevToolsd CBS_WINDOWS_DEBUG
+						HEADER_FILES QQmlDevToolsable  
+						HEADER_PATHS ${QT_HDR_DIR}/QtQmlDevTools /usr/include/qt5/QtQmlDevTools /usr/include/QtQmlDevTools
+						LIB_PATHS ${QT_LIB_DIR} /usr/lib
+						PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtQmlDevTools ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+						DEPENDS_ON QtCore
+						)
+ENDIF( CBS_QT4 )
+
+
+

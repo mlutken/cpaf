@@ -1,0 +1,9 @@
+
+
+SET_DEFAULT ( mylib_LINK_TYPE		STATIC		WINDOWS	)
+
+
+ADD_SUBDIR ( "../.." )
+#ADD_SUBDIR (  $ENV{CPAF_ROOT_DIR}		)
+ADD_SUBDIR ( phpdocument	)
+ADD_SUBDIR ( test			)

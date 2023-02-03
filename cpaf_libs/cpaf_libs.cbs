@@ -1,0 +1,29 @@
+PROJECT_DEFAULT ( _INSTALL_PREFIX	"${CBS_DEFAULT_INSTALL_PREFIX}"	)
+
+# --------------------------
+# --- Add subdirectories ---
+# --------------------------
+# --- In case cpaf_libs is top-level project, we add the libraries that we depend ...
+#     on to allow for 'local' builds 
+IF    ( ${CMAKE_PROJECT_NAME} STREQUAL "cpaf_libs" )
+	ADD_SUBDIR ( "../../cpaf"     					)
+# 	ADD_SUBDIR ( "${CMAKE_CURRENT_SOURCE_DIR}/../cul"      )
+# 	ADD_SUBDIR ( "${CMAKE_CURRENT_SOURCE_DIR}/../cul/bz2"    )
+# 	ADD_SUBDIR ( "${CMAKE_CURRENT_SOURCE_DIR}/../cul/boost"  )
+ENDIF ( ${CMAKE_PROJECT_NAME} STREQUAL "cpaf_libs" )
+
+
+ADD_SUBDIR ( utils			)
+ADD_SUBDIR ( filesystem		)
+ADD_SUBDIR ( system			)
+ADD_SUBDIR ( net			)
+ADD_SUBDIR ( math			)
+ADD_SUBDIR ( compression    )
+ADD_SUBDIR ( concurrent     )
+
+# --- Executables ---
+ADD_SUBDIR ( dircomp		)
+
+# --- Test ---
+ADD_SUBDIR ( test_lib		)
+ADD_SUBDIR ( test_exe		)

@@ -1,0 +1,321 @@
+
+# - Build library
+# Builds (or finds) the library designated by var CBS_CURRENT_TARGET
+# Most often included "indirectly" via BUILD_LIBRARY macro.
+# 
+# - VARIABLES USED AS "INPUT" -
+# ${baseName}_XDEPENDS_ON    : Names of lib that this library depends on.
+#                             Makes sure that inclæude directories, link libs, 
+#                             link dirs etc. are set correctly for compiling and linking.
+# ${baseName}_LINK_TYPE     : Link type to be used for this library. Overrides default setting
+#                             from command line build.
+#
+# - GLOBAL VARIABLES PROVIDED AS "OUTPUT" - :
+# ${baseName}_INCLUDE_DIR   : Include paths needed for xxlib alone (no dependent include dirs)
+# ${baseName}_XINCLUDE_DIRS  : Inlcude paths needed for xxlib, including including paths for eventual dependant libraries.
+# ${baseName}_LIBRARY       : Library/libraries when using xxlib (no dependent libs).
+# ${baseName}_LIBRARIES     : List of libraries including dependent when using xxlib.
+# ${baseName}_XLINK_DIR      : Linker search paths/dirs needed for linking xxlib.
+# ${baseName}_XLINK_DIRS     : List of all linker search paths/dirs needed (including dependent ones) for linking xxlib.
+# ${baseName}_LINK_TYPE     : Link type requested/used for this library : STATIC or SHARED
+# ${baseName}_FOUND         : True if xx library found/compiled.
+# ${baseName}_FULL_PATH     : XX Not implemented yet!! Full path to the library built.
+# ${baseName}_INFO_USE      : Set to use type actually used for xx library.
+#
+# -------------------------------------------------------------
+# --- Determine use type: DISABLED, SYSTEM, BUILD, PREBUILT ---
+# -------------------------------------------------------------
+INCLUDE ( ${CBS_ROOT_DIR}/set_use_type.cbs        	)
+
+# SEE: macros_build.cbs => BUILD_LIBRARY() 
+# # # --------------------------------------------------------------------------
+# # # --- SYSTEM: User chose to use system installed version of this library ---
+# # # --------------------------------------------------------------------------
+# # # IF    ( ${useType} STREQUAL "SYSTEM" )
+# # #     IF ( EXISTS ${CBS_ROOT_DIR}/Modules/Find_${CBS_CURRENT_TARGET}.cbs )
+# # #         INCLUDE ( ${CBS_ROOT_DIR}/Modules/Find_${CBS_CURRENT_TARGET}.cbs )
+# # #     ELSE ( EXISTS ${CBS_ROOT_DIR}/Modules/Find_${CBS_CURRENT_TARGET}.cbs )
+# # #         MESSAGE( ERROR "No 'Find_${CBS_CURRENT_TARGET}' for current project '${CBS_CURRENT_TARGET}' !!!" )
+# # #     ENDIF ( EXISTS ${CBS_ROOT_DIR}/Modules/Find_${CBS_CURRENT_TARGET}.cbs )
+# # # ENDIF ( ${useType} STREQUAL "SYSTEM" )
+
+
+IF    ( ${useType} STREQUAL "BUILD" OR ${useType} STREQUAL "PREBUILT" )
+#    MESSAGE( STATUS "AAA --- LIBRARY --- ${CBS_CURRENT_TARGET}_USE: ${${CBS_CURRENT_TARGET}_USE}" )
+
+	project ( ${CBS_CURRENT_TARGET})
+	
+	#MESSAGE( STATUS "BUILD_LIBRARY (CBS_CURRENT_TARGET, CBS_PARENT_PROJECT) =  (${CBS_CURRENT_TARGET}, ${CBS_PARENT_PROJECT})" )
+	
+	# ---Default to (named) inherited values if not allready set ---
+	FOREACH ( varNamePostFix ${CBS_NAMED_INHERIT_VARS} )
+		TARGET_DEFAULT	( ${varNamePostFix} "" )
+	ENDFOREACH ( varNamePostFix )
+	
+	
+	# --- Add platform specific sources, definitions etc. ---
+	INCLUDE ( ${CBS_ROOT_DIR}/set_common_values_for_current.cbs	)
+	
+	
+	
+	# # # --- Set target type to library ---
+	# # SET ( ${CBS_CURRENT_TARGET}_TARGET_TYPE LIBRARY  CACHE STRING "" FORCE )	# TODO: Perhaps this var is not used and can be removed
+	
+	
+	
+	
+	
+	# --- Find depends on: include directories, link libraries ---
+	INCLUDE ( ${CBS_ROOT_DIR}/set_depends_on.cbs	)
+	
+	IF    ( ${useType} STREQUAL "BUILD" OR ${useType} STREQUAL "PREBUILT" )
+		# --- Set library output path ---
+		GET_LIBRARY_RELATIVE_PATH ( libraryRelativePath ${CBS_CURRENT_TARGET}_LINK_TYPE ${CMAKE_BUILD_TYPE} )
+		SET ( LIBRARY_OUTPUT_PATH   ${CBS_LIBRARY_ROOT_DIR}/${libraryRelativePath} )  
+	ENDIF    ( ${useType} STREQUAL "BUILD" OR ${useType} STREQUAL "PREBUILT" )
+	
+	
+	
+	# -------------------------------------------------------
+	# --- BUILD: User chose to build this library locally ---
+	# -------------------------------------------------------
+	IF    ( ${useType} STREQUAL "BUILD" AND ${CBS_CURRENT_TARGET}_SRCS )
+		# --- Add (compiler) definitions : eventually ends up in cmakes add_definitions command ---
+		INCLUDE ( ${CBS_ROOT_DIR}/add_defines.cbs		)
+	
+		# --- Set include directories, and link directories ---
+		include_directories ( ${${CBS_CURRENT_TARGET}_XINCLUDE_DIRS} ${${CBS_CURRENT_TARGET}_INCLUDE_DIRS} )
+		link_directories    ( ${${CBS_CURRENT_TARGET}_XLINK_DIRS}	)
+	
+		# --- Set custom build flags for the project ---
+		INCLUDE ( ${CBS_ROOT_DIR}/set_custom_build_flags.cbs		)
+	
+		# -------------------------
+		# --- Build the library ---
+		# -------------------------
+		# --- Static Library ---
+		SET ( LINK_TYPE_SPECIFIED  "" )
+		IF ( ${CBS_CURRENT_TARGET}_LINK_TYPE STREQUAL "STATIC" )
+            SET ( LINK_TYPE_SPECIFIED  "STATIC" )
+			SET ( CMAKE_C_FLAGS     "${CMAKE_C_FLAGS}    ${CMAKE_STATIC_LIBRARY_C_FLAGS}"     ) # These flags seems not to be part of default cmake, so we add here manually!
+			SET ( CMAKE_CXX_FLAGS   "${CMAKE_CXX_FLAGS}  ${CMAKE_STATIC_LIBRARY_CXX_FLAGS}"   ) # The CMAKE_SHARED_LIBRARY_CXX_FLAGS and CMAKE_SHARED_MODULE_CXX_FLAGS and the C versions are however.
+			add_library (${CBS_CURRENT_TARGET} STATIC ${${CBS_CURRENT_TARGET}_SRCS} )
+			
+			# - Set install path and permissions
+			SET ( ${CBS_CURRENT_TARGET}_INSTALL_LIB_PATH            "${${CBS_CURRENT_TARGET}_INSTALL_PREFIX}${CBS_INSTALL_STATIC_SUBDIR}"  ) 
+			SET_DEFAULT ( ${CBS_CURRENT_TARGET}_INSTALL_HEADER_PATH         "${${CBS_CURRENT_TARGET}_INSTALL_PREFIX}${CBS_INSTALL_HEADER_SUBDIR}"  ) 
+			SET_DEFAULT ( ${CBS_CURRENT_TARGET}_INSTALL_LIB_PERMISSIONS     ${CBS_INSTALL_STATIC_PERMISSIONS}                                       ) 
+		ENDIF ( ${CBS_CURRENT_TARGET}_LINK_TYPE STREQUAL "STATIC" )
+		
+		# --- Dynamic Library ---
+		IF ( ${CBS_CURRENT_TARGET}_LINK_TYPE STREQUAL "SHARED" )
+            SET ( LINK_TYPE_SPECIFIED  "SHARED" )
+			add_library (${CBS_CURRENT_TARGET} SHARED ${${CBS_CURRENT_TARGET}_SRCS} )
+			
+			# - Set install path and permissions
+			SET_DEFAULT ( ${CBS_CURRENT_TARGET}_INSTALL_LIB_PATH            "${${CBS_CURRENT_TARGET}_INSTALL_PREFIX}${CBS_INSTALL_SHARED_SUBDIR}"  ) 
+			SET_DEFAULT ( ${CBS_CURRENT_TARGET}_INSTALL_HEADER_PATH         "${${CBS_CURRENT_TARGET}_INSTALL_PREFIX}${CBS_INSTALL_HEADER_SUBDIR}"  ) 
+			SET_DEFAULT ( ${CBS_CURRENT_TARGET}_INSTALL_LIB_PERMISSIONS     ${CBS_INSTALL_SHARED_PERMISSIONS}                                       ) 
+            
+		ENDIF ( ${CBS_CURRENT_TARGET}_LINK_TYPE STREQUAL "SHARED" )
+
+		IF ( LINK_TYPE_SPECIFIED STREQUAL "" )
+            MESSAGE ( STATUS "ERROR: ${CBS_CURRENT_TARGET},  No _LINK_TYPE specified" ) 
+        ENDIF ( LINK_TYPE_SPECIFIED STREQUAL "" )
+
+		
+		# Add cmake project dependecies . Cannot be done until the current target is 'defined' using 'add_library'.
+		IF ( ${CBS_CURRENT_TARGET}_XDEPENDS_ON )
+			IF ( NOT ${CMAKE_GENERATOR} MATCHES "Visual Studio" )	# TODO: For some reason adding dependencies is ok in NMake but not in VS
+                add_dependencies( ${CBS_CURRENT_TARGET} ${${CBS_CURRENT_TARGET}_XDEPENDS_ON}	)
+			ENDIF ( NOT ${CMAKE_GENERATOR} MATCHES "Visual Studio" )
+		ENDIF ( ${CBS_CURRENT_TARGET}_XDEPENDS_ON )
+	
+		INCLUDE ( ${CBS_ROOT_DIR}/set_target_properties.cbs          )
+	
+		# --- Set target link libraries (dependencies) ---
+        if (${CBS_CURRENT_TARGET}_XLINK_LIBRARIES)
+            list(REMOVE_ITEM ${CBS_CURRENT_TARGET}_XLINK_LIBRARIES ${CBS_CURRENT_TARGET} CACHE )
+        endif()
+        target_link_libraries ( ${CBS_CURRENT_TARGET}  ${${CBS_CURRENT_TARGET}_XLINK_LIBRARIES} )
+	ENDIF ( ${useType} STREQUAL "BUILD" AND ${CBS_CURRENT_TARGET}_SRCS )
+	
+	IF    ( ${useType} STREQUAL "BUILD" AND NOT ${CBS_CURRENT_TARGET}_SRCS )
+		#MESSAGE ( STATUS "AAAAAAAAAAAAAA: ${CBS_CURRENT_TARGET}" ) 
+		add_custom_target ( ${CBS_CURRENT_TARGET} ) 
+	ENDIF    ( ${useType} STREQUAL "BUILD" AND NOT ${CBS_CURRENT_TARGET}_SRCS )
+	
+	# ---------------------------------------------------------
+	# --- Set library output path for useType PREBUILT ---
+	# ---------------------------------------------------------
+	# In case the user has set CBS_PRE_BUILT_LIBRARY_ROOT_DIR we will use that.
+	# Otherwise we try to search for the closest 'build' directory, starting with current build directory.
+	# If a such is found we set: LIBRARY_OUTPUT_PATH to 'path_to_build/libs'
+	IF    ( ${useType} STREQUAL "PREBUILT" )
+		GET_LIBRARY_RELATIVE_PATH_PREBUILD ( libraryRelativePathCopy ${CBS_CURRENT_TARGET}_LINK_TYPE ${CMAKE_BUILD_TYPE} )
+		
+		
+		IF ( CBS_PRE_BUILT_LIBRARY_ROOT_DIR )
+			SET ( libraryBuiltPath   ${CBS_PRE_BUILT_LIBRARY_ROOT_DIR}/libs/${libraryRelativePathCopy} )  
+		ELSE ( CBS_PRE_BUILT_LIBRARY_ROOT_DIR )
+			# Here we try to search for the closest (from current source dir) 'build' directory.
+			# The 'build' directory is what normally equals CBS_LIBRARY_ROOT_DIR, but not if we are 
+			# trying to use a (by CBS build system) pre built library. In this case the library would NOT
+			# be in CBS_LIBRARY_ROOT_DIR since this ONLY hold the libraries which are in fact built by
+			# the current 'main' user project. 
+			
+			GET_PARENT_DIR ( prjRootParent  "${CMAKE_SOURCE_DIR}" 1 )
+	
+			GET_NEAREST_PATH_UP ( nearest_CBS_LIBRARY_ROOT_DIR "${prjRootParent}" "build_cbs" )
+			
+			IF    ( ${nearest_CBS_LIBRARY_ROOT_DIR} MATCHES "NOTFOUND" )
+				MESSAGE( ERROR "  CBS_PRE_BUILT_LIBRARY_ROOT_DIR, must be defined for useType: '${useType}' ! Currrent project is: '${CBS_CURRENT_TARGET}'." )
+				MESSAGE( "  Project root source dir is      : '${CMAKE_SOURCE_DIR}'." )
+				MESSAGE( "  nearest_CBS_LIBRARY_ROOT_DIR    : '${nearest_CBS_LIBRARY_ROOT_DIR}'." )
+			ELSE  ( ${nearest_CBS_LIBRARY_ROOT_DIR} MATCHES "NOTFOUND" )
+				SET ( libraryBuiltPath   "${nearest_CBS_LIBRARY_ROOT_DIR}/libs/${libraryRelativePathCopy}" )  
+			ENDIF ( ${nearest_CBS_LIBRARY_ROOT_DIR} MATCHES "NOTFOUND" )
+		ENDIF ( CBS_PRE_BUILT_LIBRARY_ROOT_DIR )
+			
+			
+			
+	#	SET ( LIBRARY_OUTPUT_PATH   ${libraryBuiltPath} )  
+			
+	# 	MESSAGE ( STATUS "PPPP ${CBS_CURRENT_TARGET}_LINK_TYPE: ${${CBS_CURRENT_TARGET}_LINK_TYPE}" ) 
+	# 	MESSAGE ( STATUS "PPPP libraryRelativePathCopy: ${libraryRelativePathCopy}" ) 
+	# 	#MESSAGE ( STATUS "PPPP CBS_PRE_BUILT_LIBRARY_ROOT_DIR: ${CBS_PRE_BUILT_LIBRARY_ROOT_DIR}" ) 
+	#	MESSAGE ( STATUS "PPPP libraryBuiltPath: ${libraryBuiltPath}" ) 
+		#MESSAGE ( STATUS "PPPP CMAKE_SOURCE_DIR: ${CMAKE_SOURCE_DIR}" ) 
+		
+		IF ( ${CBS_CURRENT_TARGET}_SRCS ) # If target has no sources then there's no library to copy :-)
+			COPY_LIBRARY ( ${CBS_CURRENT_TARGET} "${libraryBuiltPath}"	"${CBS_LIBRARY_ROOT_DIR}/${libraryRelativePathCopy}" )
+		ENDIF ( ${CBS_CURRENT_TARGET}_SRCS ) 
+		
+	ENDIF ( ${useType} STREQUAL "PREBUILT" )
+	
+	
+	# ---------------------------------------------------------------------------------------------------------------------------------
+	# --- Set vars for this library: Built locally (BUILD) or use an allready compiled (non system PREBUILT) installed version ---
+	# ---------------------------------------------------------------------------------------------------------------------------------
+	IF    ( ${useType} STREQUAL "BUILD" OR ${useType} STREQUAL "PREBUILT" )
+	#	MESSAGE ( STATUS "LLLLLLIB ${CBS_CURRENT_TARGET}              : ${dependsOnLinkLibraries}" )
+	#	MESSAGE ( STATUS "LLLLLLIB ${CBS_CURRENT_TARGET}              : ${dependsOnIncludeDirectories}" )
+	
+		#  --- Set xx_INCLUDE_DIR ---
+		# By default we here set it to project's source directory, unless xx_INCLUDE_DIR is set .
+		SET_IF_NOT_CACHE (  ${CBS_CURRENT_TARGET}_XINCLUDE_DIRS  ${CMAKE_CURRENT_SOURCE_DIR} ) 
+	
+		# Allways add current target (library) to xx_LIBRARY, which is the libraries others,
+		#  need to link with when using this library. Except if no source files!!!
+		IF ( ${CBS_CURRENT_TARGET}_SRCS ) 
+			SET( ${CBS_CURRENT_TARGET}_HEADERS_ONLY FALSE CACHE BOOL "True if library has only headers" FORCE )
+# 			message ( "QQQQQQ: ${CBS_CURRENT_TARGET}_SRCS: ${${CBS_CURRENT_TARGET}_SRCS}" )
+			LIST_APPEND_UNIQUE ( ${CBS_CURRENT_TARGET}_XLINK_LIBRARIES	${CBS_CURRENT_TARGET} 	CACHE ) 
+		ELSE ( ${CBS_CURRENT_TARGET}_SRCS ) 
+			SET( ${CBS_CURRENT_TARGET}_HEADERS_ONLY TRUE CACHE BOOL "True if library has only headers" FORCE )
+		ENDIF ( ${CBS_CURRENT_TARGET}_SRCS ) 
+		
+		
+		#  --- Set xx_LINK_DIR ---
+		## By default we here set it to LIBRARY_OUTPUT_PATH, unless xx_LINK_DIR is set .
+		##SET_IF_NOT_CACHE (  ${CBS_CURRENT_TARGET}_XLINK_DIR     ${LIBRARY_OUTPUT_PATH}      ) 
+		# Allways add LIBRARY_OUTPUT_PATH to xx_LINK_DIR 
+		ADDX_LINK_DIR ( ${LIBRARY_OUTPUT_PATH}  ) 
+		#TODO:USE this instead LIST_APPEND_UNIQUE ( ${CBS_CURRENT_TARGET}_XLINK_DIRS 	${LIBRARY_OUTPUT_PATH}	CACHE ) 
+	
+	
+		# -------------------------------------------------------------------------
+		# --- Assign to the xx_XINCLUDE_DIRS, xx_XLINK_DIRS, xx_XLIBRARIES vars ---
+		# -------------------------------------------------------------------------
+		# Promote values to cache values.
+		SET ( ${CBS_CURRENT_TARGET}_XINCLUDE_DIRS	${${CBS_CURRENT_TARGET}_XINCLUDE_DIRS}  		CACHE STRING "" FORCE )
+		SET ( ${CBS_CURRENT_TARGET}_XLINK_DIRS		${${CBS_CURRENT_TARGET}_XLINK_DIRS}     		CACHE STRING "" FORCE )
+		SET ( ${CBS_CURRENT_TARGET}_XLINK_LIBRARIES	${${CBS_CURRENT_TARGET}_XLINK_LIBRARIES} 		CACHE STRING "" FORCE )
+    
+	
+		# --- Set xx_FOUND variable to true ---
+		SET( ${CBS_CURRENT_TARGET}_FOUND TRUE CACHE BOOL "True if library found" )
+		SET ( ${CBS_CURRENT_TARGET}_LIBRARY	${CBS_CURRENT_TARGET} CACHE STRING "" FORCE )	
+		
+		# --- Set release and debug variables ---
+		IF ( ${CMAKE_BUILD_TYPE} STREQUAL Release  ) 
+			SET( ${CBS_CURRENT_TARGET}_Release TRUE CACHE BOOL "True if target is built as Release" )
+			SET( ${CBS_CURRENT_TARGET}_Debug FALSE CACHE BOOL "True if target is built as Debug" )
+		ENDIF ( ${CMAKE_BUILD_TYPE} STREQUAL Release  ) 
+		
+		IF ( ${CMAKE_BUILD_TYPE} STREQUAL Debug  ) 
+			SET( ${CBS_CURRENT_TARGET}_Debug TRUE CACHE BOOL "True if target is built as Debug" )
+			SET( ${CBS_CURRENT_TARGET}_Debug FALSE CACHE BOOL "True if target is built as Debug" )
+		ENDIF ( ${CMAKE_BUILD_TYPE} STREQUAL Debug  ) 
+		
+		# -----------------------    
+		# --- Install library ---
+		# -----------------------   
+		##message ( "AAA  ${CBS_CURRENT_TARGET}_INSTALL: '${${CBS_CURRENT_TARGET}_INSTALL}' ---" )
+		IF ( ${CBS_CURRENT_TARGET}_INSTALL STREQUAL "ENABLED" )
+			#message ( "***  INSTALL lib: '${CBS_CURRENT_TARGET}',  ${CBS_CURRENT_TARGET}_INSTALL_LIB_PATH: '${${CBS_CURRENT_TARGET}_INSTALL_LIB_PATH}' ---" )
+			# - Set version properties, if they are specified -
+			IF ( ${CBS_CURRENT_TARGET}_VERSION AND NOT ${CBS_CURRENT_TARGET}_VERSION STREQUAL "" )
+				SET_TARGET_PROPERTIES( ${CBS_CURRENT_TARGET} PROPERTIES VERSION ${${CBS_CURRENT_TARGET}_VERSION} SOVERSION ${${CBS_CURRENT_TARGET}_SOVERSION} )
+			ENDIF ( ${CBS_CURRENT_TARGET}_VERSION AND NOT ${CBS_CURRENT_TARGET}_VERSION STREQUAL "" )
+			
+			# - Install the target -  
+			INSTALL ( TARGETS ${CBS_CURRENT_TARGET} DESTINATION "${${CBS_CURRENT_TARGET}_INSTALL_LIB_PATH}" COMPONENT libraries )
+            message ( "***  INSTALL library: '${CBS_CURRENT_TARGET}',  ${CBS_CURRENT_TARGET}_INSTALL_LIB_PATH: '${${CBS_CURRENT_TARGET}_INSTALL_LIB_PATH}' ---" )
+			
+			# - Install header files
+			INSTALL ( FILES ${${CBS_CURRENT_TARGET}_INSTALL_HEADERS} DESTINATION "${${CBS_CURRENT_TARGET}_INSTALL_HEADER_SUBDIR}" COMPONENT headers )
+		ENDIF ( ${CBS_CURRENT_TARGET}_INSTALL STREQUAL "ENABLED" )
+			
+		# -------------------------------------    
+		# --- Mark cache values as advanced ---
+		#--------------------------------------    
+		MARK_AS_ADVANCED (
+			${CBS_CURRENT_TARGET}_XINCLUDE_DIRS
+			${CBS_CURRENT_TARGET}_INCLUDE_DIR
+			${CBS_CURRENT_TARGET}_XLINK_LIBRARY
+			${CBS_CURRENT_TARGET}_XLINK_LIBRARIES
+			${CBS_CURRENT_TARGET}_LIBRARY
+			${CBS_CURRENT_TARGET}_XLINK_DIR
+			${CBS_CURRENT_TARGET}_XLINK_DIRS
+			${CBS_CURRENT_TARGET}_LINK_TYPE 
+			${CBS_CURRENT_TARGET}_FULL_PATH
+			${CBS_CURRENT_TARGET}_FOUND
+			${CBS_CURRENT_TARGET}_Release
+			${CBS_CURRENT_TARGET}_Debug
+##			${CBS_CURRENT_TARGET}_INFO_USE
+		)
+	ENDIF    ( ${useType} STREQUAL "BUILD" OR ${useType} STREQUAL "PREBUILT" )
+	
+	# # IF ( NOT ${CBS_CURRENT_TARGET}_SRCS ) 
+	# # 	MESSAGE ( STATUS "DDDDDDDDDDD: ${CBS_CURRENT_TARGET}_XINCLUDE_DIRS: ${${CBS_CURRENT_TARGET}_XINCLUDE_DIRS}" )
+	# # ENDIF ( NOT ${CBS_CURRENT_TARGET}_SRCS ) 
+	
+	
+	# ----------------------
+	# --- BUILD Examples ---
+	# ----------------------
+	IF    ( ${useType} STREQUAL "BUILD" )
+		IF ( CBS_BUILD_EXAMPLES STREQUAL "ON" )
+			IF ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/_examples )
+				add_subdirectory ( _examples    ${CMAKE_CURRENT_BINARY_DIR}/_examples  )
+			ENDIF ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/_examples )
+		ENDIF ( CBS_BUILD_EXAMPLES STREQUAL "ON" )
+		IF ( CBS_BUILD_TESTS STREQUAL "ON" )
+			IF ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/_tests )
+				add_subdirectory ( _tests    ${CMAKE_CURRENT_BINARY_DIR}/_tests  )
+			ENDIF ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/_tests )
+		ENDIF ( CBS_BUILD_TESTS STREQUAL "ON" )
+	ENDIF    ( ${useType} STREQUAL "BUILD" )
+
+ENDIF   ( ${useType} STREQUAL "BUILD" OR ${useType} STREQUAL "PREBUILT" )
+
+
+#MESSAGE( STATUS "--- LIBRARY --- ${CBS_CURRENT_TARGET}_MAJOR_VERSION: ${${CBS_CURRENT_TARGET}_MAJOR_VERSION}" )
+#MESSAGE( STATUS "--- LIBRARY --- ${CBS_CURRENT_TARGET}_VERSION_STRING: ${${CBS_CURRENT_TARGET}_VERSION_STRING}" )
+
+
+
+
+
+

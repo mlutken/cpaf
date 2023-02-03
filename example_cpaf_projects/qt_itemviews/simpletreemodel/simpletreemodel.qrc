@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>default.txt</file>
+        <file>levels.txt</file>
+        <file>psb.txt</file>
+    </qresource>
+</RCC>

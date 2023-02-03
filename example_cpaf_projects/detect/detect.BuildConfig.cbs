@@ -1,0 +1,88 @@
+
+# --- My Project build configuration ---
+SET_CONFIG ( myproject_USE			BUILD	)
+SET_CONFIG ( mylib_USE				BUILD	)
+SET_CONFIG ( link_test_USE			BUILD	)
+#SET_CONFIG ( cpaf_USE				BUILD	)
+
+# # --- CPAF / 3rd party build configuration ---
+# ---- BUILD ---
+# # SET_CONFIG ( boost_USE						BUILD			)
+# # SET_CONFIG ( cpaf_libs_USE					BUILD			)
+# ---- PREBUILT ---
+SET_CONFIG ( cpaf_USE						PREBUILT		)
+SET_CONFIG ( boost_USE						PREBUILT		)
+SET_CONFIG ( cpaf_libs_USE					PREBUILT		)
+
+
+
+# # # --- We don't need all these here ---
+# # SET_CONFIG ( expat_USE						DISABLED		)
+# # SET_CONFIG ( z_USE							DISABLED		)
+# # SET_CONFIG ( xml2_USE						DISABLED		)
+# # SET_CONFIG ( png_USE						DISABLED    	)
+# # SET_CONFIG ( bz2_USE						DISABLED		)
+# # SET_CONFIG ( jpeg_USE						DISABLED		)
+# # SET_CONFIG ( tiff_USE						DISABLED		)
+# # SET_CONFIG ( freetype_USE					DISABLED		)
+# # SET_CONFIG ( pixman_USE						DISABLED		)
+# # SET_CONFIG ( cairo_USE						DISABLED		)
+# # SET_CONFIG ( openssl_USE					DISABLED		)
+# # SET_CONFIG ( curl-main_USE					DISABLED		)
+# # SET_CONFIG ( glib-main_USE					DISABLED		)
+# # SET_CONFIG ( iconv-main_USE					DISABLED		)
+# # SET_CONFIG ( gettext_USE					DISABLED		)
+# # SET_CONFIG ( atk_USE						DISABLED		)
+# # SET_CONFIG ( pango-main_USE					DISABLED		)
+# # SET_CONFIG ( gtk+_USE						DISABLED		)
+# # SET_CONFIG ( glade_USE						DISABLED		)
+# # SET_CONFIG ( wxWidgets_USE					DISABLED		)
+# # SET_CONFIG ( IDL_USE						DISABLED		)
+# # SET_CONFIG ( Sockets_USE					DISABLED		)
+
+
+
+#SET ( z_USE                         PREBUILT    )
+#SET ( png_USE                       PREBUILT    )
+#SET ( bz2_USE                       PREBUILT    )
+#SET ( boost_USE                     PREBUILT    )     # Addtional possiblity for a main project is "ON" which means that subproject setting is used
+
+#SET ( z_USE                         SYSTEM    )
+#SET ( png_USE                       SYSTEM    )
+#SET ( bz2_USE                       SYSTEM    )
+#SET ( boost_USE                     SYSTEM    )     # Addtional possiblity for a main project is "ON" which means that subproject setting is used
+
+#SET ( z_USE                         BUILD    )
+#SET ( png_USE                       BUILD    )
+#SET ( bz2_USE                       BUILD    )
+#SET ( boost_USE                     BUILD    )     # Addtional possiblity for a main project is "ON" which means that subproject setting is used
+
+#SET ( boost_filesystem_USE          DISABLED  )
+#SET ( boost_regex_USE               BUILD  )
+
+
+# --- CPAF NATIVE LIBRARIES ---
+# - Possible values: BUILD, PREBUILT, DISABLED -
+#SET ( cpaf_filesystem_USE           BUILD     )
+#SET ( cpaf_dynamiclibs_USE          BUILD     )
+#SET ( cpaf_process_USE              DISABLED     )
+
+
+
+
+# --- OWN/USER PROJECT LIBRARIES (i.e. project hello_cpaf's own libraries ) ---
+# - Possible values: BUILD, OFF -
+#SET ( mylib_USE                     OFF        )
+
+
+
+# On (at least AMD 64 bit linux) we get problems when building the 'ex_dynamiclibs_my_dynlib' shared module when 
+# the dependent libraries are static and not compiled with the '-fPIC' flag. This is the case for some of the system
+# installed libraies that this example depends on like zlib, boost_filesystem, boost_regex. At least on my machine.
+IF ( ${CBS_LIB_TYPE_TO_BUILD} STREQUAL "STATIC" ) 
+    IF ( "${bz2_USE}" STREQUAL "SYSTEM" OR  "${boost_USE}" STREQUAL "SYSTEM" )
+        SET ( ex_dynamiclibs_all_USE        DISABLED     )
+        SET ( ex_dynamiclibs_my_dynlib_USE  DISABLED     )
+    ENDIF ( "${bz2_USE}" STREQUAL "SYSTEM" OR  "${boost_USE}" STREQUAL "SYSTEM" )
+ENDIF ( ${CBS_LIB_TYPE_TO_BUILD} STREQUAL "STATIC" )
+

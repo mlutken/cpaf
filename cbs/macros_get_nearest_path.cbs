@@ -1,0 +1,46 @@
+
+# -----------------------------------
+# --- GET_NEAREST_PATH_UP (Macro) ---
+# -----------------------------------
+# --- Get first 'occurence'/location of a specified path. ---
+# The macro searches from a given directory for a file or subdir. If the 
+# the path searched for is not found, then the macro advances one directory up,
+# and searches there. This continues untill the specified path is found or the 
+# filesystem root directory is reached.
+#
+# - PARAMETERS -
+# foundInDir        : [out] Return value containg the directory in which the searched 
+#                     for path was found or an empty string in case it was not found.
+# startSearchDir    : [in] Library type: SHARED or STATIC.
+# searchForPath     : [in] File or subdirectory to search for
+#
+
+MACRO( GET_NEAREST_PATH_UP foundInDir startSearchDir searchForPath )  
+#    MESSAGE( STATUS "GET_NEAREST_PATH_UP, foundInDir     : ${foundInDir}"       )
+#    MESSAGE( STATUS "GET_NEAREST_PATH_UP, startSearchDir : ${startSearchDir}"   )
+#    MESSAGE( STATUS "GET_NEAREST_PATH_UP, searchForPath  : ${searchForPath}"    )
+
+	SET ( ${foundInDir}	""	)	# Set default 'return value'
+
+    SET ( searchDirs "" )
+
+    SET ( dirFound 	"FALSE" )
+    SET ( previousSearchDir ""   )
+    SET ( currentSearchDir  ${startSearchDir}   )
+    WHILE( NOT "${currentSearchDir}" STREQUAL "${previousSearchDir}" )
+		#MESSAGE( STATUS "currentSearchDir      : ${currentSearchDir}"    )
+		IF ( EXISTS ${currentSearchDir}/${searchForPath} )
+			IF ( "${dirFound}" STREQUAL "FALSE" )
+				SET ( ${foundInDir}	${currentSearchDir}/${searchForPath}	)	# Set 'return value'
+			    SET ( dirFound 	"TRUE" )
+			ENDIF ( "${dirFound}" STREQUAL "FALSE" )
+		ENDIF ( EXISTS ${currentSearchDir}/${searchForPath} )
+        
+        SET ( searchDirs        ${searchDirs}   ${currentSearchDir} )   # Add to list of search directories
+        GET_FILENAME_COMPONENT( parentDir ${currentSearchDir} PATH  )  
+        SET ( previousSearchDir ${currentSearchDir}                 )   # We terminate loop when previousSearchDir and currentSearchDir becomes equal.
+        SET ( currentSearchDir  ${parentDir}                        )   # Needed because we never get an empty string from the call to GET_FILENAME_COMPONENT.
+    ENDWHILE( NOT "${currentSearchDir}" STREQUAL "${previousSearchDir}" )
+ENDMACRO( GET_NEAREST_PATH_UP )
+
+

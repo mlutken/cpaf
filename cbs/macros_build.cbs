@@ -1,0 +1,200 @@
+# Builds a shared module
+#
+# - PARAMETERS -
+# prjName   : Project name of shared module
+#
+# - Preconditions -
+# In same directory as the "CMakeLists.txt" from which this library is invoked,
+# there MIGHT be a file named prjName.cbs containing code similar to this:
+#
+# IF NOT such a file exists. Then at least the mymodule_SRCS variable must be set before
+# invoking this macro !!!
+#
+
+MACRO( BUILD_MODULE prjName )  
+    project ( ${prjName}									)
+    SET     ( CBS_PARENT_PROJECT	${CBS_CURRENT_PROJECT}	)   # Remember our parent project
+    SET     ( CBS_CURRENT_TARGET	${prjName}				)
+    SET     ( CBS_CURRENT		${prjName}				)
+    
+	# Set type of CBS_CURRENT: project, library, module, executable
+	SET     ( CBS_CURRENT_IS_PROJECT			""  )
+	SET     ( CBS_CURRENT_IS_TARGET			1	)
+	SET     ( CBS_CURRENT_IS_LIBRARY			""  )
+	SET     ( CBS_CURRENT_IS_MODULE			1	)
+	SET     ( CBS_CURRENT_IS_EXECUTABLE		""  )
+    
+	INCLUDE ( ${CBS_ROOT_DIR}/set_inherit_target_vars.cbs	)
+    IF ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${CBS_CURRENT_TARGET}_config.cbs    )
+        INCLUDE ( ${CMAKE_CURRENT_SOURCE_DIR}/${CBS_CURRENT_TARGET}_config.cbs  )
+    ENDIF ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${CBS_CURRENT_TARGET}_config.cbs )
+    
+    IF ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${CBS_CURRENT_TARGET}.cbs    )
+        INCLUDE ( ${CMAKE_CURRENT_SOURCE_DIR}/${CBS_CURRENT_TARGET}.cbs  )
+    ENDIF ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${CBS_CURRENT_TARGET}.cbs )
+    INCLUDE ( ${CBS_BUILD_MODULE_CMAKE}                                         )
+    
+    IF ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${CBS_CURRENT_TARGET}_custom.cbs    )
+        INCLUDE ( ${CMAKE_CURRENT_SOURCE_DIR}/${CBS_CURRENT_TARGET}_custom.cbs  )
+    ENDIF ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${CBS_CURRENT_TARGET}_custom.cbs )
+ENDMACRO( BUILD_MODULE )
+
+
+# Builds an executable
+#
+# - PARAMETERS -
+# prjName   : Project name of executable
+#
+# - Preconditions -
+# In same directory as the "CMakeLists.txt" from which this library is invoked,
+# there MIGHT be a file named prjName.cbs containing code similar to this:
+#
+# IF NOT such a file exists. Then at least the myexe_SRCS variable must be set before
+# invoking this macro !!!
+#
+
+MACRO( BUILD_EXECUTABLE prjName )  
+   IF ( NOT "${${prjName}_USE}" STREQUAL "DISABLED" )
+		project ( ${prjName}	)
+		SET     ( CBS_PARENT_PROJECT	${CBS_CURRENT_PROJECT}	)   # Remember our parent project
+		SET     ( CBS_CURRENT_TARGET	${prjName}				)
+		SET     ( CBS_CURRENT		${prjName}				)
+	
+	# 	MESSAGE ( "******** ${prjName}_USE: ${${prjName}_USE}" )
+		# Set type of CBS_CURRENT: project, library, module, executable
+		SET     ( CBS_CURRENT_IS_PROJECT			""  )
+		SET     ( CBS_CURRENT_IS_TARGET			1	)
+		SET     ( CBS_CURRENT_IS_LIBRARY			""  )
+		SET     ( CBS_CURRENT_IS_MODULE			""  )
+		SET     ( CBS_CURRENT_IS_EXECUTABLE		1	)
+		
+		INCLUDE ( ${CBS_ROOT_DIR}/set_inherit_target_vars.cbs	)
+		IF ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${CBS_CURRENT_TARGET}_config.cbs    )
+			INCLUDE ( ${CMAKE_CURRENT_SOURCE_DIR}/${CBS_CURRENT_TARGET}_config.cbs  )
+		ENDIF ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${CBS_CURRENT_TARGET}_config.cbs )
+		
+		IF ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${CBS_CURRENT_TARGET}.cbs    )
+			INCLUDE ( ${CMAKE_CURRENT_SOURCE_DIR}/${CBS_CURRENT_TARGET}.cbs  )
+		ENDIF ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${CBS_CURRENT_TARGET}.cbs )
+		INCLUDE ( ${CBS_BUILD_EXECUTABLE_CMAKE}                                     )
+		
+		IF ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${CBS_CURRENT_TARGET}_custom.cbs    )
+			INCLUDE ( ${CMAKE_CURRENT_SOURCE_DIR}/${CBS_CURRENT_TARGET}_custom.cbs  )
+		ENDIF ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${CBS_CURRENT_TARGET}_custom.cbs )
+    ENDIF ( NOT "${${prjName}_USE}" STREQUAL "DISABLED" ) 
+ENDMACRO( BUILD_EXECUTABLE )
+
+
+# Builds a library
+#
+# - PARAMETERS -
+# prjName   : Project name of library
+#
+# - Preconditions -
+# In same directory as the "CMakeLists.txt" from which this library is invoked,
+# there MIGHT be a file named prjName.cbs containing code similar to this:
+#
+# IF NOT such a file exists. Then at least the mylib_SRCS variable must be set before
+# invoking this macro !!!
+#
+# TODO: XX Describe mylib_install.cbs . Notes: MUST set the default install prefix 
+#       (mylib_INSTALL_PREFIX) in mylib.cbs and never in mylib_install.cbs XX
+#
+
+MACRO( BUILD_LIBRARY prjName )  
+	SET     ( CBS_PARENT_PROJECT	${CBS_CURRENT_PROJECT}	)   # Remember our parent project
+	SET     ( CBS_CURRENT_TARGET	${prjName}				)
+	SET     ( CBS_CURRENT		${prjName}				)
+
+
+	# Set type of CBS_CURRENT: project, library, module, executable
+	SET     ( CBS_CURRENT_IS_PROJECT			""  )
+	SET     ( CBS_CURRENT_IS_TARGET			1	)
+	SET     ( CBS_CURRENT_IS_LIBRARY			1	)
+	SET     ( CBS_CURRENT_IS_MODULE			""  )
+	SET     ( CBS_CURRENT_IS_EXECUTABLE		""  )
+# # 	MESSAGE( "********** '${prjName}'  ${prjName}_USE: '${${prjName}_USE}' !!!" )
+	
+	IF   ( "${${prjName}_USE}" STREQUAL "SYSTEM" )
+		
+		IF ( EXISTS ${CBS_ROOT_DIR}/Modules/Find_${prjName}.cbs )
+			INCLUDE ( ${CBS_ROOT_DIR}/Modules/Find_${prjName}.cbs )
+		ELSE ( EXISTS ${CBS_ROOT_DIR}/Modules/Find_${prjName}.cbs )
+			MESSAGE( ERROR "No 'Find_${prjName}' for current project '${prjName}' !!!" )
+		ENDIF ( EXISTS ${CBS_ROOT_DIR}/Modules/Find_${prjName}.cbs )
+	ELSE   ( "${${prjName}_USE}" STREQUAL "SYSTEM" )
+		project ( ${prjName}									)
+	
+		SET     ( CBS_ALL_LIBRARIES		${CBS_ALL_LIBRARIES}	${prjName}	CACHE STRING "" FORCE )
+		
+		INCLUDE ( ${CBS_ROOT_DIR}/set_inherit_target_vars.cbs	)
+		INCLUDE ( ${CBS_ROOT_DIR}/set_library_link_type.cbs  )
+		IF ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${CBS_CURRENT_TARGET}_config.cbs    )
+			INCLUDE ( ${CMAKE_CURRENT_SOURCE_DIR}/${CBS_CURRENT_TARGET}_config.cbs  )
+		ENDIF ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${CBS_CURRENT_TARGET}_config.cbs )
+		
+		IF ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${CBS_CURRENT_TARGET}.cbs    )
+			INCLUDE ( ${CMAKE_CURRENT_SOURCE_DIR}/${CBS_CURRENT_TARGET}.cbs  )
+		ENDIF ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${CBS_CURRENT_TARGET}.cbs )
+		INCLUDE ( ${CBS_BUILD_LIBRARY_CMAKE}                                   )
+		
+		IF ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${CBS_CURRENT_TARGET}_custom.cbs    )
+			INCLUDE ( ${CMAKE_CURRENT_SOURCE_DIR}/${CBS_CURRENT_TARGET}_custom.cbs  )
+		ENDIF ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${CBS_CURRENT_TARGET}_custom.cbs )
+	ENDIF   ( "${${prjName}_USE}" STREQUAL "SYSTEM" )
+	INCLUDE ( ${CBS_ROOT_DIR}/debug_show_target_standard_settings.cbs     )
+ENDMACRO( BUILD_LIBRARY )
+
+
+# Builds a project
+#
+# - PARAMETERS -
+# prjName   : Project name of main project
+#
+# - Preconditions -
+# In same directory as the "CMakeLists.txt" from which this library is invoked,
+# there MIGHT be a file named prjName.cbs containing code similar to this:
+#
+# IF NOT such a file exists. Then at least the myprj_SUBDIRS variable must be set before
+# invoking this macro !!!
+#
+
+MACRO( BUILD_PROJECT prjName )  
+    SET     ( CBS_PARENT_PROJECT	${CBS_CURRENT_PROJECT}	)   # Remember our parent project
+    SET     ( CBS_CURRENT_PROJECT	${prjName}				)
+    SET     ( CBS_CURRENT			${prjName}				)
+
+	# Set type of CBS_CURRENT: project, library, module, executable
+	SET     ( CBS_CURRENT_IS_PROJECT			1	)
+	SET     ( CBS_CURRENT_IS_TARGET			""  )
+	SET     ( CBS_CURRENT_IS_LIBRARY			""  )
+	SET     ( CBS_CURRENT_IS_MODULE			""  )
+	SET     ( CBS_CURRENT_IS_EXECUTABLE		""  )
+	IF   ( "${${prjName}_USE}" STREQUAL "SYSTEM" )
+		IF ( EXISTS ${CBS_ROOT_DIR}/Modules/Find_${prjName}.cbs )
+			INCLUDE ( ${CBS_ROOT_DIR}/Modules/Find_${prjName}.cbs )
+		ELSE ( EXISTS ${CBS_ROOT_DIR}/Modules/Find_${prjName}.cbs )
+			MESSAGE( ERROR "No 'Find_${prjName}' for current project '${prjName}' !!!" )
+		ENDIF ( EXISTS ${CBS_ROOT_DIR}/Modules/Find_${prjName}.cbs )
+	ELSE   ( "${${prjName}_USE}" STREQUAL "SYSTEM" )
+	    project ( ${prjName}									)
+		INCLUDE ( ${CBS_ROOT_DIR}/set_inherit_project_vars.cbs	)
+		INCLUDE ( ${CBS_ROOT_DIR}/set_project_link_type.cbs		)
+		IF ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${CBS_CURRENT_PROJECT}_config.cbs    )
+			INCLUDE ( ${CMAKE_CURRENT_SOURCE_DIR}/${CBS_CURRENT_PROJECT}_config.cbs  )
+		ENDIF ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${CBS_CURRENT_PROJECT}_config.cbs )
+		IF ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${CBS_CURRENT_PROJECT}.cbs    )
+			INCLUDE ( ${CMAKE_CURRENT_SOURCE_DIR}/${CBS_CURRENT_PROJECT}.cbs  )
+		ENDIF ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${CBS_CURRENT_PROJECT}.cbs )
+		INCLUDE ( ${CBS_BUILD_PROJECT_CMAKE}                                    )
+		
+		IF ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${CBS_CURRENT_PROJECT}_custom.cbs    )
+			INCLUDE ( ${CMAKE_CURRENT_SOURCE_DIR}/${CBS_CURRENT_PROJECT}_custom.cbs  )
+		ENDIF ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${CBS_CURRENT_PROJECT}_custom.cbs )
+	ENDIF   ( "${${prjName}_USE}" STREQUAL "SYSTEM" )
+	INCLUDE ( ${CBS_ROOT_DIR}/debug_show_project_standard_settings.cbs     )
+ENDMACRO( BUILD_PROJECT )
+
+
+
+

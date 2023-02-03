@@ -1,0 +1,9 @@
+
+INCLUDE (${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+FIND_LIB_SIMPLE ( 	gobject-2.0 
+					HEADER_FILES gobject.h  
+					HEADER_PATHS /usr/include/glib-2.0/gobject /opt/gnome/include/glib-2.0/gobject   
+					INCLUDE_DIR_LEVELS_UP 1 
+					LIB_PATHS /usr/lib /opt/gnome/lib 
+					)
+

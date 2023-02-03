@@ -1,0 +1,214 @@
+# Set/Override a previously defined default value only if not set explicitly 
+# allready using SET or SET_CONFIG. 
+# - PARAMETERS -
+# varName   	: Variable to set
+# defaultValue  : Default value to assign in case varName is not set
+#             	Important: In case this represents a list you must put i in quotes.
+# [onlyIfSet]   : optional 3rd parameter which controls whether to try to set the variable at all 
+# 
+MACRO( SET_DEFAULT varName defaultValue )  
+	SET ( bAllowChangeDefault	""	)
+	
+	# Test for project/target specific value for varName is set already.
+	# If it is, use this value as default
+	IF (    NOT "${${CBS_CURRENT}_${varName}}" STREQUAL ""    OR    "${${CBS_CURRENT}_${varName}_ALLOW_DEFAULT_CHANGE}" STREQUAL "FALSE"   )
+		SET ( ${varName}						${${CBS_CURRENT}_${varName}} 						)
+		SET ( ${varName}_ALLOW_DEFAULT_CHANGE	${${CBS_CURRENT}_${varName}_ALLOW_DEFAULT_CHANGE}	)
+	ENDIF (    NOT "${${CBS_CURRENT}_${varName}}" STREQUAL ""    OR    "${${CBS_CURRENT}_${varName}_ALLOW_DEFAULT_CHANGE}" STREQUAL "FALSE"   )
+	
+	# 
+	IF (  "${${varName}}"	STREQUAL "" )
+		SET ( bAllowChangeDefault	1	)
+	ELSE (  "${${varName}}"	STREQUAL "" )
+		IF ( "${${varName}_ALLOW_DEFAULT_CHANGE}" STREQUAL "TRUE" )
+			SET ( bAllowChangeDefault	1	)
+		ENDIF ( "${${varName}_ALLOW_DEFAULT_CHANGE}" STREQUAL "TRUE" )
+	ENDIF (  "${${varName}}"	STREQUAL "" )
+	
+	
+	# Allways disallow changes if SET_CONFIG macro was used. 
+	# Allows SET_CONFIG to initialize varName to "" (empty string)
+	IF ( "${${varName}_ALLOW_DEFAULT_CHANGE}" STREQUAL "FALSE" )
+		SET ( bAllowChangeDefault	""	)
+	ENDIF ( "${${varName}_ALLOW_DEFAULT_CHANGE}" STREQUAL "FALSE" )
+	
+	
+	# Test 3rd condition argument, only if by now change is allowed
+	IF ( bAllowChangeDefault )
+		IF ( ${ARGC} EQUAL 3 )
+			IF ( "${${ARGV2}}" STREQUAL "" )
+				SET ( bAllowChangeDefault	""	)
+			ENDIF ( "${${ARGV2}}" STREQUAL "" )
+		ENDIF ( ${ARGC} EQUAL 3 )
+	ENDIF ( bAllowChangeDefault )
+
+	
+	# Finally set new value if allowed
+	IF ( bAllowChangeDefault )
+		SET ( ${varName}					${defaultValue} )
+		SET ( ${varName}_ALLOW_DEFAULT_CHANGE	TRUE		)
+	ENDIF ( bAllowChangeDefault )
+ENDMACRO( SET_DEFAULT )
+
+
+
+# Sets variable to default value only if not set allready. 
+# Variable is in all cases "promoted to a cache value" 
+# - PARAMETERS -
+# varName   	: Variable to set
+# defaultValue  : Default value to assign in case varName is not set
+#             	Important: In case this represents a list you must put i in quotes.
+# [onlyIfSet]   : optional 3rd parameter which controls whether to try to set the variable at all 
+#
+MACRO( SET_DEFAULT_CACHE varName defaultValue )  
+	SET_DEFAULT ( ${varName} ${defaultValue} ${ARGV2} )
+	SET ( ${varName}  ${${varName}} CACHE STRING "" FORCE )	# Promote to cache value
+ENDMACRO( SET_DEFAULT_CACHE )
+
+
+# Sets variable to default value only if not set allready or an 
+# inherited value exists. Assumes CBS_CURRENT is set, which it 
+# allmost allways will be.
+# Variable is in all cases "promoted to a cache value" 
+# - PARAMETERS -
+# varPostFix   	: Variable (postFix) to set like e.g. "_INSTALL_PREFIX"
+# value     	: Default value to assign in case varPostFix is not set
+#				: Note. that in case a 
+#
+MACRO( ASSIGN_DEFAULT varPostFix defaultValue )  
+#	MESSAGE( STATUS "BBBBBBBBBBBB   :(${CBS_CURRENT}, ${CBS_PARENT_PROJECT}) ${CBS_PARENT_PROJECT}${varPostFix}: 	${${CBS_PARENT_PROJECT}${varPostFix}}" )
+#	MESSAGE( STATUS "CCCCCCCCCCCC   : ${CBS_CURRENT}${varPostFix} := ${${CBS_PARENT_PROJECT}${varPostFix}}" )
+	IF ( NOT ${CBS_CURRENT}${varPostFix} OR ${CBS_CURRENT}${varPostFix} STREQUAL "" )
+		IF ( NOT ${CBS_PARENT_PROJECT}${varPostFix} OR ${CBS_PARENT_PROJECT}${varPostFix} STREQUAL "" )
+			SET ( ${CBS_CURRENT}${varPostFix}  ${defaultValue} CACHE STRING "" FORCE )							# Use default value 
+		ELSE ( NOT ${CBS_PARENT_PROJECT}${varPostFix} OR ${CBS_PARENT_PROJECT}${varPostFix} STREQUAL "" )
+#		    MESSAGE( STATUS "WWW prj use parent      : ${CBS_CURRENT}${varPostFix} := ${${CBS_PARENT_PROJECT}${varPostFix}}" )
+			SET ( ${CBS_CURRENT}${varPostFix}  ${${CBS_PARENT_PROJECT}${varPostFix}} CACHE STRING "" FORCE )	# Use parent project's 
+		ENDIF ( NOT ${CBS_PARENT_PROJECT}${varPostFix} OR ${CBS_PARENT_PROJECT}${varPostFix} STREQUAL "" )
+	ELSE ( NOT ${CBS_CURRENT}${varPostFix} OR ${CBS_CURRENT}${varPostFix} STREQUAL "" )
+		SET ( ${CBS_CURRENT}${varPostFix}  ${${CBS_CURRENT}${varPostFix}} CACHE STRING "" FORCE )		# Use explicitly set (from xx.BuildConfig.cbs file typically)
+	ENDIF ( NOT ${CBS_CURRENT}${varPostFix} OR ${CBS_CURRENT}${varPostFix} STREQUAL "" )
+ENDMACRO( ASSIGN_DEFAULT )
+
+
+# Convenience macro to set target's/project's (default) version number.
+# Sets 4 vars:
+# prj_VERSION_MAJOR, prj_VERSION_MINOR, prj_VERSION_MICRO 
+# and a prj_VERSION_STRING which is a concatenation of the 3 first with dots to separate 
+# like eg. glib-main_VERSION_STRING = "2.14.3"
+# Also sets PACKAGE,PACKAGE_NAME,PACKAGE_STRING,PACKAGE_TARNAME,PACKAGE_VERSION,VERSION
+# 
+MACRO( SET_DEFAULT_VERSION major minor micro )  
+#	ASSIGN_DEFAULT ( _VERSION_MAJOR	${major}	)
+#	ASSIGN_DEFAULT ( _VERSION_MINOR	${minor}	)
+#	ASSIGN_DEFAULT ( _VERSION_MICRO	${micro}	)
+	SET_DEFAULT ( ${CBS_CURRENT}_VERSION_MAJOR	${major}	${ARGV3}	) 
+	SET_DEFAULT ( ${CBS_CURRENT}_VERSION_MINOR	${minor}	${ARGV3}	) 
+	SET_DEFAULT ( ${CBS_CURRENT}_VERSION_MICRO	${micro}	${ARGV3}	) 
+	SET ( ${CBS_CURRENT}_VERSION_STRING  "${${CBS_CURRENT}_VERSION_MAJOR}.${${CBS_CURRENT}_VERSION_MINOR}.${${CBS_CURRENT}_VERSION_MICRO}" CACHE STRING "" FORCE )	# Use parent project's 
+	SET ( PACKAGE				"${CBS_CURRENT}"									)	# Name of package 
+	SET ( PACKAGE_NAME			"${CBS_CURRENT}"									)	# Define to the full name of this package. 
+	SET ( PACKAGE_STRING		"${CBS_CURRENT} ${${CBS_CURRENT}_VERSION_STRING}"	) 	# Define to the full name and version of this package. 
+	SET ( PACKAGE_TARNAME		"${CBS_CURRENT}"									)	# Define to the one symbol short name of this package. 
+	SET ( PACKAGE_VERSION		"${${CBS_CURRENT}_VERSION_STRING}"					) 	# Define to the version of this package. 
+	SET ( VERSION				"${${CBS_CURRENT}_VERSION_STRING}"					) 	# Version number of package 
+ENDMACRO( SET_DEFAULT_VERSION )
+
+# Convenience macro to set target's/project's default (install)prefix.
+# Sets var:
+# 'prj_INSTALL_PREFIX' 
+# - PARAMETERS -
+# prefixDir   	: Default install prefix directory to set (fx. use ${CBS_DEFAULT_INSTALL_PREFIX} 
+#				: or "" which also defaults to ${CBS_DEFAULT_INSTALL_PREFIX} )
+# [onlyIfSet]   : optional 3rd parameter which controls whether to try to set the variable at all 
+# 
+MACRO( SET_DEFAULT_PREFIX prefixDir )  
+	SET ( prefix		${prefixDir}	)
+	IF ( "${prefixDir}" STREQUAL "" )
+		SET ( prefix		${CBS_DEFAULT_INSTALL_PREFIX}	)
+	ENDIF ( "${prefixDir}" STREQUAL "" )
+	IF ( ${ARGC} EQUAL 2 )
+		SET_DEFAULT ( ${CBS_CURRENT}_INSTALL_PREFIX	${prefix}	${ARGV1}	) 
+	ELSE ( ${ARGC} EQUAL 2 )
+		SET_DEFAULT ( ${CBS_CURRENT}_INSTALL_PREFIX	${prefix}	1	) 
+	ENDIF ( ${ARGC} EQUAL 2 )
+	
+ENDMACRO( SET_DEFAULT_PREFIX )
+
+
+# Sets variable to value optionally using a conditional. 
+# Enhanced version of CMake's normal SET command which takes an
+# optional conditional variable. If such a variable exists then
+# the SET is only performed in case that variable is not empty.
+# If no optinal second parameter is provided the command works as
+# normal SET and sets the variable unconditionally.
+# - PARAMETERS -
+# varName   	: Variable to set
+# [onlyIfSet]   : optional 3rd parameter which controls whether to try to set theVERSION variable at all 
+#
+MACRO( SET_CONFIG varName value )  
+	SET ( buildTgtNameSystem "" )
+	
+	IF ( "${varName}" MATCHES "^.*_USE$" )
+		STRING ( REPLACE "_USE" "" buildTgtName ${varName} )
+		LIST_APPEND_UNIQUE ( CBS_ALL_TARGETS 	${buildTgtName} ) 
+		IF ( "${value}" STREQUAL "SYSTEM" )
+			SET ( buildTgtNameSystem ${buildTgtName} )
+		ENDIF ( "${value}" STREQUAL "SYSTEM" )
+	ENDIF ( "${varName}" MATCHES "^.*_USE$" )
+ 	
+ 	IF ( ${ARGC} STREQUAL "3" )
+ 		IF ( NOT ${${ARGV2}} STREQUAL "" )
+			SET ( ${varName}  ${value} 		)
+			LIST_APPEND_UNIQUE ( CBS_ALL_TARGETS_SYSTEM 	${buildTgtNameSystem} ) 
+ 		ENDIF ( NOT ${${ARGV2}} STREQUAL "" )
+ 	ELSE ( ${ARGC} STREQUAL "3" )
+		SET ( ${varName}  ${value} 	)
+			LIST_APPEND_UNIQUE ( CBS_ALL_TARGETS_SYSTEM 	${buildTgtNameSystem} ) 
+ 	ENDIF ( ${ARGC} STREQUAL "3" )
+	
+	# TODO: This should probably only be done if variable was actually set
+	SET ( ${varName}_ALLOW_DEFAULT_CHANGE	FALSE	)	# Make sure SET_DEFAULT macro will not change this var: TODO: This should probably only be done if variable was actually set
+	
+ENDMACRO( SET_CONFIG )
+
+
+# Sets variable to value only if not set allready
+# - PARAMETERS -
+# varName   : Variable to set
+# value     : Default value to assign in case varName is not set.
+#             Important: In case this represents a list you must put i in quotes.
+#
+MACRO( SET_IF_NOT varName value )  
+	IF ( 	NOT ${varName} OR ${varName} STREQUAL "" )
+		SET ( ${varName}  ${value} )
+	ENDIF ( NOT ${varName} OR ${varName} STREQUAL "" )
+ENDMACRO( SET_IF_NOT )
+
+
+# Sets variable to value only if not set allready. 
+# Variable is in all cases "promoted to a cache value" 
+# - PARAMETERS -
+# varName   : Variable to set
+# value     : Default value to assign in case varName is not set
+#             Important: In case this represents a list you must put i in quotes.
+#
+MACRO( SET_IF_NOT_CACHE varName value )  
+	IF ( 	NOT ${varName} OR ${varName} STREQUAL "" )
+		SET ( ${varName}  ${value} CACHE STRING "" )
+	ELSE ( 	NOT ${varName} OR ${varName} STREQUAL "" )
+		SET ( ${varName}  ${${varName}} CACHE STRING "" )
+	ENDIF ( NOT ${varName} OR ${varName} STREQUAL "" )
+ENDMACRO( SET_IF_NOT_CACHE )
+
+
+# Set variable to zero if not set/empty!
+# Used mainly when configuring files with 
+# the "#if @HAVE_XXX@" constructions
+MACRO ( SET_TO_ZERO_IF_EMPTY varName )  
+	IF (  	NOT ${varName} )
+		SET ( ${varName}	0	)
+	ENDIF (	NOT ${varName} )
+ENDMACRO( SET_TO_ZERO_IF_EMPTY )
+
+

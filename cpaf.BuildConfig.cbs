@@ -1,0 +1,117 @@
+
+SET_CONFIG ( z_DEBUG_SHOW_STANDARD_SETTINGS ENABLED )
+
+##SET_CONFIG ( COMPILE_FLAG_GCC_SHORT_WCHAR		1	)
+##SET_CONFIG ( cpaf_USE						BUILD    )
+    
+# --- 3RD PARTY LIBRARIES ---
+# SET_CONFIG ( wxWidgets_USE					DISABLED		)
+SET_CONFIG ( expat_USE						BUILD		)
+SET_CONFIG ( z_USE							BUILD		)
+SET_CONFIG ( minizip_USE					BUILD		)
+# # SET_CONFIG ( xml2_USE					BUILD		)
+SET_CONFIG ( png_USE							BUILD    	)
+SET_CONFIG ( bz2_USE							BUILD		)
+SET_CONFIG ( jpeg_USE						BUILD		)
+SET_CONFIG ( tiff_USE						BUILD		)
+SET_CONFIG ( openssl_USE						BUILD		)
+SET_CONFIG ( curl-main_USE					BUILD		)
+SET_CONFIG ( loki_USE						BUILD		)
+SET_CONFIG ( boost_USE						BUILD		)
+SET_CONFIG ( cpaf_libs_USE					BUILD		)
+SET_CONFIG ( RCF_USE							BUILD		)
+    
+SET_CONFIG ( fontconfig_USE					DISABLED	)	# NOTE: Not ready yet!
+
+#SET_CONFIG ( boost_iostreams_USE_z			""	)
+
+
+##SET_CONFIG ( gettext_LINK_TYPE				STATIC		WIN32	)
+##SET_CONFIG ( openssl_LINK_TYPE				STATIC		)
+
+     
+    
+# # --- CPAF NATIVE LIBRARIES ---
+# #SET_CONFIG ( cpaf_filesystem_USE			BUILD    )
+# #SET_CONFIG ( cpaf_dynamiclibs_USE			BUILD    )
+
+
+#SET_CONFIG ( CMAKE_INSTALL_PREFIX  "/home/ml/cpaf_install_prefix" )
+
+
+#    SET_CONFIG ( ex_filesystem_test_USE         DISABLED   )
+#    SET_CONFIG ( z_C_FLAGS                             "-fPIC"    )
+# Other options 
+
+#SET_CONFIG ( cpaf_INSTALL_PREFIX  "/home/ml/cpaf_install_prefix" )
+#SET_CONFIG ( glib-main_INSTALL_PREFIX  "/home/ml/glib-main_install_prefix" )
+#SET_CONFIG ( glib_INSTALL_PREFIX  "/home/ml/glib_install_prefix" )
+#SET_CONFIG ( z_INSTALL_PREFIX  "/home/ml/z_install_prefix" )
+#SET_CONFIG ( glib-main_MAJOR_VERSION 		23 					)	# Define to the GLIB major version . TEST ONLY !!
+
+# Thorbjørn List, Core, SourceForge
+
+# SET_CONFIG ( CBS_DEBUG_SHOW_STANDARD_SETTINGS ENABLED )
+
+# *** debug ***
+# SET_CONFIG ( z_DEBUG_SHOW_STANDARD_SETTINGS ENABLED )
+# SET_CONFIG ( bz2_DEBUG_SHOW_STANDARD_SETTINGS ENABLED )
+# SET_CONFIG ( png_DEBUG_SHOW_STANDARD_SETTINGS ENABLED )
+# SET_CONFIG ( jpeg_DEBUG_SHOW_STANDARD_SETTINGS ENABLED )
+
+
+#  
+# --- 3RD PARTY LIBRARIES ---
+# By setting a 'xx_USE' (xx=library_name) to "SYSTEM" you say 
+# that you want to use the CPAF version of the library specified. 
+# Whether or not this library is built as part of your own or project 
+# is controlled by # the 'CPAF_SYSTEM_CPAF_IN_USER_PROJECT' variable, 
+# which you set in your main CMakeLists.txt file or one of the 3 local, 
+# project or explicit build configuration files. See around line 65 in 
+# 'cpaf/cmake/cpaf_common_rules.cbs'
+#
+# If you use 'SET_CONFIG (xx_USE    "SYSTEM" )' then you have chosen to 
+# use whatever system installed version of this library that might exist on 
+# the platform you are currently building for. CPAF will try to find/configure this 
+# library for you by setting the 'xx_INCLUDE_DIRS' and '#xx_LIBRARIES' 'global' cache 
+# varibales to the appropriate values. In case the automatic detection dooes not work 
+# for you, you can preset these variables your main CMakeLists.txt file or one of the 3 
+# build configuration files. Note that you can use simple statements like :
+# 'SET_CONFIG ( xx_LIBRARIES   "/usr/local/libxx.so"  "/usr/local/libxx_extra.so" )'
+# You don't have to set them as cache values since you are setting them at top level.
+#
+# - Overview ofvariables that might be set by autoconfigure for a library xx -
+# xx_INCLUDE_DIRS  - Inlcude paths needed for xxlib, including including paths for eventual dependant libraries.
+# xx_INCLUDE_DIR   - Include paths needed for xxlib alone (no dependent include dirs)
+# xx_LIBRARIES     - List of libraries including dependent when using xxlib.
+# xx_LIBRARY       - Library/libraries when using xxlib (no dependent libs).
+# xx_LINK_DIR      - Linker search paths/dirs needed for linking xxlib.
+# xx_LINK_DIRS     - List of all linker search paths/dirs needed (including dependent ones) for linking xxlib.
+# xx_FOUND         - True if xxlib found.
+#
+# NOTE      : The first 4 are the most likely allways to be set.
+# IMPORTANT : The pre-setting (forcing) of these values are not recommended 
+#             when you have used'SET_CONFIG (xx_USE    "SYSTEM" )'
+#             for the library in question. CPAF (cmake files) controlled 
+#             builds of 3rd party libs set their include/libray paths in 
+#             the cmake files themselves and are generally not needed 
+#             to be end-user controllable. Also if the xx.cbs file set 
+#             some of these explicitly then if you really want (which again 
+#             you probably wont) you have to set them as cache entries using 
+#             statements like: 
+#             'SET_CONFIG ( xx_INCLUDE_DIRS  "path" CACHE STRING "Force this value" )'
+#
+#
+# Setting 'SET_CONFIG (xx_USE    "OFF" )' you have selected not to use 
+# this particalar 3rd party library at all in you project. It will not be build 
+# and no effort is done trying to find it's include paths or library include 
+# paths.
+#
+# --- CPAF NATIVE LIBRARIES ---
+# CPAF native libraries are those libraries that are actually developped 
+# as a subproject within the CPAF framework. These are enables or disabled 
+# for build by using lines like:
+# 'SET_CONFIG ( xx_USE  "SYSTEM"  )'   or 'SET_CONFIG ( xx_USE  "DISABLED"  )'
+# Whether the library is actually built depends again on the 
+# 'CPAF_SYSTEM_CPAF_IN_USER_PROJECT' variable
+# -------------------------------------------------------

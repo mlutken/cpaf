@@ -1,0 +1,7 @@
+#add_unit_test(semantic "cpaf_semantic")
+add_unit_test(pattern_matcher "cpaf_semantic")
+add_unit_test(fragment_matcher "cpaf_semantic")
+add_unit_test(fragments_classifier "cpaf_semantic")
+add_unit_test(semantic_reader "cpaf_semantic")
+add_unit_test(semantic_reader2 "cpaf_semantic")
+add_unit_test(collapse_string "cpaf_semantic")

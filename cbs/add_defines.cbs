@@ -1,0 +1,12 @@
+
+FOREACH( targetDefine ${${CBS_CURRENT_TARGET}_DEFINES} )
+	add_definitions ( ${targetDefine} )
+ENDFOREACH( targetDefine )
+
+FOREACH( targetDefine ${${CBS_CURRENT_TARGET}_XDEFINES} )
+	add_definitions ( ${targetDefine} )
+ENDFOREACH( targetDefine )
+
+FOREACH( targetCompilerOption ${${CBS_CURRENT_TARGET}_COMPILER_OPTIONS} )
+	add_definitions ( ${targetCompilerOption} )
+ENDFOREACH( targetCompilerOption )

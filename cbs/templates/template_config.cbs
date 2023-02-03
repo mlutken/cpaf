@@ -1,0 +1,32 @@
+# *** @TYPE_TO_BUILD@: '@PRJTGT_NAME@' cbs config file. ***
+
+SET_DEFAULT_VERSION ( x x x )
+SET_DEFAULT_PREFIX ( "" )
+SET ( PACKAGE_BUGREPORT		""	) # Define to the address where bug reports for this package should be sent. 
+# --------------------
+# --- Common stuff ---
+# --------------------
+SET ( MY_DEFINE 						1 )
+
+# --------------------------
+# --- Platform specific ---
+# --------------------------
+
+# *** WINDOWS ***
+IF (    WIN32 )
+ENDIF ( WIN32 )
+
+# *** UNIX ***
+IF (    UNIX )
+	SET( CMAKE_CXX_FLAGS	"${CMAKE_CXX_FLAGS} -fshort-wchar -include ${CMAKE_CURRENT_BINARY_DIR}/myconfig.h" )
+	
+	# *** LINUX ***
+    IF (    CMAKE_SYSTEM_NAME MATCHES "Linux" )
+    ENDIF ( CMAKE_SYSTEM_NAME MATCHES "Linux" )
+
+	# *** DARWIN (MAC OSX) ***
+    IF (   CMAKE_SYSTEM_NAME MATCHES "Darwin" )
+    ENDIF( CMAKE_SYSTEM_NAME MATCHES "Darwin" )
+ENDIF ( UNIX )
+
+

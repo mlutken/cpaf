@@ -1,0 +1,9 @@
+
+INCLUDE (${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+FIND_LIB_SIMPLE ( 	atk-1.0 
+					HEADER_FILES atk.h  
+					HEADER_PATHS /usr/include/atk-1.0/atk /opt/gnome/include/atk-1.0/atk 
+					INCLUDE_DIR_LEVELS_UP 1 
+					LIB_PATHS /usr/lib /opt/gnome/lib 
+					)
+

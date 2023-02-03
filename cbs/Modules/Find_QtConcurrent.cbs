@@ -1,0 +1,19 @@
+INCLUDE (${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+IF( CBS_QT4 )
+	FIND_LIB_SIMPLE ( 	QtConcurrent 
+						LIB_NAME QtConcurrent LINUX QtConcurrent4 CBS_WINDOWS_RELEASE QtConcurrentd4 CBS_WINDOWS_DEBUG
+						HEADER_FILES QtConcurrent 
+						HEADER_PATHS ${QT_HDR_DIR}/QtConcurrent /usr/include/qt4/QtConcurrent /usr/include/QtConcurrent
+						LIB_PATHS ${QT_LIB_DIR} /usr/lib
+						PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtConcurrent ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+						)
+ELSE( CBS_QT4 )
+	FIND_LIB_SIMPLE ( 	QtConcurrent
+						LIB_NAME QtConcurrent LINUX Qt5Concurrent CBS_WINDOWS_RELEASE Qt5Concurrentd CBS_WINDOWS_DEBUG
+						HEADER_FILES QtConcurrent 
+						HEADER_PATHS ${QT_HDR_DIR}/QtConcurrent /usr/include/qt5/QtConcurrent /usr/include/QtConcurrent
+						LIB_PATHS ${QT_LIB_DIR} /usr/lib
+						PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtConcurrent ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+						)
+ENDIF( CBS_QT4 )
+

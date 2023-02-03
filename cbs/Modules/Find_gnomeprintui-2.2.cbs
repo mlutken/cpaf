@@ -1,0 +1,10 @@
+
+INCLUDE (${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+FIND_LIB_SIMPLE ( 	gnomeprintui-2.2 
+					HEADER_FILES gnome-print-dialog.h  
+					HEADER_PATHS /usr/include/libgnomeprintui-2.2/libgnomeprintui /opt/gnome/include/libgnomeprintui-2.2/libgnomeprintui 
+					INCLUDE_DIR_LEVELS_UP 1 
+					LIB_PATHS /usr/lib /opt/gnome/lib 
+					LIB_NAME gnomeprintui-2-2
+					)
+

@@ -1,0 +1,14 @@
+# -------------------
+# --- Build setup ---
+# -------------------
+ADDX_INCLUDE_DIR ( ${CMAKE_CURRENT_SOURCE_DIR}/include 			) 
+ADD_COMPILE_FLAG ( -fpermissive 			COMPILER_GCC	)
+# -------------------
+# --- Add sources ---
+# -------------------
+ADD_SOURCE_FILE ( src/OrderedStatic.cpp		) 
+ADD_SOURCE_FILE ( src/SafeFormat.cpp		) 
+ADD_SOURCE_FILE ( src/SmallObj.cpp			) 
+ADD_SOURCE_FILE ( src/SmartPtr.cpp			)
+ADD_SOURCE_FILE ( src/Singleton.cpp			)
+ADD_SOURCE_FILE ( src/StrongPtr.cpp			)

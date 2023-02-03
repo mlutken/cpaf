@@ -1,0 +1,76 @@
+
+#ADD_FORCE_INCLUDE ( ${CBS_ROOT_DIR}/compatibility/msvc/msvc_recommended_pragmas.h	WINDOWS )
+
+####ADD_DEFINE ( _ITERATOR_DEBUG_LEVEL			0		WINDOWS	 )
+
+
+WARNING_DISABLE ( W_SIGNED_UNSIGNED_MISMATCH		COMPILER_MSVC	)
+WARNING_DISABLE ( W_UNREFERENCED_LOCAL_VARIABLE		COMPILER_MSVC	)
+WARNING_DISABLE ( W_UNARY_MINUS_ON_UNSIGNED			COMPILER_MSVC	)
+WARNING_DISABLE ( W_CONVERSION_LOSS_OF_DATA			COMPILER_MSVC	)
+WARNING_DISABLE ( W_INCOMPATIBLE_TYPES				COMPILER_MSVC	)
+#WARNING_DISABLE ( W_STATIC_CAST_TRUNCATE_CONST_VAL	COMPILER_MSVC	)
+
+SET_DEFAULT ( z_LINK_TYPE                       STATIC      WINDOWS )
+SET_DEFAULT ( minizip_LINK_TYPE                	STATIC      WINDOWS )
+SET_DEFAULT ( jpeg_LINK_TYPE                    STATIC      WINDOWS )
+SET_DEFAULT ( openssl_LINK_TYPE                 STATIC      WINDOWS )
+SET_DEFAULT ( cpaf_libs_LINK_TYPE               STATIC              )
+SET_DEFAULT ( boost_iostreams_LINK_TYPE         STATIC      WINDOWS )
+SET_DEFAULT ( boost_program_options_LINK_TYPE   STATIC      WINDOWS )
+SET_DEFAULT ( boost_serialization_LINK_TYPE     STATIC      WINDOWS )
+SET_DEFAULT ( boost_wserialization_LINK_TYPE    STATIC      WINDOWS )
+SET_DEFAULT ( curl_LINK_TYPE                    STATIC      WINDOWS )
+
+# # SET_DEFAULT ( z_LINK_TYPE                       STATIC      LINUX   )
+# # SET_DEFAULT ( minizip_LINK_TYPE                	STATIC      LINUX 	)
+SET_DEFAULT ( z_LINK_TYPE                       STATIC     LINUX   )
+SET_DEFAULT ( minizip_LINK_TYPE                	STATIC      LINUX 	)
+SET_DEFAULT ( expat_LINK_TYPE                   SHARED      LINUX   )
+SET_DEFAULT ( jpeg_LINK_TYPE                    SHARED      LINUX   )
+SET_DEFAULT ( tiff_LINK_TYPE                    SHARED      LINUX   )
+SET_DEFAULT ( bz2_LINK_TYPE                     SHARED      LINUX   )
+SET_DEFAULT ( png_LINK_TYPE                     SHARED      LINUX   )
+SET_DEFAULT ( crypto_LINK_TYPE                  SHARED      LINUX   )
+SET_DEFAULT ( ssl_LINK_TYPE                     SHARED      LINUX   )
+SET_DEFAULT ( curl_LINK_TYPE                    SHARED      LINUX   )
+SET_DEFAULT ( boost_date_time_LINK_TYPE         SHARED      LINUX   )
+SET_DEFAULT ( boost_filesystem_LINK_TYPE        SHARED      LINUX   )
+SET_DEFAULT ( boost_iostreams_LINK_TYPE         SHARED      LINUX   )
+SET_DEFAULT ( boost_program_options_LINK_TYPE   SHARED      LINUX   )
+SET_DEFAULT ( boost_serialization_LINK_TYPE     SHARED      LINUX   )
+SET_DEFAULT ( boost_wserialization_LINK_TYPE    SHARED      LINUX   )
+SET_DEFAULT ( boost_system_LINK_TYPE            SHARED      LINUX   )
+SET_DEFAULT ( boost_regex_LINK_TYPE             SHARED      LINUX   )
+
+
+
+##SET_DEFAULT ( _LINK_TYPE                        SHARED      LINUX   )
+
+ADD_SUBDIR ( cul/loki			)
+ADD_SUBDIR ( cul/utf8			)
+
+IF    ( NOT ${CMAKE_PROJECT_NAME} STREQUAL "cpaf_libs" )
+  	ADD_SUBDIR ( cpaf_libs  )
+ENDIF    ( NOT ${CMAKE_PROJECT_NAME} STREQUAL "cpaf_libs" )
+
+
+#ADD_SUBDIR ( example_cpaf_projects/unzip 	)
+#ADD_SUBDIR ( example_cpaf_projects/zip 		)
+
+#DEBUG_SHOW_STANDARD_SETTINGS ( z )
+
+#ADD_SUBDIR ( apps                  )
+
+# /wd1111
+
+# ----------------------------
+# --- Files adminnitration ---
+# ----------------------------
+# cpio: copy files with dir structure: http://bradthemad.org/tech/notes/cpio_directory.php
+# find . -name "*.cbs" | cpio -pamVd /new/parent/dir
+# find . -name "CMakeLists.txt" | cpio -pamVd /new/parent/dir
+
+
+
+

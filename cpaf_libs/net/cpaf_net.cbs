@@ -1,0 +1,22 @@
+# -------------------
+# --- Build setup ---
+# -------------------
+ADDX_DEPENDS_ON ( boost_headers			)
+##ADDX_DEPENDS_ON ( boost_process			)
+ADDX_DEPENDS_ON ( boost_filesystem	)
+# # ADDX_DEPENDS_ON ( curl                          )
+# # ADDX_DEPENDS_ON ( ssl                          )
+# # ADDX_DEPENDS_ON ( crypto                       )
+# # ADDX_DEPENDS_ON ( png								)
+
+ADDX_INCLUDE_DIR ( ${CMAKE_CURRENT_SOURCE_DIR} ) 
+
+
+# -------------------
+# --- Add sources ---
+# -------------------
+ADD_SOURCE_FILE ( cpaf_url_string_functions.cpp	)
+ADD_SOURCE_FILE ( cpaf_url.cpp					)
+ADD_SOURCE_FILE ( cpaf_http_convenience.cpp		)
+
+

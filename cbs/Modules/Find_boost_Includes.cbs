@@ -1,0 +1,21 @@
+
+# - Find boost include directories
+#
+# PROVIDES:
+# boost_INCLUDE_DIRS  - Path to set to be able to write like this: #include <boost/xx.hpp>
+
+IF ( boost_INCLUDE_DIR )
+    SET ( boost_INCLUDE_DIR ${boost_INCLUDE_DIR} CACHE STRING "Boost includes dir" FORCE )
+ELSE ( boost_INCLUDE_DIR )
+    FIND_PATH ( boost_INCLUDE_DIR boost
+        /usr/local/include
+        /usr/include
+    )
+ENDIF ( boost_INCLUDE_DIR )
+
+SET ( boost_INCLUDE_DIRS    ${boost_INCLUDE_DIR}        CACHE STRING "Boost includes dirs" FORCE )
+
+MESSAGE ( STATUS "FIND MODULE: boost_INCLUDE_DIR: ${boost_INCLUDE_DIR}" )
+
+
+

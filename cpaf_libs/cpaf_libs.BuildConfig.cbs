@@ -1,0 +1,11 @@
+    
+SET_CONFIG ( cpaf_USE						PREBUILT  				)
+SET_CONFIG ( cpaf_libs_USE                  BUILD    	)
+    
+# --- 3RD PARTY LIBRARIES ---
+SET_CONFIG ( z_USE                         	PREBUILT    )
+SET_CONFIG ( bz2_USE                       	PREBUILT    )
+SET_CONFIG ( boost_USE                     	PREBUILT    )
+SET_CONFIG ( curl_USE                    	PREBUILT    )
+
+

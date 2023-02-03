@@ -1,0 +1,91 @@
+/** \page "Gui Design Doc"
+
+I would like to take a pragmatic yet (perhaps) new and very easy to use (for the 
+GUI library user) API approach. 
+
+!A few key elements are:
+
+- Multiple "backends" like Gtk+, QT, wxWidgets, Windows native, Mac Native etc.
+- Separation of all key elements like views, data,  layout description, localizable 
+  texts and inter data restrictions (like when e.g. you want some GUI item to be "grayed out" 
+  given some state of another item (data) )
+- Layout is described in an easy statebased maner using strings to identify every GUI element instantiation.
+
+A small example to illustrate how the library could work from a GUI application writers point 
+of view.
+
+\image images/TabDialog.jpg
+
+Is produced by code like the following (layout only):
+
+\code
+TabDialog* pTabDialog = CPAF_GUI_CREATE_WIDGET(TabDialog, "TabDialog");
+pTabDialog->addTab("Vertical", eVBoxLayout);          // Add tab with simple vertical layout
+pTabDialog->addButton("Button1");                     // Add button: "Button1"
+pTabDialog->addWidget("RadioButton", "Radio1");       // Use general addWidget, name: "Radio1"
+pTabDialog->addRadioButton("Radio2");                 // Use specialized addRadioButton, name : "Radio2"
+pTabDialog->addCheckBox("Check1");                    
+pTabDialog->addLabel("LabelForTextEdit1");   
+pTabDialog->addTextEdit("TextEdit1");
+pTabDialog->startGroup("Group", 2, 3);                // Push group grid-box (on gui "stack"): 2 rows, 3 columns
+pTabDialog->addRadioButton("RadioInGroup1");          // Group gui-widgets are added left->right
+pTabDialog->addRadioButton("RadioInGroup2");          // one row at a time in a grid box
+pTabDialog->addRadioButton("RadioInGroup3");
+pTabDialog->addRadioButton("RadioInGroup4");
+pTabDialog->startGroup("GroupInGroup1", eVBoxLayout); // Push (nested) group box, simple vertical layout
+pTabDialog->addCheckBox("CheckBox1");
+pTabDialog->addCheckBox("CheckBox2");
+pTabDialog->endGroup();                               // Pop (from gui "stack") the "GroupInGroup1" group.
+pTabDialog->startGroup("GroupInGroup2", eVBoxLayout); // Push (nested) group box, simple vertical layout
+pTabDialog->addCheckBox("CheckBox3");
+pTabDialog->addCheckBox("CheckBox4");
+pTabDialog->endGroup();                               // Pop (from gui "stack") the "GroupInGroup2" group.
+                                                      // The "Group" grid box is popped automatically after 
+                                                      // all 6 widgets are added.
+pTabDialog->addTab("Grid", 3, 5);                     // Add tab with simple grid layout: 3 rows, 5 columns
+pTabDialog->addTab("Horizontal", eHBoxLayout);        // Add tab with simple horizontal layout
+pTabDialog->addTab("ListView");                       // Add some tab (with default layout)
+
+                                                      
+\endcode
+
+So the whole idea is to separate all the different aspects of designing a GUI. 
+This means that the above code mainly deals with the structure/layout of the 
+GUI interface, using a "Gui Stack" and layout-generators like in Java.
+The captions and other GUI related texts are not really dealt with here, but the 
+(unique) names given to the widget instances are displayed as default captions.
+
+The first string given in the functions above (exept for #addWidget()#) is a 
+unique identifier (ID) for each instantiated widget. This ID is used subsequently 
+whenever we need to refer to the widget (and don't have a pointer to it). E.g we 
+could assign a caption to the label like this:
+|| assignCaption("LabelForTextEdit1", "Here comes a text edit");
+
+In case of the #addWidget()# function the first parameter designates the widget's 
+class name, and the second is the instance ID.
+
+Another thing we might like to do is to connect some of the widgets to data variables 
+elsewhere in our code. The data which we want the GUI widget to display/modify is "wrapped" 
+inside a template and then connected to the desired widget using the widget's ID and 
+the address of the variable.
+ 
+\code
+// Declare, connect and initialize a boolean variable, multiple steps
+CPAF_DATA<bool>  bMyBoolVar1;
+connectDataToGui( &bMyBoolVar, "CheckBox1" );
+bMyBoolVar =  true;
+
+// Declare, connect and initialize a boolean variable, in one statement
+CPAF_DATA<bool>  bMyBoolVar2("CheckBox2", true);
+\endcode
+ 
+The CPAF_DATA template should ensure type compatibility: like a checkbox 
+supports perhaps only boolean variables as data. Also it must ensure thread 
+safety in the case of the program using multiple threads and/or multiple 
+widgets displaying and modifying the same variable.
+Finally the CPAF_DATA template establishes the pointers (or whatever needed) to 
+ensure that whenever the variable is assigned the widget gets updated and whenever 
+the user clicks the checkbox the variable gets updated. 
+ 
+ 
+*/

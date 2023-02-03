@@ -1,0 +1,123 @@
+INCLUDE (${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+IF( CBS_QT4 )
+	FIND_LIB_SIMPLE ( 	Qt 
+						LIB_NAME QtCore LINUX QtCore4 CBS_WINDOWS_RELEASE QtCored4 CBS_WINDOWS_DEBUG
+						HEADER_FILES QObject  
+						HEADER_PATHS ${QT_HDR_DIR} /usr/include/qt4/QtCore /usr/include/QtCore 
+						INCLUDE_DIR_LEVELS_UP 1 
+						LIB_PATHS ${QT_LIB_DIR} /usr/lib 
+						PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtCore ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+						)
+ELSE( CBS_QT4 )
+	IF(WINDOWS)
+		FIND_LIB_SIMPLE ( 	Qt 
+							LIB_NAME QtCore LINUX Qt5Core CBS_WINDOWS_RELEASE Qt5Cored CBS_WINDOWS_DEBUG
+							HEADER_FILES QObject  
+							HEADER_PATHS ${QT_HDR_DIR} /usr/include/qt5/QtCore /usr/include/QtCore 
+							INCLUDE_DIR_LEVELS_UP 1 
+							LIB_PATHS ${QT_LIB_DIR} /usr/lib 
+							PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtCore ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+							)
+		FIND_LIB_SIMPLE ( 	D3DCompiler_43 
+							LIB_NAME QtCore LINUX D3DCompiler_43 CBS_WINDOWS_RELEASE D3DCompiler_43 CBS_WINDOWS_DEBUG
+							HEADER_FILES QObject  
+							HEADER_PATHS ${QT_HDR_DIR} /usr/include/qt5/QtCore /usr/include/QtCore 
+							INCLUDE_DIR_LEVELS_UP 1 
+							LIB_PATHS ${QT_LIB_DIR} /usr/lib 
+							PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtCore ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+							)
+		FIND_LIB_SIMPLE ( 	icudt49 
+							LIB_NAME QtCore LINUX icudt49 CBS_WINDOWS_RELEASE icudt49 CBS_WINDOWS_DEBUG
+							HEADER_FILES QObject  
+							HEADER_PATHS ${QT_HDR_DIR} /usr/include/qt5/QtCore /usr/include/QtCore 
+							INCLUDE_DIR_LEVELS_UP 1 
+							LIB_PATHS ${QT_LIB_DIR} /usr/lib 
+							PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtCore ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+							)
+		FIND_LIB_SIMPLE ( 	icuin49 
+							LIB_NAME QtCore LINUX icuin49 CBS_WINDOWS_RELEASE icuin49 CBS_WINDOWS_DEBUG
+							HEADER_FILES QObject  
+							HEADER_PATHS ${QT_HDR_DIR} /usr/include/qt5/QtCore /usr/include/QtCore 
+							INCLUDE_DIR_LEVELS_UP 1 
+							LIB_PATHS ${QT_LIB_DIR} /usr/lib 
+							PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtCore ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+							)
+		FIND_LIB_SIMPLE ( 	icuuc49 
+							LIB_NAME QtCore LINUX icuuc49 CBS_WINDOWS_RELEASE icuuc49 CBS_WINDOWS_DEBUG
+							HEADER_FILES QObject  
+							HEADER_PATHS ${QT_HDR_DIR} /usr/include/qt5/QtCore /usr/include/QtCore 
+							INCLUDE_DIR_LEVELS_UP 1 
+							LIB_PATHS ${QT_LIB_DIR} /usr/lib 
+							PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtCore ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+							)
+
+		FIND_LIB_SIMPLE ( 	libEGL 
+							LIB_NAME QtCore LINUX libEGL CBS_WINDOWS_RELEASE libEGLd CBS_WINDOWS_DEBUG
+							HEADER_FILES QObject  
+							HEADER_PATHS ${QT_HDR_DIR} /usr/include/qt5/QtCore /usr/include/QtCore 
+							INCLUDE_DIR_LEVELS_UP 1 
+							LIB_PATHS ${QT_LIB_DIR} /usr/lib 
+							PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtCore ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+							)
+		FIND_LIB_SIMPLE ( 	libGLESv2 
+							LIB_NAME QtCore LINUX libGLESv2 CBS_WINDOWS_RELEASE libGLESv2d CBS_WINDOWS_DEBUG
+							HEADER_FILES QObject  
+							HEADER_PATHS ${QT_HDR_DIR} /usr/include/qt5/QtCore /usr/include/QtCore 
+							INCLUDE_DIR_LEVELS_UP 1 
+							LIB_PATHS ${QT_LIB_DIR} /usr/lib 
+							PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtCore ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+							)
+	ELSE(WINDOWS)
+# 		FIND_LIB_SIMPLE ( 	QtGui 
+# 							LIB_NAME Qt5Gui 
+# 							HEADER_FILES QtGui  
+# 							HEADER_PATHS ${QT_HDR_DIR}/QtGui /usr/include/qt5/QtGui
+# 							)
+		FIND_LIB_SIMPLE ( 	Qt 
+							LIB_NAME Qt5Core
+							HEADER_FILES QObject  
+							HEADER_PATHS ${QT_HDR_DIR}/QtCore /usr/include/qt5/QtCore
+							INCLUDE_DIR_LEVELS_UP 1 
+							)
+# 		FIND_LIB_SIMPLE ( 	D3DCompiler_43 
+# 							LIB_NAME D3DCompiler_43
+# 							HEADER_FILES QObject  
+# 							HEADER_PATHS ${QT_HDR_DIR}/QtCore /usr/include/qt5/QtCore
+# 							INCLUDE_DIR_LEVELS_UP 1 
+# 							)
+# 		FIND_LIB_SIMPLE ( 	icudt49 
+# 							LIB_NAME icudt49
+# 							HEADER_FILES QObject  
+# 							HEADER_PATHS ${QT_HDR_DIR}/QtCore /usr/include/qt5/QtCore
+# 							INCLUDE_DIR_LEVELS_UP 1 
+# 							)
+# 		FIND_LIB_SIMPLE ( 	icuin49 
+# 							LIB_NAME icuin49
+# 							HEADER_FILES QObject  
+# 							HEADER_PATHS ${QT_HDR_DIR}/QtCore /usr/include/qt5/QtCore
+# 							INCLUDE_DIR_LEVELS_UP 1 
+# 							)
+# 		FIND_LIB_SIMPLE ( 	icuuc49 
+# 							LIB_NAME icuuc49
+# 							HEADER_FILES QObject  
+# 							HEADER_PATHS ${QT_HDR_DIR}/QtCore /usr/include/qt5/QtCore
+# 							INCLUDE_DIR_LEVELS_UP 1 
+# 							)
+# 
+# 		FIND_LIB_SIMPLE ( 	libEGL 
+# 							LIB_NAME libEGL
+# 							HEADER_FILES QObject  
+# 							HEADER_PATHS ${QT_HDR_DIR}/QtCore /usr/include/qt5/QtCore
+# 							INCLUDE_DIR_LEVELS_UP 1 
+# 							)
+# 		FIND_LIB_SIMPLE ( 	libGLESv2 
+# 							LIB_NAME libGLESv2
+# 							HEADER_FILES QObject  
+# 							HEADER_PATHS ${QT_HDR_DIR}/QtCore /usr/include/qt5/QtCore
+# 							INCLUDE_DIR_LEVELS_UP 1 
+# 							)
+
+	ENDIF (WINDOWS)						
+ENDIF( CBS_QT4 )
+
+

@@ -1,0 +1,8 @@
+INCLUDE (${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+FIND_LIB_SIMPLE ( 	curl 
+					HEADER_FILES curl.h  
+					HEADER_PATHS /usr/include/curl /usr/include/x86_64-linux-gnu/curl
+					LIB_PATHS /usr/lib64 /usr/lib
+                    INCLUDE_DIR_LEVELS_UP 1 
+					)
+

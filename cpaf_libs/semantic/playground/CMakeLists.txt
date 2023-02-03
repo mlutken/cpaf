@@ -1,0 +1,8 @@
+add_playground_cpp_exe(semantic "cpaf_semantic")
+add_playground_cpp_exe(domtree "cpaf_semantic")
+add_playground_cpp_exe(semantic_unicode "cpaf_semantic")
+add_playground_cpp_exe(pattern_matcher "cpaf_semantic")
+add_playground_cpp_exe(fragment_matcher "cpaf_semantic")
+add_playground_cpp_exe(fragments_classifier "cpaf_semantic")
+add_playground_cpp_exe(collapse_name "cpaf_semantic")
+add_playground_cpp_exe(json_classification_data_reader "cpaf_semantic")

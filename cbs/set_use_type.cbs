@@ -1,0 +1,22 @@
+
+# -------------------------------------------------------------
+# --- Determine use type: DISABLED, SYSTEM, BUILD, PREBUILT ---
+# -------------------------------------------------------------
+    
+# Use Parent project's only if not set for current target
+IF ( NOT ${CBS_CURRENT_TARGET}_USE OR ${CBS_CURRENT_TARGET}_USE STREQUAL "" )
+    SET ( useType    "${${CBS_CURRENT_PROJECT}_USE}" )    	# Use parent project setting 
+ELSE ( NOT ${CBS_CURRENT_TARGET}_USE OR ${CBS_CURRENT_TARGET}_USE STREQUAL "" )
+    SET ( useType    "${${CBS_CURRENT_TARGET}_USE}" )    		# Use target own setting 
+ENDIF ( NOT ${CBS_CURRENT_TARGET}_USE OR ${CBS_CURRENT_TARGET}_USE STREQUAL "" )
+    
+    
+# --- Default "catch-all" in case no use variable is set we set it to CBS_DEFAULT_USE_TYPE ---
+IF ( NOT useType OR "${useType}" STREQUAL "" )
+    SET ( useType    ${CBS_DEFAULT_USE_TYPE} )               # For unknown to CBS_DEFAULT_USE_TYPE 
+ENDIF ( NOT useType OR "${useType}" STREQUAL "" )
+    
+# --- Add info about chosen useType to cache variable ---    
+SET ( ${CBS_CURRENT_TARGET}_INFO_USE     ${useType}      CACHE STRING "" FORCE )
+MARK_AS_ADVANCED ( ${CBS_CURRENT_TARGET}_INFO_USE )
+

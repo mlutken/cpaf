@@ -1,0 +1,19 @@
+INCLUDE (${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+IF( CBS_QT4 )
+	FIND_LIB_SIMPLE ( 	QtAxContainer 
+						LIB_NAME QtAxContainer LINUX QtAxContainer4 CBS_WINDOWS_RELEASE QtAxContainerd4 CBS_WINDOWS_DEBUG
+						HEADER_FILES QtAxContainer 
+						HEADER_PATHS ${QT_HDR_DIR}/QtAxContainer /usr/include/qt4/QtAxContainer /usr/include/QtAxContainer
+						LIB_PATHS ${QT_LIB_DIR} /usr/lib
+						PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtAxContainer ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+						)
+ELSE( CBS_QT4 )
+	FIND_LIB_SIMPLE ( 	QtAxContainer
+						LIB_NAME QtAxContainer LINUX Qt5AxContainer CBS_WINDOWS_RELEASE Qt5AxContainerd CBS_WINDOWS_DEBUG
+						HEADER_FILES QtAxContainer 
+						HEADER_PATHS ${QT_HDR_DIR}/QtAxContainer /usr/include/qt5/QtAxContainer /usr/include/QtAxContainer
+						LIB_PATHS ${QT_LIB_DIR} /usr/lib
+						PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtAxContainer ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+						)
+ENDIF( CBS_QT4 )
+

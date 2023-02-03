@@ -1,0 +1,403 @@
+# ---------------------
+# --- Library names ---
+# ---------------------
+
+
+# - Find xxlib
+# Find the native xxlib includes and library
+# - PARAMETERS -
+# baseName      : Basename og library like z, png, boost_filesystem ...
+# headerFiles   : Header files to look for. If set to "NONE" searching for include directories is ignored.
+# dependsOn     : Basename of library that this one depends on.
+#
+# - VARIABLES USED AS "INPUT" -
+# CMAKE_INCLUDE_PATH                        :
+# CMAKE_LIBRARY_PATH                        :
+# CBS_LIBRARY_PATH                          : Used as destination when a static library is found. 
+#                                             I.e. when static library is requested it is copied to current (default) 
+#                                             CBS_LIBRARY_PATH and linked from there.
+# CBS_LIB_TYPE_TO_BUILD                     : 
+# CMAKE_INCLUDE_PATH                        : 
+# CBS_FIND_LIB_SEARCH_INCLUDE_PATHS_FIRST   : 
+# CBS_FIND_LIB_SEARCH_LIBRARY_PATHS_FIRST   : 
+# 
+# - GLOBAL VARIABLES PROVIDED AS "OUTPUT" - :
+# ${baseName}_INCLUDE_DIR   : Include paths needed for xxlib alone (no dependent include dirs)
+# ${baseName}_XINCLUDE_DIRS  : Inlcude paths needed for xxlib, including including paths for eventual dependant libraries.
+# ${baseName}_LIBRARY       : Library/libraries when using xxlib (no dependent libs).
+# ${baseName}_XLINK_LIBRARIES     : List of libraries including dependent when using xxlib.
+# ${baseName}_XLINK_DIR      : Linker search paths/dirs needed for linking xxlib.
+# ${baseName}_XLINK_DIRS     : List of all linker search paths/dirs needed (including dependent ones) for linking xxlib.
+# ${baseName}_LINK_TYPE     : Link type requested/used for this library : STATIC or SHARED
+# ${baseName}_FOUND         : True if xxlib found.
+
+#FUNCTION( FIND_LIB_SIMPLE baseName headerFiles dependsOn )  
+FUNCTION( FIND_LIB_SIMPLE baseName )  
+    # --- If already in cache, skip ---
+    IF ( NOT ${baseName}_FOUND )
+		SET ( headerFiles  				)
+        SET ( dependsOn                 )
+		SET ( headerPaths  				)
+        SET ( libName   ${baseName}     )
+        SET ( includeDirLevelsUp        )
+		SET ( libPaths  				)
+		SET ( preferProvidedPaths       )
+		SET ( preferProvidedPathsList   )
+		SET ( libNamesList   			)
+		
+		FOREACH( arg ${ARGN} )
+			# ----------------------
+			# --- Set next state ---
+			# ----------------------
+			SET ( argIsStateChangeCmd	1	)
+			
+			#			--- HEADER_FILES --- 
+			IF ( ${arg} STREQUAL "HEADER_FILES" )
+				SET ( curState		"read_HEADER_FILES"	)
+			ELSE ( ${arg} STREQUAL "HEADER_FILES" )
+			#				--- DEPENDS_ON --- NOTE: Not used currently
+				IF ( ${arg} STREQUAL "DEPENDS_ON" )
+					SET ( curState		"read_DEPENDS_ON"	)
+				ELSE ( ${arg} STREQUAL "DEPENDS_ON" )
+			#				--- HEADER_PATHS --- 
+					IF ( ${arg} STREQUAL "HEADER_PATHS" )
+						SET ( curState		"read_HEADER_PATHS"	)
+					ELSE ( ${arg} STREQUAL "HEADER_PATHS" )
+			#				--- LIB_NAME --- 
+						IF ( ${arg} STREQUAL "LIB_NAME" )
+							SET ( curState		"read_LIB_NAME"	)
+						ELSE ( ${arg} STREQUAL "LIB_NAME" )
+			#				--- INCLUDE_DIR_LEVELS_UP --- 
+							IF ( ${arg} STREQUAL "INCLUDE_DIR_LEVELS_UP" )
+								SET ( curState		"read_INCLUDE_DIR_LEVELS_UP"	)
+							ELSE ( ${arg} STREQUAL "INCLUDE_DIR_LEVELS_UP" )
+            #                   --- PREFER_PROVIDED_PATHS --- 
+                                IF ( ${arg} STREQUAL "PREFER_PROVIDED_PATHS" )
+                                    SET ( preferProvidedPaths   1   )
+                                    SET ( curState      "read_PREFER_PROVIDED_PATHS"    )
+                                ELSE ( ${arg} STREQUAL "PREFER_PROVIDED_PATHS" )
+            #				        --- LIB_PATHS --- 
+                                    IF ( ${arg} STREQUAL "LIB_PATHS" )
+                                        SET ( curState		"read_LIB_PATHS"	)
+                                    ELSE ( ${arg} STREQUAL "LIB_PATHS" )
+                                        SET ( argIsStateChangeCmd	0	)	# Argument was NOT a state change command
+                                    ENDIF ( ${arg} STREQUAL "LIB_PATHS" )
+                                ENDIF ( ${arg} STREQUAL "PREFER_PROVIDED_PATHS" )
+							ENDIF ( ${arg} STREQUAL "INCLUDE_DIR_LEVELS_UP" )
+						ENDIF ( ${arg} STREQUAL "LIB_NAME" )
+					ENDIF ( ${arg} STREQUAL "HEADER_PATHS" )
+				ENDIF ( ${arg} STREQUAL "DEPENDS_ON" )
+			ENDIF ( ${arg} STREQUAL "HEADER_FILES" )
+	
+			# ----------------------
+			# --- Read arguments ---
+			# ----------------------
+			#				--- CMD --- 
+			IF ( NOT ${argIsStateChangeCmd} )
+		#		--- STATE: read_HEADER_FILES --- 
+				IF ( curState STREQUAL "read_HEADER_FILES" ) 
+					LIST ( APPEND headerFiles ${arg}	)
+				ELSE ( curState STREQUAL "read_HEADER_FILES" ) 
+	
+		#			--- STATE: read_DEPENDS_ON --- 
+					IF ( curState STREQUAL "read_DEPENDS_ON" ) 
+						LIST ( APPEND dependsOn ${arg}	)
+					ELSE ( curState STREQUAL "read_DEPENDS_ON" ) 
+	
+		#				--- STATE: read_LIB_PATHS --- 
+						IF ( curState STREQUAL "read_LIB_PATHS" ) 
+							LIST ( APPEND libPaths ${arg}	)
+						ELSE ( curState STREQUAL "read_LIB_PATHS" ) 
+		#					--- STATE: read_LIB_NAME --- 
+							IF ( curState STREQUAL "read_LIB_NAME" ) 
+								#SET ( libName ${arg}	)
+								LIST ( APPEND libNamesList ${arg}	)
+							ELSE ( curState STREQUAL "read_LIB_NAME" ) 
+		#					    --- STATE: read_INCLUDE_DIR_LEVELS_UP --- 
+								IF ( curState STREQUAL "read_INCLUDE_DIR_LEVELS_UP" ) 
+									LIST ( APPEND includeDirLevelsUp ${arg}	)
+								ELSE ( curState STREQUAL "read_INCLUDE_DIR_LEVELS_UP" ) 
+        #                           --- STATE: read_PREFER_PROVIDED_PATHS --- 
+                                    IF ( curState STREQUAL "read_PREFER_PROVIDED_PATHS" ) 
+                                        LIST ( APPEND preferProvidedPathsList ${arg} )
+                                    ELSE ( curState STREQUAL "read_PREFER_PROVIDED_PATHS" ) 
+        #					            --- STATE: read_HEADER_PATHS --- 
+                                        IF ( curState STREQUAL "read_HEADER_PATHS" ) 
+                                            LIST ( APPEND headerPaths ${arg}	)
+                                        ENDIF ( curState STREQUAL "read_HEADER_PATHS" ) 
+                                    ENDIF ( curState STREQUAL "read_PREFER_PROVIDED_PATHS" ) 
+								ENDIF ( curState STREQUAL "read_INCLUDE_DIR_LEVELS_UP" ) 
+							ENDIF ( curState STREQUAL "read_LIB_NAME" ) 
+						ENDIF ( curState STREQUAL "read_LIB_PATHS" ) 
+					ENDIF ( curState STREQUAL "read_DEPENDS_ON" ) 
+				ENDIF ( curState STREQUAL "read_HEADER_FILES" ) 
+			ENDIF ( NOT ${argIsStateChangeCmd} )
+		ENDFOREACH( arg )
+	
+	
+		LIST ( LENGTH libNamesList listlen )
+		MATH ( EXPR listlen ${listlen} )            
+		SET ( iIndex 0 )
+		FOREACH ( ln ${libNamesList} )
+			MATH ( EXPR even "${iIndex} % 2"  )            
+			MATH ( EXPR iIndex "${iIndex} + 1" )            
+			IF ( ${even} EQUAL 0 ) 
+				IF ( ${iIndex} LESS ${listlen} ) 
+					LIST ( GET libNamesList ${iIndex} lCond )
+					IF ( ${lCond} )
+						SET ( libName ${ln})
+					ENDIF ( ${lCond} )
+				ELSE ( ${iIndex} LESS ${listlen} )
+					SET ( libName ${ln} )
+				ENDIF ( ${iIndex} LESS ${listlen} ) 
+# 			ELSE ( ${even} EQUAL 0  ) 
+# 				MATH ( EXPR iIndex "${iIndex} + 1" )            
+			ENDIF ( ${even} EQUAL 0  ) 
+		ENDFOREACH ( ln )
+	
+		
+		# ----------------------------
+		# --- Actual function body ---
+		# ----------------------------
+# 		IF ( "${baseName}" STREQUAL "QtGui" )
+#             MESSAGE( STATUS "FIND_LIB_SIMPLE, ${CBS_CURRENT}: ${baseName}" )
+#             MESSAGE( STATUS "FIND_LIB_SIMPLE, libName       : ${libName}" )
+#             MESSAGE( STATUS "FIND_LIB_SIMPLE, headerFiles   : ${headerFiles}" )
+#             MESSAGE( STATUS "FIND_LIB_SIMPLE, headerPaths   : ${headerPaths}" )
+#             MESSAGE( STATUS "preferProvidedPaths            : ${preferProvidedPaths}" )
+#             
+#             MESSAGE( STATUS "FIND_LIB_SIMPLE, libPaths      : ${libPaths}" )
+#             MESSAGE( STATUS "FIND_LIB_SIMPLE, dependsOn     : ${dependsOn}" )
+#             MESSAGE( STATUS "FIND_LIB_SIMPLE, CMAKE_INCLUDE_PATH: ${CMAKE_INCLUDE_PATH}" )
+#             MESSAGE( STATUS "FIND_LIB_SIMPLE, CMAKE_FRAMEWORK_PATH: ${CMAKE_FRAMEWORK_PATH}" )
+#             MESSAGE( STATUS "FIND_LIB_SIMPLE, ${baseName}_HEADER_PATHS: '${${baseName}_HEADER_PATHS}'" )  
+#         ENDIF ( "${baseName}" STREQUAL "QtGui" ) 
+
+        # ------------------------------------------------------------------------------------------
+        # --- See if this library depends on others, and if it does then try to find them first ---
+        # ------------------------------------------------------------------------------------------
+        SET ( bDependsOnOk TRUE )
+		FOREACH( dependOn ${dependsOn} )
+			##MESSAGE ( "*** Find: dependson '${dependOn}'" )
+			IF ( NOT ${dependOn}_FOUND )
+				##MESSAGE ( "***** DO Find: dependson '${dependOn}'" )
+				INCLUDE ( ${CBS_ROOT_DIR}/Modules/Find_${dependOn}.cbs )
+			ENDIF ( NOT ${dependOn}_FOUND )
+			IF ( NOT ${dependOn}_FOUND )
+				SET ( bDependsOnOk FALSE )
+			ENDIF ( NOT ${dependOn}_FOUND )
+		ENDFOREACH( dependOn )
+        
+        IF ( bDependsOnOk )
+# # 			MESSAGE( STATUS "FIND_LIB_SIMPLE, bDependsOnOk     : ${baseName}" )
+            # ------------------------------------------
+            # --- Static or dynamic version wanted ? ---
+            # ------------------------------------------
+            # If specific linking is requested for this library then overide the general setting
+            IF ( ${baseName}_LINK_TYPE )
+                SET ( ${baseName}_LINK_TYPE ${${baseName}_LINK_TYPE} CACHE STRING "" )
+            ELSE ( ${baseName}_LINK_TYPE )
+                SET ( ${baseName}_LINK_TYPE ${CBS_LIB_TYPE_TO_BUILD} CACHE STRING "" )
+            ENDIF ( ${baseName}_LINK_TYPE )
+            
+            # --------------------------
+            # --- Find include paths ---
+            # --------------------------
+            # We look in standard places for the header files given.
+            # In case an empty string is given as headerfile to look for the serach is canceled, 
+            # and an empty xx_INCLUDE_DIRS cache entry is made. This is e.g. used for boost libraries.
+            #
+
+            # NO_DEFAULT_PATH
+
+            # In case preferProvidedPaths requested make sure the 
+             IF ( preferProvidedPaths )
+                LIST ( LENGTH preferProvidedPathsList preferProvidedPathsLen )
+                IF ( ${preferProvidedPathsLen} LESS 4 )
+                    SET ( preferProvidedPaths )
+                ENDIF ( ${preferProvidedPathsLen} LESS 4 )
+             ENDIF ( preferProvidedPaths )
+
+            SET ( iIndex 0 )
+            FOREACH ( hFile ${headerFiles} )
+                IF ( preferProvidedPaths )
+                    # Assume that first element in list is include dir
+                    LIST ( GET preferProvidedPathsList 0 ${hFile}_PATH ) 
+                    ##SET ( ${hFile}_PATH ${headerPaths} )
+                ELSE ( preferProvidedPaths )
+                    FIND_PATH ( ${hFile}_PATH ${hFile} PATHS ${${baseName}_HEADER_PATHS} ${headerPaths}  )
+                ENDIF ( preferProvidedPaths )
+
+
+                IF ( "${${hFile}_PATH}" STREQUAL "" )
+                    MESSAGE ( "ERROR header file : '${hFile}' NOT found in paths: '${${baseName}_HEADER_PATHS} ${headerPaths}' " )
+                ENDIF ( "${${hFile}_PATH}" STREQUAL "" )
+
+				SET ( iLvsUp 0 )
+				LIST ( LENGTH includeDirLevelsUp includeDirLevelsUpLen )
+				IF ( ${includeDirLevelsUpLen} GREATER ${iIndex} )
+					LIST ( GET includeDirLevelsUp  ${iIndex} iLvsUp )
+				ENDIF ( ${includeDirLevelsUpLen} GREATER ${iIndex} )
+                IF ( ${iLvsUp} GREATER 0 )
+             		GET_PARENT_DIR ( parentDir ${${hFile}_PATH} ${iLvsUp} )
+             		SET ( ${hFile}_PATH ${parentDir} CACHE STRING "" FORCE )
+                ENDIF ( ${iLvsUp} GREATER 0 )
+                LIST_APPEND_UNIQUE ( ${baseName}_INCLUDE_DIR ${${hFile}_PATH} ) 
+			MATH ( EXPR iIndex "${iIndex} + 1" )            
+            ENDFOREACH ( hFile )
+            
+            SET ( ${baseName}_INCLUDE_DIR ${${baseName}_INCLUDE_DIR} CACHE STRING "" FORCE )
+            
+            # --------------------
+            # --- Find library ---
+            # --------------------
+            # TODO: Should we put CBS_FIND_LIB_SEARCH_LIBRARY_PATHS_FIRST before CMAKE_LIBRARY_PATH ??
+            SET( ${baseName}_LIB_NAMES lib${libName} ${libName} ${libName}.lib ${libName}.dll )
+
+            IF ( preferProvidedPaths )
+                # Assume that second element in list is library dir
+                LIST ( GET preferProvidedPathsList 1 trunkLibraryDir )
+                GET_LIBRARY_NAME( libNameOut ${baseName} )
+                GET_LIBRARY_NAME( libNameOutShared ${baseName} "SHARED" )
+                SET    ( ${baseName}_LIBRARY        ${trunkLibraryDir}/${libNameOut}  )
+                SET    ( ${baseName}_LIBRARY_SHARED ${trunkLibraryDir}/${libNameOutShared}  )
+            ELSE ( preferProvidedPaths )
+                FIND_LIBRARY ( ${baseName}_LIBRARY NAMES ${${baseName}_LIB_NAMES} PATHS ${${baseName}_LIB_PATHS} ${libPaths} )
+            ENDIF ( preferProvidedPaths )
+
+			IF ( "${${baseName}_LIBRARY}" STREQUAL "" )
+				MESSAGE ( "ERROR libraries: '${${baseName}_LIB_NAMES}' NOT found in paths: '${${baseName}_LIB_PATHS} ${libPaths}' " )
+			ENDIF ( "${${baseName}_LIBRARY}" STREQUAL "" )
+            
+			SET ( ${baseName}_FULL_LIBRAY_PATH	${${baseName}_LIBRARY}  	CACHE STRING "" FORCE )
+   
+            # ---------------------------------
+            # --- Did we find the library ? ---
+            # ---------------------------------
+            # Here we use the dummy value set for making this IF work as intended
+            IF ( ${baseName}_INCLUDE_DIR AND ${baseName}_LIBRARY )
+                # Library was found. Set found to true and continue with rest of "work"              
+                SET ( ${baseName}_FOUND TRUE CACHE BOOL "True if xxlib found" )
+            
+                GET_FILENAME_COMPONENT ( libSrcPath ${${baseName}_LIBRARY} PATH )
+                
+                # ----------------------------------
+                # --- User want static library ? ---
+                # ----------------------------------
+				SET ( isDynamicLinkType TRUE )
+				IF ( ${${baseName}_LINK_TYPE} STREQUAL "STATIC" )
+					GET_FILENAME_COMPONENT ( libNameStatic ${${baseName}_LIBRARY} NAME_WE )
+					SET ( libNameStatic ${libNameStatic}${CBS_STATIC_LIB_POSTFIX} )
+					
+					IF (UNIX)
+						# If static library exists copy it to default CBS library directory.
+						IF ( EXISTS ${libSrcPath}/${libNameStatic} )
+							SET ( ${baseName}_INFO_LINK_TYPE "STATIC"  	CACHE STRING "" FORCE )
+							SET ( isDynamicLinkType )
+							CONFIGURE_FILE ( ${libSrcPath}/${libNameStatic} ${CBS_LIBRARY_PATH}/${libNameStatic} COPYONLY ) 
+							SET ( ${baseName}_LIBRARY ${libName}     	      	CACHE STRING "" FORCE )
+							SET ( ${baseName}_XLINK_DIR ${CBS_LIBRARY_PATH}  	CACHE STRING "" FORCE )
+						ELSE ( EXISTS ${libSrcPath}/${libNameStatic} )
+							SET ( ${baseName}_FULL_LIBRAY_PATH  ${${baseName}_LIBRARY_SHARED}      CACHE STRING "" FORCE )
+						ENDIF ( EXISTS ${libSrcPath}/${libNameStatic} )
+					ENDIF (UNIX)
+				ENDIF ( ${${baseName}_LINK_TYPE} STREQUAL "STATIC" )
+                
+				IF ( isDynamicLinkType )
+					SET ( ${baseName}_INFO_LINK_TYPE "DYNAMIC" 	CACHE STRING "" FORCE )
+					SET ( ${baseName}_LIBRARY ${libName}     	CACHE STRING "" FORCE )
+					SET ( ${baseName}_XLINK_DIR ${libSrcPath}  	CACHE STRING "" FORCE )
+					IF ( WINDOWS )
+						GET_FILENAME_COMPONENT ( libBaseName ${${baseName}_LIBRARY} NAME_WE )
+						SET ( libNameDynamic ${libBaseName}${CBS_DYNAMIC_LIB_POSTFIX} )
+						SET ( dstDynBuildDir  "${CBS_LIBRARY_ROOT_DIR}/shared/${CMAKE_BUILD_TYPE}" )
+
+						IF ( EXISTS ${libSrcPath}/${libNameDynamic} )
+							CONFIGURE_FILE ( ${libSrcPath}/${libNameDynamic} ${dstDynBuildDir}/${libNameDynamic} COPYONLY ) 
+						ENDIF ( EXISTS ${libSrcPath}/${libNameDynamic} )
+						IF ( EXISTS ${libSrcPath}/../bin/${libNameDynamic} )
+							MESSAGE ( "COPY DLL: ${libSrcPath}/../bin/${libNameDynamic} => ${dstDynBuildDir}" )
+							CONFIGURE_FILE ( ${libSrcPath}/../bin/${libNameDynamic} ${dstDynBuildDir}/${libNameDynamic} COPYONLY ) 
+						ENDIF ( EXISTS ${libSrcPath}/../bin/${libNameDynamic} )
+							
+					ENDIF (WINDOWS)
+					
+				ENDIF ( isDynamicLinkType )
+                
+                # --------------------------------------------------------------------
+                # --- Assign to the xx_INCLUDE_DIRS, _LINK_DIRS, xx_XLINK_LIBRARIES vars ---
+                # --------------------------------------------------------------------
+                # We allready have set the non dependent vars xx_INCLUDE_DIR, xx_LIBRARY, xx_LINK_DIR.
+                # Now we check dependsOn and set the xx_INCLUDE_DIRS and xx_XLINK_LIBRARIES to includes
+                # the same valuse from the dependent libs if there is a such. If no dependent lib we just
+                # assign them to the same values as xx_INCLUDE_DIR, xx_LIBRARY.
+                SET ( ${baseName}_XINCLUDE_DIRS_SYS  	${${baseName}_INCLUDE_DIR}  )
+                SET ( ${baseName}_XLINK_DIRS_SYS     	${${baseName}_XLINK_DIR}	)
+                SET ( ${baseName}_XLINK_LIBRARIES_SYS   ${${baseName}_LIBRARY} 		)
+                
+				FOREACH( dependOn ${dependsOn} )
+					##MESSAGE ( "@@@ ${dependOn}" )
+					LIST_APPEND_UNIQUE ( ${baseName}_XINCLUDE_DIRS_SYS 		${${dependOn}_XINCLUDE_DIRS} )
+					LIST_APPEND_UNIQUE ( ${baseName}_XLINK_DIRS_SYS 		${${dependOn}_XLINK_DIRS} )
+					LIST_APPEND_UNIQUE ( ${baseName}_XLINK_LIBRARIES_SYS 	${${dependOn}_XLINK_LIBRARIES} )
+				ENDFOREACH( dependOn )
+        
+				# Set 'real' actual used names to cache values.
+				SET ( ${baseName}_XINCLUDE_DIRS		${${baseName}_XINCLUDE_DIRS_SYS}  	CACHE STRING "" FORCE )
+				SET ( ${baseName}_XLINK_DIRS		${${baseName}_XLINK_DIRS_SYS}     	CACHE STRING "" FORCE )
+				SET ( ${baseName}_XLINK_LIBRARIES	${${baseName}_XLINK_LIBRARIES_SYS} 	CACHE STRING "" FORCE )
+				
+				SET ( ${baseName}_XLINK_DIR			${${baseName}_XLINK_DIR}     	CACHE STRING "" FORCE )
+				SET ( ${baseName}_INCLUDE_DIR		${${baseName}_INCLUDE_DIR} 		CACHE STRING "" FORCE )
+				SET ( ${baseName}_USE				${${baseName}_USE}		 		CACHE STRING "" FORCE )
+				SET ( ${baseName}_INFO_USE			${${baseName}_USE}		 		CACHE STRING "" FORCE )
+				SET ( ${baseName}_VERSION_STRING	${${baseName}_VERSION_STRING}	CACHE STRING "" FORCE )
+
+               
+                MARK_AS_ADVANCED (
+                    ${baseName}_XINCLUDE_DIRS
+                    ${baseName}_INCLUDE_DIR
+                    ${baseName}_XLINK_LIBRARIES
+                    ${baseName}_LIBRARY
+                    ${baseName}_XLINK_DIR
+                    ${baseName}_XLINK_DIRS
+                    ${baseName}_LINK_TYPE
+                    ${baseName}_FOUND
+                    ${baseName}_INFO_LINK_TYPE
+                    ${baseName}_INFO_USE
+                )
+            ELSE ( ${baseName}_INCLUDE_DIR AND ${baseName}_LIBRARY )
+                SET ( ${baseName}_FOUND FALSE CACHE BOOL "True if xxlib found" )
+                MESSAGE ( STATUS "ERROR! Looked for '${baseName}' library named ${libName}' and headers: '${headerFiles}'" )
+                MESSAGE ( STATUS "IN LIBPATHS     : '${${baseName}_XLINK_DIRS}' '${libPaths}'" )
+                MESSAGE ( STATUS "IN INCLUDE DIRS : '${${baseName}_XINCLUDE_DIRS}' '${headerPaths}'" )
+				MESSAGE ( "INCLUDE DIR  ${baseName}_INCLUDE_DIR: '${${baseName}_INCLUDE_DIR}'" )
+				MESSAGE ( "LIBRARY PATH ${baseName}_LIBRARY: '${${baseName}_LIBRARY}'" )
+                MESSAGE ( FATAL_ERROR "Could NOT find library " )
+            ENDIF ( ${baseName}_INCLUDE_DIR AND ${baseName}_LIBRARY )
+            
+        ENDIF ( bDependsOnOk )
+    ENDIF ( NOT ${baseName}_FOUND )
+
+# 		IF ( "${baseName}" STREQUAL "QtGui" )
+# 			MESSAGE ( STATUS "ML: Looked for '${baseName}' library named ${libName}' and headers: '${headerFiles}'" )
+# 			MESSAGE ( STATUS "ML: IN LIBPATHS     : '${${baseName}_XLINK_DIRS}' '${libPaths}'" )
+# 			MESSAGE ( STATUS "ML: IN INCLUDE DIRS : '${${baseName}_XINCLUDE_DIRS}' '${headerPaths}'" )
+# 			MESSAGE ( STATUS "ML: INCLUDE DIR  ${baseName}_INCLUDE_DIR: '${${baseName}_INCLUDE_DIR}'" )
+# 			MESSAGE ( STATUS "ML: LIBRARY PATH ${baseName}_LIBRARY: '${${baseName}_LIBRARY}'" )
+#         ENDIF ( "${baseName}" STREQUAL "QtGui" )
+	
+	#SET ( dbgLibName "QtCore" )
+# 	SET ( dbgLibName "QtGui" )
+# 	SET ( dbgLibName "QtMultimedia"	)
+#	MESSAGE ( STATUS "${baseName}_LIBRARY:  ${${baseName}_LIBRARY}" )
+
+# 	IF ( "${baseName}" STREQUAL "${dbgLibName}" )
+# 		DEBUG_SHOW_STANDARD_SETTINGS ( ${baseName} )
+# 	ENDIF ( "${baseName}" STREQUAL "${dbgLibName}" )
+    
+    
+ENDFUNCTION( FIND_LIB_SIMPLE )
+
+
+

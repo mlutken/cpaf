@@ -1,0 +1,137 @@
+
+# - Build shared module
+# Builds a shared module designated by var CBS_CURRENT_TARGET
+# Most often included "indirectly" via BUILD_MODULE macro.
+#  
+# - VARIABLES USED AS "INPUT" -
+# ${baseName}_XDEPENDS_ON    : Names of lib that this library depends on.
+#                             Makes sure that inclæude directories, link libs, 
+#                             link dirs etc. are set correctly for compiling and linking.
+#
+#
+# - GLOBAL VARIABLES PROVIDED AS "OUTPUT" - :
+# ${baseName}_FOUND         : True if xx module found/compiled.
+# ${baseName}_FULL_PATH     : XX Not implemented yet!! Full path to the module built.
+# ${baseName}_INFO_USE      : Set to use type actually used for xx module.
+#
+
+# -------------------------------------------------------------
+# --- Determine use type: DISABLED, SYSTEM, BUILD, PREBUILT ---
+# -------------------------------------------------------------
+INCLUDE ( ${CBS_ROOT_DIR}/set_use_type.cbs          )
+
+IF    ( ${useType} STREQUAL "BUILD" OR ${useType} STREQUAL "PREBUILT" )
+	
+	project ( ${CBS_CURRENT_TARGET}    )
+	
+	# ---Default to (named) inherited values if not allready set ---
+	FOREACH( varNamePostFix ${CBS_NAMED_INHERIT_VARS} )
+		TARGET_DEFAULT	( ${varNamePostFix} "" )
+	ENDFOREACH( varNamePostFix )
+	
+	# --- Include platform specific sources ---
+	INCLUDE ( ${CBS_ROOT_DIR}/set_common_values_for_current.cbs	)
+	
+	
+	# # # --- Set target type to module ---
+	# # SET ( ${CBS_CURRENT_TARGET}_TARGET_TYPE MODULE  CACHE STRING "" FORCE )	# TODO: Perhaps this var is not used and can be removed
+	
+	# --- Find depends on: include directories, link libraries ---
+	INCLUDE ( ${CBS_ROOT_DIR}/set_depends_on.cbs              )
+	
+	# --- Set library output path ---
+	GET_LIBRARY_RELATIVE_PATH ( libraryRelativePath SHARED ${CMAKE_BUILD_TYPE} )
+	SET ( LIBRARY_OUTPUT_PATH   ${CBS_LIBRARY_ROOT_DIR}/${libraryRelativePath} )  
+	
+	# -------------------------------------------------------
+	# --- BUILD: User chose to build this library locally ---
+	# -------------------------------------------------------
+	IF    ( ${useType} STREQUAL "BUILD" )
+		# --- Add (compiler) definitions : eventually ends up in cmakes add_definitions command ---
+		INCLUDE ( ${CBS_ROOT_DIR}/add_defines.cbs	)
+		
+		# --- Set include directories, and link directories ---
+		include_directories ( ${${CBS_CURRENT_TARGET}_XINCLUDE_DIRS} ${${CBS_CURRENT_TARGET}_INCLUDE_DIRS} )
+		link_directories    ( ${${CBS_CURRENT_TARGET}_XLINK_DIRS}	)
+		
+		# --- Set custom build flags for the project ---
+		INCLUDE ( ${CBS_ROOT_DIR}/set_custom_build_flags.cbs          )
+		
+		# -------------------------------
+		# --- Build the shared module ---
+		# -------------------------------
+		add_library (${CBS_CURRENT_TARGET} MODULE ${${CBS_CURRENT_TARGET}_SRCS} )
+
+		# - Set install path and permissions
+		SET_DEFAULT ( ${CBS_CURRENT_TARGET}_INSTALL_MODULE_PATH         "${${CBS_CURRENT_TARGET}_INSTALL_PREFIX}${CBS_INSTALL_MODULE_SUBDIR}"  ) 
+		SET_DEFAULT ( ${CBS_CURRENT_TARGET}_INSTALL_HEADER_PATH         "${${CBS_CURRENT_TARGET}_INSTALL_PREFIX}${CBS_INSTALL_HEADER_SUBDIR}"  ) 
+		SET_DEFAULT ( ${CBS_CURRENT_TARGET}_INSTALL_LIB_PERMISSIONS     ${CBS_INSTALL_SHARED_PERMISSIONS}                                      ) 
+	
+		# Add cmake project dependecies . Cannot be done until the current target is 'defined' using 'add_library'.
+		IF ( ${CBS_CURRENT_TARGET}_XDEPENDS_ON} )
+			IF ( NOT ${CMAKE_GENERATOR} MATCHES "Visual Studio" )	# TODO: For some reason adding dependencies is ok in NMake but not in VS
+				add_dependencies( ${CBS_CURRENT_TARGET} ${${CBS_CURRENT_TARGET}_XDEPENDS_ON}	)
+			ENDIF ( NOT ${CMAKE_GENERATOR} MATCHES "Visual Studio" )
+		ENDIF ( ${CBS_CURRENT_TARGET}_XDEPENDS_ON} )
+	
+		INCLUDE ( ${CBS_ROOT_DIR}/set_target_properties.cbs          )
+	
+		# --- Set target link libraries ---
+		target_link_libraries ( ${CBS_CURRENT_TARGET}  ${${CBS_CURRENT_TARGET}_XLINK_LIBRARIES} )
+	
+	ENDIF ( ${useType} STREQUAL "BUILD" )
+	
+	# ------------------------------------------------------------------------------------------------------------------
+	# --- Set vars : PREBUILT, BUILD: this module locally or use an allready compiled (non system) installed version ---
+	# ------------------------------------------------------------------------------------------------------------------
+	IF    ( ${useType} STREQUAL "BUILD" OR ${useType} STREQUAL "PREBUILT" )
+	
+		# --- Set xx_FOUND variable to true ---
+		SET( ${CBS_CURRENT_TARGET}_FOUND TRUE CACHE BOOL "True if executable found" )
+		
+		
+		IF ( ${CBS_CURRENT_TARGET}_INSTALL STREQUAL "ENABLED" )
+			message ( "***  INSTALL module: '${CBS_CURRENT_TARGET}',  ${CBS_CURRENT_TARGET}_INSTALL_MODULE_PATH: '${${CBS_CURRENT_TARGET}_INSTALL_MODULE_PATH}' ---" )
+			# - Set version properties, if they are specified -
+			IF ( ${CBS_CURRENT_TARGET}_VERSION AND NOT ${CBS_CURRENT_TARGET}_VERSION STREQUAL "" )
+				SET_TARGET_PROPERTIES( ${CBS_CURRENT_TARGET} PROPERTIES VERSION ${${CBS_CURRENT_TARGET}_VERSION} SOVERSION ${${CBS_CURRENT_TARGET}_SOVERSION} )
+			ENDIF ( ${CBS_CURRENT_TARGET}_VERSION AND NOT ${CBS_CURRENT_TARGET}_VERSION STREQUAL "" )
+			
+			# - Install the target -  
+			INSTALL ( TARGETS ${CBS_CURRENT_TARGET} DESTINATION "${${CBS_CURRENT_TARGET}_INSTALL_MODULE_PATH}" COMPONENT libraries )
+			
+			# - Install header files
+#			INSTALL ( FILES ${${CBS_CURRENT_TARGET}_INSTALL_HEADERS} DESTINATION "${${CBS_CURRENT_TARGET}_INSTALL_HEADER_SUBDIR}" PERMISSIONS ${CBS_INSTALL_HEADER_PERMISSIONS} COMPONENT headers )
+		ENDIF ( ${CBS_CURRENT_TARGET}_INSTALL STREQUAL "ENABLED" )
+		
+		
+		
+		MARK_AS_ADVANCED (
+			${CBS_CURRENT_TARGET}_FULL_PATH
+			${CBS_CURRENT_TARGET}_FOUND
+	##        ${CBS_CURRENT_TARGET}_INFO_USE
+		)
+	ENDIF    ( ${useType} STREQUAL "BUILD" OR ${useType} STREQUAL "PREBUILT" )
+	
+	# ----------------------
+	# --- BUILD Examples ---
+	# ----------------------
+	IF    ( ${useType} STREQUAL "BUILD" )
+		IF ( CBS_BUILD_EXAMPLES STREQUAL "ON" )
+			IF ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/_examples )
+				add_subdirectory ( _examples    ${CMAKE_CURRENT_BINARY_DIR}/_examples  )
+			ENDIF ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/_examples )
+		ENDIF ( CBS_BUILD_EXAMPLES STREQUAL "ON" )
+		IF ( CBS_BUILD_TESTS STREQUAL "ON" )
+			IF ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/_tests )
+				add_subdirectory ( _tests    ${CMAKE_CURRENT_BINARY_DIR}/_tests  )
+			ENDIF ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/_tests )
+		ENDIF ( CBS_BUILD_TESTS STREQUAL "ON" )
+	ENDIF    ( ${useType} STREQUAL "BUILD" )
+
+ENDIF    ( ${useType} STREQUAL "BUILD" OR ${useType} STREQUAL "PREBUILT" )
+
+INCLUDE ( ${CBS_ROOT_DIR}/debug_show_target_standard_settings.cbs     )
+
+#MESSAGE( STATUS "CMAKE_BINARY_DIR:  ${CMAKE_BINARY_DIR}" )
+

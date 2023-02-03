@@ -1,0 +1,465 @@
+# OBSOLETE !!!
+
+# # 
+# # # *** WINDOWS ***
+# # IF (    WIN32 )
+# # 	SET ( HAVE_ALLOCA 						1  )	# Define to 1 if you have `alloca', as a function or macro.
+# # 	SET ( HAVE_ALLOCA_H 					"" )	# Define to 1 if you have <alloca.h> and it should be used (not on Ultrix).
+# # 	SET ( HAVE_ATEXIT 						1  )	# Define to 1 if you have the `atexit' function.
+# # 	SET ( HAVE_BIND_TEXTDOMAIN_CODESET 		"" )	# Define to 1 if you have the `bind_textdomain_codeset' function.
+# # 	SET ( HAVE_C99_SNPRINTF 				"" )	# Define if you have a version of the snprintf function with semantics as specified by the ISO C99 standard.
+# # 	SET ( HAVE_C99_VSNPRINTF 				"" )	# Define if you have a version of the vsnprintf function with semantics as specified by the ISO C99 standard.
+# # 	SET ( HAVE_CARBON 						"" )	# define to 1 if Carbon is available
+# # 	SET ( HAVE_CLOCK_GETTIME 				"" )	# Define to 1 if you have the `clock_gettime' function.
+# # 	SET ( HAVE_CODESET 						"" )	# Have nl_langinfo (CODESET)
+# # 	SET ( HAVE_CRT_EXTERNS_H 				"" )	# Define to 1 if you have the <crt_externs.h> header file.
+# # 	SET ( HAVE_DCGETTEXT 					"" )	# Define to 1 if you have the `dcgettext' function.
+# # 	SET ( HAVE_DIRENT_H 					"" )	# Define to 1 if you have the <dirent.h> header file.
+# # 	SET ( HAVE_DLFCN_H 						"" )	# Define to 1 if you have the <dlfcn.h> header file.
+# # 	SET ( HAVE_DOPRNT 						"" )	# Define to 1 if you don't have `vprintf' but do have `_doprnt.'
+# # 	SET ( HAVE_DOWHILE_MACROS 				1  )	# define for working do while(0) macros
+# # 	SET ( HAVE_FDWALK 						"" )	# Define to 1 if you have the `fdwalk' function.
+# # 	SET ( HAVE_FLOAT_H 						1  )	# Define to 1 if you have the <float.h> header file.
+# # 	SET ( HAVE_GETCWD 						1  )	# Define to 1 if you have the `getcwd' function.
+# # 	SET ( HAVE_GETC_UNLOCKED 				"" )	# Define to 1 if you have the `getc_unlocked' function.
+# # 	SET ( HAVE_GETPAGESIZE 					"" )	# Define to 1 if you have the `getpagesize' function.
+# # 	SET ( HAVE_GETTEXT 						"" )	# Define if the GNU gettext() function is already present or preinstalled.
+# # 	    SET ( HAVE_GOOD_PRINTF 					1  )	# TODO: Perhaps change default to "" ! Define to use system printf.
+# # 	SET ( HAVE_INT64_AND_I64 				1  )	# define to support printing 64-bit integers with format I64
+# # 	SET ( HAVE_INTMAX_T 					1  )	# Define if you have the 'intmax_t' type in <stdint.h> or <inttypes.h>.
+# # 	SET ( HAVE_INTTYPES_H 					1  )	# Define to 1 if you have the <inttypes.h> header file.
+# # 	SET ( HAVE_INTTYPES_H_WITH_UINTMAX 		1  )	# Define if <inttypes.h> exists, doesn't clash with <sys/types.h>, and declares uintmax_t.
+# # 	SET ( HAVE_LANGINFO_CODESET				"" )	# Define if you have <langinfo.h> and nl_langinfo(CODESET).
+# # 	SET ( HAVE_LANGINFO_H 					"" )	# Define to 1 if you have the <langinfo.h> header file.
+# # 	SET ( HAVE_LC_MESSAGES 					"" )	# Define if your <locale.h> file defines LC_MESSAGES.
+# # 	SET ( HAVE_LIMITS_H 					1  )	# Define to 1 if you have the <limits.h> header file.
+# # 	SET ( HAVE_LOCALE_H 					1  )	# Define to 1 if you have the <locale.h> header file.
+# # 	SET ( HAVE_LOCALTIME_R 					"" )	# Define to 1 if you have the `localtime_r' function.
+# # 	SET ( HAVE_LONG_DOUBLE 					1  )	# Define if you have the 'long double' type.
+# # 	SET ( HAVE_LONG_LONG 					"" )	# Define if you have the 'long long' type.
+# # 	SET ( HAVE_LONG_LONG_FORMAT 			1  )	# define if system printf can print long long
+# # 	SET ( HAVE_LSTAT 						"" )	# Define to 1 if you have the `lstat' function.
+# # 	SET ( HAVE_MALLOC_H 					"" )	# Define to 1 if you have the <malloc.h> header file.
+# # 	SET ( HAVE_MEMALIGN 					"" )	# Define to 1 if you have the `memalign' function.
+# # 	SET ( HAVE_MEMMOVE 						1  )	# Define to 1 if you have the `memmove' function.
+# # 	SET ( HAVE_MEMORY_H 					1  )	# Define to 1 if you have the <memory.h> header file.
+# # 	SET ( HAVE_MMAP 						"" )	# Define to 1 if you have a working `mmap' system call.
+# # 	SET ( HAVE_MONOTONIC_CLOCK 				"" )	# Have a monotonic clock
+# # 	SET ( HAVE_NANOSLEEP 					"" )	# Define to 1 if you have the `nanosleep' function.
+# # 	SET ( HAVE_NL_LANGINFO 					"" )	# Define to 1 if you have the `nl_langinfo' function.
+# # 	SET ( HAVE_NONPOSIX_GETPWUID_R 			"" )	# Have non-POSIX function getpwuid_r
+# # 	SET ( HAVE_NSLEEP 						"" )	# Define to 1 if you have the `nsleep' function.
+# # 	SET ( HAVE_ON_EXIT 						"" )	# Define to 1 if you have the `on_exit' function.
+# # 	SET ( HAVE_POLL 						"" )	# Define to 1 if you have the `poll' function.
+# # 	SET ( HAVE_POSIX_GETPWUID_R 			"" )	# Have POSIX function getpwuid_r
+# # 	SET ( HAVE_POSIX_MEMALIGN 				"" )	# Define to 1 if you have the `posix_memalign' function.
+# # 	SET ( HAVE_PTHREAD_ATTR_SETSTACKSIZE	"" )	# Have function pthread_attr_setstacksize
+# # 	SET ( HAVE_PTRDIFF_T 					1  )	# Define to 1 if the system has the type `ptrdiff_t'.
+# # 	SET ( HAVE_PWD_H 						"" )	# Define to 1 if you have the <pwd.h> header file.
+# # 	SET ( HAVE_READLINK 					"" )	# Define to 1 if you have the `readlink' function.
+# # 	SET ( HAVE_SCHED_H 						"" )	# Define to 1 if you have the <sched.h> header file.
+# # 	SET ( HAVE_SETENV 						"" )	# Define to 1 if you have the `setenv' function.
+# # 	SET ( HAVE_SETLOCALE 					1  )	# Define to 1 if you have the `setlocale' function.
+# # 	SET ( HAVE_SNPRINTF 					"" )	# Define to 1 if you have the `snprintf' function.
+# # 	SET ( HAVE_STDDEF_H 					1  )	# Define to 1 if you have the <stddef.h> header file.
+# # 	SET ( HAVE_STDINT_H 					1  )	# Define to 1 if you have the <stdint.h> header file.
+# # 	SET ( HAVE_STDINT_H_WITH_UINTMAX 		1  )	# Define if <stdint.h> exists, doesn't clash with <sys/types.h>, and declares uintmax_t.
+# # 	SET ( HAVE_STDLIB_H 					1  )	# Define to 1 if you have the <stdlib.h> header file.
+# # 	SET ( HAVE_STPCPY						"" )	# Define to 1 if you have the `stpcpy' function.
+# # 	SET ( HAVE_STRCASECMP					"" )	# Define to 1 if you have the `strcasecmp' function.
+# # 	SET ( HAVE_STRERROR 					1  )	# Define to 1 if you have the `strerror' function.
+# # 	SET	( HAVE_STRINGS_H 					"" )	# Define to 1 if you have the <strings.h> header file.
+# # 	SET ( HAVE_STRING_H 					1  )	# Define to 1 if you have the <string.h> header file.
+# # 	SET ( HAVE_STRLCPY 						"" )	# Have functions strlcpy and strlcat
+# # 	SET ( HAVE_STRNCASECMP 					"" )	# Define to 1 if you have the `strncasecmp' function.
+# # 	SET ( HAVE_STRSIGNAL 					"" )	# Define to 1 if you have the `strsignal' function.
+# # 	SET ( HAVE_SYMLINK 						"" )	# Define to 1 if you have the `symlink' function.
+# # 	SET ( HAVE_SYS_PARAM_H 					"" )	# Define to 1 if you have the <sys/param.h> header file.
+# # 	SET ( HAVE_SYS_POLL_H 					"" )	# Define to 1 if you have the <sys/poll.h> header file.
+# # 	SET ( HAVE_SYS_SELECT_H 				"" )	# found fd_set in sys/select.h
+# # 	SET ( HAVE_SYS_STAT_H 					1  )	# Define to 1 if you have the <sys/stat.h> header file.
+# # 	SET ( HAVE_SYS_TIMES_H 					"" )	# Define to 1 if you have the <sys/times.h> header file.
+# # 	SET ( HAVE_SYS_TIME_H 					"" )	# Define to 1 if you have the <sys/time.h> header file.
+# # 	SET ( HAVE_SYS_TYPES_H 					1  )	# Define to 1 if you have the <sys/types.h> header file.
+# # 	SET ( HAVE_SYS_WAIT_H 					"" )	# Define to 1 if you have the <sys/wait.h> header file.
+# # 	SET ( HAVE_TIMEGM	 					"" )	# Define to 1 if you have the `timegm' function.
+# # 	SET ( HAVE_UNISTD_H 					"" )	# Define to 1 if you have the <unistd.h> header file.
+# # 	SET ( HAVE_UNIX98_PRINTF 				"" )	# Define if your printf function family supports positional parameters as specified by Unix98.
+# # 	SET ( HAVE_UNSETENV 					"" )	# Define to 1 if you have the `unsetenv' function.
+# # 	SET ( HAVE_VALLOC 						"" )	# Define to 1 if you have the `valloc' function.
+# # 	SET ( HAVE_VALUES_H 					"" )	# Define to 1 if you have the <values.h> header file.
+# # 		SET ( HAVE_VASPRINTF 					""  )	# TODO: Not found in Define to 1 if you have the `vasprintf' function.
+# # 	SET ( HAVE_VPRINTF 						1  )	# Define to 1 if you have the `vprintf' function.
+# # 	SET ( HAVE_VSNPRINTF 					"" )	# Define to 1 if you have the `vsnprintf' function.
+# # 	SET ( HAVE_WCHAR_T 						1  )	# Define if you have the 'wchar_t' type.
+# # 	SET ( HAVE_WCHAR_H 						1  )	# Define if you have the 'wchar.h' header.
+# # 	SET ( HAVE_WCSLEN 						1  )	# Define to 1 if you have the `wcslen' function.
+# # 	SET ( HAVE_WINT_T 						1  )	# Define if you have the 'wint_t' type.
+# # 	SET ( HAVE_POPEN  						1  )	# Define if you have the 'popen'  function
+# # 	SET ( HAVE_ACCESS						"" )	# Define if you have the 'access'  function
+# # 	SET ( HAVE_WORKING_BCOPY 				"" )	# Have a working bcopy
+# # 	SET ( HAVE__NSGETENVIRON 				"" )	# Define to 1 if you have the `_NSGetEnviron' function.
+# # 	SET ( HAVE_STATVFS  					"" )	# Define if statvfs() is available
+# # 	SET ( HAVE_FCHMOD 						"" )	# Define if you have the 'fchmod'  function
+# # 	SET ( HAVE_FLOCKFILE					"" )	# Define if you have the 'flockfile'  function
+# # 	SET ( HAVE_GETOPT_H						"" )	# Define if you have the 'getopt'  function
+# # 	SET ( HAVE_INT16_T						1  )	# Define to 1 if the system has the type `int16_t'.
+# # 	SET ( HAVE_INT32_T						1  )	# Define to 1 if the system has the type `int32_t'.	
+# # 	SET ( HAVE_INT64_T						1  )	# Define to 1 if the system has the type `int64_t'.	
+# # 	SET ( HAVE_INT8							"" )	# Define to 1 if the system has the type `int8'. 
+# # 	SET ( HAVE_INT16						"" )	# Define to 1 if the system has the type `int16'. 
+# # 	SET ( HAVE_INT32						"" )	# Define to 1 if the system has the type `int32'. 
+# # 	SET ( HAVE_LCHOWN						"" )	# Define to 1 if you have the 'lchown'  function.
+# # 	SET ( HAVE_LIBDL						"" )	# Define to 1 if you have the 'dl'  library.
+# # 	SET ( HAVE_LIBM							"" )	# Define to 1 if you have the 'm'  library.
+# # 	SET ( HAVE_LSTAT64						"" )	# Define to 1 if you have the 'lstat64'  function.
+# # 	SET ( HAVE_NL_TYPES_H					"" )	# Define to 1 if you have the 'nl_types.h'  header.
+# # 	## SET ( HAVE_RANDOM					1 )	# Define to 1 if you have the 'random'  function.
+# # 	SET ( HAVE_RES_NINIT					"" )	# Define to 1 if you have the 'res_ninit'  function.
+# # 	SET ( HAVE_RINT							"" )	# Define to 1 if you have the 'rint'  function.
+# # 	SET ( HAVE_SIGINFO_T					"" )	# Define to 1 if you have the 'siginfo_t'  type.
+# # 	## SET ( HAVE_STAT64					1 )	# Define to 1 if you have the 'XX'  XX.
+# # 	SET ( HAVE_STRTOK_R						"" )	# Define to 1 if you have the 'strtok_r'  function.
+# # 	SET ( HAVE_ST_BLKSIZE					"" )	# Define to 1 if you have the 'st_blksize'  function.
+# # 	SET ( HAVE_SYS_BITYPES_H				"" )	# Define to 1 if you have the 'sys/bitypes.h'  header.
+# # 	SET ( HAVE_SYS_CDEFS_H					"" )	# Define to 1 if you have the 'sys/cdefs.h'  header.
+# # 	SET ( HAVE_SYS_STATFS_H					"" )	# Define to 1 if you have the 'sys/statfs.h'  header.
+# # 	SET ( HAVE_SYS_STATVFS_H				"" )	# Define to 1 if you have the 'sys/statvfs.h'  header.
+# # 	SET ( HAVE_UINT							"" )	# Define to 1 if you have the 'uint'  type.	
+# # 	SET ( HAVE_UINT64_T						1  )	# Define to 1 if you have the 'uint64_t'  type.
+# # 	SET ( HAVE_VA_COPY						"" )	# Define to 1 if you have the 'va_copy'  function.
+# # 	SET ( HAVE_VISIBILITY_ATTRIBUTE			"" )	# Define to 1 if you have the 'visibility_attribute'  function.
+# # 	SET ( HAVE_X11_XKBLIB_H					"" )	# Define to 1 if you have the 'xkblib.h'  header.
+# # 	SET ( HAVE_XSHM							"" )	# TODO: Correct comment: ?? Define to 1 if you have the 'xshm'  function.
+# # 	SET ( HAVE_GETPAGESIZE 					"" )	# Define if getpagesize() is available
+# # 	SET ( HAVE_ICONV 						"" )	# Define if iconv() is available
+# # 	SET ( HAVE_MBRTOWC 						1  )	# Define if mbrtowc() is available
+# # 	SET ( HAVE_SYS_MOUNT_H 					"" )	# Define if <sys/mount.h> is present
+# # 	SET ( HAVE_SYS_VFS_H 					"" )	# Define if <sys/vfs.h> is present 
+# # 	SET ( HAVE_WCRTOMB 						1  )	# Define if wcrtomb() is available 
+# # 	SET ( HAVE_ASSERT_H						1  )	# Define to 1 if you have the <assert.h> header file. 
+# # 	SET ( HAVE_FCNTL_H						1  )	# Define to 1 if you have the <fcntl.h> header file. 
+# # 	SET ( HAVE_FLOOR						""	)	# Define to 1 if you have the `floor' function. 
+# # 	SET ( HAVE_GETOPT						""	)	# Define to 1 if you have the `getopt' function. 
+# # 	## SET ( HAVE_IEEEFP				1	)	# Define as 0 or 1 according to the floating point format suported by the    machine 
+# # 	SET ( HAVE_ISASCII						""	)	# Define to 1 if you have the `isascii' function. 
+# # 	SET ( HAVE_LFIND						1	) # Define to 1 if you have the `lfind' function. 
+# # 	## SET ( HAVE_LIBC					1	)	# Define to 1 if you have the `c' library (-lc). 
+# # 	SET ( HAVE_MEMSET						1	)	# Define to 1 if you have the `memset' function. 
+# # 	SET ( HAVE_POW							1	)	# Define to 1 if you have the `pow' function. 
+# # 	SET ( HAVE_PTHREAD						""	)	# Define if you have POSIX threads libraries and header files. 
+# # 	SET ( HAVE_SEARCH_H						1	)	# Define to 1 if you have the <search.h> header file. 
+# # 	SET ( HAVE_SQRT							1	)	# Define to 1 if you have the `sqrt' function. 
+# # 	SET ( HAVE_STRCHR						1	)	# Define to 1 if you have the `strchr' function. 
+# # 	SET ( HAVE_STRRCHR						1	)	# Define to 1 if you have the `strrchr' function. 
+# # 	SET ( HAVE_STRSTR						1	)	# Define to 1 if you have the `strstr' function. 
+# # 	SET ( HAVE_STRTOL						1	)	# Define to 1 if you have the `strtol' function. 
+# # 	SET ( HAVE_STRTOUL						1	)	# Define to 1 if you have the `strtoul' function. 
+# # 	SET ( HAVE_WINDOWS_H					1	)	# Define to 1 if you have the <windows.h> header file. 
+# # 	## SET ( HAVE_BOOL_T				1	)	# Define to 1 if bool is an available type ( in ansi C ?  Only I think!).
+# # 	SET ( HAVE_ERRNO_H						1	)	# Define to 1 if you have the <errno.h> header file. 
+# # 	SET ( HAVE_ERR_H						""	)	# Define to 1 if you have the <err.h> header file. 
+# # 	SET ( HAVE_FORK							""	) # Define to 1 if you have the `fork' function. 
+# # 	SET ( HAVE_FTRUNCATE					""	) # Define to 1 if you have the `ftruncate' function. 
+# # 	SET ( HAVE_GETADDRINFO					1	) # Define if getaddrinfo exists and works 
+# # 	SET ( HAVE_GETEUID						""	) # Define to 1 if you have the `geteuid' function. 
+# # 	SET ( HAVE_GETHOSTBYADDR				1	) # Define to 1 if you have the `gethostbyaddr' function. 
+# # 	SET ( HAVE_GETHOSTBYNAME				1	) # If you have gethostbyname 
+# # 	SET ( HAVE_GETHOSTBYNAME_R				""	) # Define to 1 if you have the `gethostbyname_r' function. 
+# # 	SET ( HAVE_GETHOSTBYNAME_R_3			""	) # gethostbyname_r() takes 3 args 
+# # 	SET ( HAVE_GETHOSTBYNAME_R_5			""	) # gethostbyname_r() takes 5 args 
+# # 	SET ( HAVE_GETHOSTBYNAME_R_6			""	) # gethostbyname_r() takes 6 args 
+# # 	SET ( HAVE_GETPROTOBYNAME				1	) # Define to 1 if you have the `getprotobyname' function. 
+# # 	SET ( HAVE_GETPWUID						""	) # Define to 1 if you have the `getpwuid' function. 
+# # 	SET ( HAVE_GETRLIMIT					""	) # Define to 1 if you have the `getrlimit' function. 
+# # 	SET ( HAVE_GETTIMEOFDAY					""	) # Define to 1 if you have the `gettimeofday' function. 
+# # 	SET ( HAVE_GLIBC_STRERROR_R				""	) # we have a glibc-style strerror_r() 
+# # 	SET ( HAVE_GMTIME_R						""	) # Define to 1 if you have the `gmtime_r' function. 
+# # 	SET ( HAVE_INET_PTON					""	) # Define to 1 if you have the `inet_pton' function. 
+# # 	SET ( HAVE_LONGLONG						1	) # if your compiler supports long long 
+# # 	SET ( HAVE_NETDB_H						""	) # Define to 1 if you have the <netdb.h> header file. 
+# # 	SET ( HAVE_NETINET_IN_H					""	) # Define to 1 if you have the <netinet/in.h> header file. 
+# # 	SET ( HAVE_NETINET_TCP_H				""	) # Define to 1 if you have the <netinet/tcp.h> header file. 
+# # 	SET ( HAVE_NET_IF_H						""	) # Define to 1 if you have the <net/if.h> header file. 
+# # 	SET ( HAVE_PERROR						1	) # Define to 1 if you have the `perror' function. 
+# # 	SET ( HAVE_PIPE							1	) # Define to 1 if you have the `pipe' function. 
+# # 	SET ( HAVE_POSIX_STRERROR_R				""	) # we have a POSIX-style strerror_r() 
+# # 	SET ( HAVE_RECV							1	) # Define to 1 if you have the recv function. 
+# # 	SET ( HAVE_SELECT						1	) # Define to 1 if you have the select function. 
+# # 	SET ( HAVE_SEND							1	) # Define to 1 if you have the send function. 
+# # 	SET ( HAVE_SETJMP_H						1	) # Define to 1 if you have the <setjmp.h> header file. 
+# # 	SET ( HAVE_SETRLIMIT					""	) # Define to 1 if you have the `setrlimit' function. 
+# # 	SET ( HAVE_SGTTY_H						""	) # Define to 1 if you have the <sgtty.h> header file. 
+# # 	SET ( HAVE_SIGACTION					""	) # Define to 1 if you have the `sigaction' function. 
+# # 	SET ( HAVE_SIGINTERRUPT					""	) # Define to 1 if you have the `siginterrupt' function. 
+# # 	SET ( HAVE_SIGNAL						1	) # Define to 1 if you have the `signal' function. 
+# # 	SET ( HAVE_SIGNAL_H						1	) # Define to 1 if you have the <signal.h> header file. 
+# # 	SET ( HAVE_SIGSETJMP					""	) # If you have sigsetjmp 
+# # 	SET ( HAVE_SIG_ATOMIC_T					1	) # Define to 1 if sig_atomic_t is an available typedef. 
+# # 	## SET ( HAVE_SIG_ATOMIC_T_VOLATILE	""	) # Define to 1 if sig_atomic_t is already defined as volatile. 
+# # 	SET ( HAVE_SOCKET						1	) # Define to 1 if you have the `socket' function. 
+# # 	SET ( HAVE_STDBOOL_H					""	) # Define to 1 if you have the <stdbool.h> header file. 
+# # 	SET ( HAVE_STDIO_H						1	) # Define to 1 if you have the <stdio.h> header file. 
+# # 	SET ( HAVE_STRCASESTR					""	) # Define to 1 if you have the `strcasestr' function. 
+# # 	SET ( HAVE_STRCMPI						1	) # Define to 1 if you have the `strcmpi' function. 
+# # 	SET ( HAVE_STRDUP						""	) # Define to 1 if you have the `strdup' function. 
+# # 	SET ( HAVE_STRERROR_R					""	) # Define to 1 if you have the `strerror_r' function. 
+# # 	SET ( HAVE_STRICMP						1	) # Define to 1 if you have the `stricmp' function. 
+# # 	SET ( HAVE_STRLCAT						""	) # Define to 1 if you have the `strlcat' function. 
+# # 	SET ( HAVE_STRTOLL						""	) # Define to 1 if you have the `strtoll' function. 
+# # 	SET ( HAVE_STRUCT_SOCKADDR_STORAGE		1	) # if struct sockaddr_storage is defined 
+# # 	SET ( HAVE_STRUCT_TIMEVAL				1	) # Define to 1 if you have the timeval struct. 
+# # 	SET ( HAVE_SYS_FILIO_H					""	) # Define to 1 if you have the <sys/filio.h> header file. 
+# # 	SET ( HAVE_SYS_IOCTL_H					""	) # Define to 1 if you have the <sys/ioctl.h> header file. 
+# # 	SET ( HAVE_SYS_RESOURCE_H				""	) # Define to 1 if you have the <sys/resource.h> header file. 
+# # 	SET ( HAVE_SYS_SOCKET_H					""	) # Define to 1 if you have the <sys/socket.h> header file. 
+# # 	SET ( HAVE_SYS_SOCKIO_H					""	) # Define to 1 if you have the <sys/sockio.h> header file. 
+# # 	SET ( HAVE_SYS_UTIME_H					1	) # Define to 1 if you have the <sys/utime.h> header file. 
+# # 	SET ( HAVE_TERMIOS_H					""	) # Define to 1 if you have the <termios.h> header file. 
+# # 	SET ( HAVE_TERMIO_H						""	) # Define to 1 if you have the <termio.h> header file. 
+# # 	SET ( HAVE_TIME_H						1	) # Define to 1 if you have the <time.h> header file. 
+# # 	SET ( HAVE_UNAME						""	) # Define to 1 if you have the `uname' function. 
+# # 	SET ( HAVE_UTIME						1	) # Define to 1 if you have the `utime' function. 
+# # 	SET ( HAVE_UTIME_H						1	) # Define to 1 if you have the <utime.h> header file. 
+# # 	## SET ( HAVE_VARIADIC_MACROS_C99	1	) # Define to 1 if compiler supports C99 variadic macro style. 
+# # 	## SET ( HAVE_VARIADIC_MACROS_GCC	1	) # Define to 1 if compiler supports old gcc variadic macro style. 
+# # 	SET ( HAVE_WINBER_H						1	) # Define to 1 if you have the winber.h header file. 
+# # 	SET ( HAVE_WINLDAP_H					1	) # Define to 1 if you have the winldap.h header file. 
+# # 	SET ( HAVE_WINSOCK2_H					1	) # Define to 1 if you have the winsock2.h header file. 
+# # 	SET ( HAVE_WINSOCK_H					1	) # Define to 1 if you have the winsock.h header file. 
+# # 	## SET ( HAVE_WRITABLE_ARGV			1	) # Define this symbol if your OS supports changing the contents of argv 
+# # 	SET ( HAVE_LIBGEN_H						""	) # Define to 1 if you have the <libgen.h> header file. 
+# # 	SET ( HAVE_PTHREAD_H					""	) # Define to 1 if you have the <pthread.h> header file. 
+# # 	SET ( HAVE_SYS_INT_TYPES_H				""	) # Define to 1 if you have the <sys/int_types.h> header file. 
+# # 	SET ( HAVE_UINT128_T					""	) # Define to 1 if the system has the type `uint128_t'. 
+# # 	SET ( HAVE_WCTYPE_H						1	) # Have 'wctype.h' include file 
+# # 	SET ( HAVE_BCOPY						""	) # Define to 1 if you have the `bcopy' function. 
+# # 	SET ( HAVE_GETOPT_LONG					""	) # Define to 1 if you have the `getopt_long' function. 
+# # 	SET ( HAVE_GETUID						""	) # Define to 1 if you have the `getuid' function. 
+# # 	SET ( HAVE_LINK							""	) # Define to 1 if you have the `link' function. 
+# # 	SET ( HAVE_MKSTEMP						""	) # Define to 1 if you have the `mkstemp' function. 
+# # 	SET ( HAVE_RAND_R						""	) # Define to 1 if you have the `rand_r' function. 
+# # 	SET ( HAVE_SYSCONF						""	) # Define to 1 if you have the `sysconf' function. 
+# # 
+# # 	# iconv
+# # 	SET ( HAVE_DECL_CLEARERR_UNLOCKED		0	) # Define to 1 if you have the declaration of `clearerr_unlocked', and to 0 if    you don't. 
+# # 	SET ( HAVE_DECL_FEOF_UNLOCKED			0	) # Define to 1 if you have the declaration of `feof_unlocked', and to 0 if you    don't. 
+# # 	SET ( HAVE_DECL_FERROR_UNLOCKED			0	) # Define to 1 if you have the declaration of `ferror_unlocked', and to 0 if    you don't. 
+# # 	SET ( HAVE_DECL_FFLUSH_UNLOCKED			0	) # Define to 1 if you have the declaration of `fflush_unlocked', and to 0 if    you don't. 
+# # 	SET ( HAVE_DECL_FGETS_UNLOCKED			0	) # Define to 1 if you have the declaration of `fgets_unlocked', and to 0 if    you don't. 
+# # 	SET ( HAVE_DECL_FPUTC_UNLOCKED			0	) # Define to 1 if you have the declaration of `fputc_unlocked', and to 0 if    you don't. 
+# # 	SET ( HAVE_DECL_FPUTS_UNLOCKED			0	) # Define to 1 if you have the declaration of `fputs_unlocked', and to 0 if    you don't. 
+# # 	SET ( HAVE_DECL_FREAD_UNLOCKED			0	) # Define to 1 if you have the declaration of `fread_unlocked', and to 0 if    you don't. 
+# # 	SET ( HAVE_DECL_FWRITE_UNLOCKED			0	) # Define to 1 if you have the declaration of `fwrite_unlocked', and to 0 if    you don't. 
+# # 	SET ( HAVE_DECL_GETCHAR_UNLOCKED		0	) # Define to 1 if you have the declaration of `getchar_unlocked', and to 0 if    you don't. 
+# # 	SET ( HAVE_DECL_GETC_UNLOCKED			0	) # Define to 1 if you have the declaration of `getc_unlocked', and to 0 if you    don't. 
+# # 	SET ( HAVE_DECL_PUTCHAR_UNLOCKED		0	) # Define to 1 if you have the declaration of `putchar_unlocked', and to 0 if    you don't. 
+# # 	SET ( HAVE_DECL_PUTC_UNLOCKED			0	) # Define to 1 if you have the declaration of `putc_unlocked', and to 0 if you    don't. 
+# # 	SET ( HAVE_DECL_STRERROR				1	) # Define to 1 if you have the declaration of `strerror', and to 0 if you    don't. 
+# # 	SET ( HAVE_DECL_STRERROR_R				0	) # Define to 1 if you have the declaration of `strerror_r', and to 0 if you    don't. 
+# # 	SET ( HAVE_ENVIRON_DECL					1	) # Define if you have the declaration of environ. 
+# # 	SET ( HAVE_INCLUDE_NEXT					""	) # Define if your compiler supports the #include_next directive. 
+# # 	SET ( HAVE_LONG_LONG_INT				""	) # Define to 1 if the system has the type `long long int'. 
+# # 	##SET ( HAVE_MALLOC_POSIX			1	) # Define if the 'malloc' function is POSIX compliant. 
+# # 	SET ( HAVE_MBSINIT						1	) # Define to 1 if you have the `mbsinit' function. 
+# # 	SET ( HAVE_MBSTATE_T					1	) # Define to 1 if <wchar.h> declares mbstate_t. 
+# # 	SET ( HAVE_SIGNED_SIG_ATOMIC_T			1	) # Define to 1 if 'sig_atomic_t' is a signed integer type. 
+# # 	##SET ( HAVE_SIGNED_WCHAR_T			""	) # Probably '1' : Define to 1 if 'wchar_t' is a signed integer type. 
+# # 	##SET ( HAVE_SIGNED_WINT_T			""	) # Probably '1' : Define to 1 if 'wint_t' is a signed integer type. 
+# # 	SET ( HAVE_SYS_INTTYPES_H				""	) # Define to 1 if you have the <sys/inttypes.h> header file. 
+# # 	SET ( HAVE_TSEARCH						""	) # Define to 1 if you have the `tsearch' function. 
+# # 	##SET ( HAVE_UNSIGNED_LONG_LONG_INT	1	) # Define to 1 if the system has the type `unsigned long long int'. 
+# # 	SET ( HAVE_VISIBILITY					0	) # Define to 1 or 0, depending whether the compiler supports simple visibility    declarations. 
+# # 	SET ( HAVE__BOOL						""	) # Define to 1 if the system has the type `_Bool'. 
+# # 	SET ( STRERROR_R_CHAR_P					""	) # Define to 1 if strerror_r returns char 
+# # 	# gettext
+# # 	SET ( HAVE_WPRINTF						1	) # Define to 1 if you have  fwprintf and to 0 if you don't. 
+# # 	SET ( HAVE_DECL__SNPRINTF				1	) # Define to 1 if you have the declaration of `_snprintf', and to 0 if you    don't. 
+# # 		SET ( HAVE_POSIX_PRINTF					0	) # Define 1 if your printf() function supports format strings with positions, and to 0 if you don't. 
+# # 	SET ( HAVE_ARGZ_COUNT					""	) # Define to 1 if you have the `argz_count' function. 
+# # 	SET ( HAVE_ARGZ_H						""	) # Define to 1 if you have the <argz.h> header file. 
+# # 	SET ( HAVE_ARGZ_NEXT					""	) # Define to 1 if you have the `argz_next' function. 
+# # 	SET ( HAVE_ARGZ_STRINGIFY				""	) # Define to 1 if you have the `argz_stringify' function. 
+# # 	SET ( HAVE_ASPRINTF						""	) # Define to 1 if you have the `asprintf' function. 
+# # 	SET ( HAVE_BUILTIN_EXPECT				""	) # Define to 1 if the compiler understands __builtin_expect. 
+# # 	SET ( HAVE_CFLOCALECOPYCURRENT			""	) # Define to 1 if you have the MacOS X function CFLocaleCopyCurrent in the    CoreFoundation framework. 
+# # 	SET ( HAVE_CFPREFERENCESCOPYAPPVALUE	""	) # Define to 1 if you have the MacOS X function CFPreferencesCopyAppValue in    the CoreFoundation framework. 
+# # 	SET ( HAVE_DECL_GETENV					1	) # Define to 1 if you have the declaration of `getenv', and to 0 if you don't.    
+# # 	SET ( HAVE_DECL_STRDUP					0	) # Define to 1 if you have the declaration of `strdup', and to 0 if you don't.    
+# # 	SET ( HAVE_DECL_STRNLEN					1	) # Define to 1 if you have the declaration of `strnlen', and to 0 if you    don't. 
+# # 	SET ( HAVE_DECL_WCWIDTH					0	) # Define to 1 if you have the declaration of `wcwidth', and to 0 if you    don't. 
+# # 	SET ( HAVE_DECL__SNWPRINTF				1	) # Define to 1 if you have the declaration of `_snwprintf', and to 0 if you    don't. 
+# # 	SET ( HAVE_FWPRINTF						1	) # Define to 1 if you have the `fwprintf' function. 
+# # 	SET ( HAVE_GETEGID						""	) # Define to 1 if you have the `getegid' function. 
+# # 	SET ( HAVE_GETGID						""	) # Define to 1 if you have the `getgid' function. 
+# # 	SET ( HAVE_GETOPT_LONG_ONLY				""	) # Define to 1 if you have the `getopt_long_only' function. 
+# # 	SET ( HAVE_ICONV_H						""	) # Define to 1 if you have the <iconv.h> header file. 
+# # 	SET ( HAVE_ISWCNTRL						1	) # Define to 1 if you have the `iswcntrl' function. 
+# # 	SET ( HAVE_MEMCHR						1	) # Define to 1 if you have the `memchr' function. 
+# # 	SET ( HAVE_MEMPCPY						""	) # Define to 1 if you have the `mempcpy' function. 
+# # 	SET ( HAVE_MUNMAP						""	) # Define to 1 if you have the `munmap' function. 
+# # 	SET ( HAVE_NL_LOCALE_NAME				""	) # Define if you have <langinfo.h> and it defines the NL_LOCALE_NAME macro if    _GNU_SOURCE is defined. 
+# # 	SET ( HAVE_PTHREAD_MUTEX_RECURSIVE		""	) # Define if the <pthread.h> defines PTHREAD_MUTEX_RECURSIVE. 
+# # 	SET ( HAVE_PTHREAD_RWLOCK				""	) # Define if the POSIX multithreading library has read/write locks. 
+# # 	SET ( HAVE_PUTENV						1	) # Define to 1 if you have the `putenv' function. 
+# # 	SET ( HAVE_UINTMAX_T					1	) # Define if you have the 'uintmax_t' type in <stdint.h> or <inttypes.h>. 
+# # 	SET ( HAVE_WCWIDTH						""	) # Define to 1 if you have the `wcwidth' function. 
+# # 	SET ( HAVE___FSETLOCKING				""	) # Define to 1 if you have the `__fsetlocking' function. 
+# # 	SET ( HAVE_ACL							""	) # Define to 1 if you have the `acl' function. 
+# # 	SET ( HAVE_ACL_DELETE_DEF_FILE			""	) # Define to 1 if you have the `acl_delete_def_file' function. 
+# # 	SET ( HAVE_ACL_ENTRIES					""	) # Define to 1 if you have the `acl_entries' function. 
+# # 	SET ( HAVE_ACL_EXTENDED_FILE			""	) # Define to 1 if you have the `acl_extended_file' function. 
+# # 	SET ( HAVE_ACL_FREE						""	) # Define to 1 if you have the `acl_free' function. 
+# # 	SET ( HAVE_ACL_FROM_MODE				""	) # Define to 1 if you have the `acl_from_mode' function. 
+# # 	SET ( HAVE_ACL_FROM_TEXT				""	) # Define to 1 if you have the `acl_from_text' function. 
+# # 	SET ( HAVE_ACL_GET_FD					""	) # Define to 1 if you have the `acl_get_fd' function. 
+# # 	SET ( HAVE_ACL_GET_FILE					""	) # Define to 1 if you have the `acl_get_file' function. 
+# # 	SET ( HAVE_ACL_LIBACL_H					""	) # Define to 1 if you have the <acl/libacl.h> header file. 
+# # 	SET ( HAVE_ACL_SET_FD					""	) # Define to 1 if you have the `acl_set_fd' function. 
+# # 	SET ( HAVE_ACL_SET_FILE					""	) # Define to 1 if you have the `acl_set_file' function. 
+# # 	SET ( HAVE_ACL_TRIVIAL					""	) # Define to 1 if you have the `acl_trivial' function. 
+# # 	SET	( HAVE_ARPA_INET_H					""	) # Define to 1 if you have the <arpa/inet.h> header file. 
+# # 	SET ( HAVE_ARPA_NAMESER_H				""	) # Define to 1 if you have the <arpa/nameser.h> header file. 
+# # 	SET ( HAVE_BTOWC						1	) # Define to 1 if you have the `btowc' function. 
+# # 	SET ( HAVE_CHOWN						""	) # Define to 1 if you have the `chown' function. 
+# # 	SET ( HAVE_CTYPE_H						1	) # Define to 1 if you have the <ctype.h> header file. 
+# # 	SET ( HAVE_DECL_GETDELIM				0	) # Define to 1 if you have the declaration of `getdelim', and to 0 if you    don't. 
+# # 	SET ( HAVE_DECL_GETLINE					0	) # Define to 1 if you have the declaration of `getline', and to 0 if you    don't. 
+# # 	SET ( HAVE_DECL_ISBLANK					0	) # Define to 1 if you have the declaration of `isblank', and to 0 if you    don't. 
+# # 	SET ( HAVE_DECL_MKDIR					1	) # Define to 1 if you have the declaration of `mkdir', and to 0 if you don't.    
+# # 	SET ( HAVE_DECL_SNPRINTF				1	) # Define to 1 if you have the declaration of `snprintf', and to 0 if you    don't. 
+# # 	SET ( HAVE_DECL_VSNPRINTF				1	) # Define to 1 if you have the declaration of `vsnprintf', and to 0 if you    don't. 
+# # 	SET ( HAVE_DLOPEN						""	) # Define to 1 if you have the `dlopen' function. 
+# # 	SET ( HAVE_FUNLOCKFILE					""	) # Define to 1 if you have the `funlockfile' function. 
+# # 	SET ( HAVE_GETDELIM						""	) # Define to 1 if you have the `getdelim' function. 
+# # 	SET ( HAVE_GETHOSTNAME					1	) # Define to 1 if you have the `gethostname' function. 
+# # 	SET ( HAVE_INET_NTOP					1	) # Define to 1 if you have the `inet_ntop' function. 
+# # 	SET ( HAVE_INLINE						1	) # Define to 1 if the compiler supports one of the keywords 'inline',    '__inline__', '__inline' and effectively inlines functions marked as such.    
+# # 	##SET ( HAVE_IPV6					1	) # Define if <sys/socket.h> defines AF_INET6. TODO: Winsock2.h does. Perhaps thats good enough !
+# # 	SET ( HAVE_ISBLANK						""	) # Define to 1 if you have the `isblank' function. 
+# # 	SET ( HAVE_ISWCTYPE						1	) # Define to 1 if you have the `iswctype' function. 
+# # 	SET ( HAVE_LOCALTIME					1	) # Define to 1 if you have the `localtime' function. 
+# # 	SET ( HAVE_LONG_FILE_NAMES				1	) # Define to 1 if you support file names longer than 14 characters. 
+# # 	SET ( HAVE_MATH_H						1	) # Define to 1 if you have the <math.h> header file. 
+# # 	SET ( HAVE_MBSRTOWCS					1	) # Define to 1 if you have the `mbsrtowcs' function. 
+# # 	SET ( HAVE_MINMAX_IN_LIMITS_H			""	) # Define to 1 if <limits.h> defines the MIN and MAX macros. 
+# # 	SET ( HAVE_MKDTEMP						""	) # Define to 1 if you have the `mkdtemp' function. 
+# # 	SET ( HAVE_OBSTACK						""	) # Define to 1 if libc includes obstacks. 
+# # 	SET ( HAVE_PATHCONF						""	) # Define to 1 if you have the `pathconf' function. 
+# # 	SET ( HAVE_POSIX_SPAWN					""	) # Define to 1 if you have the `posix_spawn' function. 
+# # 	SET ( HAVE_RAISE						1	) # Define to 1 if you have the `raise' function. 
+# # 	##SET ( HAVE_REALLOC_POSIX			1	) # Define if the 'realloc' function is POSIX compliant. 
+# # 	SET ( HAVE_SIGINFO						""	) # Define to 1 if <signal.h> defines the siginfo_t type, and struct sigaction    has the sa_sigaction member and the SA_SIGINFO flag. 
+# # 	SET ( HAVE_STAT							1	) # Define to 1 if you have the `stat' function. 
+# # 	SET ( HAVE_STPNCPY						""	) # Define if you have the stpncpy() function and it works. 
+# # 	SET ( HAVE_STRCSPN						1	) # Define to 1 if you have the `strcspn' function. 
+# # 	SET ( HAVE_STRFTIME						1	) # Define to 1 if you have the `strftime' function. 
+# # 	SET ( HAVE_STRPBRK						1	) # Define to 1 if you have the `strpbrk' function. 
+# # 	SET ( HAVE_SYS_ACL_H					""	) # Define to 1 if you have the <sys/acl.h> header file. 
+# # 	SET ( HAVE_SYS_TIMEB_H					1	) # Define to 1 if you have the <sys/timeb.h> header file. 
+# # 	SET ( HAVE_UNION_WAIT					""	) # Define if <sys/wait.h> defines the 'union wait' type. 
+# # 	SET ( HAVE_UNSIGNED_LONG_LONG			1	) # Define if you have the 'unsigned long long' type. 
+# # 	SET ( HAVE_UTIMES						""	) # Define to 1 if you have the `utimes' function. 
+# # 	SET ( HAVE_VFORK						""	) # Define to 1 if you have the `vfork' function. 
+# # 	SET ( HAVE_WAITID						""	) # Define to 1 if you have the `waitid' function. 
+# # 	SET ( HAVE_WAITPID						""	) # Define to 1 if you have the `waitpid' function. 
+# # 	SET ( HAVE_WMEMCHR						1	) # Define to 1 if you have the `wmemchr' function. 
+# # 	SET ( HAVE_WMEMCPY						1	) # Define to 1 if you have the `wmemcpy' function. 
+# # 	SET ( HAVE_WMEMPCPY						""	) # Define to 1 if you have the `wmempcpy' function. 
+# # 	SET ( HAVE_WORKING_FORK					""	) # Define to 1 if `fork' works. 
+# # 	SET ( HAVE_WORKING_VFORK				""	) # Define to 1 if `vfork' works. 
+# # 	SET ( HAVE_STRING						1	) # Define to 1 if you have the <string> header file. 
+# # 	SET ( HAVE_STRTOQ						""	) # Define to 1 if you have the `strtoq' function. 
+# # 	SET ( HAVE__STRTOI64					1	) # Define to 1 if you have the `_strtoi64' function. 
+# # 	SET ( HAVE_FINITE						1	) # Define to 1 if you have the `finite' function. 
+# # 	SET ( HAVE_FPRINTF						1	) # Define to 1 if you have the `fprintf' function. 
+# # 	SET ( HAVE_FTIME						1	) # Define to 1 if you have the `ftime' function. 
+# # 	SET ( HAVE_IEEEFP_H						""	) # Define to 1 if you have the <ieeefp.h> header file. 
+# # 	SET ( HAVE_ISINF						""	) # Define if isinf is there 
+# # 	SET ( HAVE_ISNAN						1	) # Define if isnan is there 
+# # 	SET ( HAVE_ISNAND						""	) # Define to 1 if you have the `isnand' function. 
+# # 	SET ( HAVE_LIBPTHREAD					""	) # Define if pthread library is there (-lpthread) 
+# # 	SET ( HAVE_PRINTF						1	) # Define to 1 if you have the `printf' function. 
+# # 	SET ( HAVE_RESOLV_H						""	) # Define to 1 if you have the <resolv.h> header file. 
+# # 	SET ( HAVE_SPRINTF						1	) # Define to 1 if you have the `sprintf' function. 
+# # 	SET ( HAVE_SSCANF						1	) # Define to 1 if you have the `sscanf' function. 
+# # 	SET ( HAVE_STDARG_H						1	) # Define to 1 if you have the <stdarg.h> header file. 
+# # 	SET ( HAVE_STRNDUP						""	) # Define to 1 if you have the `strndup' function. 
+# # 	SET ( HAVE_SYS_DIR_H					""	) # Define to 1 if you have the <sys/dir.h> header file, and it defines `DIR'.    
+# # 	SET ( HAVE_SYS_MMAN_H					""	) # Define to 1 if you have the <sys/mman.h> header file. 
+# # 	SET ( HAVE_VFPRINTF						1	) # Define to 1 if you have the `vfprintf' function. 
+# # 	SET ( HAVE_VSPRINTF						1	) # Define to 1 if you have the `vsprintf' function. 
+# # 	SET ( HAVE_IO_H							1	) # Define to 1 if you have the `io.h' header. 
+# # 	SET_DEFAULT ( HAVE_MEMCPY				1	) # Define to 1 if you have the `memcpy' function. 
+# # 	SET_DEFAULT ( HAVE_FNMATCH_H			""	) # Define to 1 if you have the <fnmatch.h> header file. 
+# # 	SET_DEFAULT ( HAVE_SETEGID				""	) # Define to 1 if you have the `setegid' function. 
+# # 	SET_DEFAULT ( HAVE_SETEUID				""	) # Define to 1 if you have the `seteuid' function. 
+# # 	#
+# #  	SET_DEFAULT ( HAVE_FSYNC					""	) # Define if fsync() is available 
+# #  	SET_DEFAULT ( HAVE_ROUND					""	) # Define if round() is available 
+# #  		SET_DEFAULT ( HAVE_LARGEFILE_SUPPORT		1	) # Define if you have support for large (64 bit size) files 
+# #  	SET_DEFAULT ( HAVE_SCHED_YIELD				""	) # Define if you have sched_yield 
+# #  	SET_DEFAULT ( HAVE_PTHREAD_CANCEL			""	) # Define if you have pthread_cancel 
+# #  	SET_DEFAULT ( HAVE_SIGEMPTYSET				""	) # Define if you have sigemptyset() 
+# #  	SET_DEFAULT ( HAVE_SNPRINTF_DECL			1	) # Define if you have snprintf() declaration in the header 
+# #  	SET_DEFAULT ( HAVE_STATFS					""	) # define if you have statfs function 
+# #  	SET_DEFAULT ( HAVE_STATFS_DECL				1	) # define if you have statfs prototype 
+# #  	SET_DEFAULT ( HAVE_STRPTIME					""	) # Define if you have strptime() 
+# #  	SET_DEFAULT ( HAVE_STRPTIME_DECL			""	) # Define if strptime() is declared in headers 
+# #  	SET_DEFAULT ( HAVE_STRTOULL					""	) # Define if you have strtoull() and strtoll() 
+# #  		SET_DEFAULT ( HAVE_THREAD_PRIORITY_FUNCTIONS	1	) # Define if you have all functions to set thread priority 
+# #  	SET_DEFAULT ( HAVE_VSNPRINTF_DECL			1	) # Define if you have vsnprintf() declaration in the header 
+# #  	SET_DEFAULT ( HAVE_USLEEP					""	) # Define if you have usleep() TODO: Might be there on Linux
+# #  	SET_DEFAULT ( HAVE_WCSTOULL					""	) # Define if you have wcstoull() and wcstoll() TODO: Might be there on Linux
+# #  	SET_DEFAULT ( HAVE_VSSCANF					""	) # define if you have vsscanf function TODO: Might be there on Linux
+# #  	SET_DEFAULT ( HAVE_DLERROR					""	) # Define if you have the dlerror function.  
+# #  	SET_DEFAULT ( HAVE_FCNTL					""	) # Define if you have Posix fnctl() function. 
+# #  	SET_DEFAULT ( HAVE_FLOCK					""	) # Define if you have BSD flock() function. 
+# #  	SET_DEFAULT ( HAVE_FUNC_GETHOSTBYNAME_R_6	""	) # Define if you have a gethostbyname_r function taking 6 arguments. 
+# #  	SET_DEFAULT ( HAVE_FUNC_GETHOSTBYNAME_R_5	""	) # Define if you have a gethostbyname_r function taking 5 arguments. 
+# #  	SET_DEFAULT ( HAVE_FUNC_GETHOSTBYNAME_R_3	""	) # Define if you have a gethostbyname_r function taking 3 arguments. 
+# #  	SET_DEFAULT ( HAVE_FUNC_GETSERVBYNAME_R_6	""	) # Define if you have a getservbyname_r function taking 6 arguments. 
+# #  	SET_DEFAULT ( HAVE_FUNC_GETSERVBYNAME_R_5	""	) # Define if you have a getservbyname_r function taking 5 arguments. 
+# #  	SET_DEFAULT ( HAVE_FUNC_GETSERVBYNAME_R_4	""	) # Define if you have a getservbyname_r function taking 4 arguments. 
+# #  	SET_DEFAULT ( HAVE_GETSERVBYNAME			1	) # Define if you only have a getservbyname function 
+# #  	SET_DEFAULT ( HAVE_INET_ADDR				1	) # Define if you have the inet_addr function.  
+# #  	SET_DEFAULT ( HAVE_INET_ATON				""	) # Define if you have the inet_aton function.  
+# #  	SET_DEFAULT ( HAVE_MKTEMP					1	) # Define if you have the mktemp function.  
+# #  	SET_DEFAULT ( HAVE_READDIR_R				""	) # Define if you have the readdir_r function.  
+# #  	SET_DEFAULT ( HAVE_USLEEP					""	) # Define if you have the usleep function.  
+# # 	SET_DEFAULT ( HAVE_X11_EXTENSIONS_XF86VMODE_H	""	) # Define if you have the <X11/extensions/xf86vmode.h> header file.  
+# #  	SET_DEFAULT ( HAVE_FNMATCH					""	) # Define if you have the fnmatch() function 
+# # 	SET_DEFAULT ( HAVE_IOSTREAM					1	) # Define if you have the <iostream> header file.  
+# # 	SET_DEFAULT ( HAVE_LINUX_JOYSTICK_H			""	) # Define if you have the <linux/joystick.h> header file.  
+# #  	SET_DEFAULT ( HAVE_W32API_H					""	) # Define if you have the <w32api.h> header file (mingw,cygwin).  
+# # 	SET_DEFAULT ( HAVE_SYS_SOUNDCARD_H			""	) # Define if you have the <sys/soundcard.h> header file. 
+# #  	SET_DEFAULT ( HAVE_WCSRTOMBS				1	) # Define if you have wcsrtombs() function 
+# #  	SET_DEFAULT ( HAVE_FPUTWS					1	) # Define this if you have fputws() 
+# #  	SET_DEFAULT ( HAVE_SWPRINTF					1	) # Define this if you have swprintf() 
+# #  	SET_DEFAULT ( HAVE_VSWPRINTF				1	) # Define this if you have vswprintf() and related functions 
+# # 	SET_DEFAULT ( HAVE__VSNWPRINTF				1	) # Define this if you have _vsnwprintf. NOTE: Typical Microsoft function.
+# #  	SET_DEFAULT ( HAVE_FSEEKO					""	) # Define if fseeko and ftello are available.  
+# #  	SET_DEFAULT ( HAVE_XSHAPE					""	) # Define this if you have X11/extensions/shape.h 
+# #  	SET_DEFAULT ( HAVE_FDOPEN					1	) # Define if fdopen is available.  
+# #  	SET_DEFAULT ( HAVE_GETPWUID_R				""	) # Define if getpwuid_r is available. 
+# #  	SET_DEFAULT ( HAVE_GETGRGID_R				""	) # Define if getgrgid_r is available. 
+# # 
+# # 	# ---------------------------------------------------------------------------------------
+# # 	# --- AM_STANDARD_VARS: Common settings (Re)Move to platform specific block if needed ---
+# # 	# ---------------------------------------------------------------------------------------
+# # 	SET ( STDC_HEADERS 						1 	)	# Define to 1 if you have the ANSI C header files.
+# # 	##SET ( YYTEXT_POINTER 				1 	)	# Define YYTEXT_POINTER if yytext defaults to `char *' instead of to `char []
+# # 	SET ( C_ALLOCA 							"" 	)	# Define to 1 if using `alloca.c'.
+# # 	SET ( NO_FD_SET 						"" 	)	# Didn't find fd_set
+# # 	SET ( NO_SYS_ERRLIST 					1 	)	# Global 'sys_errlist' not found
+# # 	SET ( NO_SYS_SIGLIST 					1 	)	# Global 'sys_siglist' not found
+# # 	SET ( NO_SYS_SIGLIST_DECL 				1 	)	# Global 'sys_siglist' not declared
+# # 	SET ( REALLOC_0_WORKS 					1 	)	# Whether realloc (NULL,) works
+# # 	SET ( SANE_MALLOC_PROTOS 				1 	)	# Define if you have correct malloc prototypes
+# # 	##SET ( _FILE_OFFSET_BITS 			64	)	# Number of bits in a file offset, on hosts where this is settable.
+# # 	SET ( _LARGE_FILES 						""	)	# Define to 1 for large files, on AIX-style hosts.
+# # 	SET ( VA_COPY							""	)	# 
+# # 	SET ( XP_UNIX							""	)	#
+# # 	SET ( STRERROR_R_CHAR_P					""	) # Define to 1 if strerror_r returns char 
+# # 
+# # ENDIF ( WIN32 )

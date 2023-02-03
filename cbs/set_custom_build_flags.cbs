@@ -1,0 +1,39 @@
+# -----------------------------------------------------------------------------------------
+# --- Add flags which are NOT exported to targets that depends on this ---
+# -----------------------------------------------------------------------------------------
+FOREACH( Cflag ${${CBS_CURRENT}_C_FLAGS} )
+	SET ( CMAKE_C_FLAGS     "${CMAKE_C_FLAGS} ${Cflag}"     )
+ENDFOREACH( Cflag )
+
+FOREACH( CXXflag ${${CBS_CURRENT}_CXX_FLAGS} )
+	SET ( CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS} ${CXXflag}"     )
+ENDFOREACH( CXXflag )
+
+
+# -----------------------------------------------------------------------------------
+# --- Add flags which ARE exported to targets that depends on this ---
+# ------------------------------------------------------------------------------------
+FOREACH( Cflag ${${CBS_CURRENT}_XC_FLAGS} )
+	SET ( CMAKE_C_FLAGS     "${CMAKE_C_FLAGS} ${Cflag}"     )
+ENDFOREACH( Cflag )
+
+FOREACH( CXXflag ${${CBS_CURRENT}_XCXX_FLAGS} )
+	SET ( CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS} ${CXXflag}"     )
+ENDFOREACH( CXXflag )
+
+
+
+# *** WINDOWS ***
+IF (    WIN32 )
+ENDIF ( WIN32 )
+
+# *** UNIX ***
+IF (    UNIX )
+	# *** LINUX ***
+	IF (    CMAKE_SYSTEM_NAME MATCHES "Linux" )
+	ENDIF ( CMAKE_SYSTEM_NAME MATCHES "Linux" )
+	
+	# *** DARWIN (MAC OSX) ***
+	IF (   CMAKE_SYSTEM_NAME MATCHES "Darwin" )
+	ENDIF( CMAKE_SYSTEM_NAME MATCHES "Darwin" )
+ENDIF ( UNIX )

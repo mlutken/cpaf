@@ -1,0 +1,36 @@
+/** \dir
+!!! CPAF libs
+These libraries contains utility classes and functions developed within the CPAF project. Whereas the rest of CPAF merely put 
+together existing open source libraries into a common and easy to use build system, this is the place for functionality that we 
+have not been able to find in an existing library.
+
+The things found here are included for mainly one of two reasons:
+-# No other commercially useable open source alternative has been found (to our knowledge).
+-# Convenience: C/C++ libs in general (and the standard and many Boost ones in particular) have a very minimalistic 
+   interface, which really is a good thing. However at CPAF we believe in adding convenience functions/classes on 
+   top of the minimal interfaces making the lives of the programmer easier and the code clearer to read. PHP, C# and 
+   other languages have many more convenience type functions, and we want this for C+++ as well.
+
+!!Work in progress
+This is work in progress, and we do not consider this to be 100% producion ready - yet. The code is generally working well, but 
+it needs to have unit testing added and interfaces needs to be reviewed and in the case of the 
+
+! General todo-list
+- Unittest: Add unit-testing. The CBS buildsystem and the directory structure with the '_test' subfolders already support it.
+- Get rid of string/char* overloads: In filesystem we have overloaded functions that takes const std::string&/const char* and 
+  we should get rid of the const char* ones. std::string does have a constructor taking a const char* so those overloads 
+  superflouos.
+- math: Only the basic 2D, 3D, 4D vectors and matrices are implemented (needs review though). All the higher level primitives 
+  still need to be implemented (squares, triangles, cubes, ...). But see math/primitives2d/triangle.hpp for a good idea of where 
+  this is heading: triangle.
+- utils cleanup: The utils library needs to be cleaned up and functions moved to less generally named files. 
+- utils parse numbers: The parse numbers functions in cpaf_string_utils.hpp/cpp have 'grown wildly'. And even if CPAF libs 
+  are about providing convenience functions as well, we need all these many variants cleaned up a bit. 
+  
+!! Help wanted
+We are looking for people who would like to help. The whole CPAF project is very ambitious and so there is a lot to be done yet 
+before it is ready for general public use. 
+
+
+
+*/

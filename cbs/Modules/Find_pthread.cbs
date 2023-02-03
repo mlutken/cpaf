@@ -1,0 +1,6 @@
+
+INCLUDE (${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+FIND_LIB_SIMPLE ( 	pthread   
+					HEADER_FILES pthread.h   
+					)
+

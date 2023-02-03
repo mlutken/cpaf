@@ -1,0 +1,20 @@
+INCLUDE (${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+IF( CBS_QT4 )
+	FIND_LIB_SIMPLE ( 	qtmain 
+						LIB_NAME qtmain LINUX qtmain CBS_WINDOWS_RELEASE qtmaind CBS_WINDOWS_DEBUG
+						HEADER_FILES qatomic.h 
+						HEADER_PATHS ${QT_HDR_DIR}/QtCore /usr/include/qt4/QtCore /usr/include/QtCore
+						LIB_PATHS ${QT_LIB_DIR} /usr/lib
+						PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtCore ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+						)
+ELSE( CBS_QT4 )
+	FIND_LIB_SIMPLE ( 	qtmain 
+						LIB_NAME qtmain LINUX qtmain CBS_WINDOWS_RELEASE qtmaind CBS_WINDOWS_DEBUG
+						HEADER_FILES qatomic.h 
+						HEADER_PATHS ${QT_HDR_DIR}/QtCore /usr/include/qt5/QtCore /usr/include/QtCore
+						LIB_PATHS ${QT_LIB_DIR} /usr/lib
+						PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtCore ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+						)
+ENDIF( CBS_QT4 )
+
+

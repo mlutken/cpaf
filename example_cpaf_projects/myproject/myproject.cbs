@@ -1,0 +1,9 @@
+
+
+SET_DEFAULT ( mylib_LINK_TYPE		STATIC		WINDOWS	)
+
+
+ADD_SUBDIR ( "../.."	)
+ADD_SUBDIR ( mylib		)
+ADD_SUBDIR ( myapp		)
+ADD_SUBDIR ( link_test	)

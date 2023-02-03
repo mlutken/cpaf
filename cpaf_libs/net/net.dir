@@ -1,0 +1,8 @@
+/** \dir 
+!!! Network related functionality. 
+
+\todo Functions for downloading and posting via HTTP, should generally not be called anything with CURL in their names. 
+      We don't want to be forced to use CuRL to implement these functions.
+*/
+
+

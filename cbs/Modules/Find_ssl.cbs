@@ -1,0 +1,10 @@
+
+INCLUDE (${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+FIND_LIB_SIMPLE ( 	ssl 
+					HEADER_FILES ssl.h  
+					HEADER_PATHS /usr/include/openssl
+					LIB_PATHS /usr/lib64 /usr/lib
+                    DEPENDS_ON crypto
+                    INCLUDE_DIR_LEVELS_UP 1 
+					)
+

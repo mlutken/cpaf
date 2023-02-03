@@ -1,0 +1,160 @@
+
+# ----------------------------
+# --- Custom command macro ---
+# ----------------------------
+
+# Finds a single include directory, without any dependencies. 
+# - PARAMETERS -
+# targetName 	: 
+# 
+#
+MACRO ( FIND_INCLUDE_DIR_SINGLE targetName  )  
+ENDMACRO( FIND_INCLUDE_DIR_SINGLE )
+
+
+# Finds a single include directory, without any dependencies. 
+# - PARAMETERS -
+# targetName 	: 
+# 
+#
+MACRO ( FIND_INCLUDE_DIR_SINGLE targetName  )  
+ENDMACRO( FIND_INCLUDE_DIR_SINGLE )
+
+
+
+# Finds a single library, without any dependencies. 
+MACRO ( FIND_XXXX   )  
+	# --- Setup ---
+	SET ( doAddCommand		1							)
+	SET ( tgtType			REAL						)	# Add a "DUMMY" to commad params to make a dummy target.
+	SET ( curState			IDLE						)
+	SET ( iCmdCount			"0"							)
+	SET ( workDir			${CMAKE_CURRENT_SOURCE_DIR}	)
+	FOREACH( arg ${ARGN} )
+	
+		# ----------------------
+		# --- Set next state ---
+		# ----------------------
+		
+		SET ( argIsStateChangeCmd	1	)
+		
+		#				--- CMD --- 
+		IF ( ${arg} STREQUAL "CMD" )
+			SET ( curState		"read_CMD"	)
+			MATH ( EXPR iCmdCount "${iCmdCount} +1" )    
+		ELSE ( ${arg} STREQUAL "CMD" )
+
+			#			--- SRC --- 
+			IF ( ${arg} STREQUAL "SRC" )
+				SET ( curState		"read_SRC"	)
+			ELSE ( ${arg} STREQUAL "SRC" )
+			#				--- OUT --- 
+				IF ( ${arg} STREQUAL "OUT" )
+					SET ( curState		"read_OUT"	)
+				ELSE ( ${arg} STREQUAL "OUT" )
+			#				--- ONLY_IF --- 
+					IF ( ${arg} STREQUAL "ONLY_IF" )
+						SET ( curState		"read_ONLY_IF"	)
+					ELSE ( ${arg} STREQUAL "ONLY_IF" )
+				#				--- DIR --- 
+						IF ( ${arg} STREQUAL "DIR" )
+							SET ( curState		"read_DIR"	)
+						ELSE ( ${arg} STREQUAL "DIR" )
+				#				--- DEP --- 
+							IF ( ${arg} STREQUAL "DEP" )
+								SET ( curState		"read_DEP"	)
+							ELSE ( ${arg} STREQUAL "DEP" )
+				#				--- DUMMY --- Not really a state change, but easiest to cope with here
+								IF ( ${arg} STREQUAL "DUMMY" )
+									SET ( tgtType		"DUMMY"	)
+								ELSE ( ${arg} STREQUAL "DUMMY" )
+									SET ( argIsStateChangeCmd	0	)	# Argument was NOT a state change command
+								ENDIF ( ${arg} STREQUAL "DUMMY" )
+							ENDIF ( ${arg} STREQUAL "DEP" )
+						ENDIF ( ${arg} STREQUAL "DIR" )
+					ENDIF ( ${arg} STREQUAL "ONLY_IF" )
+				ENDIF ( ${arg} STREQUAL "OUT" )
+			ENDIF ( ${arg} STREQUAL "SRC" )
+		ENDIF ( ${arg} STREQUAL "CMD" )
+#		MESSAGE ( STATUS "AA: '${arg}' :STATE: ${curState}" )
+#		MESSAGE ( STATUS " '${arg}' : ${iCmdCount} : STATE: ${curState}" )
+
+		# ----------------------
+		# --- Read arguments ---
+		# ----------------------
+		#				--- CMD --- 
+		IF ( NOT ${argIsStateChangeCmd} )
+			#MESSAGE ( STATUS "SSSSSSSSS: ${arg}" )
+			#					--- STATE: read_CMD --- 
+			IF ( curState STREQUAL "read_CMD" ) 
+				IF ( ${arg} STREQUAL "_SRC" )
+					LIST ( APPEND cmdList_${iCmdCount} ${CMAKE_CURRENT_SOURCE_DIR}/${srcFile} )
+				ELSE ( ${arg} STREQUAL "_SRC" )
+					IF ( ${arg} STREQUAL "_OUT" )
+						LIST ( APPEND cmdList_${iCmdCount} ${CMAKE_CURRENT_BINARY_DIR}/${outFile} )
+					ELSE ( ${arg} STREQUAL "_OUT" )
+						LIST ( APPEND cmdList_${iCmdCount} ${arg} )
+					ENDIF ( ${arg} STREQUAL "_OUT" )
+				ENDIF ( ${arg} STREQUAL "_SRC" )
+			ELSE ( curState STREQUAL "read_CMD" ) 
+			
+			#					--- STATE: read_SRC --- 
+				IF ( curState STREQUAL "read_SRC" ) 
+					SET ( srcFile	${arg}	)
+				ELSE ( curState STREQUAL "read_SRC" ) 
+
+			#					--- STATE: read_OUT --- 
+					IF ( curState STREQUAL "read_OUT" ) 
+						SET ( outFile	${arg}	)
+					ELSE ( curState STREQUAL "read_OUT" ) 
+
+			#					--- STATE: read_ONLY_IF --- 
+						IF ( curState STREQUAL "read_ONLY_IF" ) 
+							SET ( doAddCommand ${${arg}}	)
+						ELSE ( curState STREQUAL "read_ONLY_IF" ) 
+
+			#					--- STATE: read_DEP --- 
+							IF ( curState STREQUAL "read_DEP" ) 
+								SET ( depend	${arg}	)
+							ELSE ( curState STREQUAL "read_DEP" ) 
+
+			#					--- STATE: read_DIR --- 
+								IF ( curState STREQUAL "read_DIR" ) 
+									SET ( workDir	${arg}	)
+								ENDIF ( curState STREQUAL "read_DIR" ) 
+							ENDIF ( curState STREQUAL "read_DEP" ) 
+						ENDIF ( curState STREQUAL "read_ONLY_IF" ) 
+					ENDIF ( curState STREQUAL "read_OUT" ) 
+				ENDIF ( curState STREQUAL "read_SRC" ) 
+			ENDIF ( curState STREQUAL "read_CMD" ) 
+		ENDIF ( NOT ${argIsStateChangeCmd} )
+
+		#MESSAGE ( STATUS "DD (${arg}): argIsStateChangeCmd: ${argIsStateChangeCmd}" )
+
+
+
+		#MESSAGE ( STATUS "SS STATE, COUNT: ${curState}, ${iCmdCount}" )
+	
+		#MESSAGE ( STATUS "AA ADD_GENERATED_SOURCE_PIPE: ${arg}" )
+	ENDFOREACH( arg )
+	
+#	MESSAGE ( STATUS "outFile : ${outFile}"		)
+#	MESSAGE ( STATUS "srcFile : ${srcFile}"		)
+#	MESSAGE ( STATUS "workDir : ${workDir}"		)
+#	MESSAGE ( STATUS "depend : ${depend}"		)
+#	MESSAGE ( STATUS "CmdCount: ${iCmdCount}"	)
+#	MESSAGE ( STATUS "cmd1: ${cmdList_1}"		)
+#	MESSAGE ( STATUS "cmd2: ${cmdList_2}"		)
+#	MESSAGE ( STATUS "cmd1: ${cmdList_3}"		)
+#	MESSAGE ( STATUS "cmd2: ${cmdList_4}"		)
+
+	# --------------------
+	# --- Add Commands ---
+	# --------------------
+	
+	IF ( ${doAddCommand} )
+	ENDIF ( ${doAddCommand} )
+ENDMACRO( FIND_XXXX )
+
+
+

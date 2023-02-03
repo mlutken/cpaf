@@ -1,0 +1,358 @@
+# -------------------------
+# --- Swig helper macro ---
+#
+MACRO ( HELPER_SWIG_SET_TARGET_LANG_OPTIONS targetLang )  
+	IF ( ${targetLang}	STREQUAL "python" ) 
+		ADD_TARGET_PROPERTY ( PREFIX "_"  ) # This is what python expects instead of default system ( e.g. lib on UNIX )
+	ENDIF ( ${targetLang}	STREQUAL "python" ) 
+	IF ( ${targetLang}	MATCHES "php" ) 
+		IF ( WINDOWS )
+			ADD_TARGET_PROPERTY ( PREFIX "php_"  ) # 
+		ELSE ( WINDOWS )	# Unices
+			ADD_TARGET_PROPERTY ( PREFIX ""  ) # This is what php expects instead of default system ( e.g. lib on UNIX )
+		ENDIF ( WINDOWS )
+		
+##		LIST ( APPEND options -oh ${CMAKE_CURRENT_BINARY_DIR}/php_${CBS_CURRENT}.h	)	# Doen't seem to change location of this header file !
+		ADDX_INCLUDE_DIR ( ${CBS_SHARED_LIBRARY_PATH_PREBUILD} ) # The php_${CBS_CURRENT}.h header file goes here so we need the include path!
+	ENDIF ( ${targetLang}	MATCHES "php" ) 
+ENDMACRO( HELPER_SWIG_SET_TARGET_LANG_OPTIONS )
+
+
+# ----------------------------
+# --- Swig C command macro ---
+# ----------------------------
+SET_DEFAULT ( swig_EXECUTABLE	${CBS_swig_EXECUTABLE}	)
+SET_DEFAULT ( swig_ENV	 		""						)
+
+
+# --- Paramaters: ---
+# <swigsource> 		: Input swig-file. 
+# <targetLang> 		: Target language as specified in swig docs. Exclude the '-':
+#					: allegrocl, chicken, clisp, cffi, csharp, guile, java, lua, modula3, mzscheme, 
+#					: ocaml, octave, perl, php4, php5, pike, python, r, ruby, sexp, tcl, uffi, xml
+# OPTIONS <options> : Input file that commands use. Relative to CMAKE_CURRENT_SOURCE_DIR
+# DEP <depensOnTgt>	: Target this depends on.
+# DIR <workingDir>	: Working directory. Only needed if different from CMAKE_CURRENT_SOURCE_DIR
+# ONLY_IF <varName>	: Command is only added if varName is set.
+#
+# EXAMPLE:
+# ADD_SWIG_SOURCE_CPP (  myswig.i php5 )
+#
+MACRO ( ADD_SWIG_SOURCE_C srcFile targetLang )  
+	# --- Setup ---
+	SET ( doAddCommand		1							)
+	SET ( curState			IDLE						)
+	SET ( workDir			${CMAKE_CURRENT_SOURCE_DIR}	)
+	SET ( depend			${srcFile}					)
+
+	FOREACH( arg ${ARGN} )
+	
+		# ----------------------
+		# --- Set next state ---
+		# ----------------------
+		
+		SET ( argIsStateChangeCmd	1	)
+		
+		#			--- OPTIONS --- 
+		IF ( ${arg} STREQUAL "OPTIONS" )
+			SET ( curState		"read_OPTIONS"	)
+		ELSE ( ${arg} STREQUAL "OPTIONS" )
+		#				--- ONLY_IF --- 
+			IF ( ${arg} STREQUAL "ONLY_IF" )
+				SET ( curState		"read_ONLY_IF"	)
+			ELSE ( ${arg} STREQUAL "ONLY_IF" )
+		#				--- DIR --- 
+				IF ( ${arg} STREQUAL "DIR" )
+					SET ( curState		"read_DIR"	)
+				ELSE ( ${arg} STREQUAL "DIR" )
+		#				--- DEP --- 
+					IF ( ${arg} STREQUAL "DEP" )
+						SET ( curState		"read_DEP"	)
+					ELSE ( ${arg} STREQUAL "DEP" )
+						SET ( argIsStateChangeCmd	0	)	# Argument was NOT a state change command
+					ENDIF ( ${arg} STREQUAL "DEP" )
+				ENDIF ( ${arg} STREQUAL "DIR" )
+			ENDIF ( ${arg} STREQUAL "ONLY_IF" )
+		ENDIF ( ${arg} STREQUAL "OPTIONS" )
+
+		# ----------------------
+		# --- Read arguments ---
+		# ----------------------
+		#				--- CMD --- 
+		IF ( NOT ${argIsStateChangeCmd} )
+			#					--- STATE: read_OPTIONS --- 
+			IF ( curState STREQUAL "read_OPTIONS" ) 
+				LIST ( APPEND options ${arg}	)
+			ELSE ( curState STREQUAL "read_OPTIONS" ) 
+
+	#					--- STATE: read_ONLY_IF --- 
+				IF ( curState STREQUAL "read_ONLY_IF" ) 
+					SET ( doAddCommand ${${arg}}	)
+				ELSE ( curState STREQUAL "read_ONLY_IF" ) 
+
+	#					--- STATE: read_DEP --- 
+					IF ( curState STREQUAL "read_DEP" ) 
+						SET ( depend	${arg}	)
+					ELSE ( curState STREQUAL "read_DEP" ) 
+
+	#					--- STATE: read_DIR --- 
+						IF ( curState STREQUAL "read_DIR" ) 
+							SET ( workDir	${arg}	)
+						ENDIF ( curState STREQUAL "read_DIR" ) 
+					ENDIF ( curState STREQUAL "read_DEP" ) 
+				ENDIF ( curState STREQUAL "read_ONLY_IF" ) 
+			ENDIF ( curState STREQUAL "read_OPTIONS" ) 
+		ENDIF ( NOT ${argIsStateChangeCmd} )
+	ENDFOREACH( arg )
+	
+	HELPER_SWIG_SET_TARGET_LANG_OPTIONS ( ${targetLang} 					)
+  	GET_FILENAME_COMPONENT				( srcFileWE  ${srcFile}  NAME_WE 	)
+	
+# 	MESSAGE ( STATUS "srcFile         : ${srcFile}"			)
+# 	MESSAGE ( STATUS "srcFileWE       : ${srcFileWE}"		)
+# 	MESSAGE ( STATUS "options         : ${options}"			)
+# 	MESSAGE ( STATUS "workDir         : ${workDir}"			)
+# 	MESSAGE ( STATUS "depend          : ${depend}"			)
+# 	MESSAGE ( STATUS "doAddCommand    : ${doAddCommand}"	)
+#	MESSAGE ( STATUS "swig_EXECUTABLE : ${swig_EXECUTABLE}"	)
+#	MESSAGE ( STATUS ""							)
+
+	# --------------------
+	# --- Add Commands ---
+	# --------------------
+	
+	IF ( ${doAddCommand} )
+		ADD_GENERATED_SOURCE ( 	SRC ${srcFile} 
+								OUT ${srcFileWE}_wrap.c 
+								CMD ${swig_EXECUTABLE} -${targetLang} ${options} -outdir ${CBS_SHARED_LIBRARY_PATH_PREBUILD} -module ${CBS_CURRENT} -o _OUT ${srcFile} 
+								DEP ${depend}
+								DIR ${workDir} 
+								) 
+	ENDIF ( ${doAddCommand} )
+ENDMACRO( ADD_SWIG_SOURCE_C )
+
+
+
+
+
+
+
+# --- Paramaters: ---
+# <swigsource> 		: Input swig-file. 
+# <targetLang> 		: Target language as specified in swig docs. Exclude the '-':
+#					: allegrocl, chicken, clisp, cffi, csharp, guile, java, lua, modula3, mzscheme, 
+#					: ocaml, octave, perl, php4, php5, pike, python, r, ruby, sexp, tcl, uffi, xml
+# OPTIONS <options> : Input file that commands use. Relative to CMAKE_CURRENT_SOURCE_DIR
+# DEP <depensOnTgt>	: Target this depends on.
+# DIR <workingDir>	: Working directory. Only needed if different from CMAKE_CURRENT_SOURCE_DIR
+# ONLY_IF <varName>	: Command is only added if varName is set.
+# 
+# Note              : Dont't add the -c++ option as this is done automatically.
+# EXAMPLE:
+# ADD_SWIG_SOURCE_CPP (  myswig.i python ONLY_IF UNIX )
+#
+MACRO ( ADD_SWIG_SOURCE_CPP srcFile targetLang )  
+	# --- Setup ---
+	SET ( doAddCommand		1							)
+	SET ( curState			IDLE						)
+	SET ( workDir			${CMAKE_CURRENT_SOURCE_DIR}	)
+	SET ( depend			${srcFile}					)
+
+	FOREACH( arg ${ARGN} )
+	
+		# ----------------------
+		# --- Set next state ---
+		# ----------------------
+		
+		SET ( argIsStateChangeCmd	1	)
+		
+		#			--- OPTIONS --- 
+		IF ( ${arg} STREQUAL "OPTIONS" )
+			SET ( curState		"read_OPTIONS"	)
+		ELSE ( ${arg} STREQUAL "OPTIONS" )
+		#				--- ONLY_IF --- 
+			IF ( ${arg} STREQUAL "ONLY_IF" )
+				SET ( curState		"read_ONLY_IF"	)
+			ELSE ( ${arg} STREQUAL "ONLY_IF" )
+		#				--- DIR --- 
+				IF ( ${arg} STREQUAL "DIR" )
+					SET ( curState		"read_DIR"	)
+				ELSE ( ${arg} STREQUAL "DIR" )
+		#				--- DEP --- 
+					IF ( ${arg} STREQUAL "DEP" )
+						SET ( curState		"read_DEP"	)
+					ELSE ( ${arg} STREQUAL "DEP" )
+						SET ( argIsStateChangeCmd	0	)	# Argument was NOT a state change command
+					ENDIF ( ${arg} STREQUAL "DEP" )
+				ENDIF ( ${arg} STREQUAL "DIR" )
+			ENDIF ( ${arg} STREQUAL "ONLY_IF" )
+		ENDIF ( ${arg} STREQUAL "OPTIONS" )
+
+		# ----------------------
+		# --- Read arguments ---
+		# ----------------------
+		#				--- CMD --- 
+		IF ( NOT ${argIsStateChangeCmd} )
+			#					--- STATE: read_OPTIONS --- 
+			IF ( curState STREQUAL "read_OPTIONS" ) 
+				LIST ( APPEND options ${arg}	)
+			ELSE ( curState STREQUAL "read_OPTIONS" ) 
+
+	#					--- STATE: read_ONLY_IF --- 
+				IF ( curState STREQUAL "read_ONLY_IF" ) 
+					SET ( doAddCommand ${${arg}}	)
+				ELSE ( curState STREQUAL "read_ONLY_IF" ) 
+
+	#					--- STATE: read_DEP --- 
+					IF ( curState STREQUAL "read_DEP" ) 
+						SET ( depend	${arg}	)
+					ELSE ( curState STREQUAL "read_DEP" ) 
+
+	#					--- STATE: read_DIR --- 
+						IF ( curState STREQUAL "read_DIR" ) 
+							SET ( workDir	${arg}	)
+						ENDIF ( curState STREQUAL "read_DIR" ) 
+					ENDIF ( curState STREQUAL "read_DEP" ) 
+				ENDIF ( curState STREQUAL "read_ONLY_IF" ) 
+			ENDIF ( curState STREQUAL "read_OPTIONS" ) 
+		ENDIF ( NOT ${argIsStateChangeCmd} )
+	ENDFOREACH( arg )
+	
+	HELPER_SWIG_SET_TARGET_LANG_OPTIONS ( ${targetLang} 					)
+  	GET_FILENAME_COMPONENT				( srcFileWE  ${srcFile}  NAME_WE 	)
+	
+# 	MESSAGE ( STATUS "srcFile         : ${srcFile}"			)
+# 	MESSAGE ( STATUS "srcFileWE       : ${srcFileWE}"		)
+# 	MESSAGE ( STATUS "options         : ${options}"			)
+# 	MESSAGE ( STATUS "workDir         : ${workDir}"			)
+# 	MESSAGE ( STATUS "depend          : ${depend}"			)
+# 	MESSAGE ( STATUS "doAddCommand    : ${doAddCommand}"	)
+# 	MESSAGE ( STATUS "swig_EXECUTABLE : ${swig_EXECUTABLE}"	)
+#	MESSAGE ( STATUS ""							)
+
+	# --------------------
+	# --- Add Commands ---
+	# --------------------
+	
+	IF ( ${doAddCommand} )
+		ADD_GENERATED_SOURCE ( 	SRC ${srcFile} 
+								OUT ${srcFileWE}_wrap.cpp 
+								CMD ${swig_ENV} ${swig_EXECUTABLE} -c++ -${targetLang} ${options} -outdir ${CBS_SHARED_LIBRARY_PATH_PREBUILD} -module ${CBS_CURRENT} -o _OUT ${srcFile} 
+								DEP ${depend}
+								DIR ${workDir} 
+								) 
+	ENDIF ( ${doAddCommand} )
+ENDMACRO( ADD_SWIG_SOURCE_CPP )
+
+
+# --- Paramaters: ---
+# <swigsource> 		: Input swig-file. 
+# <targetLang> 		: Target language as specified in swig docs. Exclude the '-':
+#					: allegrocl, chicken, clisp, cffi, csharp, guile, java, lua, modula3, mzscheme, 
+#					: ocaml, octave, perl, php4, php5, pike, python, r, ruby, sexp, tcl, uffi, xml
+# OPTIONS <options> : Input file that commands use. Relative to CMAKE_CURRENT_SOURCE_DIR
+# DEP <depensOnTgt>	: Target this depends on.
+# DIR <workingDir>	: Working directory. Only needed if different from CMAKE_CURRENT_SOURCE_DIR
+# ONLY_IF <varName>	: Command is only added if varName is set.
+# 
+# Note              : Dont't add the -c++ option as this is done automatically.
+# EXAMPLE:
+# ADD_SWIG_SOURCE_CPP (  myswig.i python ONLY_IF UNIX )
+#
+MACRO ( ADD_SYSTEM_SWIG_SOURCE_CPP srcFile targetLang )  
+	# --- Setup ---
+	SET ( doAddCommand		1							)
+	SET ( curState			IDLE						)
+	SET ( workDir			${CMAKE_CURRENT_SOURCE_DIR}	)
+	SET ( depend			${srcFile}					)
+
+	FOREACH( arg ${ARGN} )
+	
+		# ----------------------
+		# --- Set next state ---
+		# ----------------------
+		
+		SET ( argIsStateChangeCmd	1	)
+		
+		#			--- OPTIONS --- 
+		IF ( ${arg} STREQUAL "OPTIONS" )
+			SET ( curState		"read_OPTIONS"	)
+		ELSE ( ${arg} STREQUAL "OPTIONS" )
+		#				--- ONLY_IF --- 
+			IF ( ${arg} STREQUAL "ONLY_IF" )
+				SET ( curState		"read_ONLY_IF"	)
+			ELSE ( ${arg} STREQUAL "ONLY_IF" )
+		#				--- DIR --- 
+				IF ( ${arg} STREQUAL "DIR" )
+					SET ( curState		"read_DIR"	)
+				ELSE ( ${arg} STREQUAL "DIR" )
+		#				--- DEP --- 
+					IF ( ${arg} STREQUAL "DEP" )
+						SET ( curState		"read_DEP"	)
+					ELSE ( ${arg} STREQUAL "DEP" )
+						SET ( argIsStateChangeCmd	0	)	# Argument was NOT a state change command
+					ENDIF ( ${arg} STREQUAL "DEP" )
+				ENDIF ( ${arg} STREQUAL "DIR" )
+			ENDIF ( ${arg} STREQUAL "ONLY_IF" )
+		ENDIF ( ${arg} STREQUAL "OPTIONS" )
+
+		# ----------------------
+		# --- Read arguments ---
+		# ----------------------
+		#				--- CMD --- 
+		IF ( NOT ${argIsStateChangeCmd} )
+			#					--- STATE: read_OPTIONS --- 
+			IF ( curState STREQUAL "read_OPTIONS" ) 
+				LIST ( APPEND options ${arg}	)
+			ELSE ( curState STREQUAL "read_OPTIONS" ) 
+
+	#					--- STATE: read_ONLY_IF --- 
+				IF ( curState STREQUAL "read_ONLY_IF" ) 
+					SET ( doAddCommand ${${arg}}	)
+				ELSE ( curState STREQUAL "read_ONLY_IF" ) 
+
+	#					--- STATE: read_DEP --- 
+					IF ( curState STREQUAL "read_DEP" ) 
+						SET ( depend	${arg}	)
+					ELSE ( curState STREQUAL "read_DEP" ) 
+
+	#					--- STATE: read_DIR --- 
+						IF ( curState STREQUAL "read_DIR" ) 
+							SET ( workDir	${arg}	)
+						ENDIF ( curState STREQUAL "read_DIR" ) 
+					ENDIF ( curState STREQUAL "read_DEP" ) 
+				ENDIF ( curState STREQUAL "read_ONLY_IF" ) 
+			ENDIF ( curState STREQUAL "read_OPTIONS" ) 
+		ENDIF ( NOT ${argIsStateChangeCmd} )
+	ENDFOREACH( arg )
+	
+	HELPER_SWIG_SET_TARGET_LANG_OPTIONS ( ${targetLang} 					)
+  	GET_FILENAME_COMPONENT				( srcFileWE  ${srcFile}  NAME_WE 	)
+	
+# 	MESSAGE ( STATUS "srcFile         : ${srcFile}"			)
+# 	MESSAGE ( STATUS "srcFileWE       : ${srcFileWE}"		)
+# 	MESSAGE ( STATUS "options         : ${options}"			)
+# 	MESSAGE ( STATUS "workDir         : ${workDir}"			)
+# 	MESSAGE ( STATUS "depend          : ${depend}"			)
+# 	MESSAGE ( STATUS "doAddCommand    : ${doAddCommand}"	)
+#	MESSAGE ( STATUS ""							)
+
+	# --------------------
+	# --- Add Commands ---
+	# --------------------
+	
+	IF ( ${doAddCommand} )
+		ADD_GENERATED_SOURCE ( 	SRC ${srcFile} 
+								OUT ${srcFileWE}_wrap.cpp 
+								CMD swig -c++ -${targetLang} ${options} -outdir ${CBS_SHARED_LIBRARY_PATH_PREBUILD} -module ${CBS_CURRENT} -o _OUT ${srcFile} 
+								DEP ${depend}
+								DIR ${workDir} 
+								) 
+	ENDIF ( ${doAddCommand} )
+ENDMACRO( ADD_SYSTEM_SWIG_SOURCE_CPP )
+
+
+
+
+
+

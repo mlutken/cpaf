@@ -1,0 +1,50 @@
+
+# --------------------------------
+# --- Visual Studio Waring IDs ---
+# --------------------------------
+IF ( COMPILER_MSVC )
+
+	SET ( W_SIGNED_UNSIGNED_MISMATCH					4018	) 
+	SET ( W_UNREFERENCED_LOCAL_VARIABLE					4101	)
+	SET ( W_UNREFERENCED_LABEL							4102	)
+	SET ( W_INCOMPATIBLE_TYPES							4133	) 
+	SET ( W_UNARY_MINUS_ON_UNSIGNED						4146	)
+	SET ( W_QUALIFIER_APPLIED_TO_FUNCTION_TYPE			4180	) 
+	SET ( W_CONVERSION_LOSS_OF_DATA						4244	)
+	SET ( W_EXCEPTION_SPECIFICATION_IGNORED				4290	)
+	SET ( W_ASSIGN_TRUNCATION							4305	) 
+	SET ( W_STATIC_CAST_TRUNCATE_CONST_VAL				4309	) 
+	SET ( W_FORCING_VALUE_TO_BOOL						4800	) 
+	
+	
+
+#	MESSAGE ( STATUS "WW: W_STATIC_CAST_TRUNCATE_CONST_VAL: ${W_STATIC_CAST_TRUNCATE_CONST_VAL} ")
+ENDIF ( COMPILER_MSVC ) 
+
+
+# ---------------------
+# --- Waring macros ---
+# ---------------------
+
+MACRO ( HELPER_DO_WARNING_DISABLE warningID )  
+	IF ( COMPILER_MSVC )
+		#MESSAGE ( STATUS "WW: warningID: ${warningID}, ${${warningID}} ")
+		add_definitions ( "/wd${${warningID}}" )
+	ELSE ( COMPILER_MSVC )	# Assume GCC
+		# TODO: Is there anyway at all to disable specific warnings in gcc ?
+		#	    Other than filtering the output thru grep or similar. We might need to change in CMake.
+		###add_definitions ( "--include ${warningID}" )
+	ENDIF ( COMPILER_MSVC ) 
+ENDMACRO( HELPER_DO_WARNING_DISABLE )
+
+MACRO ( WARNING_DISABLE warningID )  
+	IF ( ${ARGC} EQUAL 2 )
+		IF ( NOT ${${ARGV1}} STREQUAL "" )
+			HELPER_DO_WARNING_DISABLE ( ${warningID} )
+		ENDIF ( NOT ${${ARGV1}} STREQUAL "" )
+	ELSE (  ${ARGC} EQUAL 2  )
+		HELPER_DO_WARNING_DISABLE ( ${warningID} )
+	ENDIF (  ${ARGC} EQUAL 2  )
+ENDMACRO( WARNING_DISABLE )
+
+

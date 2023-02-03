@@ -1,0 +1,58 @@
+{
+    "default_weights" : {
+        "*" : 3,
+        "item_title" : 40,
+        "description_text" : 7,
+        "breadcrumbs_text" : 20
+    },
+    "names_da_add_from_language": [
+        "de",
+        "en"
+    ],
+    "values":
+    [
+        {
+            "item_family": "cycling_bike",
+            "item_group": "bike_group",
+            "item_type": "city_bike",
+            "names_da": [
+                "herrecy*"
+            ],
+            "names_en": [
+            ],
+            "type": "bike_type",
+            "val": "city_bike"
+        }
+        ,
+        {
+            "component_group": "transportation_and_storage_group",
+            "item_family": "cycling_component",
+            "item_group": "transportation_and_storage_group",
+            "item_type": "rack_bags_component",
+            "names_da": [
+                "taske til bagagebærer",
+                " [ breadcrumbs_text:100, item_title:200 ]  cykeltaske"
+            ],
+            "names_en": [
+            ],
+            "type": "component_type",
+            "val": "rack_bags_component"
+        }
+        ,
+        {
+            "component_group": "transportation_and_storage_group",
+            "item_family": "cycling_component",
+            "item_group": "wheels_group",
+            "item_type": "wheels_component",
+            "names_da": [
+                "cykelhjul"
+            ],
+            "names_en": [
+                "bike wheel"
+            ],
+            "type": "component_type",
+            "val": "wheels_component"
+        }
+
+    ]
+}

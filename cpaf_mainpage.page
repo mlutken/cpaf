@@ -1,0 +1,135 @@
+/** \mainpage "CPAF - C++ Cross Platform Application Framework"
+!!! CPAF - C++ Cross Platform Application Framework
+
+C++ framework for easy cross platform development, including GUI. Write once, 
+compile and run many. The best C/C++ open source libraries collected 
+in one distribution for easy compilation and static/dynamic linking in your project.
+
+Libraries include lots of %common c libraries like zlib, libpng, etc. as well as C++ 
+libraries like Boost. Cmake files are provided for easy command line compilation of 
+both the libraries (and your application code) as well as enabling the programmer to 
+use the IDE of his preference (Visual Studio, KDevelop, XCode).
+
+Where no public libraries exist we will try to develop them within cpaf, where the 
+biggest challenge will be to implement a GUI framework. Possibly as a sort of "wrapper" 
+around existing GUIs like QT, Gtk+, WxWidgets etc. All non cpaf 
+native libraries (3rd party, like e.g. zlib) are located in license folders like GPL, LGPL, 
+CUL (Commercial Usable Licenses), so developers have a choice of which they will use.
+
+!! Pragmatic approach
+We want C++ to be as easy to use for your new project as Java or C\#. While C++ is a very 
+versatile language it's main disadvantage compared to others like Java is perhaps 
+the sparse number of standard libraries as well as limited support for crossplatform 
+development. 
+
+CPAF seeks to remedy these two "drawbacks" in a pragmatic way utilizing exsisting C/C++ 
+libraries like Boost, zlib... And by making own platform abstraction libraries like e.g. 
+cpaf_libs/gui. Everything comes in one "package" release complete with CMake make files and 
+scripts for easy creation own CPAF derived projects and compilation.
+
+!! Common Build Sytem (CBS)
+The cmake based build system along with associated python helper scripts have been factored 
+out as a seperate project located in cpaf/cbs for now. The general idea is to supply a general 
+and very simple way to produce a cbs/cmake file(s) for a project (e.g. a library) and then this 
+library can build seamlessly together with other "cbs-enabled" libs/apps. 
+
+In your top level directory of your own project you also keep a #myprj.BuildConfig.cmake# file 
+which contains a use entry/line for every library you want to enable/use in your project like this:
+\code
+# --- 3RD PARTY LIBRARIES ---
+SET ( z_USE                         SYSTEM   )  # Use system installed version
+SET ( png_USE                       BUILD    )  # Build from local source code
+SET ( bz2_USE                       DISABLED )  # Don't use this lib at all
+SET ( boost_USE                     PREBUILT )  # Use allready locally (cbs) compiled version of boost.
+
+# Other build options
+SET ( z_LINK_TYPE                   STATIC    ) # Force static version of zlib even when cbmake.py -l shared is used.    
+\endcode
+
+So the (perhaps naive) hope is that many open source SW projects will pick up the idea and 
+provide cbs build files for their code. See the "CBS Introduction" page how simple it really is 
+to use this system.
+
+
+!! Documentation
+We also seek to provide some rudimentary documentation of the many different libraries 
+provided. It's to provide simple library level documentation/introduction in a uniform 
+way here on this homepage. The ambition is something like one to a few pages per library. 
+For CPAF's own subprojects the level of documentation should higher, with both directory 
+level, class level and function level documentation as well as examples.
+
+
+! License
+CPAF is distrubuted under the Boost license (http://www.boost.org/LICENSE_1_0.txt)
+which pretty much allows you to use the code in anyway you want. Ofcouse: since CPAF 
+consists of numerous SW libraries with different open source licenses, you will have 
+to adhere to the licenses of the libraries you wish to include in your project. But 
+the CPAF buildfiles, documentation and CPAF subprojects developped source code are 
+all under the Boost license.
+
+! Get the code
+So far only via Subversion:
+|| svn co https://cpaf.svn.sourceforge.net/svnroot/cpaf/trunk/cpaf cpaf
+
+Or use Tortoise on windows. Get it here:\n
+
+#NOTE: # All compiled files goes into $ ./build $ (i.e. .../cpaf/build)
+
+Compiling on linux:
+- Goto cpaf dir and run: #source env.cpaf#  Sets the CBS_ROOT_DIR environment var.
+- Run: #./cbs/cbmake.py# or just #cbmake.py# since the PATH to ./cbs should be set by now.
+- This should compile static release versions of all the libs.
+- Use #cbmake.py --help# for options to clean, clean cmake cache (often needed when changing 
+  configuration in config files like cpaf.BuildConfig.cmake or cpaf.cmake or when changing to 
+  shared versions of the libraries.
+- KDevelop files: $ cbmake.py -g kdev $.
+  - Then open the project file in KDevelop. File(s) is located in $ ./build/kdev_release $
+
+! Compiling on Windows
+Suppose you have checked out $ https://cpaf.svn.sourceforge.net/svnroot/cpaf/trunk/cpaf $ to 
+$ c:/code/cpaf $. You then need set the environment variable $ CBS_ROOT_DIR $ for example by going to: 
+$ Start->Settings->Control Panel->System->Advanced->Environment Variables->User variables for xxx->New $.
+Enter like this:
+||Variable name:  | $ CBS_ROOT_DIR $
+||Variable value: | $ c:/code/cpaf/cbs $  (IMPORTANT: Use forward '/' slashes !!!)
+
+Open a Visual Studio 2005 (vc8) command prompt. For example like this: $ Start->Run$ and then:
+||Open:  | #%comspec% /k ""C:/Program Files/Microsoft Visual Studio 8/VC/vcvarsall.bat"" x86#
+Just copy and paste the line into the open field.
+
+For Visual Studio 2003 (vc71) use:
+||Open:  | #%comspec% /k "C:/Program Files/Microsoft Visual Studio .NET 2003/Common7/Tools/vsvars32.bat"#
+
+Note that the above examples assumes default installation paths for Visual Studio 2005 and 2003.
+
+Once you have the command prompt navigate to $ c:/code/cpaf$:
+- Perhaps first run $ env.bat$ to set your PATH to also include $ c:/code/cpaf/cbs$ making 
+  it easier to run $ cbmake.py$.
+- Run: #./cbs/cbmake.py# or just #cbmake.py# since the PATH to cbs should be set by now.
+- This should compile static release versions of all the libs using nmake.
+- Use #cbmake.py --help# for options to clean, clean cmake cache (often needed when changing 
+  configuration in config files like cpaf.BuildConfig.cmake or cpaf.cmake or when changing to 
+  shared versions of the libraries using nmake.
+- Visual Studio 2005 (vc8) files: $ cbmake.py -g vc8$.
+  - Note that for the above command to work you must be in a VC8/2005 command prompt.
+  - Then open the project file in Visual Studio. File(s) is located in $ ./build/vc8_release$
+- Visual Studio 2003 (vc71) files: $ cbmake.py -g vc71$.
+  - Note that for the above command to work you must be in a VC71/2003 command prompt.
+  - Then open the project file in Visual Studio. File(s) is located in $ ./build/vc71_release$
+
+
+! SF project page
+http://sourceforge.net/projects/cpaf
+
+
+! Contact - Help really needed since it's a big project :-)
+Martin L : nitram@lutken.dk
+
+Help would be really appreciated since one person is really inadequate for a project this size. 
+It should however be quite easy to make small contributions like creating CBS build files for a 
+library. For example it should only take a 10 minuttes (perhaps up to 30 if you are new to CBS) 
+to create build files for a library like z or png.
+
+
+*/
+

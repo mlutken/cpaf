@@ -1,0 +1,417 @@
+
+SET ( CBS_PLATFORM_LIST WIN32 UNIX LINUX DARWIN )
+
+
+MACRO( FIND_HEADER_FOR_CPP_FILE var cppFile )  
+  	GET_FILENAME_COMPONENT	( cppFilePATH  ${cppFile} PATH )
+  	GET_FILENAME_COMPONENT	( cppFileWE  ${cppFile} NAME_WE )
+	GET_FILENAME_COMPONENT 	( cppFileEXT ${cppFile} EXT 	)
+    ####GET_TARGET_PROPERTY ( tgtType   ${cppFile}  TYPE )
+    IF    ( "${cppFilePATH}" STREQUAL "" )
+		SET ( headerFile_h  "${cppFileWE}.h" )  
+    ELSE    ( "${cppFilePATH}" STREQUAL "" )
+		SET ( headerFile_h  "${cppFilePATH}/${cppFileWE}.h" )  
+    ENDIF    ( "${cppFilePATH}" STREQUAL "" )
+	
+	IF ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${headerFile_h} )
+		SET ( ${var}  "${headerFile_h}" )  # Set 'return value'
+	ENDIF ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${headerFile_h} )
+	
+ENDMACRO( FIND_HEADER_FOR_CPP_FILE )
+
+
+# -------------------------------
+# --- GET_TARGET_TYPE (Macro) ---
+# --------------------------------
+# Gets the target's/project's type.
+#
+# - PARAMETERS -
+# var          : [out] Target/project type which is one of:
+#                       EXECUTABLE, STATIC_LIBRARY, SHARED_LIBRARY
+#                       MODULE_LIBRARY, UTILITY, INSTALL_FILES,
+#                       INSTALL_PROGRAMS, CBS_PROJECT (i.e. directory 
+#                       with subprojects and targets)
+# prjName       : [in] Target/project name
+#
+#
+MACRO( GET_TARGET_TYPE var prjName )  
+    GET_TARGET_PROPERTY ( tgtType   ${prjName}  TYPE )
+    IF    ( "${tgtType}" STREQUAL "NOTFOUND" )
+        IF    ( NOT "${${prjName}_INFO_USE}" STREQUAL "" )
+            SET ( tgtType   CBS_PROJECT )
+        ENDIF ( NOT "${${prjName}_INFO_USE}" STREQUAL "" )
+    ENDIF ( "${tgtType}" STREQUAL "NOTFOUND" )
+    SET ( ${var}  ${tgtType} )  # Set 'return value'
+ENDMACRO( GET_TARGET_TYPE )
+
+
+
+# -----------------------------------
+# --- GET_PARENT_DIR (Macro) ---
+# -----------------------------------
+# Gets parent directory.
+# The macro returns the parent directory of the argument given.
+# the path searched for is not found, then the macro advances one directory up,
+# and searches there. This continues untill the specified path is found or the 
+# filesystem root directory is reached.
+#
+# - PARAMETERS -
+# fparentDir            : [out] Return value containing the parent directory.
+# path                  : [in]  Directory/file to get parent directory for.
+# levelsUp              : [in]  If value > 1 it's used to
+#                               specify how many levels up you want.
+#                               E.g.  GET_PARENT_DIR ( twoUp  myDir 2 )  
+#
+# parentDirDescendPath  : [in] (Optional) A path to be appended to the found parent dir.
+#
+MACRO( GET_PARENT_DIR parentDir path levelsUp )  
+#    MESSAGE( STATUS "GET_PARENT_DIR, path : ${path}"   )
+#    MESSAGE( STATUS "GET_PARENT_DIR, levelsUp  : ${levelsUp}"    )
+
+    SET ( currentDir  ${path}   )
+    SET ( iCount ${levelsUp} )
+    WHILE( ${iCount} GREATER 0 )
+        GET_FILENAME_COMPONENT( parentDirectory ${currentDir} PATH  )  
+        SET ( currentDir  ${parentDirectory}                        )   
+        MATH ( EXPR iCount "${iCount} -1" )    
+    ENDWHILE( ${iCount} GREATER 0 )
+    
+    # If (optional) parentDirDescendPath is present, then append that to the found parent dir.
+    IF    ( ${ARGC} MATCHES 4 )
+        SET ( currentDir       "${currentDir}/${ARGV3}" )
+    ENDIF ( ${ARGC} MATCHES 4 )
+    
+    SET ( ${parentDir} ${currentDir} )   # Set 'return value'
+ENDMACRO( GET_PARENT_DIR )
+
+
+
+
+# Sets variable to default value only if not set allready or an 
+# inherited value exists. Assumes CBS_CURRENT_TARGET is set, which it 
+# allmost allways will be.
+# Variable is in all cases "promoted to a cache value" 
+# - PARAMETERS -
+# varPostFix   	: Variable (postFix) to set like e.g. "_INSTALL_PREFIX"
+# value     	: Default value to assign in case varPostFix is not set
+#				: Note. that in case a 
+#
+MACRO( TARGET_DEFAULT varPostFix defaultValue )  
+	IF ( NOT ${CBS_CURRENT_TARGET}${varPostFix} OR ${CBS_CURRENT_TARGET}${varPostFix} STREQUAL "" )
+		IF ( NOT ${CBS_PARENT_PROJECT}${varPostFix} OR ${CBS_PARENT_PROJECT}${varPostFix} STREQUAL "" )
+			SET ( ${CBS_CURRENT_TARGET}${varPostFix}  ${defaultValue} CACHE STRING "" FORCE )						# Use default value 
+		ELSE ( NOT ${CBS_PARENT_PROJECT}${varPostFix} OR ${CBS_PARENT_PROJECT}${varPostFix} STREQUAL "" )
+#		    MESSAGE( STATUS "WWW prj use parent      : ${CBS_CURRENT_TARGET}${varPostFix} := ${${CBS_PARENT_PROJECT}${varPostFix}}" )
+			SET ( ${CBS_CURRENT_TARGET}${varPostFix}  ${${CBS_PARENT_PROJECT}${varPostFix}} CACHE STRING "" FORCE )	# Use parent project's 
+		ENDIF ( NOT ${CBS_PARENT_PROJECT}${varPostFix} OR ${CBS_PARENT_PROJECT}${varPostFix} STREQUAL "" )
+	ELSE ( NOT ${CBS_CURRENT_TARGET}${varPostFix} OR ${CBS_CURRENT_TARGET}${varPostFix} STREQUAL "" )
+		SET ( ${CBS_CURRENT_TARGET}${varPostFix}  ${${CBS_CURRENT_TARGET}${varPostFix}} CACHE STRING "" FORCE )		# Use explicitly set (from xx.BuildConfig.cbs file typically)
+	ENDIF ( NOT ${CBS_CURRENT_TARGET}${varPostFix} OR ${CBS_CURRENT_TARGET}${varPostFix} STREQUAL "" )
+ENDMACRO( TARGET_DEFAULT )
+
+
+
+# Sets variable to default value only if not set allready or an 
+# inherited value exists. Assumes CBS_CURRENT_PROJECT is set, which it 
+# allmost allways will be.
+# Variable is in all cases "promoted to a cache value" 
+# - PARAMETERS -
+# varPostFix   	: Variable (postFix) to set like e.g. "_INSTALL_PREFIX"
+# value     	: Default value to assign in case varPostFix is not set
+#				: Note. that in case a 
+#
+MACRO( PROJECT_DEFAULT varPostFix defaultValue )  
+#	MESSAGE( STATUS "BBBBBBBBBBBB   :(${CBS_CURRENT_PROJECT}, ${CBS_PARENT_PROJECT}) ${CBS_PARENT_PROJECT}${varPostFix}: 	${${CBS_PARENT_PROJECT}${varPostFix}}" )
+#	MESSAGE( STATUS "CCCCCCCCCCCC   : ${CBS_CURRENT_PROJECT}${varPostFix} := ${${CBS_PARENT_PROJECT}${varPostFix}}" )
+	IF ( NOT ${CBS_CURRENT_PROJECT}${varPostFix} OR ${CBS_CURRENT_PROJECT}${varPostFix} STREQUAL "" )
+		IF ( NOT ${CBS_PARENT_PROJECT}${varPostFix} OR ${CBS_PARENT_PROJECT}${varPostFix} STREQUAL "" )
+			SET ( ${CBS_CURRENT_PROJECT}${varPostFix}  ${defaultValue} CACHE STRING "" FORCE )							# Use default value 
+		ELSE ( NOT ${CBS_PARENT_PROJECT}${varPostFix} OR ${CBS_PARENT_PROJECT}${varPostFix} STREQUAL "" )
+#		    MESSAGE( STATUS "WWW prj use parent      : ${CBS_CURRENT_PROJECT}${varPostFix} := ${${CBS_PARENT_PROJECT}${varPostFix}}" )
+			SET ( ${CBS_CURRENT_PROJECT}${varPostFix}  ${${CBS_PARENT_PROJECT}${varPostFix}} CACHE STRING "" FORCE )	# Use parent project's 
+		ENDIF ( NOT ${CBS_PARENT_PROJECT}${varPostFix} OR ${CBS_PARENT_PROJECT}${varPostFix} STREQUAL "" )
+	ELSE ( NOT ${CBS_CURRENT_PROJECT}${varPostFix} OR ${CBS_CURRENT_PROJECT}${varPostFix} STREQUAL "" )
+		SET ( ${CBS_CURRENT_PROJECT}${varPostFix}  ${${CBS_CURRENT_PROJECT}${varPostFix}} CACHE STRING "" FORCE )		# Use explicitly set (from xx.BuildConfig.cbs file typically)
+	ENDIF ( NOT ${CBS_CURRENT_PROJECT}${varPostFix} OR ${CBS_CURRENT_PROJECT}${varPostFix} STREQUAL "" )
+ENDMACRO( PROJECT_DEFAULT )
+
+
+
+
+
+
+
+# Checks wheter argument is a platform designation/name.
+#
+# - PARAMETERS -
+# bIsPlatformName    : [out] Header file.
+# varToTest          : [in]  Variable to test wheter it's a platform name. 
+#
+MACRO( CHECK_PLATFORM_NAME bIsPlatformName varToTest )  
+	SET ( ${bIsPlatformName}  )
+	FOREACH( platformName ${CBS_PLATFORM_LIST} )
+		IF ( ${platformName} STREQUAL ${varToTest} )
+			SET ( ${bIsPlatformName} 1 )
+		ENDIF ( ${platformName} STREQUAL ${varToTest} )
+	ENDFOREACH( platformName )
+ENDMACRO( CHECK_PLATFORM_NAME )
+
+
+#-- SSS: COMMAND C:/code/cpaf/cbs/bin/windows/sed.exe  -i.SEDBAK s%\@GLIB_VERSION\@%2.14.3%g" C:/code/cpaf/build_cbs/vc8_release/lgpl/glib-main/gobject/glib-mkenums"
+
+#-- SSS: COMMAND C:/code/cpaf/cbs/bin/windows/sed.exe  -i.SEDBAK s%_AT_HACK_%@%g" C:/code/cpaf/build_cbs/vc8_release/lgpl/pango/cbs_pango_mkenums.bat"
+
+#-- SSS: COMMAND C:/code/cpaf/cbs/bin/windows/sed.exe  -i.SEDBAK "s%_AT_HACK_%@%g" C:/code/cpaf/build_cbs/vc8_release/lgpl/pango/cbs_pango_mkenums.bat
+
+# Search/replace in file using regular expressions
+# Macro uses sed (Stream Line Editor).
+#
+# - PARAMETERS -
+# inFile    : [in] Input file.
+# outFile   : [in] Output file.
+#  
+# ...       : Pairs of sSearchFor, sReplaceWith strings.
+#			  Currently we support only 3 such pairs.
+#
+MACRO( REPLACE_IN_FILE_REGEX inFile )  
+	IF ( UNIX )
+ 		SET_DEFAULT ( sed_EXECUTABLE 	${CBS_sed_EXECUTABLE} )
+		IF ( ${ARGC} STREQUAL "3" )
+			EXECUTE_PROCESS( 	COMMAND ${sed_EXECUTABLE}  -i.SEDBAK "s%${ARGV1}%${ARGV2}%g" ${inFile}
+								WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}	)
+		ENDIF ( ${ARGC} STREQUAL "3" )
+		IF ( ${ARGC} STREQUAL "5" )
+			EXECUTE_PROCESS( 	COMMAND ${sed_EXECUTABLE}  -i.SEDBAK "s�${ARGV1}�${ARGV2}�g" ${inFile}
+								WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}	)
+			EXECUTE_PROCESS( 	COMMAND ${sed_EXECUTABLE}  -i.SEDBAK "s�${ARGV3}�${ARGV4}�g" ${inFile}
+								WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}	)
+		ENDIF ( ${ARGC} STREQUAL "5" )
+		IF ( ${ARGC} STREQUAL "7" )
+			EXECUTE_PROCESS( 	COMMAND ${sed_EXECUTABLE}  -i.SEDBAK "s�${ARGV1}�${ARGV2}�g" ${inFile}
+								WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}	)
+			EXECUTE_PROCESS( 	COMMAND ${sed_EXECUTABLE}  -i.SEDBAK "s�${ARGV3}�${ARGV4}�g" ${inFile}
+								WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}	)
+			EXECUTE_PROCESS( 	COMMAND ${sed_EXECUTABLE}  -i.SEDBAK "s�${ARGV5}�${ARGV6}�g" ${inFile}
+								WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}	)
+		ENDIF ( ${ARGC} STREQUAL "7" )
+		EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E remove ${inFile}.SEDBAK
+ 						WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}	)
+	ENDIF ( UNIX )
+	IF ( WIN32 )
+ 		SET_DEFAULT ( sed_EXECUTABLE 	${CBS_sed_EXECUTABLE} )
+		IF ( ${ARGC} STREQUAL "3" )
+		 	GET_FILENAME_COMPONENT( inFile_FilePATH 	${inFile}		PATH 		)
+			EXECUTE_PROCESS( 	COMMAND ${sed_EXECUTABLE}  -i -e "s%${ARGV1}%${ARGV2}%g" ${inFile}  
+								WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}	)
+			EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E copy ${inFile_FilePATH}/sedDOSSUX ${inFile}
+ 							WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}	)
+			EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E remove ${inFile_FilePATH}/sedDOSSUX
+ 							WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}	)
+		ENDIF ( ${ARGC} STREQUAL "3" )
+#		IF ( ${ARGC} STREQUAL "5" )
+#			EXECUTE_PROCESS( 	COMMAND ${sed_EXECUTABLE}  -i.SEDBAK "s%${ARGV1}%${ARGV2}%g" ${inFile} > ${inFile}.SED
+#								WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}	)
+#			EXECUTE_PROCESS( 	COMMAND ${sed_EXECUTABLE}  -i.SEDBAK "s%${ARGV3}%${ARGV4}%g" ${inFile} > ${inFile}.SED
+#								WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}	)
+#		ENDIF ( ${ARGC} STREQUAL "5" )
+#		IF ( ${ARGC} STREQUAL "7" )
+#			EXECUTE_PROCESS( 	COMMAND ${sed_EXECUTABLE}  -i.SEDBAK "s%${ARGV1}%${ARGV2}%g" ${inFile} > ${inFile}.SED
+#								WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}	)
+#			EXECUTE_PROCESS( 	COMMAND ${sed_EXECUTABLE}  -i.SEDBAK "s%${ARGV3}%${ARGV4}%g" ${inFile} > ${inFile}.SED
+#								WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}	)
+#			EXECUTE_PROCESS( 	COMMAND ${sed_EXECUTABLE}  -i.SEDBAK "s%${ARGV5}%${ARGV6}%g" ${inFile} > ${inFile}.SED
+#								WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}	)
+#		ENDIF ( ${ARGC} STREQUAL "7" )
+	ENDIF ( WIN32 )
+
+ENDMACRO( REPLACE_IN_FILE_REGEX )
+
+MACRO( TARGET_REPLACE_IN_FILE_REGEX inFile )  
+ENDMACRO( TARGET_REPLACE_IN_FILE_REGEX )
+
+
+
+
+# Append an element to the end of a list, only
+# if that element is not already in the list.
+MACRO ( LIST_APPEND_UNIQUE listName )  
+	SET ( addToCache	""	)
+	FOREACH( arg ${ARGN} )
+		IF ( ${arg} STREQUAL "CACHE" )
+			SET ( addToCache	1	)
+		ELSE ( ${arg} STREQUAL "CACHE" )
+			LIST ( FIND ${listName} ${arg} argFoundInList )
+			IF ( ${argFoundInList} EQUAL -1 )
+				LIST ( APPEND ${listName} ${arg} )
+			ELSE ( ${argFoundInList} EQUAL -1 )
+			ENDIF ( ${argFoundInList} EQUAL -1 )
+		ENDIF ( ${arg} STREQUAL "CACHE" )
+	ENDFOREACH( arg )
+	IF ( addToCache )
+		SET ( ${listName} ${${listName}} CACHE STRING "" FORCE )
+	ENDIF ( addToCache )
+ENDMACRO( LIST_APPEND_UNIQUE )
+
+
+
+# Append an element to the end of a list.
+MACRO ( LIST_APPEND listName )  
+	SET ( addToCache	""	)
+	FOREACH( arg ${ARGN} )
+		IF ( ${arg} STREQUAL "CACHE" )
+			SET ( addToCache	1	)
+		ELSE ( ${arg} STREQUAL "CACHE" )
+			LIST ( APPEND ${listName} ${arg} )
+		ENDIF ( ${arg} STREQUAL "CACHE" )
+	ENDFOREACH( arg )
+	IF ( addToCache )
+		SET ( ${listName} ${${listName}} CACHE STRING "" FORCE )
+	ENDIF ( addToCache )
+ENDMACRO( LIST_APPEND )
+
+
+
+# # ### Sets variable to default value only if not set allready
+# # ### - PARAMETERS -
+# # ### varName   	: Variable to set
+# # ### defaultValue  : Default value to assign in case varName is not set.
+# # ###             	Important: In case this represents a list you must put i in quotes.
+# # ###
+# # ##MACRO( SET_DEFAULT varName defaultValue )  
+# # ###    MESSAGE( STATUS "SET_DEFAULT varName:                 "${varName} )
+# # ###    MESSAGE( STATUS "SET_DEFAULT $ {varName}:             '${${varName}}'" )
+# # ###    MESSAGE( STATUS "SET_DEFAULT value:                   "${defaultValue} )
+# # ##	IF ( NOT ${varName} OR ${varName} STREQUAL "" )
+# # ##		SET ( ${varName}  ${defaultValue} )
+# # ##	ELSE ( NOT ${varName} OR ${varName} STREQUAL "" )
+# # ##		SET ( ${varName}  ${${varName}} )
+# # ##	ENDIF ( NOT ${varName} OR ${varName} STREQUAL "" )
+# # ##ENDMACRO( SET_DEFAULT )
+# # 
+# # # Sets variable to default value only if not set allready. 
+# # # - PARAMETERS -
+# # # varName   	: Variable to set
+# # # defaultValue  : Default value to assign in case varName is not set
+# # #             	Important: In case this represents a list you must put i in quotes.
+# # # [onlyIfSet]   : optional 3rd parameter which controls whether to try to set the variable at all 
+# # #
+# # #MACRO( SET_DEFAULT varName defaultValue )  
+# # # 	IF ( ${ARGC} STREQUAL "3" )
+# # # 		IF ( NOT ${${ARGV2}} STREQUAL "" )
+# # #			IF ( NOT ${varName} OR ${varName} STREQUAL "" )
+# # #				SET ( ${varName}  ${defaultValue} )
+# # #			ELSE ( NOT ${varName} OR ${varName} STREQUAL "" )
+# # #				SET ( ${varName}  ${${varName}} )
+# # #			ENDIF ( NOT ${varName} OR ${varName} STREQUAL "" )
+# # # 		ENDIF ( NOT ${${ARGV2}} STREQUAL "" )
+# # # 	ELSE ( ${ARGC} STREQUAL "3" )
+# # #		IF ( NOT ${varName} OR ${varName} STREQUAL "" )
+# # #			SET ( ${varName}  ${defaultValue} )
+# # #		ELSE ( NOT ${varName} OR ${varName} STREQUAL "" )
+# # #			SET ( ${varName}  ${${varName}} )
+# # #		ENDIF ( NOT ${varName} OR ${varName} STREQUAL "" )
+# # # 	ENDIF ( ${ARGC} STREQUAL "3" )
+# # #ENDMACRO( SET_DEFAULT )
+# # 
+# # #MACRO( SET_DEFAULT varName defaultValue )  
+# # # 	IF ( ${ARGC} STREQUAL "3" )
+# # # 		IF ( NOT ${${ARGV2}} STREQUAL "" )
+# # #			IF ( NOT ${varName} OR ${varName} STREQUAL "" )
+# # #				SET ( ${varName}					${defaultValue} )
+# # #				SET ( ${varName}_WAS_DEFAULT_SET	1				)
+# # #			ENDIF ( NOT ${varName} OR ${varName} STREQUAL "" )
+# # # 		ENDIF ( NOT ${${ARGV2}} STREQUAL "" )
+# # # 	ELSE ( ${ARGC} STREQUAL "3" )
+# # #		IF ( NOT ${varName} OR ${varName} STREQUAL "" )
+# # #			SET ( ${varName}					${defaultValue} )
+# # #			SET ( ${varName}_WAS_DEFAULT_SET	1				)
+# # #		ENDIF ( NOT ${varName} OR ${varName} STREQUAL "" )
+# # # 	ENDIF ( ${ARGC} STREQUAL "3" )
+# # #ENDMACRO( SET_DEFAULT )
+# # # MACRO( SET_DEFAULT varName defaultValue )  
+# # #  	IF ( ${ARGC} STREQUAL "3" )
+# # #  		IF ( NOT ${${ARGV2}} STREQUAL "" )
+# # # 			IF ( NOT ${varName} OR ${varName} STREQUAL "" OR ${varName}_WAS_DEFAULT_SET )
+# # # 				SET ( ${varName}					${defaultValue} )
+# # # 				SET ( ${varName}_WAS_DEFAULT_SET	1				)
+# # # 			ENDIF ( NOT ${varName} OR ${varName} STREQUAL "" OR ${varName}_WAS_DEFAULT_SET )
+# # #  		ENDIF ( NOT ${${ARGV2}} STREQUAL "" )
+# # #  	ELSE ( ${ARGC} STREQUAL "3" )
+# # # 		IF ( NOT ${varName} OR ${varName} STREQUAL "" OR ${varName}_WAS_DEFAULT_SET )
+# # # 			SET ( ${varName}					${defaultValue}		)
+# # # 			SET ( ${varName}_WAS_DEFAULT_SET	1					)
+# # # 		ENDIF ( NOT ${varName} OR ${varName} STREQUAL "" OR ${varName}_WAS_DEFAULT_SET )
+# # #  	ENDIF ( ${ARGC} STREQUAL "3" )
+# # # ENDMACRO( SET_DEFAULT )
+
+# # # Sets variable to default value only if not set allready. 
+# # # Variable is in all cases "promoted to a cache value" 
+# # # - PARAMETERS -
+# # # varName   	: Variable to set
+# # # defaultValue  : Default value to assign in case varName is not set
+# # #             	Important: In case this represents a list you must put i in quotes.
+# # # [onlyIfSet]   : optional 3rd parameter which controls whether to try to set the variable at all 
+# # #
+# # MACRO( SET_DEFAULT_CACHE varName defaultValue )  
+# #  	IF ( ${ARGC} STREQUAL "3" )
+# #  		IF ( NOT ${${ARGV2}} STREQUAL "" )
+# # 			IF ( NOT ${varName} OR ${varName} STREQUAL "" )
+# # 				SET ( ${varName}  ${defaultValue} CACHE STRING "" FORCE )
+# # 			ELSE ( NOT ${varName} OR ${varName} STREQUAL "" )
+# # 				SET ( ${varName}  ${${varName}} CACHE STRING "" FORCE )
+# # 			ENDIF ( NOT ${varName} OR ${varName} STREQUAL "" )
+# #  		ENDIF ( NOT ${${ARGV2}} STREQUAL "" )
+# #  	ELSE ( ${ARGC} STREQUAL "3" )
+# # 		IF ( NOT ${varName} OR ${varName} STREQUAL "" )
+# # 			SET ( ${varName}  ${defaultValue} CACHE STRING "" FORCE )
+# # 		ELSE ( NOT ${varName} OR ${varName} STREQUAL "" )
+# # 			SET ( ${varName}  ${${varName}} CACHE STRING "" FORCE )
+# # 		ENDIF ( NOT ${varName} OR ${varName} STREQUAL "" )
+# #  	ENDIF ( ${ARGC} STREQUAL "3" )
+# # ENDMACRO( SET_DEFAULT_CACHE )
+# # # Convenience macro to set targets (default) version number.
+# # # Sets 4 vars:
+# # # tgt_VERSION_MAJOR, tgt_VERSION_MINOR, tgt_VERSION_MICRO 
+# # # and a tgt_VERSION_STRING which is a concatenation of the 3 first with dots to separate 
+# # # like eg. z_VERSION_STRING = "1.2.3"
+# # # 
+# # MACRO( TARGET_DEFAULT_VERSION major minor micro )  
+# # 	TARGET_DEFAULT ( _VERSION_MAJOR	${major}	)
+# # 	TARGET_DEFAULT ( _VERSION_MINOR	${minor}	)
+# # 	TARGET_DEFAULT ( _VERSION_MICRO	${micro}	)
+# # 	SET ( ${CBS_CURRENT_TARGET}_VERSION_STRING  "${${CBS_CURRENT_TARGET}_VERSION_MAJOR}.${${CBS_CURRENT_TARGET}_VERSION_MINOR}.${${CBS_CURRENT_TARGET}_VERSION_MICRO}" CACHE STRING "" FORCE )	# Use parent project's 
+# # ENDMACRO( TARGET_DEFAULT_VERSION )
+
+
+
+# # # Convenience macro to set projects (default) version number.
+# # # Sets 4 vars:
+# # # prj_VERSION_MAJOR, prj_VERSION_MINOR, prj_VERSION_MICRO 
+# # # and a prj_VERSION_STRING which is a concatenation of the 3 first with dots to separate 
+# # # like eg. glib-main_VERSION_STRING = "2.14.3"
+# # # # 
+# # MACRO( PROJECT_DEFAULT_VERSION major minor micro )  
+# # 	PROJECT_DEFAULT ( _VERSION_MAJOR	${major}	)
+# # 	PROJECT_DEFAULT ( _VERSION_MINOR	${minor}	)
+# # 	PROJECT_DEFAULT ( _VERSION_MICRO	${micro}	)
+# # 	SET ( ${CBS_CURRENT_PROJECT}_VERSION_STRING  "${${CBS_CURRENT_PROJECT}_VERSION_MAJOR}.${${CBS_CURRENT_PROJECT}_VERSION_MINOR}.${${CBS_CURRENT_PROJECT}_VERSION_MICRO}" CACHE STRING "" FORCE )	# Use parent project's 
+# # ENDMACRO( PROJECT_DEFAULT_VERSION )
+## Sets variable to value optionally using a conditional. 
+## Enhanced version of CMake's normal SET command which takes an
+## optional conditional variable. If such a variable exists then
+## the SET is only performed in case that variable is not empty.
+## If no optinal second parameter is provided the command works as
+## normal SET and sets the variable unconditionally.
+## - PARAMETERS -
+## varName   	: Variable to set
+## [onlyIfSet]   : optional 3rd parameter which controls whether to try to set the variable at all 
+##
+##MACRO( SET_IF varName value )  
+## 	IF ( ${ARGC} STREQUAL "3" )
+## 		IF ( NOT ${${ARGV2}} STREQUAL "" )
+##			SET ( ${varName}  ${value} )
+## 		ENDIF ( NOT ${${ARGV2}} STREQUAL "" )
+## 	ELSE ( ${ARGC} STREQUAL "3" )
+##			SET ( ${varName}  ${value} )
+## 	ENDIF ( ${ARGC} STREQUAL "3" )
+##ENDMACRO( SET_IF )

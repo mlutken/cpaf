@@ -1,0 +1,9 @@
+
+INCLUDE (${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+FIND_LIB_SIMPLE ( 	wx_gtk2u_core-2.8 
+					HEADER_FILES app.h  
+					HEADER_PATHS /usr/include/wx-2.8/wx /usr/lib/x86_64-linux-gnu/wx/include/base-unicode-release-2.8/wx
+					LIB_PATHS /usr/lib64 /usr/lib /usr/lib/x86_64-linux-gnu
+                    INCLUDE_DIR_LEVELS_UP 1 
+					)
+

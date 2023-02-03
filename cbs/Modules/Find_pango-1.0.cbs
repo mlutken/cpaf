@@ -1,0 +1,9 @@
+
+INCLUDE (${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+FIND_LIB_SIMPLE ( 	pango-1.0 
+					HEADER_FILES pango.h  
+					HEADER_PATHS /usr/include/pango-1.0/pango /opt/gnome/include/pango-1.0/pango 
+					INCLUDE_DIR_LEVELS_UP 1 
+					LIB_PATHS /usr/lib /opt/gnome/lib 
+					)
+

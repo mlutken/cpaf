@@ -1,0 +1,40 @@
+1 Getting Started				How to familiarize yourself with Qt Designer
+    2 Launching Designer			Running the Qt Designer application
+    2 The User Interface			How to interact with Qt Designer
+
+1 Designing a Component			Creating a GUI for your application
+    2 Creating a Dialog			How to create a dialog
+    2 Composing the Dialog		Putting widgets into the dialog example
+    2 Creating a Layout			Arranging widgets on a form
+    2 Signal and Slot Connections		Making widget communicate with each other
+
+1 Using a Component in Your Application	Generating code from forms
+    2 The Direct Approach			Using a form without any adjustments
+    2 The Single Inheritance Approach	Subclassing a form's base class
+    2 The Multiple Inheritance Approach	Subclassing the form itself
+    2 Automatic Connections		Connecting widgets using a naming scheme
+        3 A Dialog Without Auto-Connect	How to connect widgets without a naming scheme
+        3 A Dialog With Auto-Connect	Using automatic connections
+
+1 Form Editing Mode			How to edit a form in Qt Designer
+    2 Managing Forms			Loading and saving forms
+    2 Editing a Form			Basic editing techniques
+    2 The Property Editor			Changing widget properties
+    2 The Object Inspector		Examining the hierarchy of objects on a form
+    2 Layouts				Objects that arrange widgets on a form
+        3 Applying and Breaking Layouts	Managing widgets in layouts
+        3 Horizontal and Vertical Layouts	Standard row and column layouts
+        3 The Grid Layout			Arranging widgets in a matrix
+    2 Previewing Forms			Checking that the design works
+
+1 Using Containers			How to group widgets together
+    2 General Features			Common container features
+    2 Frames				QFrame
+    2 Group Boxes				QGroupBox
+    2 Stacked Widgets			QStackedWidget
+    2 Tab Widgets				QTabWidget
+    2 Toolbox Widgets			QToolBox
+
+1 Connection Editing Mode			Connecting widgets together with signals and slots
+    2 Connecting Objects			Making connections in Qt Designer
+    2 Editing Connections			Changing existing connections

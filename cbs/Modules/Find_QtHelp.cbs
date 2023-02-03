@@ -1,0 +1,19 @@
+INCLUDE (${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+IF( CBS_QT4 )
+	FIND_LIB_SIMPLE ( 	QtHelp 
+						LIB_NAME QtHelp LINUX QtHelp4 CBS_WINDOWS_RELEASE QtHelpd4 CBS_WINDOWS_DEBUG
+						HEADER_FILES QtHelp 
+						HEADER_PATHS ${QT_HDR_DIR}/QtHelp /usr/include/qt4/QtHelp /usr/include/QtHelp
+						LIB_PATHS ${QT_LIB_DIR} /usr/lib
+						PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtHelp ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+						)
+ELSE( CBS_QT4 )
+	FIND_LIB_SIMPLE ( 	QtHelp
+						LIB_NAME QtHelp LINUX Qt5Help CBS_WINDOWS_RELEASE Qt5Helpd CBS_WINDOWS_DEBUG
+						HEADER_FILES QtHelp 
+						HEADER_PATHS ${QT_HDR_DIR}/QtHelp /usr/include/qt5/QtHelp /usr/include/QtHelp
+						LIB_PATHS ${QT_LIB_DIR} /usr/lib
+						PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtHelp ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+						)
+ENDIF( CBS_QT4 )
+

@@ -1,0 +1,19 @@
+INCLUDE (${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+IF( CBS_QT4 )
+	FIND_LIB_SIMPLE ( 	QtCLucene 
+						LIB_NAME QtCLucene LINUX QtCLucene4 CBS_WINDOWS_RELEASE QtCLucened4 CBS_WINDOWS_DEBUG
+						HEADER_FILES QtCLucene 
+						HEADER_PATHS ${QT_HDR_DIR}/QtCLucene /usr/include/qt4/QtCLucene /usr/include/QtCLucene
+						LIB_PATHS ${QT_LIB_DIR} /usr/lib
+						PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtCLucene ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+						)
+ELSE( CBS_QT4 )
+	FIND_LIB_SIMPLE ( 	QtCLucene
+						LIB_NAME QtCLucene LINUX Qt5CLucene CBS_WINDOWS_RELEASE Qt5CLucened CBS_WINDOWS_DEBUG
+						HEADER_FILES QtCLucene 
+						HEADER_PATHS ${QT_HDR_DIR}/QtCLucene /usr/include/qt5/QtCLucene /usr/include/QtCLucene
+						LIB_PATHS ${QT_LIB_DIR} /usr/lib
+						PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtCLucene ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+						)
+ENDIF( CBS_QT4 )
+

@@ -1,0 +1,22 @@
+INCLUDE (${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+IF( CBS_QT4 )
+	FIND_LIB_SIMPLE ( 	QtXmlPatterns 
+						LIB_NAME QtXmlPatterns LINUX QtXmlPatterns4 CBS_WINDOWS_RELEASE QtXmlPatternsd4 CBS_WINDOWS_DEBUG
+						HEADER_FILES QXmlSchema  
+						HEADER_PATHS ${QT_HDR_DIR}/QtXmlPatterns /usr/include/qt4/QtXmlPatterns /usr/include/QtXmlPatterns
+						LIB_PATHS ${QT_LIB_DIR} /usr/lib
+						PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtXmlPatterns ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+						DEPENDS_ON QtXml
+						)
+ELSE( CBS_QT4 )
+	FIND_LIB_SIMPLE ( 	QtXmlPatterns 
+						LIB_NAME QtXmlPatterns LINUX Qt5XmlPatterns CBS_WINDOWS_RELEASE Qt5XmlPatternsd CBS_WINDOWS_DEBUG
+						HEADER_FILES QXmlSchema  
+						HEADER_PATHS ${QT_HDR_DIR}/QtXmlPatterns /usr/include/qt5/QtXmlPatterns /usr/include/QtXmlPatterns
+						LIB_PATHS ${QT_LIB_DIR} /usr/lib
+						PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtXmlPatterns ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+						DEPENDS_ON QtXml
+						)
+ENDIF( CBS_QT4 )
+
+

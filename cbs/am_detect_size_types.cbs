@@ -1,0 +1,25 @@
+
+INCLUDE( CheckTypeSize )
+
+# --- Get fixed size integer types for current platform ---
+CHECK_TYPE_SIZE( "char" 			SIZEOF_CHAR			)
+CHECK_TYPE_SIZE( "wchar_t" 			SIZEOF_WCHAR_T		)
+CHECK_TYPE_SIZE( "int" 				SIZEOF_INT			)
+CHECK_TYPE_SIZE( "long" 			SIZEOF_LONG			)
+CHECK_TYPE_SIZE( "long long" 		SIZEOF_LONG_LONG	)
+CHECK_TYPE_SIZE( "short" 			SIZEOF_SHORT		)
+CHECK_TYPE_SIZE( "size_t" 			SIZEOF_SIZE_T		)
+CHECK_TYPE_SIZE( "void *" 			SIZEOF_VOID_P		)
+CHECK_TYPE_SIZE( "__int64" 			SIZEOF___INT64		)
+CHECK_TYPE_SIZE( "float" 			SIZEOF_FLOAT		)
+CHECK_TYPE_SIZE( "double" 			SIZEOF_DOUBLE		)
+
+# Seems size_t, wchar_t does not get detected on Windows.
+# For now we just force them.
+# TODO: Find out why these types does not get properly detected.
+IF (    WIN32 )
+	SET ( SIZEOF_WCHAR_T			2	)	
+	SET ( SIZEOF_SIZE_T				4	)	# TODO:  4 or 8 ??
+	SET ( SIZEOF___INT64			8	)
+	
+ENDIF ( WIN32 )

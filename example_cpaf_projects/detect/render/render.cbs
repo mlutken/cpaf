@@ -1,0 +1,18 @@
+# -------------------
+# --- Build setup ---
+# -------------------
+ADDX_DEPENDS_ON ( cpaf_math						)
+ADDX_DEPENDS_ON ( cpaf_filesystem				)
+ADDX_INCLUDE_DIR ( ${CMAKE_CURRENT_SOURCE_DIR}  )
+
+# -------------------
+# --- Add sources ---
+# -------------------
+ADD_SOURCE_FILE ( CircleDetect.cpp                  )
+ADD_SOURCE_FILE ( Color.cpp                         )
+ADD_SOURCE_FILE ( color_edge_detect_policies.cpp    )
+ADD_SOURCE_FILE ( color_pixel_get_policies.cpp      )
+ADD_SOURCE_FILE ( detect_utils.cpp                  )
+ADD_SOURCE_FILE ( StraitLineEdgeDetect.cpp          )
+
+

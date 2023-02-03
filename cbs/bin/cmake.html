@@ -1,0 +1,1360 @@
+<html><body>
+<h2>Name</h2>
+<pre>  cmake - Cross-Platform Makefile Generator.</pre>
+    
+<h2>Usage</h2>
+<pre>  cmake [options] &lt;path-to-source&gt;<br>  cmake [options] &lt;path-to-existing-build&gt;</pre>
+    
+<p>The "cmake" executable is the CMake command-line interface.  It may be used to configure projects in scripts.  Project configuration settings may be specified on the command line with the -D option.  The -i option will cause cmake to interactively prompt for such settings.
+<p>CMake is a cross-platform build system generator.  Projects specify their build process with platform-independent CMake listfiles included in each directory of a source tree with the name CMakeLists.txt. Users build a project by using CMake to generate a build system for a native tool on their platform.
+<h2>Command-Line Options</h2>
+<ul>
+  <li>
+    <b><code>-C &lt;initial-cache&gt;</code></b>: Pre-load a script to populate the cache.<br>
+    <p>When cmake is first run in an empty build tree, it creates a CMakeCache.txt file and populates it with customizable settings for the project.  This option may be used to specify a file from which to load cache entries before the first pass through the project's cmake listfiles.  The loaded entries take priority over the project's default values.  The given file should be a CMake script containing SET commands that use the CACHE option, not a cache-format file.
+  </li>
+  <li>
+    <b><code>-D &lt;var&gt;:&lt;type&gt;=&lt;value&gt;</code></b>: Create a cmake cache entry.<br>
+    <p>When cmake is first run in an empty build tree, it creates a CMakeCache.txt file and populates it with customizable settings for the project.  This option may be used to specify a setting that takes priority over the project's default value.  The option may be repeated for as many cache entries as desired.
+  </li>
+  <li>
+    <b><code>-G &lt;generator-name&gt;</code></b>: Specify a makefile generator.<br>
+    <p>CMake may support multiple native build systems on certain platforms.  A makefile generator is responsible for generating a particular build system.  Possible generator names are specified in the Generators section.
+  </li>
+  <li>
+    <b><code>-E</code></b>: CMake command mode.<br>
+    <p>For true platform independence, CMake provides a list of commands that can be used on all systems. Run with -E help for the usage information.
+  </li>
+  <li>
+    <b><code>-i</code></b>: Run in wizard mode.<br>
+    <p>Wizard mode runs cmake interactively without a GUI.  The user is prompted to answer questions about the project configuration.  The answers are used to set cmake cache values.
+  </li>
+  <li>
+    <b><code>-L[A][H]</code></b>: List non-advanced cached variables.<br>
+    <p>List cache variables will run CMake and list all the variables from the CMake cache that are not marked as INTERNAL or ADVANCED. This will effectively display current CMake settings, which can be then changed with -D option. Changing some of the variable may result in more variables being created. If A is specified, then it will display also advanced variables. If H is specified, it will also display help for each variable.
+  </li>
+  <li>
+    <b><code>-N</code></b>: View mode only.<br>
+    <p>Only load the cache. Do not actually run configure and generate steps.
+  </li>
+  <li>
+    <b><code>-P &lt;file&gt;</code></b>: Process script mode.<br>
+    <p>Process the given cmake file as a script written in the CMake language.  No configure or generate step is performed and the cache is not modified. If variables are defined using -D, this must be done before the -P argument.
+  </li>
+  <li>
+    <b><code>--graphviz=[file]</code></b>: Generate graphviz of dependencies.<br>
+    <p>Generate a graphviz input file that will contain all the library and executable dependencies in the project.
+  </li>
+  <li>
+    <b><code>--debug-trycompile</code></b>: Do not delete the try compile directories..<br>
+    <p>Do not delete the files and directories created for try_compile calls. This is useful in debugging failed try_compiles.
+  </li>
+  <li>
+    <b><code>--debug-output</code></b>: Put cmake in a debug mode.<br>
+    <p>Print extra stuff during the cmake run like stack traces with message(send_error ) calls.
+  </li>
+  <li>
+    <b><code>--help-command cmd [file]</code></b>: Print help for a single command and exit.<br>
+    <p>Full documentation specific to the given command is displayed.
+  </li>
+  <li>
+    <b><code>--help-command-list [file]</code></b>: List available listfile commands and exit.<br>
+    <p>The list contains all commands for which help may be obtained by using the --help-command argument followed by a command name.  If a file is specified, the help is written into it.
+  </li>
+  <li>
+    <b><code>--help-module module [file]</code></b>: Print help for a single module and exit.<br>
+    <p>Full documentation specific to the given module is displayed.
+  </li>
+  <li>
+    <b><code>--help-module-list [file]</code></b>: List available modules and exit.<br>
+    <p>The list contains all modules for which help may be obtained by using the --help-module argument followed by a module name.  If a file is specified, the help is written into it.
+  </li>
+  <li>
+    <b><code>--copyright [file]</code></b>: Print the CMake copyright and exit.<br>
+    <p>If a file is specified, the copyright is written into it.
+  </li>
+  <li>
+    <b><code>--help</code></b>: Print usage information and exit.<br>
+    <p>Usage describes the basic command line interface and its options.
+  </li>
+  <li>
+    <b><code>--help-full [file]</code></b>: Print full help and exit.<br>
+    <p>Full help displays most of the documentation provided by the UNIX man page.  It is provided for use on non-UNIX platforms, but is also convenient if the man page is not installed.  If a file is specified, the help is written into it.
+  </li>
+  <li>
+    <b><code>--help-html [file]</code></b>: Print full help in HTML format.<br>
+    <p>This option is used by CMake authors to help produce web pages.  If a file is specified, the help is written into it.
+  </li>
+  <li>
+    <b><code>--help-man [file]</code></b>: Print a UNIX man page and exit.<br>
+    <p>This option is used by the cmake build to generate the UNIX man page.  If a file is specified, the help is written into it.
+  </li>
+  <li>
+    <b><code>--version [file]</code></b>: Show program name/version banner and exit.<br>
+    <p>If a file is specified, the version is written into it.
+  </li>
+</ul>
+<h2>Generators</h2>
+<p>The following generators are available on this platform:
+<ul>
+  <li>
+    <b><code>Borland Makefiles</code></b>: Generates Borland makefiles.<br>
+    
+  </li>
+  <li>
+    <b><code>MSYS Makefiles</code></b>: Generates MSYS makefiles.<br>
+    <p>The makefiles use /bin/sh as the shell.  They require msys to be installed on the machine.
+  </li>
+  <li>
+    <b><code>MinGW Makefiles</code></b>: Generates a make file for use with mingw32-make.<br>
+    <p>The makefiles generated use cmd.exe as the shell.  They do not require msys or a unix shell.
+  </li>
+  <li>
+    <b><code>NMake Makefiles</code></b>: Generates NMake makefiles.<br>
+    
+  </li>
+  <li>
+    <b><code>Unix Makefiles</code></b>: Generates standard UNIX makefiles.<br>
+    <p>A hierarchy of UNIX makefiles is generated into the build tree.  Any standard UNIX-style make program can build the project through the default make target.  A "make install" target is also provided.
+  </li>
+  <li>
+    <b><code>Visual Studio 6</code></b>: Generates Visual Studio 6 project files.<br>
+    
+  </li>
+  <li>
+    <b><code>Visual Studio 7</code></b>: Generates Visual Studio .NET 2002 project files.<br>
+    
+  </li>
+  <li>
+    <b><code>Visual Studio 7 .NET 2003</code></b>: Generates Visual Studio .NET 2003 project files.<br>
+    
+  </li>
+  <li>
+    <b><code>Visual Studio 8 2005</code></b>: Generates Visual Studio .NET 2005 project files.<br>
+    
+  </li>
+  <li>
+    <b><code>Visual Studio 8 2005 Win64</code></b>: Generates Visual Studio .NET 2005 Win64 project files.<br>
+    
+  </li>
+  <li>
+    <b><code>Visual Studio 9 2008</code></b>: Generates Visual Studio 9 2008 project files.<br>
+    
+  </li>
+  <li>
+    <b><code>Visual Studio 9 2008 Win64</code></b>: Generates Visual Studio 9 2008 Win64 project files.<br>
+    
+  </li>
+  <li>
+    <b><code>Watcom WMake</code></b>: Generates Watcom WMake makefiles.<br>
+    
+  </li>
+</ul>
+<h2>Listfile Commands</h2>
+<p>The following commands are available in CMakeLists.txt code:
+<ul>
+  <li>
+    <b><code>ADD_CUSTOM_COMMAND</code></b>: Add a custom build rule to the generated build system.<br>
+    <p>There are two main signatures for ADD_CUSTOM_COMMAND The first signature is for adding a custom command to produce an output.<br><pre>  ADD_CUSTOM_COMMAND(OUTPUT output1 [output2 ...]<br>                     COMMAND command1 [ARGS] [args1...]<br>                     [COMMAND command2 [ARGS] [args2...] ...]<br>                     [MAIN_DEPENDENCY depend]<br>                     [DEPENDS [depends...]]<br>                     [WORKING_DIRECTORY dir]<br>                     [COMMENT comment] [VERBATIM] [APPEND])<br></pre>
+    <p>This defines a new command that can be executed during the build process. The outputs named should be listed as source files in the target for which they are to be generated. Note that MAIN_DEPENDENCY is completely optional and is used as a suggestion to visual studio about where to hang the custom command. In makefile terms this creates a new target in the following form:<br><pre>  OUTPUT: MAIN_DEPENDENCY DEPENDS<br>          COMMAND<br></pre>
+    <p>If more than one command is specified they will be executed in order. The optional ARGS argument is for backward compatibility and will be ignored.<br><p>The second signature adds a custom command to a target such as a library or executable. This is useful for performing an operation before or after building the target:<br><pre>  ADD_CUSTOM_COMMAND(TARGET target<br>                     PRE_BUILD | PRE_LINK | POST_BUILD<br>                     COMMAND command1 [ARGS] [args1...]<br>                     [COMMAND command2 [ARGS] [args2...] ...]<br>                     [WORKING_DIRECTORY dir]<br>                     [COMMENT comment] [VERBATIM])<br></pre>
+    <p>This defines a new command that will be associated with building the specified target. When the command will happen is determined by which of the following is specified:<br><pre>  PRE_BUILD - run before all other dependencies<br>  PRE_LINK - run after other dependencies<br>  POST_BUILD - run after the target has been built<br></pre>
+    <p>Note that the PRE_BUILD option is only supported on Visual Studio 7 or later. For all other generators PRE_BUILD will be treated as PRE_LINK.<br><p>If WORKING_DIRECTORY is specified the command will be executed in the directory given. If COMMENT is set, the value will be displayed as a message before the commands are executed at build time. If APPEND is specified the COMMAND and DEPENDS option values are appended to the custom command for the first output specified. There must have already been a previous call to this command with the same output. The COMMENT, WORKING_DIRECTORY, and MAIN_DEPENDENCY options are currently ignored when APPEND is given, but may be used in the future.<br><p>If VERBATIM is given then all the arguments to the commands will be passed exactly as specified no matter the build tool used. Note that one level of escapes is still used by the CMake language processor before ADD_CUSTOM_TARGET even sees the arguments. Use of VERBATIM is recommended as it enables correct behavior. When VERBATIM is not given the behavior is platform specific. In the future VERBATIM may be enabled by default. The only reason it is an option is to preserve compatibility with older CMake code.<br><p>If the output of the custom command is not actually created as a file on disk it should be marked as SYMBOLIC with SET_SOURCE_FILES_PROPERTIES.
+  </li>
+  <li>
+    <b><code>ADD_CUSTOM_TARGET</code></b>: Add a target with no output so it will always be built.<br>
+    <pre>  ADD_CUSTOM_TARGET(Name [ALL] [command1 [args1...]]<br>                    [COMMAND command2 [args2...] ...]<br>                    [DEPENDS depend depend depend ... ]<br>                    [WORKING_DIRECTORY dir]<br>                    [COMMENT comment] [VERBATIM])<br></pre>
+    <p>Adds a target with the given name that executes the given commands. The target has no output file and is ALWAYS CONSIDERED OUT OF DATE even if the commands try to create a file with the name of the target. Use ADD_CUSTOM_COMMAND to generate a file with dependencies. By default nothing depends on the custom target. Use ADD_DEPENDENCIES to add dependencies to or from other targets. If the ALL option is specified it indicates that this target should be added to the default build target so that it will be run every time (the command cannot be called ALL). The command and arguments are optional and if not specified an empty target will be created. If WORKING_DIRECTORY is set, then the command will be run in that directory. If COMMENT is set, the value will be displayed as a message before the commands are executed at build time. Dependencies listed with the DEPENDS argument may reference files and outputs of custom commands created with ADD_CUSTOM_COMMAND.<br><p>If VERBATIM is given then all the arguments to the commands will be passed exactly as specified no matter the build tool used. Note that one level of escapes is still used by the CMake language processor before ADD_CUSTOM_TARGET even sees the arguments. Use of VERBATIM is recommended as it enables correct behavior. When VERBATIM is not given the behavior is platform specific. In the future VERBATIM may be enabled by default. The only reason it is an option is to preserve compatibility with older CMake code.
+  </li>
+  <li>
+    <b><code>ADD_DEFINITIONS</code></b>: Adds -D define flags to the command line of C and C++ compilers.<br>
+    <pre>  ADD_DEFINITIONS(-DFOO -DBAR ...)<br></pre>
+    <p>Adds flags to command line of C and C++ compilers.  This command can be used to add any flag to a compile line, but the -D flag is accepted most C/C++ compilers.  Other flags may not be as portable.
+  </li>
+  <li>
+    <b><code>ADD_DEPENDENCIES</code></b>: Add a dependency between top-level targets.<br>
+    <pre>  ADD_DEPENDENCIES(target-name depend-target1<br>                   depend-target2 ...)<br></pre>
+    <p>Make a top-level target depend on other top-level targets.  A top-level target is one created by ADD_EXECUTABLE, ADD_LIBRARY, or ADD_CUSTOM_TARGET.  Adding dependencies with this command can be used to make sure one target is built before another target.  See the DEPENDS option of ADD_CUSTOM_TARGET and ADD_CUSTOM_COMMAND for adding file-level dependencies in custom rules.  See the OBJECT_DEPENDS option in SET_SOURCE_FILES_PROPERTIES to add file-level dependencies to object files.
+  </li>
+  <li>
+    <b><code>ADD_EXECUTABLE</code></b>: Add an executable to the project using the specified source files.<br>
+    <pre>  ADD_EXECUTABLE(exename [WIN32] [MACOSX_BUNDLE] [EXCLUDE_FROM_ALL]<br>                 source1 source2 ... sourceN)<br></pre>
+    <p>This command adds an executable target to the current directory.  The executable will be built from the list of source files specified.<br><p>After specifying the executable name, WIN32 and/or MACOSX_BUNDLE can be specified. WIN32 indicates that the executable (when compiled on windows) is a windows app (using WinMain) not a console app (using main). The variable CMAKE_MFC_FLAG be used if the windows app uses MFC. This variable can be set to the following values:<br><pre> 0: Use Standard Windows Libraries<br> 1: Use MFC in a Static Library <br> 2: Use MFC in a Shared DLL <br></pre>
+    <p>MACOSX_BUNDLE indicates that when build on Mac OSX, executable should be in the bundle form. The MACOSX_BUNDLE also allows several variables to be specified:<br><pre>  MACOSX_BUNDLE_INFO_STRING<br>  MACOSX_BUNDLE_ICON_FILE<br>  MACOSX_BUNDLE_GUI_IDENTIFIER<br>  MACOSX_BUNDLE_LONG_VERSION_STRING<br>  MACOSX_BUNDLE_BUNDLE_NAME<br>  MACOSX_BUNDLE_SHORT_VERSION_STRING<br>  MACOSX_BUNDLE_BUNDLE_VERSION<br>  MACOSX_BUNDLE_COPYRIGHT<br></pre>
+    <p>If EXCLUDE_FROM_ALL is given the target will not be built by default. It will be built only if the user explicitly builds the target or another target that requires the target depends on it.
+  </li>
+  <li>
+    <b><code>ADD_LIBRARY</code></b>: Add a library to the project using the specified source files.<br>
+    <pre>  ADD_LIBRARY(libname [SHARED | STATIC | MODULE] [EXCLUDE_FROM_ALL]<br>              source1 source2 ... sourceN)<br></pre>
+    <p>Adds a library target.  SHARED, STATIC or MODULE keywords are used to set the library type.  If the keyword MODULE appears, the library type is set to MH_BUNDLE on systems which use dyld.  On systems without dyld, MODULE is treated like SHARED.  If no keywords appear  as the second argument, the type defaults to the current value of BUILD_SHARED_LIBS.  If this variable is not set, the type defaults to STATIC.<br><p>If EXCLUDE_FROM_ALL is given the target will not be built by default. It will be built only if the user explicitly builds the target or another target that requires the target depends on it.
+  </li>
+  <li>
+    <b><code>ADD_SUBDIRECTORY</code></b>: Add a subdirectory to the build.<br>
+    <pre>  ADD_SUBDIRECTORY(source_dir [binary_dir] <br>                   [EXCLUDE_FROM_ALL])<br></pre>
+    <p>Add a subdirectory to the build. The source_dir specifies the directory in which the source CmakeLists.txt and code files are located. If it is a relative path it will be evaluated with respect to the current directory (the typical usage), but it may also be an absolute path. The binary_dir specifies the directory in which to place the output files. If it is a relative path it will be evaluated with respect to the current output directory, but it may also be an absolute path. If binary_dir is not specified, the value of source_dir, before expanding any relative path, will be used (the typical usage). The CMakeLists.txt file in the specified source directory will be processed immediately by CMake before processing in the current input file continues beyond this command.<br><p>If the EXCLUDE_FROM_ALL argument is provided then this subdirectory will not be included in build by default. Users will have to explicitly start a build in the generated output directory. This is useful for having cmake create a build system for a set of examples in a project. One would want cmake to generate a single build system for all the examples, but one may not want the targets to show up in the main build system.
+  </li>
+  <li>
+    <b><code>ADD_TEST</code></b>: Add a test to the project with the specified arguments.<br>
+    <pre>  ADD_TEST(testname Exename arg1 arg2 ...)<br></pre>
+    <p>If the ENABLE_TESTING command has been run, this command adds a test target to the current directory. If ENABLE_TESTING has not been run, this command does nothing.  The tests are run by the testing subsystem by executing Exename with the specified arguments.  Exename can be either an executable built by this project or an arbitrary executable on the system (like tclsh).  The test will be run with the current working directory set to the CMakeList.txt files corresponding directory in the binary tree.
+  </li>
+  <li>
+    <b><code>AUX_SOURCE_DIRECTORY</code></b>: Find all source files in a directory.<br>
+    <pre>  AUX_SOURCE_DIRECTORY(dir VARIABLE)<br></pre>
+    <p>Collects the names of all the source files in the specified directory and stores the list in the variable provided.  This command is intended to be used by projects that use explicit template instantiation.  Template instantiation files can be stored in a "Templates" subdirectory and collected automatically using this command to avoid manually listing all instantiations.<br><p>It is tempting to use this command to avoid writing the list of source files for a library or executable target.  While this seems to work, there is no way for CMake to generate a build system that knows when a new source file has been added.  Normally the generated build system knows when it needs to rerun CMake because the CMakeLists.txt file is modified to add a new source.  When the source is just added to the directory without modifying this file, one would have to manually rerun CMake to generate a build system incorporating the new file.
+  </li>
+  <li>
+    <b><code>BUILD_COMMAND</code></b>: Get the command line that will build this project.<br>
+    <pre>  BUILD_COMMAND(variable MAKECOMMAND)<br></pre>
+    <p>Sets the given variable to a string containing the command that will build this project from the root of the build tree using the build tool given by MAKECOMMAND.  MAKECOMMAND should be msdev, nmake, make or one of the end user build tools.  This is useful for configuring testing systems.
+  </li>
+  <li>
+    <b><code>BUILD_NAME</code></b>: Deprecated.  Use ${CMAKE_SYSTEM} and ${CMAKE_CXX_COMPILER} instead.<br>
+    <pre>  BUILD_NAME(variable)<br></pre>
+    <p>Sets the specified variable to a string representing the platform and compiler settings.  These values are now available through the CMAKE_SYSTEM and CMAKE_CXX_COMPILER variables.
+  </li>
+  <li>
+    <b><code>CMAKE_MINIMUM_REQUIRED</code></b>: Set the minimum required version of cmake for a project.<br>
+    <pre>  CMAKE_MINIMUM_REQUIRED(VERSION versionNumber [FATAL_ERROR])<br></pre>
+    <p>Let cmake know that the project requires a certain version of a cmake, or newer.  CMake will also try to be backwards compatible to the version of cmake specified, if a newer version of cmake is running.  If FATAL_ERROR is given then failure to meet the requirements will be considered an error instead of a warning.
+  </li>
+  <li>
+    <b><code>CONFIGURE_FILE</code></b>: Copy a file to another location and modify its contents.<br>
+    <pre>  CONFIGURE_FILE(InputFile OutputFile<br>                 [COPYONLY] [ESCAPE_QUOTES] [@ONLY])<br></pre>
+    <p>The Input and Ouput files have to have full paths.  This command replaces any variables in the input file referenced as ${VAR} or @VAR@ with their values as determined by CMake.  If a variable is not defined, it will be replaced with nothing.  If COPYONLY is specified, then no variable expansion will take place.  If ESCAPE_QUOTES is specified then any substituted quotes will be C-style escaped.  The file will be configured with the current values of CMake variables. If @ONLY is specified, only variables of the form @VAR@ will be replaces and ${VAR} will be ignored.  This is useful for configuring scripts that use ${VAR}. Any occurrences of #cmakedefine VAR will be replaced with either #define VAR or /* #undef VAR */ depending on the setting of VAR in CMake
+  </li>
+  <li>
+    <b><code>CREATE_TEST_SOURCELIST</code></b>: Create a test driver and source list for building test programs.<br>
+    <pre>  CREATE_TEST_SOURCELIST(SourceListName DriverName<br>                         test1 test2 test3<br>                         EXTRA_INCLUDE include.h<br>                         FUNCTION function)<br></pre>
+    <p>A test driver is a program that links together many small tests into a single executable.  This is useful when building static executables with large libraries to shrink the total required size.  The list of source files needed to build the test driver will be in SourceListName.  DriverName is the name of the test driver program.  The rest of the arguments consist of a list of test source files, can be semicolon separated.  Each test source file should have a function in it that is the same name as the file with no extension (foo.cxx should have int foo();) DriverName will be able to call each of the tests by name on the command line. If EXTRA_INCLUDE is specified, then the next argument is included into the generated file. If FUNCTION is specified, then the next argument is taken as a function name that is passed a pointer to ac and av.  This can be used to add extra command line processing to each test. The cmake variable CMAKE_TESTDRIVER_BEFORE_TESTMAIN can be set to have code that will be placed directly before calling the test main function.   CMAKE_TESTDRIVER_AFTER_TESTMAIN can be set to have code that will be placed directly after the call to the test main function.
+  </li>
+  <li>
+    <b><code>ELSE</code></b>: Starts the ELSE portion of an IF block.<br>
+    <pre>  ELSE(expression)<br></pre>
+    <p>See the IF command.
+  </li>
+  <li>
+    <b><code>ELSEIF</code></b>: Starts the ELSEIF portion of an IF block.<br>
+    <pre>  ELSEIF(expression)<br></pre>
+    <p>See the IF command.
+  </li>
+  <li>
+    <b><code>ENABLE_LANGUAGE</code></b>: Set a name for the entire project.<br>
+    <pre>  ENABLE_LANGUAGE(languageName)<br></pre>
+    <p>This command enables support for the named language in CMake.
+  </li>
+  <li>
+    <b><code>ENABLE_TESTING</code></b>: Enable testing for current directory and below.<br>
+    <pre>  ENABLE_TESTING()<br></pre>
+    <p>Enables testing for this directory and below.  See also the ADD_TEST command.  Note that ctest expects to find a test file in the build directory root.  Therefore, this command should be in the source directory root.
+  </li>
+  <li>
+    <b><code>ENDFOREACH</code></b>: Ends a list of commands in a FOREACH block.<br>
+    <pre>  ENDFOREACH(expression)<br></pre>
+    <p>See the FOREACH command.
+  </li>
+  <li>
+    <b><code>ENDIF</code></b>: Ends a list of commands in an IF block.<br>
+    <pre>  ENDIF(expression)<br></pre>
+    <p>See the IF command.
+  </li>
+  <li>
+    <b><code>ENDMACRO</code></b>: Ends a list of commands in a MACRO block.<br>
+    <pre>  ENDMACRO(expression)<br></pre>
+    <p>See the MACRO command.
+  </li>
+  <li>
+    <b><code>ENDWHILE</code></b>: Ends a list of commands in a WHILE block.<br>
+    <pre>  ENDWHILE(expression)<br></pre>
+    <p>See the WHILE command.
+  </li>
+  <li>
+    <b><code>EXEC_PROGRAM</code></b>: Run and executable program during the processing of the CMakeList.txt file.<br>
+    <pre>  EXEC_PROGRAM(Executable [directory in which to run]<br>               [ARGS &lt;arguments to executable&gt;]<br>               [OUTPUT_VARIABLE &lt;var&gt;]<br>               [RETURN_VALUE &lt;var&gt;])<br></pre>
+    <p>The executable is run in the optionally specified directory.  The executable can include arguments if it is double quoted, but it is better to use the optional ARGS argument to specify arguments to the program.   This is because cmake will then be able to escape spaces in the executable path.  An optional argument OUTPUT_VARIABLE specifies a variable in which to store the output. To capture the return value of the execution, provide a RETURN_VALUE. If OUTPUT_VARIABLE is specified, then no output will go to the stdout/stderr of the console running cmake.<br><p>The EXECUTE_PROCESS command is a newer more powerful version of EXEC_PROGRAM, but the old command has been kept for compatibility.
+  </li>
+  <li>
+    <b><code>EXECUTE_PROCESS</code></b>: Execute one or more child processes.<br>
+    <pre>  EXECUTE_PROCESS(COMMAND &lt;cmd1&gt; [args1...]]<br>                  [COMMAND &lt;cmd2&gt; [args2...] [...]]<br>                  [WORKING_DIRECTORY &lt;directory&gt;]<br>                  [TIMEOUT &lt;seconds&gt;]<br>                  [RESULT_VARIABLE &lt;variable&gt;]<br>                  [OUTPUT_VARIABLE &lt;variable&gt;]<br>                  [ERROR_VARIABLE &lt;variable&gt;]<br>                  [INPUT_FILE &lt;file&gt;]<br>                  [OUTPUT_FILE &lt;file&gt;]<br>                  [ERROR_FILE &lt;file&gt;]<br>                  [OUTPUT_QUIET]<br>                  [ERROR_QUIET]<br>                  [OUTPUT_STRIP_TRAILING_WHITESPACE]<br>                  [ERROR_STRIP_TRAILING_WHITESPACE])<br></pre>
+    <p>Runs the given sequence of one or more commands with the standard output of each process piped to the standard input of the next.  A single standard error pipe is used for all processes.  If WORKING_DIRECTORY is given the named directory will be set as the current working directory of the child processes.  If TIMEOUT is given the child processes will be terminated if they do not finish in the specified number of seconds (fractions are allowed).  If RESULT_VARIABLE is given the variable will be set to contain the result of running the processes.  This will be an integer return code from the last child or a string describing an error condition.  If OUTPUT_VARIABLE or ERROR_VARIABLE are given the variable named will be set with the contents of the standard output and standard error pipes respectively.  If the same variable is named for both pipes their output will be merged in the order produced.  If INPUT_FILE, OUTPUT_FILE, or ERROR_FILE is given the file named will be attached to the standard input of the first process, standard output of the last process, or standard error of all processes respectively.  If OUTPUT_QUIET or ERROR_QUIET is given then the standard output or standard error results will be quietly ignored.  If more than one OUTPUT_* or ERROR_* option is given for the same pipe the precedence is not specified.  If no OUTPUT_* or ERROR_* options are given the output will be shared with the corresponding pipes of the CMake process itself.<br><p>The EXECUTE_PROCESS command is a newer more powerful version of EXEC_PROGRAM, but the old command has been kept for compatibility.
+  </li>
+  <li>
+    <b><code>EXPORT_LIBRARY_DEPENDENCIES</code></b>: Write out the dependency information for all targets of a project.<br>
+    <pre>  EXPORT_LIBRARY_DEPENDENCIES(FILE [APPEND])<br></pre>
+    <p>Create a file that can be included into a CMake listfile with the INCLUDE command.  The file will contain a number of SET commands that will set all the variables needed for library dependency information.  This should be the last command in the top level CMakeLists.txt file of the project.  If the APPEND option is specified, the SET commands will be appended to the given file instead of replacing it.
+  </li>
+  <li>
+    <b><code>FILE</code></b>: File manipulation command.<br>
+    <pre>  FILE(WRITE filename "message to write"... )<br>  FILE(APPEND filename "message to write"... )<br>  FILE(READ filename variable)<br>  FILE(GLOB variable [RELATIVE path] [globbing expressions]...)<br>  FILE(GLOB_RECURSE variable [RELATIVE path] <br>       [globbing expressions]...)<br>  FILE(REMOVE [file1 ...])<br>  FILE(REMOVE_RECURSE [file1 ...])<br>  FILE(MAKE_DIRECTORY [directory1 directory2 ...])<br>  FILE(RELATIVE_PATH variable directory file)<br>  FILE(TO_CMAKE_PATH path result)<br>  FILE(TO_NATIVE_PATH path result)<br></pre>
+    <p>WRITE will write a message into a file called 'filename'. It overwrites the file if it already exists, and creates the file if it does not exist.<br><p>APPEND will write a message into a file same as WRITE, except it will append it to the end of the file<br><p>NOTE: When using FILE WRITE and FILE APPEND, the produced file cannot be used as an input to CMake (CONFIGURE_FILE, source file ...) because it will lead to an infinite loop. Use CONFIGURE_FILE if you want to generate input files to CMake.<br><p>READ will read the content of a file and store it into the variable.<br><p>GLOB will generate a list of all files that match the globbing expressions and store it into the variable. Globbing expressions are similar to regular expressions, but much simpler. If RELATIVE flag is specified for an expression, the results will be returned as a relative path to the given path.<br><p>Examples of globbing expressions include:<br><pre>   *.cxx      - match all files with extension cxx<br>   *.vt?      - match all files with extension vta,...,vtz<br>   f[3-5].txt - match files f3.txt, f4.txt, f5.txt<br></pre>
+    <p>GLOB_RECURSE will generate similar list as the regular GLOB, except it will traverse all the subdirectories of the matched directory and match the files.<br><p>Examples of recursive globbing include:<br><pre>   /dir/*.py  - match all python files in /dir and subdirectories<br></pre>
+    <p>MAKE_DIRECTORY will create the given directories, also if their parent directories don't exist yet<br><p>REMOVE will remove the given files, also in subdirectories<br><p>REMOVE_RECURSE will remove the given files and directories, also non-empty directories<br><p>RELATIVE_PATH will determine relative path from directory to the given file.<br><p>TO_CMAKE_PATH will convert path into a cmake style path with unix /.  The input can be a single path or a system path like "$ENV{PATH}".  Note the double quotes around the ENV call TO_CMAKE_PATH only takes  one argument.<br><p>TO_NATIVE_PATH works just like TO_CMAKE_PATH, but will convert from  a cmake style path into the native path style \ for windows and / for UNIX.
+  </li>
+  <li>
+    <b><code>FIND_FILE</code></b>: Find the full path to a file.<br>
+    <pre>   FIND_FILE(&lt;VAR&gt; name1 path1 path2 ...)<br></pre>
+    <p>This is the short-hand signature for the command that is sufficient in many cases.  It is the same as FIND_FILE(&lt;VAR&gt; name1 PATHS path2 path2 ...)<br><pre>   FIND_FILE(<br>             &lt;VAR&gt; <br>             name | NAMES name1 [name2 ...]<br>             PATHS path1 [path2 ... ENV var]<br>             [PATH_SUFFIXES suffix1 [suffix2 ...]]<br>             [DOC "cache documentation string"]<br>             [NO_DEFAULT_PATH]<br>             [NO_CMAKE_ENVIRONMENT_PATH]<br>             [NO_CMAKE_PATH]<br>             [NO_SYSTEM_ENVIRONMENT_PATH]<br>             [NO_CMAKE_SYSTEM_PATH]<br>            )<br></pre>
+    <p>This command is used to find a full path to named file. A cache entry named by &lt;VAR&gt; is created to store the result of this command.  If the full path to a file is found the result is stored in the variable and the search will not be repeated unless the variable is cleared.  If nothing is found, the result will be &lt;VAR&gt;-NOTFOUND, and the search will be attempted again the next time FIND_FILE is invoked with the same variable.  The name of the full path to a file that is searched for is specified by the names listed after the NAMES argument.   Additional search locations can be specified after the PATHS argument.  If ENV var is found in the PATHS section the environment variable var will be read and converted from a system environment variable to a cmake style list of paths.  For example ENV PATH would be a way to list the system path variable. The argument after DOC will be used for the documentation string in the cache.  PATH_SUFFIXES can be used to give sub directories that will be appended to the search paths.<br><p>If NO_DEFAULT_PATH is specified, then no additional paths are added to the search. If NO_DEFAULT_PATH is not specified, the search process is as follows:<br><p>1. Search cmake specific environment variables.  This can be skipped if NO_CMAKE_ENVIRONMENT_PATH is passed.<br><pre>   CMAKE_FRAMEWORK_PATH<br>   CMAKE_APPBUNDLE_PATH<br>   CMAKE_INCLUDE_PATH<br></pre>
+    <p>2. Search cmake variables with the same names as the cmake specific environment variables.  These are intended to be used on the command line with a -DVAR=value.  This can be skipped if NO_CMAKE_PATH is passed.<br><pre>   CMAKE_FRAMEWORK_PATH<br>   CMAKE_APPBUNDLE_PATH<br>   CMAKE_INCLUDE_PATH<br></pre>
+    <p>3. Search the standard system environment variables. This can be skipped if NO_SYSTEM_ENVIRONMENT_PATH is an argument.<br><pre>   PATH<br>   INCLUDE<br></pre>
+    <p>4. Search cmake variables defined in the Platform files for the current system.  This can be skipped if NO_CMAKE_SYSTEM_PATH is passed.<br><pre>   CMAKE_SYSTEM_FRAMEWORK_PATH<br>   CMAKE_SYSTEM_APPBUNDLE_PATH<br>   CMAKE_SYSTEM_INCLUDE_PATH<br></pre>
+    <p>5. Search the paths specified after PATHS or in the short-hand version of the command.<br><p>On Darwin or systems supporting OSX Frameworks, the cmake variable    CMAKE_FIND_FRAMEWORK can be set to empty or one of the following:<br><pre>   "FIRST"  - Try to find frameworks before standard<br>              libraries or headers. This is the default on Darwin.<br>   "LAST"   - Try to find frameworks after standard<br>              libraries or headers.<br>   "ONLY"   - Only try to find frameworks.<br>   "NEVER". - Never try to find frameworks.<br></pre>
+    <p>On Darwin or systems supporting OSX Application Bundles, the cmake variable CMAKE_FIND_APPBUNDLE can be set to empty or one of the following:<br><pre>   "FIRST"  - Try to find application bundles before standard<br>              programs. This is the default on Darwin.<br>   "LAST"   - Try to find application bundles after standard<br>              programs.<br>   "ONLY"   - Only try to find application bundles.<br>   "NEVER". - Never try to find application bundles.<br></pre>
+    <p>The reason the paths listed in the call to the command are searched last is that most users of CMake would expect things to be found first in the locations specified by their environment. Projects may override this behavior by simply calling the command twice:<br><pre>   FIND_FILE(&lt;VAR&gt; NAMES name PATHS paths NO_DEFAULT_PATH)<br>   FIND_FILE(&lt;VAR&gt; NAMES name)<br></pre>
+    <p>Once one of these calls succeeds the result variable will be set and stored in the cache so that neither call will search again.
+  </li>
+  <li>
+    <b><code>FIND_LIBRARY</code></b>: Find a library.<br>
+    <pre>   FIND_LIBRARY(&lt;VAR&gt; name1 path1 path2 ...)<br></pre>
+    <p>This is the short-hand signature for the command that is sufficient in many cases.  It is the same as FIND_LIBRARY(&lt;VAR&gt; name1 PATHS path2 path2 ...)<br><pre>   FIND_LIBRARY(<br>             &lt;VAR&gt; <br>             name | NAMES name1 [name2 ...]<br>             PATHS path1 [path2 ... ENV var]<br>             [PATH_SUFFIXES suffix1 [suffix2 ...]]<br>             [DOC "cache documentation string"]<br>             [NO_DEFAULT_PATH]<br>             [NO_CMAKE_ENVIRONMENT_PATH]<br>             [NO_CMAKE_PATH]<br>             [NO_SYSTEM_ENVIRONMENT_PATH]<br>             [NO_CMAKE_SYSTEM_PATH]<br>            )<br></pre>
+    <p>This command is used to find a library. A cache entry named by &lt;VAR&gt; is created to store the result of this command.  If the library is found the result is stored in the variable and the search will not be repeated unless the variable is cleared.  If nothing is found, the result will be &lt;VAR&gt;-NOTFOUND, and the search will be attempted again the next time FIND_LIBRARY is invoked with the same variable.  The name of the library that is searched for is specified by the names listed after the NAMES argument.   Additional search locations can be specified after the PATHS argument.  If ENV var is found in the PATHS section the environment variable var will be read and converted from a system environment variable to a cmake style list of paths.  For example ENV PATH would be a way to list the system path variable. The argument after DOC will be used for the documentation string in the cache.  PATH_SUFFIXES can be used to give sub directories that will be appended to the search paths.<br><p>If NO_DEFAULT_PATH is specified, then no additional paths are added to the search. If NO_DEFAULT_PATH is not specified, the search process is as follows:<br><p>1. Search cmake specific environment variables.  This can be skipped if NO_CMAKE_ENVIRONMENT_PATH is passed.<br><pre>   CMAKE_FRAMEWORK_PATH<br>   CMAKE_APPBUNDLE_PATH<br>   CMAKE_LIBRARY_PATH<br></pre>
+    <p>2. Search cmake variables with the same names as the cmake specific environment variables.  These are intended to be used on the command line with a -DVAR=value.  This can be skipped if NO_CMAKE_PATH is passed.<br><pre>   CMAKE_FRAMEWORK_PATH<br>   CMAKE_APPBUNDLE_PATH<br>   CMAKE_LIBRARY_PATH<br></pre>
+    <p>3. Search the standard system environment variables. This can be skipped if NO_SYSTEM_ENVIRONMENT_PATH is an argument.<br><pre>   PATH<br>   LIB<br></pre>
+    <p>4. Search cmake variables defined in the Platform files for the current system.  This can be skipped if NO_CMAKE_SYSTEM_PATH is passed.<br><pre>   CMAKE_SYSTEM_FRAMEWORK_PATH<br>   CMAKE_SYSTEM_APPBUNDLE_PATH<br>   CMAKE_SYSTEM_LIBRARY_PATH<br></pre>
+    <p>5. Search the paths specified after PATHS or in the short-hand version of the command.<br><p>On Darwin or systems supporting OSX Frameworks, the cmake variable    CMAKE_FIND_FRAMEWORK can be set to empty or one of the following:<br><pre>   "FIRST"  - Try to find frameworks before standard<br>              libraries or headers. This is the default on Darwin.<br>   "LAST"   - Try to find frameworks after standard<br>              libraries or headers.<br>   "ONLY"   - Only try to find frameworks.<br>   "NEVER". - Never try to find frameworks.<br></pre>
+    <p>On Darwin or systems supporting OSX Application Bundles, the cmake variable CMAKE_FIND_APPBUNDLE can be set to empty or one of the following:<br><pre>   "FIRST"  - Try to find application bundles before standard<br>              programs. This is the default on Darwin.<br>   "LAST"   - Try to find application bundles after standard<br>              programs.<br>   "ONLY"   - Only try to find application bundles.<br>   "NEVER". - Never try to find application bundles.<br></pre>
+    <p>The reason the paths listed in the call to the command are searched last is that most users of CMake would expect things to be found first in the locations specified by their environment. Projects may override this behavior by simply calling the command twice:<br><pre>   FIND_LIBRARY(&lt;VAR&gt; NAMES name PATHS paths NO_DEFAULT_PATH)<br>   FIND_LIBRARY(&lt;VAR&gt; NAMES name)<br></pre>
+    <p>Once one of these calls succeeds the result variable will be set and stored in the cache so that neither call will search again.<br><p>If the library found is a framework, then VAR will be set to the full path to the framework &lt;fullPath&gt;/A.framework. When a full path to a framework is used as a library, CMake will use a -framework A, and a -F&lt;fullPath&gt; to link the framework to the target. 
+  </li>
+  <li>
+    <b><code>FIND_PACKAGE</code></b>: Load settings for an external project.<br>
+    <pre>  FIND_PACKAGE(&lt;name&gt; [major.minor] [QUIET] [NO_MODULE]<br>               [[REQUIRED|COMPONENTS] [components...]])<br></pre>
+    <p>Finds and loads settings from an external project.  &lt;name&gt;_FOUND will be set to indicate whether the package was found.  Settings that can be used when &lt;name&gt;_FOUND is true are package-specific.  The package is found through several steps.  Directories listed in CMAKE_MODULE_PATH are searched for files called "Find&lt;name&gt;.cmake".  If such a file is found, it is read and processed by CMake, and is responsible for finding the package.  This first step may be skipped by using the NO_MODULE option.  If no such file is found, it is expected that the package is another project built by CMake that has a "&lt;name&gt;Config.cmake" file.  A cache entry called &lt;name&gt;_DIR is created and is expected to be set to the directory containing this file.  If the file is found, it is read and processed by CMake to load the settings of the package.  If &lt;name&gt;_DIR has not been set during a configure step, the command will generate an error describing the problem unless the QUIET argument is specified.  If &lt;name&gt;_DIR has been set to a directory not containing a "&lt;name&gt;Config.cmake" file, an error is always generated.  If REQUIRED is specified and the package is not found, a FATAL_ERROR is generated and the configure step stops executing.  A package-specific list of components may be listed after the REQUIRED option, or after the COMPONENTS option if no REQUIRED option is given.
+  </li>
+  <li>
+    <b><code>FIND_PATH</code></b>: Find the directory containing a file.<br>
+    <pre>   FIND_PATH(&lt;VAR&gt; name1 path1 path2 ...)<br></pre>
+    <p>This is the short-hand signature for the command that is sufficient in many cases.  It is the same as FIND_PATH(&lt;VAR&gt; name1 PATHS path2 path2 ...)<br><pre>   FIND_PATH(<br>             &lt;VAR&gt; <br>             name | NAMES name1 [name2 ...]<br>             PATHS path1 [path2 ... ENV var]<br>             [PATH_SUFFIXES suffix1 [suffix2 ...]]<br>             [DOC "cache documentation string"]<br>             [NO_DEFAULT_PATH]<br>             [NO_CMAKE_ENVIRONMENT_PATH]<br>             [NO_CMAKE_PATH]<br>             [NO_SYSTEM_ENVIRONMENT_PATH]<br>             [NO_CMAKE_SYSTEM_PATH]<br>            )<br></pre>
+    <p>This command is used to find a directory containing the named file. A cache entry named by &lt;VAR&gt; is created to store the result of this command.  If the file in a directory is found the result is stored in the variable and the search will not be repeated unless the variable is cleared.  If nothing is found, the result will be &lt;VAR&gt;-NOTFOUND, and the search will be attempted again the next time FIND_PATH is invoked with the same variable.  The name of the file in a directory that is searched for is specified by the names listed after the NAMES argument.   Additional search locations can be specified after the PATHS argument.  If ENV var is found in the PATHS section the environment variable var will be read and converted from a system environment variable to a cmake style list of paths.  For example ENV PATH would be a way to list the system path variable. The argument after DOC will be used for the documentation string in the cache.  PATH_SUFFIXES can be used to give sub directories that will be appended to the search paths.<br><p>If NO_DEFAULT_PATH is specified, then no additional paths are added to the search. If NO_DEFAULT_PATH is not specified, the search process is as follows:<br><p>1. Search cmake specific environment variables.  This can be skipped if NO_CMAKE_ENVIRONMENT_PATH is passed.<br><pre>   CMAKE_FRAMEWORK_PATH<br>   CMAKE_APPBUNDLE_PATH<br>   CMAKE_INCLUDE_PATH<br></pre>
+    <p>2. Search cmake variables with the same names as the cmake specific environment variables.  These are intended to be used on the command line with a -DVAR=value.  This can be skipped if NO_CMAKE_PATH is passed.<br><pre>   CMAKE_FRAMEWORK_PATH<br>   CMAKE_APPBUNDLE_PATH<br>   CMAKE_INCLUDE_PATH<br></pre>
+    <p>3. Search the standard system environment variables. This can be skipped if NO_SYSTEM_ENVIRONMENT_PATH is an argument.<br><pre>   PATH<br>   INCLUDE<br></pre>
+    <p>4. Search cmake variables defined in the Platform files for the current system.  This can be skipped if NO_CMAKE_SYSTEM_PATH is passed.<br><pre>   CMAKE_SYSTEM_FRAMEWORK_PATH<br>   CMAKE_SYSTEM_APPBUNDLE_PATH<br>   CMAKE_SYSTEM_INCLUDE_PATH<br></pre>
+    <p>5. Search the paths specified after PATHS or in the short-hand version of the command.<br><p>On Darwin or systems supporting OSX Frameworks, the cmake variable    CMAKE_FIND_FRAMEWORK can be set to empty or one of the following:<br><pre>   "FIRST"  - Try to find frameworks before standard<br>              libraries or headers. This is the default on Darwin.<br>   "LAST"   - Try to find frameworks after standard<br>              libraries or headers.<br>   "ONLY"   - Only try to find frameworks.<br>   "NEVER". - Never try to find frameworks.<br></pre>
+    <p>On Darwin or systems supporting OSX Application Bundles, the cmake variable CMAKE_FIND_APPBUNDLE can be set to empty or one of the following:<br><pre>   "FIRST"  - Try to find application bundles before standard<br>              programs. This is the default on Darwin.<br>   "LAST"   - Try to find application bundles after standard<br>              programs.<br>   "ONLY"   - Only try to find application bundles.<br>   "NEVER". - Never try to find application bundles.<br></pre>
+    <p>The reason the paths listed in the call to the command are searched last is that most users of CMake would expect things to be found first in the locations specified by their environment. Projects may override this behavior by simply calling the command twice:<br><pre>   FIND_PATH(&lt;VAR&gt; NAMES name PATHS paths NO_DEFAULT_PATH)<br>   FIND_PATH(&lt;VAR&gt; NAMES name)<br></pre>
+    <p>Once one of these calls succeeds the result variable will be set and stored in the cache so that neither call will search again.<br><p>When searching for frameworks, if the file is specified as A/b.h, then the framework search will look for A.framework/Headers/b.h. If that is found the path will be set to the path to the framework. CMake will convert this to the correct -F option to include the file. 
+  </li>
+  <li>
+    <b><code>FIND_PROGRAM</code></b>: Find an executable program.<br>
+    <pre>   FIND_PROGRAM(&lt;VAR&gt; name1 path1 path2 ...)<br></pre>
+    <p>This is the short-hand signature for the command that is sufficient in many cases.  It is the same as FIND_PROGRAM(&lt;VAR&gt; name1 PATHS path2 path2 ...)<br><pre>   FIND_PROGRAM(<br>             &lt;VAR&gt; <br>             name | NAMES name1 [name2 ...]<br>             PATHS path1 [path2 ... ENV var]<br>             [PATH_SUFFIXES suffix1 [suffix2 ...]]<br>             [DOC "cache documentation string"]<br>             [NO_DEFAULT_PATH]<br>             [NO_CMAKE_ENVIRONMENT_PATH]<br>             [NO_CMAKE_PATH]<br>             [NO_SYSTEM_ENVIRONMENT_PATH]<br>             [NO_CMAKE_SYSTEM_PATH]<br>            )<br></pre>
+    <p>This command is used to find a program. A cache entry named by &lt;VAR&gt; is created to store the result of this command.  If the program is found the result is stored in the variable and the search will not be repeated unless the variable is cleared.  If nothing is found, the result will be &lt;VAR&gt;-NOTFOUND, and the search will be attempted again the next time FIND_PROGRAM is invoked with the same variable.  The name of the program that is searched for is specified by the names listed after the NAMES argument.   Additional search locations can be specified after the PATHS argument.  If ENV var is found in the PATHS section the environment variable var will be read and converted from a system environment variable to a cmake style list of paths.  For example ENV PATH would be a way to list the system path variable. The argument after DOC will be used for the documentation string in the cache.  PATH_SUFFIXES can be used to give sub directories that will be appended to the search paths.<br><p>If NO_DEFAULT_PATH is specified, then no additional paths are added to the search. If NO_DEFAULT_PATH is not specified, the search process is as follows:<br><p>1. Search cmake specific environment variables.  This can be skipped if NO_CMAKE_ENVIRONMENT_PATH is passed.<br><pre>   CMAKE_FRAMEWORK_PATH<br>   CMAKE_APPBUNDLE_PATH<br>   CMAKE_PROGRAM_PATH<br></pre>
+    <p>2. Search cmake variables with the same names as the cmake specific environment variables.  These are intended to be used on the command line with a -DVAR=value.  This can be skipped if NO_CMAKE_PATH is passed.<br><pre>   CMAKE_FRAMEWORK_PATH<br>   CMAKE_APPBUNDLE_PATH<br>   CMAKE_PROGRAM_PATH<br></pre>
+    <p>3. Search the standard system environment variables. This can be skipped if NO_SYSTEM_ENVIRONMENT_PATH is an argument.<br><pre>   PATH<br>   <br></pre>
+    <p>4. Search cmake variables defined in the Platform files for the current system.  This can be skipped if NO_CMAKE_SYSTEM_PATH is passed.<br><pre>   CMAKE_SYSTEM_FRAMEWORK_PATH<br>   CMAKE_SYSTEM_APPBUNDLE_PATH<br>   CMAKE_SYSTEM_PROGRAM_PATH<br></pre>
+    <p>5. Search the paths specified after PATHS or in the short-hand version of the command.<br><p>On Darwin or systems supporting OSX Frameworks, the cmake variable    CMAKE_FIND_FRAMEWORK can be set to empty or one of the following:<br><pre>   "FIRST"  - Try to find frameworks before standard<br>              libraries or headers. This is the default on Darwin.<br>   "LAST"   - Try to find frameworks after standard<br>              libraries or headers.<br>   "ONLY"   - Only try to find frameworks.<br>   "NEVER". - Never try to find frameworks.<br></pre>
+    <p>On Darwin or systems supporting OSX Application Bundles, the cmake variable CMAKE_FIND_APPBUNDLE can be set to empty or one of the following:<br><pre>   "FIRST"  - Try to find application bundles before standard<br>              programs. This is the default on Darwin.<br>   "LAST"   - Try to find application bundles after standard<br>              programs.<br>   "ONLY"   - Only try to find application bundles.<br>   "NEVER". - Never try to find application bundles.<br></pre>
+    <p>The reason the paths listed in the call to the command are searched last is that most users of CMake would expect things to be found first in the locations specified by their environment. Projects may override this behavior by simply calling the command twice:<br><pre>   FIND_PROGRAM(&lt;VAR&gt; NAMES name PATHS paths NO_DEFAULT_PATH)<br>   FIND_PROGRAM(&lt;VAR&gt; NAMES name)<br></pre>
+    <p>Once one of these calls succeeds the result variable will be set and stored in the cache so that neither call will search again.
+  </li>
+  <li>
+    <b><code>FLTK_WRAP_UI</code></b>: Create FLTK user interfaces Wrappers.<br>
+    <pre>  FLTK_WRAP_UI(resultingLibraryName source1<br>               source2 ... sourceN )<br></pre>
+    <p>Produce .h and .cxx files for all the .fl and .fld files listed.  The resulting .h and .cxx files will be added to a variable named resultingLibraryName_FLTK_UI_SRCS which should be added to your library.
+  </li>
+  <li>
+    <b><code>FOREACH</code></b>: Evaluate a group of commands for each value in a list.<br>
+    <pre>  FOREACH(loop_var arg1 arg2 ...)<br>    COMMAND1(ARGS ...)<br>    COMMAND2(ARGS ...)<br>    ...<br>  ENDFOREACH(loop_var)<br>  FOREACH(loop_var RANGE total)<br>  FOREACH(loop_var RANGE start stop [step])<br></pre>
+    <p>All commands between FOREACH and the matching ENDFOREACH are recorded without being invoked.  Once the ENDFOREACH is evaluated, the recorded list of commands is invoked once for each argument listed in the original FOREACH command.  Before each iteration of the loop "${loop_var}" will be set as a variable with the current value in the list.<br><p>Foreach can also iterate over a generated range of numbers. There are three types of this iteration:<br><p>* When specifying single number, the range will have elements 0 to "total".<br><p>* When specifying two numbers, the range will have elements from the first number to the second number.<br><p>* The third optional number is the increment used to iterate from the first number to the second number.
+  </li>
+  <li>
+    <b><code>GET_CMAKE_PROPERTY</code></b>: Get a property of the CMake instance.<br>
+    <pre>  GET_CMAKE_PROPERTY(VAR property)<br></pre>
+    <p>Get a property from the CMake instance.  The value of the property is stored in the variable VAR. If the property is not found, CMake will report an error. Some supported properties include: VARIABLES, CACHE_VARIABLES, COMMANDS, and MACROS.
+  </li>
+  <li>
+    <b><code>GET_DIRECTORY_PROPERTY</code></b>: Get a property of the directory.<br>
+    <pre>  GET_DIRECTORY_PROPERTY(VAR [DIRECTORY dir] property)<br></pre>
+    <p>Get a property from the Directory.  The value of the property is stored in the variable VAR. If the property is not found, CMake will report an error. The properties include: VARIABLES, CACHE_VARIABLES, COMMANDS, MACROS, INCLUDE_DIRECTORIES, LINK_DIRECTORIES, DEFINITIONS, INCLUDE_REGULAR_EXPRESSION, LISTFILE_STACK, PARENT_DIRECTORY, and DEFINITION varname.  If the DIRECTORY argument is provided then the property of the provided directory will be retrieved instead of the current directory. You can only get properties of a directory during or after it has been traversed by cmake.
+  </li>
+  <li>
+    <b><code>GET_FILENAME_COMPONENT</code></b>: Get a specific component of a full filename.<br>
+    <pre>  GET_FILENAME_COMPONENT(VarName FileName<br>                         PATH|ABSOLUTE|NAME|EXT|NAME_WE<br>                         [CACHE])<br></pre>
+    <p>Set VarName to be the path (PATH), file name (NAME), file extension (EXT), file name without extension (NAME_WE) of FileName, or the full absolute (ABSOLUTE) file name without symlinks.  Note that the path is converted to Unix slashes format and has no trailing slashes. The longest file extension is always considered. If the optional CACHE argument is specified, the result variable is added to the cache.<br><pre>  GET_FILENAME_COMPONENT(VarName FileName<br>                         PROGRAM [PROGRAM_ARGS ArgVar]<br>                         [CACHE])<br></pre>
+    <p>The program in FileName will be found in the system search path or left as a full path.  If PROGRAM_ARGS is present with PROGRAM, then any command-line arguments present in the FileName string are split from the program name and stored in ArgVar.  This is used to separate a program name from its arguments in a command line string.
+  </li>
+  <li>
+    <b><code>GET_SOURCE_FILE_PROPERTY</code></b>: Get a property for a source file.<br>
+    <pre>  GET_SOURCE_FILE_PROPERTY(VAR file property)<br></pre>
+    <p>Get a property from a source file.  The value of the property is stored in the variable VAR.  If the property is not found, VAR will be set to "NOTFOUND".  Use SET_SOURCE_FILES_PROPERTIES to set property values.  Source file properties usually control how the file is built. One property that is always there is LOCATION
+  </li>
+  <li>
+    <b><code>GET_TARGET_PROPERTY</code></b>: Get a property from a target.<br>
+    <pre>  GET_TARGET_PROPERTY(VAR target property)<br></pre>
+    <p>Get a property from a target.   The value of the property is stored in the variable VAR.  If the property is not found, VAR will be set to "NOTFOUND".  Use SET_TARGET_PROPERTIES to set property values.  Properties are usually used to control how a target is built.<br><p>The read-only property "&lt;CONFIG&gt;_LOCATION" provides the full path to the file on disk that will be created for the target when building under configuration &lt;CONFIG&gt; (in upper-case, such as "DEBUG_LOCATION"). The read-only property "LOCATION" specifies the full path to the file on disk that will be created for the target. The path may contain a build-system-specific portion that is replaced at build time with the configuration getting built (such as "$(ConfigurationName)" in VS). This is very useful for executable targets to get the path to the executable file for use in a custom command.<br><p>The read-only property "TYPE" returns which type the specified target has (EXECUTABLE, STATIC_LIBRARY, SHARED_LIBRARY, MODULE_LIBRARY, UTILITY, INSTALL_FILES or INSTALL_PROGRAMS). This command can get properties for any target so far created. The targets do not need to be in the current CMakeLists.txt file.
+  </li>
+  <li>
+    <b><code>GET_TEST_PROPERTY</code></b>: Get a property of the test.<br>
+    <pre>  GET_TEST_PROPERTY(test VAR property)<br></pre>
+    <p>Get a property from the Test.  The value of the property is stored in the variable VAR. If the property is not found, CMake will report an error.
+  </li>
+  <li>
+    <b><code>IF</code></b>: Conditionally execute a group of commands.<br>
+    <pre>  IF(expression)<br>    # THEN section.<br>    COMMAND1(ARGS ...)<br>    COMMAND2(ARGS ...)<br>    ...<br>  ELSEIF(expression2)<br>    # ELSEIF section.<br>    COMMAND1(ARGS ...)<br>    COMMAND2(ARGS ...)<br>    ...<br>  ELSE(expression)<br>    # ELSE section.<br>    COMMAND1(ARGS ...)<br>    COMMAND2(ARGS ...)<br>    ...<br>  ENDIF(expression)<br></pre>
+    <p>Evaluates the given expression.  If the result is true, the commands in the THEN section are invoked.  Otherwise, the commands in the ELSE section are invoked.  The ELSEIF and ELSE sections are optional. You may have multiple ELSEIF clauses. Note that the same expression must be given to IF, and ENDIF.  Long expressions can be used and the order or precedence is that the EXISTS, COMMAND, and DEFINED operators will be evaluated first. Then any EQUAL, LESS, GREATER, STRLESS, STRGREATER, STREQUAL, MATCHES will be evaluated. Then NOT operators and finally AND, OR operators will be evaluated. Possible expressions are:<br><pre>  IF(variable)<br></pre>
+    <p>True if the variable's value is not empty, 0, N, NO, OFF, FALSE, NOTFOUND, or &lt;variable&gt;-NOTFOUND.<br><pre>  IF(NOT variable)<br></pre>
+    <p>True if the variable's value is empty, 0, N, NO, OFF, FALSE, NOTFOUND, or &lt;variable&gt;-NOTFOUND.<br><pre>  IF(variable1 AND variable2)<br></pre>
+    <p>True if both variables would be considered true individually.<br><pre>  IF(variable1 OR variable2)<br></pre>
+    <p>True if either variable would be considered true individually.<br><pre>  IF(COMMAND command-name)<br></pre>
+    <p>True if the given name is a command that can be invoked.<br><pre>  IF(EXISTS file-name)<br>  IF(EXISTS directory-name)<br></pre>
+    <p>True if the named file or directory exists.  Behavior is well-defined only for full paths.<br><pre>  IF(file1 IS_NEWER_THAN file2)<br></pre>
+    <p>True if file1 is newer than file2 or if one of the two files doesn't exist. Behavior is well-defined only for full paths.<br><pre>  IF(IS_DIRECTORY directory-name)<br></pre>
+    <p>True if the given name is a directory.  Behavior is well-defined only for full paths.<br><pre>  IF(IS_ABSOLUTE path)<br></pre>
+    <p>True if the given path is an absolute path.<br><pre>   IF(variable MATCHES regex)<br>  IF(string MATCHES regex)<br></pre>
+    <p>True if the given string or variable's value matches the given regular expression.<br><pre>  IF(variable LESS number)<br>  IF(string LESS number)<br>  IF(variable GREATER number)<br>  IF(string GREATER number)<br>  IF(variable EQUAL number)<br>  IF(string EQUAL number)<br></pre>
+    <p>True if the given string or variable's value is a valid number and the inequality or equality is true.<br><pre>  IF(variable STRLESS string)<br>  IF(string STRLESS string)<br>  IF(variable STRGREATER string)<br>  IF(string STRGREATER string)<br>  IF(variable STREQUAL string)<br>  IF(string STREQUAL string)<br></pre>
+    <p>True if the given string or variable's value is lexicographically less (or greater, or equal) than the string on the right.<br><pre>  IF(DEFINED variable)<br></pre>
+    <p>True if the given variable is defined. It does not matter if the variable is true or false just if it has been set.
+  </li>
+  <li>
+    <b><code>INCLUDE</code></b>: Read CMake listfile code from the given file.<br>
+    <pre>  INCLUDE(file1 [OPTIONAL])<br>  INCLUDE(module [OPTIONAL])<br></pre>
+    <p>Reads CMake listfile code from the given file.  Commands in the file are processed immediately as if they were written in place of the INCLUDE command.  If OPTIONAL is present, then no error is raised if the file does not exist.<br><p>If a module is specified instead of a file, the file with name &lt;modulename&gt;.cmake is searched in the CMAKE_MODULE_PATH.
+  </li>
+  <li>
+    <b><code>INCLUDE_DIRECTORIES</code></b>: Add include directories to the build.<br>
+    <pre>  INCLUDE_DIRECTORIES([AFTER|BEFORE] [SYSTEM] dir1 dir2 ...)<br></pre>
+    <p>Add the given directories to those searched by the compiler for include files. By default the directories are appended onto the current list of directories. This default behavior can be changed by setting CMAKE_INCLUDE_DIRECTORIES_BEFORE to ON. By using BEFORE or AFTER you can select between appending and prepending, independent from the default. If the SYSTEM option is given the compiler will be told that the directories are meant as system include directories on some platforms.
+  </li>
+  <li>
+    <b><code>INCLUDE_EXTERNAL_MSPROJECT</code></b>: Include an external Microsoft project file in a workspace.<br>
+    <pre>  INCLUDE_EXTERNAL_MSPROJECT(projectname location<br>                             dep1 dep2 ...)<br></pre>
+    <p>Includes an external Microsoft project in the generated workspace file.  Currently does nothing on UNIX.
+  </li>
+  <li>
+    <b><code>INCLUDE_REGULAR_EXPRESSION</code></b>: Set the regular expression used for dependency checking.<br>
+    <pre>  INCLUDE_REGULAR_EXPRESSION(regex_match [regex_complain])<br></pre>
+    <p>Set the regular expressions used in dependency checking.  Only files matching regex_match will be traced as dependencies.  Only files matching regex_complain will generate warnings if they cannot be found (standard header paths are not searched).  The defaults are:<br><pre>  regex_match    = "^.*$" (match everything)<br>  regex_complain = "^$" (match empty string only)</pre>
+    
+  </li>
+  <li>
+    <b><code>INSTALL</code></b>: Specify rules to run at install time.<br>
+    <p>This command generates installation rules for a project.  Rules specified by calls to this command within a source directory are executed in order during installation.  The order across directories is not defined.<br><p>There are multiple signatures for this command.  Some of them define installation properties for files and targets.  Properties common to multiple signatures are covered here but they are valid only for signatures that specify them.<br><p>DESTINATION arguments specify the directory on disk to which a file will be installed.  If a full path (with a leading slash or drive letter) is given it is used directly.  If a relative path is given it is interpreted relative to the value of CMAKE_INSTALL_PREFIX.<br><p>PERMISSIONS arguments specify permissions for installed files.  Valid permissions are OWNER_READ, OWNER_WRITE, OWNER_EXECUTE, GROUP_READ, GROUP_WRITE, GROUP_EXECUTE, WORLD_READ, WORLD_WRITE, WORLD_EXECUTE, SETUID, and SETGID.  Permissions that do not make sense on certain platforms are ignored on those platforms.<br><p>The CONFIGURATIONS argument specifies a list of build configurations for which the install rule applies (Debug, Release, etc.).<br><p>The COMPONENT argument specifies an installation component name with which the install rule is associated, such as "runtime" or "development".  During component-specific installation only install rules associated with the given component name will be executed.  During a full installation all components are installed.<br><p>The RENAME argument specifies a name for an installed file that may be different from the original file.  Renaming is allowed only when a single file is installed by the command.<br><p>The OPTIONAL argument specifies that it is not an error if the file to be installed does not exist.  <br><p>The TARGETS signature:<br><pre>  INSTALL(TARGETS targets...<br>          [[ARCHIVE|LIBRARY|RUNTIME]<br>                              [DESTINATION &lt;dir&gt;]<br>                              [PERMISSIONS permissions...]<br>                              [CONFIGURATIONS [Debug|Release|...]]<br>                              [COMPONENT &lt;component&gt;]<br>                              [OPTIONAL]<br>                             ] [...])<br></pre>
+    <p>The TARGETS form specifies rules for installing targets from a project.  There are three kinds of target files that may be installed: archive, library, and runtime.  Executables are always treated as runtime targets. Static libraries are always treated as archive targets. Module libraries are always treated as library targets. For non-DLL platforms shared libraries are treated as library targets. For DLL platforms the DLL part of a shared library is treated as a runtime target and the corresponding import library is treated as an archive target. All Windows-based systems including Cygwin are DLL platforms. The ARCHIVE, LIBRARY, and RUNTIME arguments change the type of target to which the subsequent properties apply.  If none is given the installation properties apply to all target types.  If only one is given then only targets of that type will be installed (which can be used to install just a DLL or just an import library).<br><p>One or more groups of properties may be specified in a single call to the TARGETS form of this command.  A target may be installed more than once to different locations.  Consider hypothetical targets "myExe", "mySharedLib", and "myStaticLib".  The code<br><pre>    INSTALL(TARGETS myExe mySharedLib myStaticLib<br>            RUNTIME DESTINATION bin<br>            LIBRARY DESTINATION lib<br>            ARCHIVE DESTINATION lib/static)<br>    INSTALL(TARGETS mySharedLib DESTINATION /some/full/path)<br></pre>
+    <p>will install myExe to &lt;prefix&gt;/bin and myStaticLib to &lt;prefix&gt;/lib/static.  On non-DLL platforms mySharedLib will be installed to &lt;prefix&gt;/lib and /some/full/path.  On DLL platforms the mySharedLib DLL will be installed to &lt;prefix&gt;/bin and /some/full/path and its import library will be installed to &lt;prefix&gt;/lib/static and /some/full/path. On non-DLL platforms mySharedLib will be installed to &lt;prefix&gt;/lib and /some/full/path.<br><p>The FILES signature:<br><pre>  INSTALL(FILES files... DESTINATION &lt;dir&gt;<br>          [PERMISSIONS permissions...]<br>          [CONFIGURATIONS [Debug|Release|...]]<br>          [COMPONENT &lt;component&gt;]<br>          [RENAME &lt;name&gt;] [OPTIONAL])<br></pre>
+    <p>The FILES form specifies rules for installing files for a project.  File names given as relative paths are interpreted with respect to the current source directory.  Files installed by this form are by default given permissions OWNER_WRITE, OWNER_READ, GROUP_READ, and WORLD_READ if no PERMISSIONS argument is given.<br><p>The PROGRAMS signature:<br><pre>  INSTALL(PROGRAMS files... DESTINATION &lt;dir&gt;<br>          [PERMISSIONS permissions...]<br>          [CONFIGURATIONS [Debug|Release|...]]<br>          [COMPONENT &lt;component&gt;]<br>          [RENAME &lt;name&gt;] [OPTIONAL])<br></pre>
+    <p>The PROGRAMS form is identical to the FILES form except that the default permissions for the installed file also include OWNER_EXECUTE, GROUP_EXECUTE, and WORLD_EXECUTE.  This form is intended to install programs that are not targets, such as shell scripts.  Use the TARGETS form to install targets built within the project.<br><p>The DIRECTORY signature:<br><pre>  INSTALL(DIRECTORY dirs... DESTINATION &lt;dir&gt;<br>          [FILE_PERMISSIONS permissions...]<br>          [DIRECTORY_PERMISSIONS permissions...]<br>          [USE_SOURCE_PERMISSIONS]<br>          [CONFIGURATIONS [Debug|Release|...]]<br>          [COMPONENT &lt;component&gt;]<br>          [[PATTERN &lt;pattern&gt; | REGEX &lt;regex&gt;]<br>           [EXCLUDE] [PERMISSIONS permissions...]] [...])<br></pre>
+    <p>The DIRECTORY form installs contents of one or more directories to a given destination.  The directory structure is copied verbatim to the destination.  The last component of each directory name is appended to the destination directory but a trailing slash may be used to avoid this because it leaves the last component empty.  Directory names given as relative paths are interpreted with respect to the current source directory.  If no input directory names are given the destination directory will be created but nothing will be installed into it.  The FILE_PERMISSIONS and DIRECTORY_PERMISSIONS options specify permissions given to files and directories in the destination.  If USE_SOURCE_PERMISSIONS is specified and FILE_PERMISSIONS is not, file permissions will be copied from the source directory structure.  If no permissions are specified files will be given the default permissions specified in the FILES form of the command, and the directories will be given the default permissions specified in the PROGRAMS form of the command.  The PATTERN and REGEX options specify a globbing pattern or regular expression to match directories or files encountered during traversal of an input directory.  The full path to an input file or directory (with forward slashes) is matched against the expression.  A PATTERN will match only complete file names: the portion of the full path matching the pattern must occur at the end of the file name and be preceded by a slash.  A REGEX will match any portion of the full path but it may use '/' and '$' to simulate the PATTERN behavior.  Options following one of these matching expressions are applied only to files or directories matching them.  The EXCLUDE option will skip the matched file or directory.  The PERMISSIONS option overrides the permissions setting for the matched file or directory.  For example the code<br><pre>  INSTALL(DIRECTORY icons scripts/ DESTINATION share/myproj<br>          PATTERN "CVS" EXCLUDE<br>          PATTERN "scripts/*"<br>          PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ<br>                      GROUP_EXECUTE GROUP_READ)<br></pre>
+    <p>will install the icons directory to share/myproj/icons and the scripts directory to share/myproj.  The icons will get default file permissions, the scripts will be given specific permissions, and any CVS directories will be excluded.<br><p>The SCRIPT and CODE signature:<br><pre>  INSTALL([[SCRIPT &lt;file&gt;] [CODE &lt;code&gt;]] [...])<br></pre>
+    <p>The SCRIPT form will invoke the given CMake script files during installation.  If the script file name is a relative path it will be interpreted with respect to the current source directory.  The CODE form will invoke the given CMake code during installation.  Code is specified as a single argument inside a double-quoted string.  For example, the code<br><pre>  INSTALL(CODE "MESSAGE(\"Sample install message.\")")<br></pre>
+    <p>will print a message during installation.<br><p>NOTE: This command supercedes the INSTALL_TARGETS command and the target properties PRE_INSTALL_SCRIPT and POST_INSTALL_SCRIPT.  It also replaces the FILES forms of the INSTALL_FILES and INSTALL_PROGRAMS commands.  The processing order of these install rules relative to those generated by INSTALL_TARGETS, INSTALL_FILES, and INSTALL_PROGRAMS commands is not defined.<br>
+  </li>
+  <li>
+    <b><code>INSTALL_FILES</code></b>: Old installation command.  Use the INSTALL command.<br>
+    <p>This command has been superceded by the INSTALL command.  It is provided for compatibility with older CMake code.  The FILES form is directly replaced by the FILES form of the INSTALL command.  The regexp form can be expressed more clearly using the GLOB form of the FILE command.<br><pre>  INSTALL_FILES(&lt;dir&gt; extension file file ...)<br></pre>
+    <p>Create rules to install the listed files with the given extension into the given directory.  Only files existing in the current source tree or its corresponding location in the binary tree may be listed.  If a file specified already has an extension, that extension will be removed first.  This is useful for providing lists of source files such as foo.cxx when you want the corresponding foo.h to be installed. A typical extension is '.h'.<br><pre>  INSTALL_FILES(&lt;dir&gt; regexp)<br></pre>
+    <p>Any files in the current source directory that match the regular expression will be installed.<br><pre>  INSTALL_FILES(&lt;dir&gt; FILES file file ...)<br></pre>
+    <p>Any files listed after the FILES keyword will be installed explicitly from the names given.  Full paths are allowed in this form.<br><p>The directory &lt;dir&gt; is relative to the installation prefix, which is stored in the variable CMAKE_INSTALL_PREFIX.
+  </li>
+  <li>
+    <b><code>INSTALL_PROGRAMS</code></b>: Old installation command.  Use the INSTALL command.<br>
+    <p>This command has been superceded by the INSTALL command.  It is provided for compatibility with older CMake code.  The FILES form is directly replaced by the PROGRAMS form of the INSTALL command.  The regexp form can be expressed more clearly using the GLOB form of the FILE command.<br><pre>  INSTALL_PROGRAMS(&lt;dir&gt; file1 file2 [file3 ...])<br>  INSTALL_PROGRAMS(&lt;dir&gt; FILES file1 [file2 ...])<br></pre>
+    <p>Create rules to install the listed programs into the given directory.  Use the FILES argument to guarantee that the file list version of the command will be used even when there is only one argument.<br><pre>  INSTALL_PROGRAMS(&lt;dir&gt; regexp)<br></pre>
+    <p>In the second form any program in the current source directory that matches the regular expression will be installed.<br><p>This command is intended to install programs that are not built by cmake, such as shell scripts.  See the TARGETS form of the INSTALL command to create installation rules for targets built by cmake.<br><p>The directory &lt;dir&gt; is relative to the installation prefix, which is stored in the variable CMAKE_INSTALL_PREFIX.
+  </li>
+  <li>
+    <b><code>INSTALL_TARGETS</code></b>: Old installation command.  Use the INSTALL command.<br>
+    <p>This command has been superceded by the INSTALL command.  It is provided for compatibility with older CMake code.<br><pre>  INSTALL_TARGETS(&lt;dir&gt; [RUNTIME_DIRECTORY dir] target target)<br></pre>
+    <p>Create rules to install the listed targets into the given directory.  The directory &lt;dir&gt; is relative to the installation prefix, which is stored in the variable CMAKE_INSTALL_PREFIX. If RUNTIME_DIRECTORY is specified, then on systems with special runtime files (Windows DLL), the files will be copied to that directory.
+  </li>
+  <li>
+    <b><code>LINK_DIRECTORIES</code></b>: Specify directories in which to search for libraries.<br>
+    <pre>  LINK_DIRECTORIES(directory1 directory2 ...)<br></pre>
+    <p>Specify the paths in which the linker should search for libraries.
+  </li>
+  <li>
+    <b><code>LINK_LIBRARIES</code></b>: Link libraries to all targets added later.<br>
+    <pre>  LINK_LIBRARIES(library1 &lt;debug | optimized&gt; library2 ...)<br></pre>
+    <p>This is an old CMake command for linking libraries.  Use TARGET_LINK_LIBRARIES unless you have a good reason for every target to link to the same set of libraries.<br><p>Specify a list of libraries to be linked into any following targets (typically added with the ADD_EXECUTABLE or ADD_LIBRARY calls).  This command is passed down to all subdirectories.  The debug and optimized strings may be used to indicate that the next library listed is to be used only for that specific type of build.
+  </li>
+  <li>
+    <b><code>LIST</code></b>: List operations.<br>
+    <pre>  LIST(LENGTH &lt;list&gt; &lt;output variable&gt;)<br>  LIST(GET &lt;list&gt; &lt;element index&gt; [&lt;element index&gt; ...] &lt;output variable&gt;)<br>  LIST(APPEND &lt;list&gt; &lt;element&gt; [&lt;element&gt; ...])<br>  LIST(FIND &lt;list&gt; &lt;value&gt; &lt;output variable&gt;)<br>  LIST(INSERT &lt;list&gt; &lt;element_index&gt; &lt;element&gt; [&lt;element&gt; ...])<br>  LIST(REMOVE_ITEM &lt;list&gt; &lt;value&gt; [&lt;value&gt; ...])<br>  LIST(REMOVE_AT &lt;list&gt; &lt;index&gt; [&lt;index&gt; ...])<br>  LIST(SORT &lt;list&gt;)<br>  LIST(REVERSE &lt;list&gt;)<br></pre>
+    <p>LENGTH will return a given list's length.<br><p>GET will return list of elements specified by indices from the list.<br><p>APPEND will append elements to the list.<br><p>FIND will return the index of the element specified in the list or -1 if it wasn't found.<br><p>INSERT will insert elements to the list to the specified location.<br><p>When specifying an index, negative value corresponds to index from the end of the list.<br><p>REMOVE_AT and REMOVE_ITEM will remove items from the list. The difference is that REMOVE_ITEM will remove the given items, while REMOVE_AT will remove the items at the given indices.<br>
+  </li>
+  <li>
+    <b><code>LOAD_CACHE</code></b>: Load in the values from another project's CMake cache.<br>
+    <pre>  LOAD_CACHE(pathToCacheFile READ_WITH_PREFIX<br>             prefix entry1...)<br></pre>
+    <p>Read the cache and store the requested entries in variables with their name prefixed with the given prefix.  This only reads the values, and does not create entries in the local project's cache.<br><pre>  LOAD_CACHE(pathToCacheFile [EXCLUDE entry1...]<br>             [INCLUDE_INTERNALS entry1...])<br></pre>
+    <p>Load in the values from another cache and store them in the local project's cache as internal entries.  This is useful for a project that depends on another project built in a different tree.  EXCLUDE option can be used to provide a list of entries to be excluded.  INCLUDE_INTERNALS can be used to provide a list of internal entries to be included.  Normally, no internal entries are brought in.  Use of this form of the command is strongly discouraged, but it is provided for backward compatibility.
+  </li>
+  <li>
+    <b><code>LOAD_COMMAND</code></b>: Load a command into a running CMake.<br>
+    <pre>  LOAD_COMMAND(COMMAND_NAME &lt;loc1&gt; [loc2 ...])<br></pre>
+    <p>The given locations are searched for a library whose name is cmCOMMAND_NAME.  If found, it is loaded as a module and the command is added to the set of available CMake commands.  Usually, TRY_COMPILE is used before this command to compile the module. If the command is successfully loaded a variable named<br><pre>  CMAKE_LOADED_COMMAND_&lt;COMMAND_NAME&gt;<br></pre>
+    <p>will be set to the full path of the module that was loaded.  Otherwise the variable will not be set.
+  </li>
+  <li>
+    <b><code>MACRO</code></b>: Start recording a macro for later invocation as a command.<br>
+    <pre>  MACRO(&lt;name&gt; [arg1 [arg2 [arg3 ...]]])<br>    COMMAND1(ARGS ...)<br>    COMMAND2(ARGS ...)<br>    ...<br>  ENDMACRO(&lt;name&gt;)<br></pre>
+    <p>Define a macro named &lt;name&gt; that takes arguments named arg1 arg2 arg3 (...).  Commands listed after MACRO, but before the matching ENDMACRO, are not invoked until the macro is invoked.  When it is invoked, the commands recorded in the macro are first modified by replacing formal parameters (${arg1}) with the arguments passed, and then invoked as normal commands. In addition to referencing the formal parameters you can reference the variable ARGC which will be set to the number of arguments passed into the function as well as ARGV0 ARGV1 ARGV2 ... which will have the actual values of the arguments passed in. This facilitates creating macros with optional arguments. Additionally ARGV holds the list of all arguments given to the macro and ARGN holds the list of argument pass the last expected argument.
+  </li>
+  <li>
+    <b><code>MAKE_DIRECTORY</code></b>: Old directory creation command.  Use the FILE command.<br>
+    <p>This command has been superceded by the FILE(MAKE_DIRECTORY ...) command.  It is provided for compatibility with older CMake code.<br><pre>  MAKE_DIRECTORY(directory)<br></pre>
+    <p>Creates the specified directory.  Full paths should be given.  Any parent directories that do not exist will also be created.  Use with care.
+  </li>
+  <li>
+    <b><code>MARK_AS_ADVANCED</code></b>: Mark cmake cached variables as advanced.<br>
+    <pre>  MARK_AS_ADVANCED([CLEAR|FORCE] VAR VAR2 VAR...)<br></pre>
+    <p>Mark the named cached variables as advanced.  An advanced variable will not be displayed in any of the cmake GUIs unless the show advanced option is on.  If CLEAR is the first argument advanced variables are changed back to unadvanced.  If FORCE is the first argument, then the variable is made advanced.  If neither FORCE nor CLEAR is specified, new values will be marked as advanced, but if the variable already has an advanced/non-advanced state, it will not be changed.
+  </li>
+  <li>
+    <b><code>MATH</code></b>: Mathematical expressions.<br>
+    <pre>  MATH(EXPR &lt;output variable&gt; &lt;math expression&gt;)<br></pre>
+    <p>EXPR evaluates mathematical expression and return result in the output variable. Example mathematical expression is '5 * ( 10 + 13 )'.
+  </li>
+  <li>
+    <b><code>MESSAGE</code></b>: Display a message to the user.<br>
+    <pre>  MESSAGE([SEND_ERROR | STATUS | FATAL_ERROR]<br>          "message to display" ...)<br></pre>
+    <p>By default the message is displayed in a pop up window (CMakeSetup), or in the stdout of cmake, or the error section of ccmake. If the first argument is SEND_ERROR then an error is raised, and the generate phase will be skipped.  If the first argument is FATAL_ERROR, all processing is halted. If the first argument is STATUS then the message is displayed in the progress line for the GUI, or with a -- in the command line cmake.
+  </li>
+  <li>
+    <b><code>OPTION</code></b>: Provides an option that the user can optionally select.<br>
+    <pre>  OPTION(OPTION_VAR "help string describing option"<br>         [initial value])<br></pre>
+    <p>Provide an option for the user to select as ON or OFF.  If no initial value is provided, OFF is used.
+  </li>
+  <li>
+    <b><code>OUTPUT_REQUIRED_FILES</code></b>: Output a list of required source files for a specified source file.<br>
+    <pre>  OUTPUT_REQUIRED_FILES(srcfile outputfile)<br></pre>
+    <p>Outputs a list of all the source files that are required by the specified srcfile. This list is written into outputfile. This is similar to writing out the dependencies for srcfile except that it jumps from .h files into .cxx, .c and .cpp files if possible.
+  </li>
+  <li>
+    <b><code>PROJECT</code></b>: Set a name for the entire project.<br>
+    <pre>  PROJECT(projectname [CXX] [C] [Java])<br></pre>
+    <p>Sets the name of the project.  This creates the variables projectname_BINARY_DIR and projectname_SOURCE_DIR.  Optionally you can specify which languages your project supports.  By default all languages are supported.  If you do not have a C++ compiler, but want to build a c program with cmake, then use this option.
+  </li>
+  <li>
+    <b><code>QT_WRAP_CPP</code></b>: Create QT Wrappers.<br>
+    <pre>  QT_WRAP_CPP(resultingLibraryName DestName<br>              SourceLists ...)<br></pre>
+    <p>Produce moc files for all the .h files listed in the SourceLists.  The moc files will be added to the library using the DestName source list.
+  </li>
+  <li>
+    <b><code>QT_WRAP_UI</code></b>: Create QT user interfaces Wrappers.<br>
+    <pre>  QT_WRAP_UI(resultingLibraryName HeadersDestName<br>             SourcesDestName SourceLists ...)<br></pre>
+    <p>Produce .h and .cxx files for all the .ui files listed in the SourceLists.  The .h files will be added to the library using the HeadersDestNamesource list.  The .cxx files will be added to the library using the SourcesDestNamesource list.
+  </li>
+  <li>
+    <b><code>REMOVE</code></b>: Old list item removal command.  Use the LIST command.<br>
+    <p>This command has been superceded by the LIST(REMOVE ...) command.  It is provided for compatibility with older CMake code.<br><pre>  REMOVE(VAR VALUE VALUE ...)<br></pre>
+    <p>Removes VALUE from the variable VAR.  This is typically used to remove entries from a vector (e.g. semicolon separated list).  VALUE is expanded.
+  </li>
+  <li>
+    <b><code>REMOVE_DEFINITIONS</code></b>: Removes -D define flags to the command line of C and C++ compilers.<br>
+    <pre>  REMOVE_DEFINITIONS(-DFOO -DBAR ...)<br></pre>
+    <p>Removes flags from command line of C and C++ compilers.  This command can be used to remove any flag from a compile line, but the -D flag is accepted by most C/C++ compilers.  Other flags may not be as portable.
+  </li>
+  <li>
+    <b><code>SEPARATE_ARGUMENTS</code></b>: Split space separated arguments into a semi-colon separated list.<br>
+    <pre>  SEPARATE_ARGUMENTS(VARIABLE)<br></pre>
+    <p>Convert the value of VARIABLE to a semi-colon separated list.  All spaces are replaced with ';'.  This helps with generating command lines.
+  </li>
+  <li>
+    <b><code>SET</code></b>: Set a CMAKE variable to a given value.<br>
+    <pre>  SET(VAR [VALUE] [CACHE TYPE DOCSTRING [FORCE]])<br></pre>
+    <p>Within CMake sets VAR to the value VALUE.  VALUE is expanded before VAR is set to it.  If CACHE is present, then the VAR is put in the cache. TYPE and DOCSTRING are required. TYPE is used by the CMake GUI to choose a widget with which the user sets a value.  The value for TYPE may be one of<br><pre>  FILEPATH = File chooser dialog.<br>  PATH     = Directory chooser dialog.<br>  STRING   = Arbitrary string.<br>  BOOL     = Boolean ON/OFF checkbox.<br>  INTERNAL = No GUI entry (used for persistent variables).<br></pre>
+    <p>If TYPE is INTERNAL, then the VALUE is always written into the cache, replacing any values existing in the cache.  If it is not a cache variable, then this always writes into the current makefile. The FORCE option will overwrite the cache value removing any changes by the user.<br><pre>  SET(VAR VALUE1 ... VALUEN).<br></pre>
+    <p>In this case VAR is set to a semicolon separated list of values.<br><p>VAR can be an environment variable such as:<br><pre>  SET( ENV{PATH} /home/martink )<br></pre>
+    <p>in which case the environment variable will be set.
+  </li>
+  <li>
+    <b><code>SET_DIRECTORY_PROPERTIES</code></b>: Set a property of the directory.<br>
+    <pre>  SET_DIRECTORY_PROPERTIES(PROPERTIES prop1 value1 prop2 value2)<br></pre>
+    <p>Set a property for the current directory and subdirectories. If the property is not found, CMake will report an error. The properties include: INCLUDE_DIRECTORIES, LINK_DIRECTORIES, INCLUDE_REGULAR_EXPRESSION, and ADDITIONAL_MAKE_CLEAN_FILES.<br><p>ADDITIONAL_MAKE_CLEAN_FILES is a list of files that will be cleaned as a part of "make clean" stage.
+  </li>
+  <li>
+    <b><code>SET_SOURCE_FILES_PROPERTIES</code></b>: Source files can have properties that affect how they are built.<br>
+    <pre>  SET_SOURCE_FILES_PROPERTIES(file1 file2 ...<br>                              PROPERTIES prop1 value1<br>                              prop2 value2 ...)<br></pre>
+    <p>Set properties on a file. The syntax for the command is to list all the files you want to change, and then provide the values you want to set next.  You can make up your own properties as well.  The following are used by CMake.  The ABSTRACT flag (boolean) is used by some class wrapping commands. If WRAP_EXCLUDE (boolean) is true then many wrapping commands will ignore this file. If GENERATED (boolean) is true then it is not an error if this source file does not exist when it is added to a target.  Obviously, it must be created (presumably by a custom command) before the target is built.  If the HEADER_FILE_ONLY (boolean) property is true then dependency information is not created for that file (this is set automatically, based on the file's name's extension and is probably only used by Makefiles).  OBJECT_DEPENDS (string) adds dependencies to the object file.  COMPILE_FLAGS (string) is passed to the compiler as additional command line arguments when the source file is compiled.  LANGUAGE (string) CXX|C will change the default compiler used to compile the source file. The languages used need to be enabled in the PROJECT command. If SYMBOLIC (boolean) is set to true the build system will be informed that the source file is not actually created on disk but instead used as a symbolic name for a build rule.
+  </li>
+  <li>
+    <b><code>SET_TARGET_PROPERTIES</code></b>: Targets can have properties that affect how they are built.<br>
+    <pre>  SET_TARGET_PROPERTIES(target1 target2 ...<br>                        PROPERTIES prop1 value1<br>                        prop2 value2 ...)<br></pre>
+    <p>Set properties on a target. The syntax for the command is to list all the files you want to change, and then provide the values you want to set next.  You can use any prop value pair you want and extract it later with the GET_TARGET_PROPERTY command.<br><p>Properties that affect the name of a target's output file are as follows.  The PREFIX and SUFFIX properties override the default target name prefix (such as "lib") and suffix (such as ".so"). IMPORT_PREFIX and IMPORT_SUFFIX are the equivalent properties for the import library corresponding to a DLL (for SHARED library targets).  OUTPUT_NAME sets the real name of a target when it is built and can be used to help create two targets of the same name even though CMake requires unique logical target names.  There is also a &lt;CONFIG&gt;_OUTPUT_NAME that can set the output name on a per-configuration basis.  &lt;CONFIG&gt;_POSTFIX sets a postfix for the real name of the target when it is built under the configuration named by &lt;CONFIG&gt; (in upper-case, such as "DEBUG_POSTFIX").  The value of this property is initialized when the target is created to the value of the variable CMAKE_&lt;CONFIG&gt;_POSTFIX (except for executable targets because earlier CMake versions which did not use this variable for executables).<br><p>The LINK_FLAGS property can be used to add extra flags to the link step of a target. LINK_FLAGS_&lt;CONFIG&gt; will add to the configuration &lt;CONFIG&gt;, for example, DEBUG, RELEASE, MINSIZEREL, RELWITHDEBINFO. DEFINE_SYMBOL sets the name of the preprocessor symbol defined when compiling sources in a shared library. If not set here then it is set to target_EXPORTS by default (with some substitutions if the target is not a valid C identifier). This is useful for headers to know whether they are being included from inside their library our outside to properly setup dllexport/dllimport decorations. The COMPILE_FLAGS property sets additional compiler flags used to build sources within the target.  It may also be used to pass additional preprocessor definitions.<br><p>The LINKER_LANGUAGE property is used to change the tool used to link an executable or shared library. The default is set the language to match the files in the library. CXX and C are common values for this property.<br><p>For shared libraries VERSION and SOVERSION can be used to specify the build version and api version respectively. When building or installing appropriate symlinks are created if the platform supports symlinks and the linker supports so-names. If only one of both is specified the missing is assumed to have the same version number. For executables VERSION can be used to specify the build version. When building or installing appropriate symlinks are created if the platform supports symlinks. For shared libraries and executables on Windows the VERSION attribute is parsed to extract a "major.minor" version number. These numbers are used as the image version of the binary. <br><p>There are a few properties used to specify RPATH rules. INSTALL_RPATH is a semicolon-separated list specifying the rpath to use in installed targets (for platforms that support it). INSTALL_RPATH_USE_LINK_PATH is a boolean that if set to true will append directories in the linker search path and outside the project to the INSTALL_RPATH. SKIP_BUILD_RPATH is a boolean specifying whether to skip automatic generation of an rpath allowing the target to run from the build tree. BUILD_WITH_INSTALL_RPATH is a boolean specifying whether to link the target in the build tree with the INSTALL_RPATH.  This takes precedence over SKIP_BUILD_RPATH and avoids the need for relinking before installation.  INSTALL_NAME_DIR is a string specifying the directory portion of the "install_name" field of shared libraries on Mac OSX to use in the installed targets. When the target is created the values of the variables CMAKE_INSTALL_RPATH, CMAKE_INSTALL_RPATH_USE_LINK_PATH, CMAKE_SKIP_BUILD_RPATH, CMAKE_BUILD_WITH_INSTALL_RPATH, and CMAKE_INSTALL_NAME_DIR are used to initialize these properties.<br><p>PROJECT_LABEL can be used to change the name of the target in an IDE like visual studio.  VS_KEYWORD can be set to change the visual studio keyword, for example QT integration works better if this is set to Qt4VSv1.0.<br><p>When a library is built CMake by default generates code to remove any existing library using all possible names.  This is needed to support libraries that switch between STATIC and SHARED by a user option.  However when using OUTPUT_NAME to build a static and shared library of the same name using different logical target names the two targets will remove each other's files.  This can be prevented by setting the CLEAN_DIRECT_OUTPUT property to 1.<br><p>The PRE_INSTALL_SCRIPT and POST_INSTALL_SCRIPT properties are the old way to specify CMake scripts to run before and after installing a target.  They are used only when the old INSTALL_TARGETS command is used to install the target.  Use the INSTALL command instead.<br><p>The EXCLUDE_FROM_DEFAULT_BUILD property is used by the visual studio generators.  If it is set to 1 the target will not be part of the default build when you select "Build Solution".
+  </li>
+  <li>
+    <b><code>SET_TESTS_PROPERTIES</code></b>: Set a property of the tests.<br>
+    <pre>  SET_TESTS_PROPERTIES(test1 [test2...] PROPERTIES prop1 value1 prop2 value2)<br></pre>
+    <p>Set a property for the tests. If the property is not found, CMake will report an error. The properties include:<br><p>WILL_FAIL: If set to true, this will invert the pass/fail flag of the test.<br><p>PASS_REGULAR_EXPRESSION: If set, the test output will be checked against the specified regular expressions and at least one of the regular expressions has to match, otherwise the test will fail.<br><pre>  Example: PASS_REGULAR_EXPRESSION "TestPassed;All ok"<br></pre>
+    <p>FAIL_REGULAR_EXPRESSION: If set, if the output will match to one of specified regular expressions, the test will fail.<br><pre>  Example: PASS_REGULAR_EXPRESSION "[^a-z]Error;ERROR;Failed"<br></pre>
+    <p>Both PASS_REGULAR_EXPRESSION and FAIL_REGULAR_EXPRESSION expect a list of regular expressions.<br>
+  </li>
+  <li>
+    <b><code>SITE_NAME</code></b>: Set the given variable to the name of the computer.<br>
+    <pre>  SITE_NAME(variable)<br></pre>
+    
+  </li>
+  <li>
+    <b><code>SOURCE_GROUP</code></b>: Define a grouping for sources in the makefile.<br>
+    <pre>  SOURCE_GROUP(name [REGULAR_EXPRESSION regex] [FILES src1 src2 ...])<br></pre>
+    <p>Defines a group into which sources will be placed in project files.  This is mainly used to setup file tabs in Visual Studio.  Any file whose name is listed or matches the regular expression will be placed in this group.  If a file matches multiple groups, the LAST group that explicitly lists the file will be favored, if any.  If no group explicitly lists the file, the LAST group whose regular expression matches the file will be favored.<br><p>The name of the group may contain backslashes to specify subgroups:<br><pre>  SOURCE_GROUP(outer\\inner ...)<br></pre>
+    <p>For backwards compatibility, this command is also supports the format:<br><pre>  SOURCE_GROUP(name regex)</pre>
+    
+  </li>
+  <li>
+    <b><code>STRING</code></b>: String operations.<br>
+    <pre>  STRING(REGEX MATCH &lt;regular_expression&gt;<br>         &lt;output variable&gt; &lt;input&gt; [&lt;input&gt;...])<br>  STRING(REGEX MATCHALL &lt;regular_expression&gt;<br>         &lt;output variable&gt; &lt;input&gt; [&lt;input&gt;...])<br>  STRING(REGEX REPLACE &lt;regular_expression&gt;<br>         &lt;replace_expression&gt; &lt;output variable&gt;<br>         &lt;input&gt; [&lt;input&gt;...])<br>  STRING(REPLACE &lt;match_expression&gt;<br>         &lt;replace_expression&gt; &lt;output variable&gt;<br>         &lt;input&gt; [&lt;input&gt;...])<br>  STRING(COMPARE EQUAL &lt;string1&gt; &lt;string2&gt; &lt;output variable&gt;)<br>  STRING(COMPARE NOTEQUAL &lt;string1&gt; &lt;string2&gt; &lt;output variable&gt;)<br>  STRING(COMPARE LESS &lt;string1&gt; &lt;string2&gt; &lt;output variable&gt;)<br>  STRING(COMPARE GREATER &lt;string1&gt; &lt;string2&gt; &lt;output variable&gt;)<br>  STRING(ASCII &lt;number&gt; [&lt;number&gt; ...] &lt;output variable&gt;)<br>  STRING(CONFIGURE &lt;string1&gt; &lt;output variable&gt;<br>         [@ONLY] [ESCAPE_QUOTES])<br>  STRING(TOUPPER &lt;string1&gt; &lt;output variable&gt;)<br>  STRING(TOLOWER &lt;string1&gt; &lt;output variable&gt;)<br>  STRING(LENGTH &lt;string&gt; &lt;output variable&gt;)<br>  STRING(SUBSTRING &lt;string&gt; &lt;begin&gt; &lt;length&gt; &lt;output variable&gt;)<br></pre>
+    <p>REGEX MATCH will match the regular expression once and store the match in the output variable.<br><p>REGEX MATCHALL will match the regular expression as many times as possible and store the matches in the output variable as a list.<br><p>REGEX REPLACE will match the regular expression as many times as possible and substitute the replacement expression for the match in the output.  The replace expression may refer to paren-delimited subexpressions of the match using \1, \2, ..., \9.  Note that two backslashes (\\1) are required in CMake code to get a backslash through argument parsing.<br><p>REPLACE will match the given expression and substitute the replacement expression for the match in the output.  The replace expression may refer to paren-delimited subexpressions of the match using \1, \2, ..., \9.  Note that two backslashes (\\1) are required in CMake code to get a backslash through argument parsing.<br><p>COMPARE EQUAL/NOTEQUAL/LESS/GREATER will compare the strings and store true or false in the output variable.<br><p>ASCII will convert all numbers into corresponding ASCII characters.<br><p>CONFIGURE will transform a string like CONFIGURE_FILE transforms a file.<br><p>TOUPPER/TOLOWER will convert string to upper/lower characters.<br><p>LENGTH will return a given string's length.<br><p>SUBSTRING will return a substring of a given string.
+  </li>
+  <li>
+    <b><code>SUBDIR_DEPENDS</code></b>: Legacy command.  Does nothing.<br>
+    <pre>  SUBDIR_DEPENDS(subdir dep1 dep2 ...)<br></pre>
+    <p>Does not do anything.  This command used to help projects order parallel builds correctly.  This functionality is now automatic.
+  </li>
+  <li>
+    <b><code>SUBDIRS</code></b>: Add a list of subdirectories to the build.<br>
+    <pre>  SUBDIRS(dir1 dir2 ...[EXCLUDE_FROM_ALL exclude_dir1 exclude_dir2 ...] [PREORDER] )<br></pre>
+    <p>Add a list of subdirectories to the build. The ADD_SUBDIRECTORY command should be used instead of SUBDIRS although SUBDIRS will still work. This will cause any CMakeLists.txt files in the sub directories to be processed by CMake.  Any directories after the PREORDER flag are traversed first by makefile builds, the PREORDER flag has no effect on IDE projects.  Any directories after the EXCLUDE_FROM_ALL marker will not be included in the top level makefile or project file. This is useful for having CMake create makefiles or projects for a set of examples in a project. You would want CMake to generate makefiles or project files for all the examples at the same time, but you would not want them to show up in the top level project or be built each time make is run from the top.
+  </li>
+  <li>
+    <b><code>TARGET_LINK_LIBRARIES</code></b>: Link a target to given libraries.<br>
+    <pre>  TARGET_LINK_LIBRARIES(target library1<br>                        &lt;debug | optimized&gt; library2<br>                        ...)<br></pre>
+    <p>Specify a list of libraries to be linked into the specified target.  The debug and optimized strings may be used to indicate that the next library listed is to be used only for that specific type of build
+  </li>
+  <li>
+    <b><code>TRY_COMPILE</code></b>: Try compiling some code.<br>
+    <pre>  TRY_COMPILE(RESULT_VAR bindir srcdir<br>              projectName &lt;targetname&gt; &lt;CMAKE_FLAGS &lt;Flags&gt;&gt;<br>              &lt;OUTPUT_VARIABLE var&gt;)<br></pre>
+    <p>Try compiling a program.  In this form, srcdir should contain a complete CMake project with a CMakeLists.txt file and all sources. The bindir and srcdir will not be deleted after this command is run. If &lt;target name&gt; is specified then build just that target otherwise the all or ALL_BUILD target is built.<br><pre>  TRY_COMPILE(RESULT_VAR bindir srcfile<br>              &lt;CMAKE_FLAGS &lt;Flags&gt;&gt;<br>              &lt;COMPILE_DEFINITIONS &lt;flags&gt; ...&gt;<br>              &lt;OUTPUT_VARIABLE var&gt;)<br></pre>
+    <p>Try compiling a srcfile.  In this case, the user need only supply a source file.  CMake will create the appropriate CMakeLists.txt file to build the source. In this version all files in bindir/CMakeFiles/CMakeTmp, will be cleaned automatically, for debugging a --debug-trycompile can be passed to cmake to avoid the clean. Some extra flags that  can be included are,  INCLUDE_DIRECTORIES, LINK_DIRECTORIES, and LINK_LIBRARIES.  COMPILE_DEFINITIONS are -Ddefinition that will be passed to the compile line.  TRY_COMPILE creates a CMakeList.txt file on the fly that looks like this:<br><pre>  ADD_DEFINITIONS( &lt;expanded COMPILE_DEFINITIONS from calling cmake&gt;)<br>  INCLUDE_DIRECTORIES(${INCLUDE_DIRECTORIES})<br>  LINK_DIRECTORIES(${LINK_DIRECTORIES})<br>  ADD_EXECUTABLE(cmTryCompileExec sources)<br>  TARGET_LINK_LIBRARIES(cmTryCompileExec ${LINK_LIBRARIES})<br></pre>
+    <p>In both versions of the command, if OUTPUT_VARIABLE is specified, then the output from the build process is stored in the given variable. Return the success or failure in RESULT_VAR. CMAKE_FLAGS can be used to pass -DVAR:TYPE=VALUE flags to the cmake that is run during the build. 
+  </li>
+  <li>
+    <b><code>TRY_RUN</code></b>: Try compiling and then running some code.<br>
+    <pre>  TRY_RUN(RUN_RESULT_VAR COMPILE_RESULT_VAR<br>          bindir srcfile [CMAKE_FLAGS &lt;Flags&gt;]<br>          [COMPILE_DEFINITIONS &lt;flags&gt;]<br>          [OUTPUT_VARIABLE var]<br>          [ARGS &lt;arg1&gt; &lt;arg2&gt;...])<br></pre>
+    <p>Try compiling a srcfile.  Return TRUE or FALSE for success or failure in COMPILE_RESULT_VAR.  Then if the compile succeeded, run the executable and return its exit code in RUN_RESULT_VAR. If the executable was built, but failed to run, then RUN_RESULT_VAR will be set to FAILED_TO_RUN. OUTPUT_VARIABLE specifies the name of the variable to put all of the standard output and standard error into.
+  </li>
+  <li>
+    <b><code>USE_MANGLED_MESA</code></b>: Copy mesa headers for use in combination with system GL.<br>
+    <pre>  USE_MANGLED_MESA(PATH_TO_MESA OUTPUT_DIRECTORY)<br></pre>
+    <p>The path to mesa includes, should contain gl_mangle.h.  The mesa headers are copied to the specified output directory.  This allows mangled mesa headers to override other GL headers by being added to the include directory path earlier.
+  </li>
+  <li>
+    <b><code>UTILITY_SOURCE</code></b>: Specify the source tree of a third-party utility.<br>
+    <pre>  UTILITY_SOURCE(cache_entry executable_name<br>                 path_to_source [file1 file2 ...])<br></pre>
+    <p>When a third-party utility's source is included in the distribution, this command specifies its location and name.  The cache entry will not be set unless the path_to_source and all listed files exist.  It is assumed that the source tree of the utility will have been built before it is needed.
+  </li>
+  <li>
+    <b><code>VARIABLE_REQUIRES</code></b>: Assert satisfaction of an option's required variables.<br>
+    <pre>  VARIABLE_REQUIRES(TEST_VARIABLE RESULT_VARIABLE<br>                    REQUIRED_VARIABLE1<br>                    REQUIRED_VARIABLE2 ...)<br></pre>
+    <p>The first argument (TEST_VARIABLE) is the name of the variable to be tested, if that variable is false nothing else is done. If TEST_VARIABLE is true, then the next argument (RESULT_VARIABLE) is a variable that is set to true if all the required variables are set. The rest of the arguments are variables that must be true or not set to NOTFOUND to avoid an error.  If any are not true, an error is reported.
+  </li>
+  <li>
+    <b><code>VTK_MAKE_INSTANTIATOR</code></b>: Deprecated.  For use only in VTK 4.0.<br>
+    <pre>  VTK_MAKE_INSTANTIATOR(className outSourceList<br>                        src-list1 [src-list2 ..]<br>                        EXPORT_MACRO exportMacro<br>                        [HEADER_LOCATION dir]<br>                        [GROUP_SIZE groupSize]<br>                        [INCLUDES [file1 file2 ..]])<br></pre>
+    <p>Generates a new class with the given name and adds its files to the given outSourceList.  It registers the classes from the other given source lists with vtkInstantiator when it is loaded.  The output source list should be added to the library with the classes it registers.  The EXPORT_MACRO argument must be given and followed by the export macro to use when generating the class (ex. VTK_COMMON_EXPORT).  The HEADER_LOCATION option must be followed by a path.  It specifies the directory in which to place the generated class's header file. The generated class implementation files always go in the build directory corresponding to the CMakeLists.txt file containing the command.  This is the default location for the header.  The INCLUDES option can be followed by a list of zero or more files.  These files will be #included by the generated instantiator header, and can be used to gain access to the specified exportMacro in the C++ code.
+  </li>
+  <li>
+    <b><code>VTK_WRAP_JAVA</code></b>: Deprecated.  For use only in VTK 4.0.<br>
+    <pre>  VTK_WRAP_JAVA(resultingLibraryName SourceListName<br>                class1 class2 ...)<br></pre>
+    <p>Create Java wrappers for VTK classes.
+  </li>
+  <li>
+    <b><code>VTK_WRAP_PYTHON</code></b>: Deprecated.  For use only in VTK 4.0.<br>
+    <pre>  VTK_WRAP_PYTHON(resultingLibraryName SourceListName<br>                  class1 class2 ...)<br></pre>
+    <p>Create Python wrappers for VTK classes.
+  </li>
+  <li>
+    <b><code>VTK_WRAP_TCL</code></b>: Deprecated.  For use only in VTK 4.0.<br>
+    <pre>  VTK_WRAP_TCL(resultingLibraryName [SOURCES]<br>               SourceListName class1 class2 ...<br>               [COMMANDS CommandName1 CommandName2 ...])<br></pre>
+    <p>Create Tcl wrappers for VTK classes.
+  </li>
+  <li>
+    <b><code>WHILE</code></b>: Evaluate a group of commands while a condition is true<br>
+    <pre>  WHILE(condition)<br>    COMMAND1(ARGS ...)<br>    COMMAND2(ARGS ...)<br>    ...<br>  ENDWHILE(condition)<br></pre>
+    <p>All commands between WHILE and the matching ENDWHILE are recorded without being invoked.  Once the ENDWHILE is evaluated, the recorded list of commands is invoked as long as the condition is true. The condition is evaulated using the same logic as the IF command.
+  </li>
+  <li>
+    <b><code>WRITE_FILE</code></b>: Write a message to a file.<br>
+    <pre>  WRITE_FILE(filename "message to write"... [APPEND])<br></pre>
+    <p>The first argument is the file name, the rest of the arguments are messages to write. If the argument APPEND is specified, then the message will be appended.<br><p>NOTE 1: FILE WRITE and FILE APPEND do exactly the same as this one but add some more functionality.<br><p>NOTE 2: When using WRITE_FILE the produced file cannot be used as an input to CMake (CONFIGURE_FILE, source file ...) because it will lead to an infinite loop. Use CONFIGURE_FILE if you want to generate input files to CMake.
+  </li>
+</ul>
+<h2>Standard CMake Modules</h2>
+<p>The following modules are provided with CMake. They can be used with INCLUDE(ModuleName).
+<ul>
+  <li>
+    <b><code>AddFileDependencies</code></b>: ADD_FILE_DEPENDENCIES(source_file depend_files...)<br>
+    <p>Adds the given files as dependencies to source_file<br>
+  </li>
+  <li>
+    <b><code>CheckCCompilerFlag</code></b>: Check whether the C compiler supports a given flag.<br>
+    <p>CHECK_C_COMPILER_FLAG(FLAG VARIABLE)<br><pre>  FLAG - the compiler flag<br>  VARIABLE - variable to store the result<br></pre>
+    
+  </li>
+  <li>
+    <b><code>CheckCSourceCompiles</code></b>: macro which checks if the source code compiles<br>
+    <p>CHECK_C_SOURCE_COMPILES(SOURCE VAR)<br><pre>  SOURCE   - source code to try to compile<br>  VAR      - variable to store whether the source code compiled<br></pre>
+    <p><br><p>The following variables may be set before calling this macro to modify the way the check is run:<br><pre>  CMAKE_REQUIRED_FLAGS = string of compile command line flags<br>  CMAKE_REQUIRED_DEFINITIONS = list of macros to define (-DFOO=bar)<br>  CMAKE_REQUIRED_INCLUDES = list of include directories<br>  CMAKE_REQUIRED_LIBRARIES = list of libraries to link<br></pre>
+    
+  </li>
+  <li>
+    <b><code>CheckCSourceRuns</code></b>: macro which checks if the source code runs<br>
+    <p>CHECK_C_SOURCE_RUNS(SOURCE VAR)<br><pre>  SOURCE   - source code to try to compile<br>  VAR - variable to store size if the type exists.<br></pre>
+    <p><br><p>The following variables may be set before calling this macro to modify the way the check is run:<br><pre>  CMAKE_REQUIRED_FLAGS = string of compile command line flags<br>  CMAKE_REQUIRED_DEFINITIONS = list of macros to define (-DFOO=bar)<br>  CMAKE_REQUIRED_INCLUDES = list of include directories<br>  CMAKE_REQUIRED_LIBRARIES = list of libraries to link<br></pre>
+    
+  </li>
+  <li>
+    <b><code>CheckCXXCompilerFlag</code></b>: Check whether the CXX compiler supports a given flag.<br>
+    <p>CHECK_CXX_COMPILER_FLAG(FLAG VARIABLE)<br><pre>  FLAG - the compiler flag<br>  VARIABLE - variable to store the result<br></pre>
+    
+  </li>
+  <li>
+    <b><code>CheckCXXSourceCompiles</code></b>: macro which checks if the source code compiles<br>
+    <p>CHECK_CXX_SOURCE_COMPILES(SOURCE VAR)<br><pre>  SOURCE - source code to try to compile<br>  VAR    - variable to store whether the source code compiled<br></pre>
+    <p><br><p>The following variables may be set before calling this macro to modify the way the check is run:<br><pre>  CMAKE_REQUIRED_FLAGS = string of compile command line flags<br>  CMAKE_REQUIRED_DEFINITIONS = list of macros to define (-DFOO=bar)<br>  CMAKE_REQUIRED_INCLUDES = list of include directories<br>  CMAKE_REQUIRED_LIBRARIES = list of libraries to link<br></pre>
+    
+  </li>
+  <li>
+    <b><code>CheckCXXSourceRuns</code></b>: macro which checks if the source code compiles<br>
+    <p>CHECK_CXX_SOURCE_RUNS(SOURCE VAR)<br><pre>  SOURCE - source code to try to compile<br>  VAR    - variable to store size if the type exists.<br></pre>
+    <p><br><p>The following variables may be set before calling this macro to modify the way the check is run:<br><pre>  CMAKE_REQUIRED_FLAGS = string of compile command line flags<br>  CMAKE_REQUIRED_DEFINITIONS = list of macros to define (-DFOO=bar)<br>  CMAKE_REQUIRED_INCLUDES = list of include directories<br>  CMAKE_REQUIRED_LIBRARIES = list of libraries to link<br></pre>
+    
+  </li>
+  <li>
+    <b><code>CheckFunctionExists</code></b>: macro which checks if the function exists<br>
+    <p>CHECK_FUNCTION_EXISTS(FUNCTION VARIABLE)<br><pre>  FUNCTION - the name of the function<br>  VARIABLE - variable to store the result<br></pre>
+    <p><br><p>The following variables may be set before calling this macro to modify the way the check is run:<br><pre>  CMAKE_REQUIRED_FLAGS = string of compile command line flags<br>  CMAKE_REQUIRED_DEFINITIONS = list of macros to define (-DFOO=bar)<br>  CMAKE_REQUIRED_INCLUDES = list of include directories<br>  CMAKE_REQUIRED_LIBRARIES = list of libraries to link<br></pre>
+    
+  </li>
+  <li>
+    <b><code>CheckIncludeFile</code></b>: macro which checks the include file exists.<br>
+    <p>CHECK_INCLUDE_FILE(INCLUDE VARIABLE)<br><pre>  INCLUDE  - name of include file<br>  VARIABLE - variable to return result<br>   <br></pre>
+    <p>an optional third argument is the CFlags to add to the compile line  or you can use CMAKE_REQUIRED_FLAGS<br><p>The following variables may be set before calling this macro to modify the way the check is run:<br><pre>  CMAKE_REQUIRED_FLAGS = string of compile command line flags<br>  CMAKE_REQUIRED_DEFINITIONS = list of macros to define (-DFOO=bar)<br>  CMAKE_REQUIRED_INCLUDES = list of include directories<br></pre>
+    <p><br>
+  </li>
+  <li>
+    <b><code>CheckIncludeFileCXX</code></b>: Check if the include file exists.<br>
+    <pre>  CHECK_INCLUDE_FILE_CXX(INCLUDE VARIABLE)<br></pre>
+    <p><br><pre>  INCLUDE  - name of include file<br>  VARIABLE - variable to return result<br>  <br></pre>
+    <p>An optional third argument is the CFlags to add to the compile line  or you can use CMAKE_REQUIRED_FLAGS.<br><p>The following variables may be set before calling this macro to modify the way the check is run:<br><pre>  CMAKE_REQUIRED_FLAGS = string of compile command line flags<br>  CMAKE_REQUIRED_DEFINITIONS = list of macros to define (-DFOO=bar)<br>  CMAKE_REQUIRED_INCLUDES = list of include directories<br></pre>
+    <p><br>
+  </li>
+  <li>
+    <b><code>CheckIncludeFiles</code></b>: Check if the files can be included<br>
+    <p><br><p>CHECK_INCLUDE_FILES(INCLUDE VARIABLE)<br><pre>  INCLUDE  - list of files to include<br>  VARIABLE - variable to return result<br></pre>
+    <p><br><p>The following variables may be set before calling this macro to modify the way the check is run:<br><pre>  CMAKE_REQUIRED_FLAGS = string of compile command line flags<br>  CMAKE_REQUIRED_DEFINITIONS = list of macros to define (-DFOO=bar)<br>  CMAKE_REQUIRED_INCLUDES = list of include directories<br></pre>
+    
+  </li>
+  <li>
+    <b><code>CheckLibraryExists</code></b>: Check if the function exists.<br>
+    <p>CHECK_LIBRARY_EXISTS (LIBRARY FUNCTION LOCATION VARIABLE)<br><pre>  LIBRARY  - the name of the library you are looking for<br>  FUNCTION - the name of the function<br>  LOCATION - location where the library should be found<br>  VARIABLE - variable to store the result<br></pre>
+    <p><br><p>The following variables may be set before calling this macro to modify the way the check is run:<br><pre>  CMAKE_REQUIRED_FLAGS = string of compile command line flags<br>  CMAKE_REQUIRED_DEFINITIONS = list of macros to define (-DFOO=bar)<br>  CMAKE_REQUIRED_LIBRARIES = list of libraries to link<br></pre>
+    
+  </li>
+  <li>
+    <b><code>CheckSymbolExists</code></b>: Check if the symbol exists in include files<br>
+    <p>CHECK_SYMBOL_EXISTS(SYMBOL FILES VARIABLE)<br><pre>  SYMBOL   - symbol<br>  FILES    - include files to check<br>  VARIABLE - variable to return result<br></pre>
+    <p><br><p>The following variables may be set before calling this macro to modify the way the check is run:<br><pre>  CMAKE_REQUIRED_FLAGS = string of compile command line flags<br>  CMAKE_REQUIRED_DEFINITIONS = list of macros to define (-DFOO=bar)<br>  CMAKE_REQUIRED_INCLUDES = list of include directories<br>  CMAKE_REQUIRED_LIBRARIES = list of libraries to link<br></pre>
+    
+  </li>
+  <li>
+    <b><code>CheckTypeSize</code></b>: Check sizeof a type<br>
+    <pre>  CHECK_TYPE_SIZE(TYPE VARIABLE)<br></pre>
+    <p>Check if the type exists and determine size of type.  if the type exists, the size will be stored to the variable.<br><pre>  VARIABLE - variable to store size if the type exists.<br>  HAVE_${VARIABLE} - does the variable exists or not<br></pre>
+    <p>The following variables may be set before calling this macro to modify the way the check is run:<br><pre>  CMAKE_REQUIRED_FLAGS = string of compile command line flags<br>  CMAKE_REQUIRED_DEFINITIONS = list of macros to define (-DFOO=bar)<br>  CMAKE_REQUIRED_INCLUDES = list of include directories<br>  CMAKE_REQUIRED_LIBRARIES = list of libraries to link<br></pre>
+    
+  </li>
+  <li>
+    <b><code>CheckVariableExists</code></b>: Check if the variable exists.<br>
+    <pre>  CHECK_VARIABLE_EXISTS(VAR VARIABLE)<br>  <br>  VAR      - the name of the variable<br>  VARIABLE - variable to store the result<br></pre>
+    <p><br><p>This macro is only for C variables.<br><p>The following variables may be set before calling this macro to modify the way the check is run:<br><pre>  CMAKE_REQUIRED_FLAGS = string of compile command line flags<br>  CMAKE_REQUIRED_DEFINITIONS = list of macros to define (-DFOO=bar)<br>  CMAKE_REQUIRED_LIBRARIES = list of libraries to link<br></pre>
+    
+  </li>
+  <li>
+    <b><code>CMakeBackwardCompatibilityCXX</code></b>: define a bunch of backwards compatibility variables<br>
+    <pre>  CMAKE_ANSI_CXXFLAGS - flag for ansi c++ <br>  CMAKE_HAS_ANSI_STRING_STREAM - has &lt;strstream&gt;<br>  INCLUDE(TestForANSIStreamHeaders)<br>  INCLUDE(CheckIncludeFileCXX)<br>  INCLUDE(TestForSTDNamespace)<br>  INCLUDE(TestForANSIForScope)<br></pre>
+    
+  </li>
+  <li>
+    <b><code>CMakeDependentOption</code></b>: Macro to provide an option dependent on other options.<br>
+    <p>This macro presents an option to the user only if a set of other conditions are true.  When the option is not presented a default value is used, but any value set by the user is preserved for when the option is presented again. Example invocation:<br><pre>  CMAKE_DEPENDENT_OPTION(USE_FOO "Use Foo" ON<br>                         "USE_BAR;NOT USE_ZOT" OFF)<br></pre>
+    <p>If USE_BAR is true and USE_ZOT is false, this provides an option called USE_FOO that defaults to ON.  Otherwise, it sets USE_FOO to OFF.  If the status of USE_BAR or USE_ZOT ever changes, any value for the USE_FOO option is saved so that when the option is re-enabled it retains its old value.
+  </li>
+  <li>
+    <b><code>CMakeExportBuildSettings</code></b>: export build settings from a project.<br>
+    <pre>  CMAKE_EXPORT_BUILD_SETTINGS(SETTINGS_FILE)<br></pre>
+    <p>macro defined to export the build settings for use by another project.<br><pre>  SETTINGS_FILE - the file into which the settings are to be stored.<br></pre>
+    
+  </li>
+  <li>
+    <b><code>CMakeFindFrameworks</code></b>: helper module to find OSX frameworks<br>
+    
+  </li>
+  <li>
+    <b><code>CMakeImportBuildSettings</code></b>: import build settings from another project<br>
+    <pre>  CMAKE_IMPORT_BUILD_SETTINGS(SETTINGS_FILE) <br></pre>
+    <p>macro defined to import the build settings from another project.   SETTINGS_FILE is a file created by the other project's call to the CMAKE_EXPORT_BUILD_SETTINGS macro, see CMakeExportBuildSettings.
+  </li>
+  <li>
+    <b><code>CMakeJavaInformation</code></b>:  <br>
+    <p>This should be included before the _INIT variables are used to initialize the cache.  Since the rule variables  have if blocks on them, users can still define them here. But, it should still be after the platform file so changes can be made to those values.
+  </li>
+  <li>
+    <b><code>CMakePrintSystemInformation</code></b>: print system information<br>
+    <p>This file can be used for diagnostic purposes just include it in a project to see various internal CMake variables.
+  </li>
+  <li>
+    <b><code>CPack</code></b>:  <br>
+    <p>Default output files will be CPackConfig.cmake and CPackSourceConfig.cmake. This can be overwritten with CPACK_OUTPUT_CONFIG_FILE and CPACK_SOURCE_OUTPUT_CONFIG_FILE.
+  </li>
+  <li>
+    <b><code>CTest</code></b>: setup CTest<br>
+    <p>This file configures a project to use the CTest/Dart testing/dashboard process.  
+  </li>
+  <li>
+    <b><code>Dart</code></b>: setup for using Dart.<br>
+    <p>This file configures a project to use the Dart testing/dashboard process. It is broken into 3 sections.
+  </li>
+  <li>
+    <b><code>Documentation</code></b>: DocumentationVTK.cmake<br>
+    <p>This file provides support for the VTK documentation framework. It relies on several tools (Doxygen, Perl, etc).
+  </li>
+  <li>
+    <b><code>FindASPELL</code></b>: Try to find ASPELL<br>
+    <p>Once done this will define<br><pre>  ASPELL_FOUND - system has ASPELL<br>  ASPELL_INCLUDE_DIR - the ASPELL include directory<br>  ASPELL_LIBRARIES - The libraries needed to use ASPELL<br>  ASPELL_DEFINITIONS - Compiler switches required for using ASPELL<br></pre>
+    
+  </li>
+  <li>
+    <b><code>FindAVIFile</code></b>: Locate AVIFILE library and include paths<br>
+    <p>AVIFILE (<a href="http://avifile.sourceforge.net/">http://avifile.sourceforge.net/</a>)is a set of libraries for  i386 machines to use various AVI codecs. Support is limited beyond Linux. Windows provides native AVI support, and so doesn't need this library. This module defines<br><pre>  AVIFILE_INCLUDE_DIR, where to find avifile.h , etc.<br>  AVIFILE_LIBRARIES, the libraries to link against<br>  AVIFILE_DEFINITIONS, definitions to use when compiling<br>  AVIFILE_FOUND, If false, don't try to use AVIFILE<br></pre>
+    
+  </li>
+  <li>
+    <b><code>FindBoost</code></b>: Find the Boost includes and libraries.<br>
+    <p>The following variables are set if Boost is found.  If Boost is not found, Boost_FOUND is set to false.<br><pre>  Boost_FOUND        - True when the Boost include directory is found.<br>  Boost_INCLUDE_DIRS - the path to where the boost include files are.<br>  Boost_LIBRARY_DIRS - The path to where the boost library files are.<br>  Boost_LIB_DIAGNOSTIC_DEFINITIONS - Only set if using Windows.<br></pre>
+    
+  </li>
+  <li>
+    <b><code>FindBZip2</code></b>: Try to find BZip2<br>
+    <p>Once done this will define<br><pre>  BZIP2_FOUND - system has BZip2<br>  BZIP2_INCLUDE_DIR - the BZip2 include directory<br>  BZIP2_LIBRARIES - Link these to use BZip2<br>  BZIP2_DEFINITIONS - Compiler switches required for using BZip2<br>  BZIP2_NEED_PREFIX - this is set if the functions are prefixed with BZ2_<br></pre>
+    
+  </li>
+  <li>
+    <b><code>FindCABLE</code></b>: Find CABLE<br>
+    <p>This module finds if CABLE is installed and determines where the include files and libraries are.  This code sets the following variables:<br><pre>  CABLE             the path to the cable executable<br>  CABLE_TCL_LIBRARY the path to the Tcl wrapper library<br>  CABLE_INCLUDE_DIR the path to the include directory<br></pre>
+    <p><br><p>To build Tcl wrappers, you should add shared library and link it to ${CABLE_TCL_LIBRARY}.  You should also add ${CABLE_INCLUDE_DIR} as an include directory.
+  </li>
+  <li>
+    <b><code>FindCURL</code></b>: Find curl<br>
+    <p>Find the native CURL headers and libraries.<br><pre>  CURL_INCLUDE_DIRS - where to find curl/curl.h, etc.<br>  CURL_LIBRARIES    - List of libraries when using curl.<br>  CURL_FOUND        - True if curl found.<br></pre>
+    
+  </li>
+  <li>
+    <b><code>FindCurses</code></b>: Find the curses include file and library<br>
+    <p><br>
+  </li>
+  <li>
+    <b><code>FindCygwin</code></b>: this module looks for Cygwin<br>
+    <p><br>
+  </li>
+  <li>
+    <b><code>FindDart</code></b>: Find DART<br>
+    <p>This module looks for the dart testing software and sets DART_ROOT to point to where it found it.<br>
+  </li>
+  <li>
+    <b><code>FindDCMTK</code></b>: find DCMTK libraries<br>
+    <p><br>
+  </li>
+  <li>
+    <b><code>FindDoxygen</code></b>: This module looks for Doxygen and the path to Graphviz's dot<br>
+    <p>Doxygen is a documentation generation tool see <a href="http://www.doxygen.org">http://www.doxygen.org</a> With the OS X GUI version, it likes to be installed to /Applications and it contains the doxygen executable in the bundle. In the versions I've  seen, it is located in Resources, but in general, more often binaries are  located in MacOS. This code sets the following variables:<br><pre>  DOXYGEN_EXECUTABLE     = The path to the doxygen command.<br>  DOXYGEN_DOT_EXECUTABLE = The path to the dot program used by doxygen.<br>  DOXYGEN_DOT_PATH       = The path to dot not including the executable<br>  DOXYGEN = same as DOXYGEN_EXECUTABLE for backwards compatibility<br>  DOT = same as DOXYGEN_DOT_EXECUTABLE for backwards compatibility<br></pre>
+    
+  </li>
+  <li>
+    <b><code>FindEXPAT</code></b>: Find expat<br>
+    <p>Find the native EXPAT headers and libraries.<br><pre>  EXPAT_INCLUDE_DIRS - where to find expat.h, etc.<br>  EXPAT_LIBRARIES    - List of libraries when using expat.<br>  EXPAT_FOUND        - True if expat found.<br></pre>
+    
+  </li>
+  <li>
+    <b><code>FindFLTK</code></b>: Find the native FLTK includes and library<br>
+    <p>The following settings are defined<br><pre>  FLTK_FLUID_EXECUTABLE, where to find the Fluid tool<br>  FLTK_WRAP_UI, This enables the FLTK_WRAP_UI command<br>  FLTK_INCLUDE_DIR, where to find include files<br>  FLTK_LIBRARIES, list of fltk libraries<br>  FLTK_FOUND, Don't use FLTK if false.<br></pre>
+    <p>The following settings should not be used in general.<br><pre>  FLTK_BASE_LIBRARY   = the full path to fltk.lib<br>  FLTK_GL_LIBRARY     = the full path to fltk_gl.lib<br>  FLTK_FORMS_LIBRARY  = the full path to fltk_forms.lib<br>  FLTK_IMAGES_LIBRARY = the full path to fltk_images.lib<br></pre>
+    
+  </li>
+  <li>
+    <b><code>FindGCCXML</code></b>: Find the GCC-XML front-end executable.<br>
+    
+  </li>
+  <li>
+    <b><code>FindGLUT</code></b>: try to find glut library and include files<br>
+    <pre>  GLUT_INCLUDE_DIR, where to find GL/glut.h, etc.<br>  GLUT_LIBRARIES, the libraries to link against<br>  GLUT_FOUND, If false, do not try to use GLUT.<br></pre>
+    <p>Also defined, but not for general use are:<br><pre>  GLUT_glut_LIBRARY = the full path to the glut library.<br>  GLUT_Xmu_LIBRARY  = the full path to the Xmu library.<br>  GLUT_Xi_LIBRARY   = the full path to the Xi Library.<br></pre>
+    
+  </li>
+  <li>
+    <b><code>FindGnuplot</code></b>: this module looks for gnuplot<br>
+    <p><br>
+  </li>
+  <li>
+    <b><code>FindGTK</code></b>: try to find GTK (and glib) and GTKGLArea<br>
+    <pre>  GTK_INCLUDE_DIR   - Directories to include to use GTK<br>  GTK_LIBRARIES     - Files to link against to use GTK<br>  GTK_FOUND         - GTK was found<br>  GTK_GL_FOUND      - GTK's GL features were found<br></pre>
+    
+  </li>
+  <li>
+    <b><code>FindHSPELL</code></b>: Try to find HSPELL<br>
+    <p>Once done this will define<br><pre>  HSPELL_FOUND - system has HSPELL<br>  HSPELL_INCLUDE_DIR - the HSPELL include directory<br>  HSPELL_LIBRARIES - The libraries needed to use HSPELL<br>  HSPELL_DEFINITIONS - Compiler switches required for using HSPELL<br></pre>
+    
+  </li>
+  <li>
+    <b><code>FindHTMLHelp</code></b>: This module looks for Microsoft HTML Help Compiler<br>
+    <p>It defines:<br><pre>   HTML_HELP_COMPILER     : full path to the Compiler (hhc.exe)<br>   HTML_HELP_INCLUDE_PATH : include path to the API (htmlhelp.h)<br>   HTML_HELP_LIBRARY      : full path to the library (htmlhelp.lib)<br></pre>
+    <p><br>
+  </li>
+  <li>
+    <b><code>FindImageMagick</code></b>: Find Image Magick<br>
+    <p>This module finds if ImageMagick tools are installed and determines  where the executables are. This code sets the following variables:<br><pre>  IMAGEMAGICK_CONVERT_EXECUTABLE   = <br>     the full path to the 'convert' utility <br>  IMAGEMAGICK_MOGRIFY_EXECUTABLE   = <br>     the full path to the 'mogrify' utility <br>  IMAGEMAGICK_IMPORT_EXECUTABLE    = <br>     the full path to the 'import'  utility <br>  IMAGEMAGICK_MONTAGE_EXECUTABLE   = <br>     the full path to the 'montage' utility <br>  IMAGEMAGICK_COMPOSITE_EXECUTABLE = <br>     the full path to the 'composite' utility <br></pre>
+    <p><br>
+  </li>
+  <li>
+    <b><code>FindITK</code></b>: Find an ITK installation or build tree.<br>
+    
+  </li>
+  <li>
+    <b><code>FindJasper</code></b>: Try to find the Jasper JPEG2000 library<br>
+    <p>Once done this will define<br><pre>  JASPER_FOUND - system has Jasper<br>  JASPER_INCLUDE_DIR - the Jasper include directory<br>  JASPER_LIBRARIES - The libraries needed to use Jasper<br></pre>
+    
+  </li>
+  <li>
+    <b><code>FindJava</code></b>: Find Java<br>
+    <p>This module finds if Java is installed and determines where the include files and libraries are. This code sets the following variables:<br><pre>  JAVA_RUNTIME    = the full path to the Java runtime<br>  JAVA_COMPILE    = the full path to the Java compiler<br>  JAVA_ARCHIVE    = the full path to the Java archiver<br></pre>
+    <p><br>
+  </li>
+  <li>
+    <b><code>FindJNI</code></b>: Find JNI java libraries.<br>
+    <p>This module finds if Java is installed and determines where the include files and libraries are. It also determines what the name of the library is. This code sets the following variables:<br><pre>   <br>  JAVA_AWT_LIB_PATH     = the path to the jawt library<br>  JAVA_JVM_LIB_PATH     = the path to the jvm library<br>  JAVA_INCLUDE_PATH     = the include path to jni.h<br>  JAVA_INCLUDE_PATH2    = the include path to jni_md.h<br>  JAVA_AWT_INCLUDE_PATH = the include path to jawt.h<br></pre>
+    <p><br>
+  </li>
+  <li>
+    <b><code>FindJPEG</code></b>: Find JPEG<br>
+    <p>Find the native JPEG includes and library This module defines<br><pre>  JPEG_INCLUDE_DIR, where to find jpeglib.h, etc.<br>  JPEG_LIBRARIES, the libraries needed to use JPEG.<br>  JPEG_FOUND, If false, do not try to use JPEG.<br></pre>
+    <p>also defined, but not for general use are<br><pre>  JPEG_LIBRARY, where to find the JPEG library.<br></pre>
+    
+  </li>
+  <li>
+    <b><code>FindKDE3</code></b>: Find the KDE3 include and library dirs, KDE preprocessors and define a some macros<br>
+    <p><br><p>This module defines the following variables: KDE3_DEFINITIONS         - compiler definitions required for compiling KDE software KDE3_INCLUDE_DIR         - the KDE include directory KDE3_INCLUDE_DIRS        - the KDE and the Qt include directory, for use with INCLUDE_DIRECTORIES() KDE3_LIB_DIR             - the directory where the KDE libraries are installed, for use with LINK_DIRECTORIES() QT_AND_KDECORE_LIBS      - this contains both the Qt and the kdecore library KDE3_DCOPIDL_EXECUTABLE  - the dcopidl executable KDE3_DCOPIDL2CPP_EXECUTABLE - the dcopidl2cpp executable KDE3_KCFGC_EXECUTABLE    - the kconfig_compiler executable KDE3_FOUND               - set to TRUE if all of the above has been found<br><p>The following user adjustable options are provided:<br><p>KDE3_BUILD_TESTS - enable this to build KDE testcases<br><p><br><p>It also adds the following macros (from KDE3Macros.cmake) SRCS_VAR is always the variable which contains the list of source files for your application or library.<br><p>KDE3_AUTOMOC(file1 ... fileN)<br><pre>    Call this if you want to have automatic moc file handling.<br>    This means if you include "foo.moc" in the source file foo.cpp<br>    a moc file for the header foo.h will be created automatically.<br>    You can set the property SKIP_AUTOMAKE using SET_SOURCE_FILES_PROPERTIES()<br>    to exclude some files in the list from being processed.<br></pre>
+    <p><br><p>KDE3_ADD_MOC_FILES(SRCS_VAR file1 ... fileN )<br><pre>    If you don't use the KDE3_AUTOMOC() macro, for the files<br>    listed here moc files will be created (named "foo.moc.cpp")<br></pre>
+    <p><br><p>KDE3_ADD_DCOP_SKELS(SRCS_VAR header1.h ... headerN.h )<br><pre>    Use this to generate DCOP skeletions from the listed headers.<br></pre>
+    <p><br><p>KDE3_ADD_DCOP_STUBS(SRCS_VAR header1.h ... headerN.h )<br><pre>     Use this to generate DCOP stubs from the listed headers.<br></pre>
+    <p><br><p>KDE3_ADD_UI_FILES(SRCS_VAR file1.ui ... fileN.ui )<br><pre>    Use this to add the Qt designer ui files to your application/library.<br></pre>
+    <p><br><p>KDE3_ADD_KCFG_FILES(SRCS_VAR file1.kcfgc ... fileN.kcfgc )<br><pre>    Use this to add KDE kconfig compiler files to your application/library.<br></pre>
+    <p><br><p>KDE3_INSTALL_LIBTOOL_FILE(target)<br><pre>    This will create and install a simple libtool file for the given target.<br></pre>
+    <p><br><p>KDE3_ADD_EXECUTABLE(name file1 ... fileN )<br><pre>    Currently identical to ADD_EXECUTABLE(), may provide some advanced features in the future.<br></pre>
+    <p><br><p>KDE3_ADD_KPART(name [WITH_PREFIX] file1 ... fileN )<br><pre>    Create a KDE plugin (KPart, kioslave, etc.) from the given source files.<br>    If WITH_PREFIX is given, the resulting plugin will have the prefix "lib", otherwise it won't.<br>    It creates and installs an appropriate libtool la-file.<br></pre>
+    <p><br><p>KDE3_ADD_KDEINIT_EXECUTABLE(name file1 ... fileN )<br><pre>    Create a KDE application in the form of a module loadable via kdeinit.<br>    A library named kdeinit_&lt;name&gt; will be created and a small executable which links to it.<br></pre>
+    <p><br><p>The option KDE3_ENABLE_FINAL to enable all-in-one compilation is no longer supported.<br><p><br><p>Author: Alexander Neundorf &lt;neundorf@kde.org&gt;
+  </li>
+  <li>
+    <b><code>FindKDE4</code></b>: /opt/kde<br>
+    <p>Find KDE4 and provide all necessary variables and macros to compile software for it. It looks for KDE 4 in the following directories in the given order:<br><p>Please look in FindKDE4Internal.cmake and KDE4Macros.cmake for more information. They are installed with the KDE 4 libraries in $KDEDIRS/share/apps/cmake/modules/.<br><p>Author: Alexander Neundorf &lt;neundorf@kde.org&gt;
+  </li>
+  <li>
+    <b><code>FindLATEX</code></b>: Find Latex<br>
+    <p>This module finds if Latex is installed and determines where the executables are. This code sets the following variables:<br><pre>  <br>  LATEX_COMPILER:       path to the LaTeX compiler<br>  PDFLATEX_COMPILER:    path to the PdfLaTeX compiler<br>  BIBTEX_COMPILER:      path to the BibTeX compiler<br>  MAKEINDEX_COMPILER:   path to the MakeIndex compiler<br>  DVIPS_CONVERTER:      path to the DVIPS converter<br>  PS2PDF_CONVERTER:     path to the PS2PDF converter<br>  LATEX2HTML_CONVERTER: path to the LaTeX2Html converter <br></pre>
+    <p><br>
+  </li>
+  <li>
+    <b><code>FindLibXml2</code></b>: Try to find LibXml2<br>
+    <p>Once done this will define<br><pre>  LIBXML2_FOUND - system has LibXml2<br>  LIBXML2_INCLUDE_DIR - the LibXml2 include directory<br>  LIBXML2_LIBRARIES - the libraries needed to use LibXml2<br>  LIBXML2_DEFINITIONS - Compiler switches required for using LibXml2<br></pre>
+    <p><br><p>Copyright (c) 2006, Alexander Neundorf &lt;neundorf@kde.org&gt; This code is available under the BSD license, see licenses/BSD for details.
+  </li>
+  <li>
+    <b><code>FindLibXslt</code></b>: Try to find LibXslt<br>
+    <p>Once done this will define<br><pre>  LIBXSLT_FOUND - system has LibXslt<br>  LIBXSLT_INCLUDE_DIR - the LibXslt include directory<br>  LIBXSLT_LIBRARIES - Link these to LibXslt<br>  LIBXSLT_DEFINITIONS - Compiler switches required for using LibXslt<br></pre>
+    
+  </li>
+  <li>
+    <b><code>FindMatlab</code></b>: this module looks for Matlab<br>
+    <p>Defines:<br><pre>  MATLAB_INCLUDE_DIR: include path for mex.h, engine.h<br>  MATLAB_LIBRARIES:   required libraries: libmex, etc<br>  MATLAB_MEX_LIBRARY: path to libmex.lib<br>  MATLAB_MX_LIBRARY:  path to libmx.lib<br>  MATLAB_ENG_LIBRARY: path to libeng.lib<br></pre>
+    
+  </li>
+  <li>
+    <b><code>FindMFC</code></b>: Find MFC on Windows<br>
+    <p>Find the native MFC - i.e. decide if this is an MS VC box.<br><pre>  MFC_FOUND - Was MFC support found<br></pre>
+    <p>You don't need to include anything or link anything to use it.
+  </li>
+  <li>
+    <b><code>FindMotif</code></b>: Try to find Motif (or lesstif)<br>
+    <p>Once done this will define:<br><pre>  MOTIF_FOUND        - system has MOTIF<br>  MOTIF_INCLUDE_DIR  - incude paths to use Motif<br>  MOTIF_LIBRARIES    - Link these to use Motif<br></pre>
+    
+  </li>
+  <li>
+    <b><code>FindMPEG</code></b>: Find the native MPEG includes and library<br>
+    <p>This module defines<br><pre>  MPEG_INCLUDE_DIR, where to find MPEG.h, etc.<br>  MPEG_LIBRARIES, the libraries required to use MPEG.<br>  MPEG_FOUND, If false, do not try to use MPEG.<br></pre>
+    <p>also defined, but not for general use are<br><pre>  MPEG_mpeg2_LIBRARY, where to find the MPEG library.<br>  MPEG_vo_LIBRARY, where to find the vo library.<br></pre>
+    
+  </li>
+  <li>
+    <b><code>FindMPEG2</code></b>: Find the native MPEG2 includes and library<br>
+    <p>This module defines<br><pre>  MPEG2_INCLUDE_DIR, path to mpeg2dec/mpeg2.h, etc.<br>  MPEG2_LIBRARIES, the libraries required to use MPEG2.<br>  MPEG2_FOUND, If false, do not try to use MPEG2.<br></pre>
+    <p>also defined, but not for general use are<br><pre>  MPEG2_mpeg2_LIBRARY, where to find the MPEG2 library.<br>  MPEG2_vo_LIBRARY, where to find the vo library.<br></pre>
+    
+  </li>
+  <li>
+    <b><code>FindMPI</code></b>: Find MPI<br>
+    <p>This module looks for MPI (Message Passing Interface) support it will define the following values<br><pre>  MPI_INCLUDE_PATH = where mpi.h can be found<br>  MPI_LIBRARY    = the library to link in (mpi mpich etc)<br></pre>
+    
+  </li>
+  <li>
+    <b><code>FindOpenAL</code></b>: Locate OpenAL<br>
+    <p>This module defines<br><pre>  OPENAL_LIBRARY<br>  OPENAL_FOUND, if false, do not try to link to OpenAL <br>  OPENAL_INCLUDE_DIR, where to find the headers<br>   <br></pre>
+    <p>$OPENALDIR is an environment variable that would correspond to the ./configure --prefix=$OPENALDIR used in building OpenAL.<br><pre>   <br></pre>
+    <p>Created by Eric Wing. This was influenced by the FindSDL.cmake module. On OSX, this will prefer the Framework version (if found) over others. People will have to manually change the cache values of  OPENAL_LIBRARY to override this selection. Tiger will include OpenAL as part of the System. But for now, we have to look around. Other (Unix) systems should be able to utilize the non-framework paths.
+  </li>
+  <li>
+    <b><code>FindOpenGL</code></b>: Try to find OpenGL<br>
+    <p>Once done this will define<br><pre>  <br>  OPENGL_FOUND        - system has OpenGL<br>  OPENGL_XMESA_FOUND  - system has XMESA<br>  OPENGL_GLU_FOUND    - system has GLU<br>  OPENGL_INCLUDE_DIR  - the GL include directory<br>  OPENGL_LIBRARIES    - Link these to use OpenGL and GLU<br>   <br></pre>
+    <p>If you want to use just GL you can use these values<br><pre>  OPENGL_gl_LIBRARY   - Path to OpenGL Library<br>  OPENGL_glu_LIBRARY  - Path to GLU Library<br>  <br></pre>
+    <p>On OSX default to using the framework version of opengl People will have to change the cache values of OPENGL_glu_LIBRARY  and OPENGL_gl_LIBRARY to use OpenGL with X11 on OSX
+  </li>
+  <li>
+    <b><code>FindOpenSSL</code></b>: Try to find the OpenSSL encryption library<br>
+    <p>Once done this will define<br><pre>  OPENSSL_FOUND - system has the OpenSSL library<br>  OPENSSL_INCLUDE_DIR - the OpenSSL include directory<br>  OPENSSL_LIBRARIES - The libraries needed to use OpenSSL<br></pre>
+    
+  </li>
+  <li>
+    <b><code>FindPerl</code></b>: Find perl<br>
+    <p>this module looks for Perl<br><pre>  PERL_EXECUTABLE - the full path to perl<br>  PERL_FOUND      - If false, don't attempt to use perl.<br></pre>
+    
+  </li>
+  <li>
+    <b><code>FindPerlLibs</code></b>: Find Perl libraries<br>
+    <p>This module finds if PERL is installed and determines where the include files and libraries are. It also determines what the name of the library is. This code sets the following variables:<br><pre>  PERL_INCLUDE_PATH = path to where perl.h is found<br>  PERL_EXECUTABLE   = full path to the perl binary<br></pre>
+    <p><br>
+  </li>
+  <li>
+    <b><code>FindPHP4</code></b>: Find PHP4<br>
+    <p>This module finds if PHP4 is installed and determines where the include files and libraries are. It also determines what the name of the library is. This code sets the following variables:<br><pre>  PHP4_INCLUDE_PATH       = path to where php.h can be found<br>  PHP4_EXECUTABLE         = full path to the php4 binary<br></pre>
+    <p><br>
+  </li>
+  <li>
+    <b><code>FindPhysFS</code></b>: Locate PhysFS library<br>
+    <p>This module defines<br><pre>  PHYSFS_LIBRARY, the name of the library to link with<br>  PHYSFS_FOUND, if false, do not try to link to PHYSFS<br>  PHYSFS_INCLUDE_DIR, where to find PHYSFS/PHYSFS.h<br></pre>
+    <p><br><p>$PHYSFSDIR is an environment variable that would correspond to the ./configure --prefix=$PHYSFSDIR used in building PHYSFS.<br><p>Created by Eric Wing. This was influenced by the FindSDL.cmake  module, but with modifications to recognize OS X frameworks.
+  </li>
+  <li>
+    <b><code>FindPike</code></b>: Find Pike<br>
+    <p>This module finds if PIKE is installed and determines where the include files and libraries are. It also determines what the name of the library is. This code sets the following variables:<br><pre>  PIKE_INCLUDE_PATH       = path to where program.h is found<br>  PIKE_EXECUTABLE         = full path to the pike binary<br></pre>
+    <p><br>
+  </li>
+  <li>
+    <b><code>FindPkgConfig</code></b>: a pkg-config module for CMake<br>
+    <p><br><p>Usage:<br><pre>   pkg_check_modules(&lt;PREFIX&gt; [REQUIRED] &lt;MODULE&gt; [&lt;MODULE&gt;]*)<br>     checks for all the given modules<br></pre>
+    <p><br><pre>   pkg_search_module(&lt;PREFIX&gt; [REQUIRED] &lt;MODULE&gt; [&lt;MODULE&gt;]*)<br>     checks for given modules and uses the first working one<br></pre>
+    <p><br><p>When the 'REQUIRED' argument was set, macros will fail with an error when module(s) could not be found<br><p>It sets the following variables:<br><pre>   PKG_CONFIG_FOUND         ... true iff pkg-config works on the system<br>   PKG_CONFIG_EXECUTABLE    ... pathname of the pkg-config program<br>   &lt;PREFIX&gt;_FOUND           ... set to 1 iff module(s) exist<br></pre>
+    <p><br><p>For the following variables two sets of values exist; first one is the common one and has the given PREFIX. The second set contains flags which are given out when pkgconfig was called with the '--static' option.<br><pre>   &lt;XPREFIX&gt;_LIBRARIES      ... only the libraries (w/o the '-l')<br>   &lt;XPREFIX&gt;_LIBRARY_DIRS   ... the paths of the libraries (w/o the '-L')<br>   &lt;XPREFIX&gt;_LDFLAGS        ... all required linker flags<br>   &lt;XPREFIX&gt;_LDFLAGS_OTHER ... all other linker flags<br>   &lt;XPREFIX&gt;_INCLUDE_DIRS   ... the '-I' preprocessor flags (w/o the '-I')<br>   &lt;XPREFIX&gt;_CFLAGS         ... all required cflags<br>   &lt;XPREFIX&gt;_CFLAGS_OTHER  ... the other compiler flags<br></pre>
+    <p><br><pre>   &lt;XPREFIX&gt; = &lt;PREFIX&gt;        for common case<br>   &lt;XPREFIX&gt; = &lt;PREFIX&gt;_STATIC for static linking<br></pre>
+    <p><br><p>There are some special variables whose prefix depends on the count of given modules. When there is only one module, &lt;PREFIX&gt; stays unchanged. When there are multiple modules, the prefix will be changed to &lt;PREFIX&gt;_&lt;MODNAME&gt;:<br><pre>   &lt;XPREFIX&gt;_VERSION    ... version of the module<br>   &lt;XPREFIX&gt;_PREFIX     ... prefix-directory of the module<br>   &lt;XPREFIX&gt;_INCLUDEDIR ... include-dir of the module<br>   &lt;XPREFIX&gt;_LIBDIR     ... lib-dir of the module<br></pre>
+    <p><br><pre>   &lt;XPREFIX&gt; = &lt;PREFIX&gt;  when |MODULES| == 1, else<br>   &lt;XPREFIX&gt; = &lt;PREFIX&gt;_&lt;MODNAME&gt;<br></pre>
+    <p><br><p>A &lt;MODULE&gt; parameter can have the following formats:<br><pre>   {MODNAME}            ... matches any version<br>   {MODNAME}&gt;={VERSION} ... at least version &lt;VERSION&gt; is required<br>   {MODNAME}={VERSION}  ... exactly version &lt;VERSION&gt; is required<br>   {MODNAME}&lt;={VERSION} ... modules must not be newer than &lt;VERSION&gt;<br></pre>
+    <p><br><p>Examples<br><pre>   pkg_check_modules (GLIB2   glib-2.0)<br></pre>
+    <p><br><pre>   pkg_check_modules (GLIB2   glib-2.0&gt;=2.10)<br>     requires at least version 2.10 of glib2 and defines e.g.<br>       GLIB2_VERSION=2.10.3<br></pre>
+    <p><br><pre>   pkg_check_modules (FOO     glib-2.0&gt;=2.10 gtk+-2.0)<br>     requires both glib2 and gtk2, and defines e.g.<br>       FOO_glib-2.0_VERSION=2.10.3<br>       FOO_gtk+-2.0_VERSION=2.8.20<br></pre>
+    <p><br><pre>   pkg_check_modules (XRENDER REQUIRED xrender)<br>     defines e.g.:<br>       XRENDER_LIBRARIES=Xrender;X11<br>       XRENDER_STATIC_LIBRARIES=Xrender;X11;pthread;Xau;Xdmcp<br></pre>
+    <p><br><pre>   pkg_search_module (BAR     libxml-2.0 libxml2 libxml&gt;=2)<br></pre>
+    
+  </li>
+  <li>
+    <b><code>FindPNG</code></b>: Find the native PNG includes and library<br>
+    <p><br>
+  </li>
+  <li>
+    <b><code>FindPythonInterp</code></b>: Find python interpreter<br>
+    <p>This module finds if Python interpreter is installed and determines where the executables are. This code sets the following variables:<br><pre>  PYTHONINTERP_FOUND - Was the Python executable found<br>  PYTHON_EXECUTABLE  - path to the Python interpreter<br></pre>
+    <p><br>
+  </li>
+  <li>
+    <b><code>FindPythonLibs</code></b>: Find python libraries<br>
+    <p>This module finds if Python is installed and determines where the include files and libraries are. It also determines what the name of the library is. This code sets the following variables:<br><pre>  PYTHON_LIBRARIES     = path to the python library<br>  PYTHON_INCLUDE_PATH  = path to where Python.h is found<br>  PYTHON_DEBUG_LIBRARIES = path to the debug library<br></pre>
+    <p><br>
+  </li>
+  <li>
+    <b><code>FindQt</code></b>: Searches for all installed versions of QT.<br>
+    <p>This should only be used if your project can work with multiple versions of QT.  If not, you should just directly use FindQt4 or FindQt3. If multiple versions of QT are found on the machine, then The user must set the option DESIRED_QT_VERSION to the version they want to use.  If only one version of qt is found on the machine, then the DESIRED_QT_VERSION is set to that version and the  matching FindQt3 or FindQt4 module is included. Once the user sets DESIRED_QT_VERSION, then the FindQt3 or FindQt4 module is included.<br><pre>  QT_REQUIRED if this is set to TRUE then if CMake can <br>              not find QT4 or QT3 an error is raised <br>              and a message is sent to the user.<br></pre>
+    <p><br><pre>  DESIRED_QT_VERSION OPTION is created<br>  QT4_INSTALLED is set to TRUE if qt4 is found.<br>  QT3_INSTALLED is set to TRUE if qt3 is found.<br></pre>
+    
+  </li>
+  <li>
+    <b><code>FindQt3</code></b>: Locate Qt include paths and libraries<br>
+    <p>This module defines:<br><pre>  QT_INCLUDE_DIR - where to find qt.h, etc.<br>  QT_LIBRARIES   - the libraries to link against to use Qt.<br>  QT_DEFINITIONS - definitions to use when <br>                   compiling code that uses Qt.<br>  QT_FOUND       - If false, don't try to use Qt.<br></pre>
+    <p><br><p>If you need the multithreaded version of Qt, set QT_MT_REQUIRED to TRUE<br><p>Also defined, but not for general use are:<br><pre>  QT_MOC_EXECUTABLE, where to find the moc tool.<br>  QT_UIC_EXECUTABLE, where to find the uic tool.<br>  QT_QT_LIBRARY, where to find the Qt library.<br>  QT_QTMAIN_LIBRARY, where to find the qtmain <br>   library. This is only required by Qt3 on Windows.<br></pre>
+    
+  </li>
+  <li>
+    <b><code>FindQt4</code></b>: Find QT 4<br>
+    <p>This module can be used to find Qt4. The most important issue is that the Qt4 qmake is available via the system path. This qmake is then used to detect basically everything else. This module defines a number of key variables and macros. First is  QT_USE_FILE which is the path to a CMake file that can be included to compile Qt 4 applications and libraries.  By default, the QtCore and QtGui  libraries are loaded. This behavior can be changed by setting one or more  of the following variables to true:<br><pre>                    QT_DONT_USE_QTCORE<br>                    QT_DONT_USE_QTGUI<br>                    QT_USE_QT3SUPPORT<br>                    QT_USE_QTASSISTANT<br>                    QT_USE_QTDESIGNER<br>                    QT_USE_QTMOTIF<br>                    QT_USE_QTMAIN<br>                    QT_USE_QTNETWORK<br>                    QT_USE_QTNSPLUGIN<br>                    QT_USE_QTOPENGL<br>                    QT_USE_QTSQL<br>                    QT_USE_QTXML<br>                    QT_USE_QTSVG<br>                    QT_USE_QTTEST<br>                    QT_USE_QTUITOOLS<br>                    QT_USE_QTDBUS<br>                    QT_USE_QTSCRIPT<br></pre>
+    <p><br><p>All the libraries required are stored in a variable called QT_LIBRARIES.   Add this variable to your TARGET_LINK_LIBRARIES.<br><pre>  <br>  macro QT4_WRAP_CPP(outfiles inputfile ... OPTIONS ...)<br>  macro QT4_WRAP_UI(outfiles inputfile ... OPTIONS ...)<br>  macro QT4_ADD_RESOURCES(outfiles inputfile ... OPTIONS ...)<br>  macro QT4_AUTOMOC(inputfile ... )<br>  macro QT4_GENERATE_MOC(inputfile outputfile )<br></pre>
+    <p><br><pre>  macro QT4_ADD_DBUS_INTERFACE(outfiles interface basename)<br>        create a the interface header and implementation files with the <br>        given basename from the given interface xml file and add it to <br>        the list of sources<br></pre>
+    <p><br><pre>  macro QT4_ADD_DBUS_INTERFACES(outfiles inputfile ... )<br>        create the interface header and implementation files <br>        for all listed interface xml files<br>        the name will be automatically determined from the name of the xml file<br></pre>
+    <p><br><pre>  macro QT4_ADD_DBUS_ADAPTOR(outfiles xmlfile parentheader parentclassname [basename] )<br>        create a dbus adaptor (header and implementation file) from the xml file<br>        describing the interface, and add it to the list of sources. The adaptor<br>        forwards the calls to a parent class, defined in parentheader and named<br>        parentclassname. The name of the generated files will be<br>        &lt;basename&gt;adaptor.{cpp,h} where basename is the basename of the xml file.<br></pre>
+    <p><br><pre>  macro QT4_GENERATE_DBUS_INTERFACE( header [interfacename] )<br>        generate the xml interface file from the given header.<br>        If the optional argument interfacename is omitted, the name of the <br>        interface file is constructed from the basename of the header with<br>        the suffix .xml appended.<br></pre>
+    <p><br><pre>  QT_FOUND         If false, don't try to use Qt.<br>  QT4_FOUND        If false, don't try to use Qt 4.<br></pre>
+    <p><br><pre>  QT_EDITION             Set to the edition of Qt (i.e. DesktopLight)<br>  QT_EDITION_DESKTOPLIGHT True if QT_EDITION == DesktopLight<br>  QT_QTCORE_FOUND        True if QtCore was found.<br>  QT_QTGUI_FOUND         True if QtGui was found.<br>  QT_QT3SUPPORT_FOUND    True if Qt3Support was found.<br>  QT_QTASSISTANT_FOUND   True if QtAssistant was found.<br>  QT_QTDBUS_FOUND        True if QtDBus was found.<br>  QT_QTDESIGNER_FOUND    True if QtDesigner was found.<br>  QT_QTDESIGNERCOMPONENTS True if QtDesignerComponents was found.<br>  QT_QTMOTIF_FOUND       True if QtMotif was found.<br>  QT_QTNETWORK_FOUND     True if QtNetwork was found.<br>  QT_QTNSPLUGIN_FOUND    True if QtNsPlugin was found.<br>  QT_QTOPENGL_FOUND      True if QtOpenGL was found.<br>  QT_QTSQL_FOUND         True if QtSql was found.<br>  QT_QTXML_FOUND         True if QtXml was found.<br>  QT_QTSVG_FOUND         True if QtSvg was found.<br>  QT_QTSCRIPT_FOUND      True if QtScript was found.<br>  QT_QTTEST_FOUND        True if QtTest was found.<br>  QT_QTUITOOLS_FOUND     True if QtUiTools was found.<br>                      <br>  QT_DEFINITIONS   Definitions to use when compiling code that uses Qt.<br>                  <br>  QT_INCLUDES      List of paths to all include directories of <br>                   Qt4 QT_INCLUDE_DIR and QT_QTCORE_INCLUDE_DIR are<br>                   always in this variable even if NOTFOUND,<br>                   all other INCLUDE_DIRS are<br>                   only added if they are found.<br>   <br>  QT_INCLUDE_DIR              Path to "include" of Qt4<br>  QT_QT_INCLUDE_DIR           Path to "include/Qt" <br>  QT_QT3SUPPORT_INCLUDE_DIR   Path to "include/Qt3Support" <br>  QT_QTASSISTANT_INCLUDE_DIR  Path to "include/QtAssistant" <br>  QT_QTCORE_INCLUDE_DIR       Path to "include/QtCore"         <br>  QT_QTDESIGNER_INCLUDE_DIR   Path to "include/QtDesigner" <br>  QT_QTDESIGNERCOMPONENTS_INCLUDE_DIR   Path to "include/QtDesigner"<br>  QT_QTDBUS_INCLUDE_DIR       Path to "include/QtDBus" <br>  QT_QTGUI_INCLUDE_DIR        Path to "include/QtGui" <br>  QT_QTMOTIF_INCLUDE_DIR      Path to "include/QtMotif" <br>  QT_QTNETWORK_INCLUDE_DIR    Path to "include/QtNetwork" <br>  QT_QTNSPLUGIN_INCLUDE_DIR   Path to "include/QtNsPlugin" <br>  QT_QTOPENGL_INCLUDE_DIR     Path to "include/QtOpenGL" <br>  QT_QTSQL_INCLUDE_DIR        Path to "include/QtSql" <br>  QT_QTXML_INCLUDE_DIR        Path to "include/QtXml" <br>  QT_QTSVG_INCLUDE_DIR        Path to "include/QtSvg"<br>  QT_QTSCRIPT_INCLUDE_DIR     Path to "include/QtScript"<br>  QT_QTTEST_INCLUDE_DIR       Path to "include/QtTest"<br>                            <br>  QT_LIBRARY_DIR              Path to "lib" of Qt4<br></pre>
+    <p><br><pre>  QT_PLUGINS_DIR              Path to "plugins" for Qt4<br>                            <br></pre>
+    <p>For every library of Qt there are three variables:<br><pre>  QT_QTFOO_LIBRARY_RELEASE, which contains the full path to the release version<br>  QT_QTFOO_LIBRARY_DEBUG, which contains the full path to the debug version<br>  QT_QTFOO_LIBRARY, the full path to the release version if available, otherwise to the debug version<br></pre>
+    <p><br><p>So there are the following variables: The Qt3Support library:     QT_QT3SUPPORT_LIBRARY<br><pre>                             QT_QT3SUPPORT_LIBRARY_RELEASE<br>                             QT_QT3SUPPORT_DEBUG<br></pre>
+    <p><br><p>The QtAssistant library:    QT_QTASSISTANT_LIBRARY<br><pre>                             QT_QTASSISTANT_LIBRARY_RELEASE<br>                             QT_QTASSISTANT_LIBRARY_DEBUG<br></pre>
+    <p><br><p>The QtCore library:         QT_QTCORE_LIBRARY<br><pre>                             QT_QTCORE_LIBRARY_RELEASE<br>                             QT_QTCORE_LIBRARY_DEBUG<br></pre>
+    <p><br><p>The QtDBus library:         QT_QTDBUS_LIBRARY<br><pre>                             QT_QTDBUS_LIBRARY_RELEASE<br>                             QT_QTDBUS_LIBRARY_DEBUG<br></pre>
+    <p><br><p>The QtDesigner library:     QT_QTDESIGNER_LIBRARY<br><pre>                             QT_QTDESIGNER_LIBRARY_RELEASE<br>                             QT_QTDESIGNER_LIBRARY_DEBUG<br></pre>
+    <p><br><p>The QtDesignerComponents library:     QT_QTDESIGNERCOMPONENTS_LIBRARY<br><pre>                             QT_QTDESIGNERCOMPONENTS_LIBRARY_RELEASE<br>                             QT_QTDESIGNERCOMPONENTS_LIBRARY_DEBUG<br></pre>
+    <p><br><p>The QtGui library:          QT_QTGUI_LIBRARY<br><pre>                             QT_QTGUI_LIBRARY_RELEASE<br>                             QT_QTGUI_LIBRARY_DEBUG<br></pre>
+    <p><br><p>The QtMotif library:        QT_QTMOTIF_LIBRARY<br><pre>                             QT_QTMOTIF_LIBRARY_RELEASE<br>                             QT_QTMOTIF_LIBRARY_DEBUG<br></pre>
+    <p><br><p>The QtNetwork library:      QT_QTNETWORK_LIBRARY<br><pre>                             QT_QTNETWORK_LIBRARY_RELEASE<br>                             QT_QTNETWORK_LIBRARY_DEBUG<br></pre>
+    <p><br><p>The QtNsPLugin library:     QT_QTNSPLUGIN_LIBRARY<br><pre>                             QT_QTNSPLUGIN_LIBRARY_RELEASE<br>                             QT_QTNSPLUGIN_LIBRARY_DEBUG<br></pre>
+    <p><br><p>The QtOpenGL library:       QT_QTOPENGL_LIBRARY<br><pre>                             QT_QTOPENGL_LIBRARY_RELEASE<br>                             QT_QTOPENGL_LIBRARY_DEBUG<br></pre>
+    <p><br><p>The QtSql library:          QT_QTSQL_LIBRARY<br><pre>                             QT_QTSQL_LIBRARY_RELEASE<br>                             QT_QTSQL_LIBRARY_DEBUG<br></pre>
+    <p><br><p>The QtXml library:          QT_QTXML_LIBRARY<br><pre>                             QT_QTXML_LIBRARY_RELEASE<br>                             QT_QTXML_LIBRARY_DEBUG<br></pre>
+    <p><br><p>The QtSvg library:          QT_QTSVG_LIBRARY<br><pre>                             QT_QTSVG_LIBRARY_RELEASE<br>                             QT_QTSVG_LIBRARY_DEBUG<br></pre>
+    <p><br><p>The QtScript library:       QT_QTSCRIPT_LIBRARY<br><pre>                             QT_QTSCRIPT_LIBRARY_RELEASE<br>                             QT_QTSCRIPT_LIBRARY_DEBUG<br></pre>
+    <p><br><p>The QtTest library:         QT_QTTEST_LIBRARY<br><pre>                             QT_QTTEST_LIBRARY_RELEASE<br>                             QT_QTTEST_LIBRARY_DEBUG<br></pre>
+    <p><br><p>The qtmain library for Windows QT_QTMAIN_LIBRARY<br><pre>                             QT_QTMAIN_LIBRARY_RELEASE<br>                             QT_QTMAIN_LIBRARY_DEBUG<br></pre>
+    <p><br><p>The QtUiTools library:      QT_QTUITOOLS_LIBRARY<br><pre>                             QT_QTUITOOLS_LIBRARY_RELEASE<br>                             QT_QTUITOOLS_LIBRARY_DEBUG<br>  <br></pre>
+    <p>also defined, but NOT for general use are<br><pre>  QT_MOC_EXECUTABLE          Where to find the moc tool.<br>  QT_UIC_EXECUTABLE          Where to find the uic tool.<br>  QT_UIC3_EXECUTABLE         Where to find the uic3 tool.<br>  QT_RCC_EXECUTABLE          Where to find the rcc tool<br>  QT_DBUSCPP2XML_EXECUTABLE  Where to find the qdbuscpp2xml tool.<br>  QT_DBUSXML2CPP_EXECUTABLE  Where to find the qdbusxml2cpp tool.<br>  <br>  QT_DOC_DIR                 Path to "doc" of Qt4<br>  QT_MKSPECS_DIR             Path to "mkspecs" of Qt4<br></pre>
+    <p><br><p><br><p>These are around for backwards compatibility  they will be set<br><pre>  QT_WRAP_CPP  Set true if QT_MOC_EXECUTABLE is found<br>  QT_WRAP_UI   Set true if QT_UIC_EXECUTABLE is found<br>  <br></pre>
+    <p>These variables do _NOT_ have any effect anymore (compared to FindQt.cmake)<br><pre>  QT_MT_REQUIRED         Qt4 is now always multithreaded<br>  <br></pre>
+    <p>These variables are set to "" Because Qt structure changed  (They make no sense in Qt4)<br><pre>  QT_QT_LIBRARY        Qt-Library is now split<br></pre>
+    
+  </li>
+  <li>
+    <b><code>FindRuby</code></b>: Find Ruby<br>
+    <p>This module finds if Ruby is installed and determines where the include files and libraries are. It also determines what the name of the library is. This code sets the following variables:<br><pre>  RUBY_INCLUDE_PATH = path to where ruby.h can be found<br>  RUBY_EXECUTABLE   = full path to the ruby binary<br></pre>
+    
+  </li>
+  <li>
+    <b><code>FindSDL</code></b>: Locate the SDL library<br>
+    <p>This module defines<br><pre>  SDL_LIBRARY, the library to link against<br>  SDL_FOUND, if false, do not try to link to SDL<br>  SDL_INCLUDE_DIR, where to find SDL.h<br></pre>
+    <p><br><p>Don't forget to include SDLmain.h and SDLmain.m your project for the  OS X framework based version. (Other versions link to -lSDLmain which this module will try to find on your behalf.) Also for OS X, this  module will automatically add the -framework Cocoa on your behalf. $SDLDIR is an environment variable that would correspond to the ./configure --prefix=$SDLDIR used in building SDL. l.e.galup  9-20-02<br><p>Modified by Eric Wing.  Added new modifications to recognize OS X frameworks and  additional Unix paths (FreeBSD, etc).  Also corrected the header search path to follow "proper" SDL guidelines. Added a search for SDLmain which is needed by some platforms. Added a search for threads which is needed by some platforms. Added needed compile switches for MinGW.<br><p>On OSX, this will prefer the Framework version (if found) over others. People will have to manually change the cache values of  SDL_LIBRARY to override this selection.<br><p>Note that the header path has changed from SDL/SDL.h to just SDL.h This needed to change because "proper" SDL convention is #include "SDL.h", not &lt;SDL/SDL.h&gt;. This is done for portability reasons because not all systems place things in SDL/ (see FreeBSD).
+  </li>
+  <li>
+    <b><code>FindSDL_image</code></b>: Locate SDL_image library<br>
+    <p>This module defines<br><pre>  SDLIMAGE_LIBRARY, the library to link against<br>  SDLIMAGE_FOUND, if false, do not try to link to SDL<br>  SDLIMAGE_INCLUDE_DIR, where to find SDL/SDL.h<br></pre>
+    <p><br><p>$SDLDIR is an environment variable that would correspond to the ./configure --prefix=$SDLDIR used in building SDL.<br><p>Created by Eric Wing. This was influenced by the FindSDL.cmake  module, but with modifications to recognize OS X frameworks and  additional Unix paths (FreeBSD, etc).
+  </li>
+  <li>
+    <b><code>FindSDL_mixer</code></b>: Locate the SDL_mixer library<br>
+    <p>This module defines<br><pre>  SDLMIXER_LIBRARY, library to link against<br>  SDLMIXER_FOUND, if false, do not try to link to SDL<br>  SDLMIXER_INCLUDE_DIR, where to find SDL/SDL.h<br></pre>
+    <p><br><p>$SDLDIR is an environment variable that would correspond to the ./configure --prefix=$SDLDIR used in building SDL.<br><p>Created by Eric Wing. This was influenced by the FindSDL.cmake  module, but with modifications to recognize OS X frameworks and  additional Unix paths (FreeBSD, etc).
+  </li>
+  <li>
+    <b><code>FindSDL_net</code></b>: Locate the SDL_net library<br>
+    <p>This module defines<br><pre>  SDLNET_LIBRARY, the library to link against<br>  SDLNET_FOUND, if false, do not try to link against<br>  SDLNET_INCLUDE_DIR, where to find the headers<br>  <br></pre>
+    <p>$SDLDIR is an environment variable that would correspond to the ./configure --prefix=$SDLDIR used in building SDL.<br><pre>  <br></pre>
+    <p>Created by Eric Wing. This was influenced by the FindSDL.cmake  module, but with modifications to recognize OS X frameworks and  additional Unix paths (FreeBSD, etc). On OSX, this will prefer the Framework version (if found) over others. People will have to manually change the cache values of  SDLNET_LIBRARY to override this selection.
+  </li>
+  <li>
+    <b><code>FindSDL_sound</code></b>: Locates the SDL_sound library<br>
+    <p>This module depends on SDL being found and  must be called AFTER FindSDL.cmake is called.<br><p>This module defines SDL_SOUND_INCLUDE_DIR, where to find SDL_sound.h SDL_SOUND_FOUND, if false, do not try to link to SDL SDL_SOUND_LIBRARIES, this contains the list of libraries that you need  to link against. This is a read-only variable and is marked INTERNAL. SDL_SOUND_EXTRAS, this is an optional variable for you to add your own flags to SDL_SOUND_LIBRARIES. This is prepended to SDL_SOUND_LIBRARIES. This is available mostly for cases this module failed to anticipate for and you must add additional flags. This is marked as ADVANCED.<br><p>This module also defines (but you shouldn't need to use directly) SDL_SOUND_LIBRARY, the name of just the SDL_sound library you would link against. Use SDL_SOUND_LIBRARIES for you link instructions and not this one. And might define the following as needed<br><pre>  MIKMOD_LIBRARY<br>  MODPLUG_LIBRARY<br>  OGG_LIBRARY<br>  VORBIS_LIBRARY<br>  SMPEG_LIBRARY<br>  FLAC_LIBRARY<br>  SPEEX_LIBRARY<br></pre>
+    <p><br><p>Typically, you should not use these variables directly, and you should use SDL_SOUND_LIBRARIES which contains SDL_SOUND_LIBRARY and the other audio libraries (if needed) to successfully compile on your system .<br><p>Created by Eric Wing. <br><p>This module is a bit more complicated than the other FindSDL* family modules.  The reason is that SDL_sound can be compiled in a large variety of different ways which are independent of platform. SDL_sound may dynamically link against other 3rd party libraries to get additional codec support, such as Ogg Vorbis, SMPEG, ModPlug, MikMod, FLAC, Speex, and potentially others.  Under some circumstances which I don't fully understand, there seems to be a requirement that dependent libraries of libraries you use must also be explicitly linked against in order to successfully compile. SDL_sound does not currently have any system in place to know how it was compiled.  So this CMake module does the hard work in trying to discover which 3rd party libraries are required for building (if any).<br><p>This module uses a brute force approach to create a test program that uses SDL_sound, and then tries to build it. If the build fails, it parses the error output for known symbol names to figure out which libraries are needed.  Responds to the $SDLDIR and $SDLSOUNDDIR environmental variable that would correspond to the ./configure --prefix=$SDLDIR used in building SDL.<br><p>On OSX, this will prefer the Framework version (if found) over others. People will have to manually change the cache values of  SDL_LIBRARY to override this selection.<br>
+  </li>
+  <li>
+    <b><code>FindSDL_ttf</code></b>: Locate SDL_ttf library<br>
+    <p>This module defines<br><pre>  SDLTTF_LIBRARY, the library to link against<br>  SDLTTF_FOUND, if false, do not try to link to SDL<br>  SDLTTF_INCLUDE_DIR, where to find SDL/SDL.h<br>   <br></pre>
+    <p>$SDLDIR is an environment variable that would correspond to the ./configure --prefix=$SDLDIR used in building SDL. Created by Eric Wing. This was influenced by the FindSDL.cmake  module, but with modifications to recognize OS X frameworks and  additional Unix paths (FreeBSD, etc). On OSX, this will prefer the Framework version (if found) over others. People will have to manually change the cache values of  SDLTTF_LIBRARY to override this selection.
+  </li>
+  <li>
+    <b><code>FindSelfPackers</code></b>: Find upx<br>
+    <p>This module looks for some executable packers (i.e. softwares that compress executables or shared libs into on-the-fly self-extracting executables or shared libs. Examples:<br><pre>  UPX: <a href="http://wildsau.idv.uni-linz.ac.at/mfx/upx.html">http://wildsau.idv.uni-linz.ac.at/mfx/upx.html</a><br></pre>
+    
+  </li>
+  <li>
+    <b><code>FindSubversion</code></b>: Extract information from a subversion working copy<br>
+    <p>The module defines the following variables:<br><pre>  Subversion_SVN_EXECUTABLE - path to svn command line client<br>  Subversion_VERSION_SVN - version of svn command line client<br>  Subversion_FOUND - true if the command line client was found<br></pre>
+    <p>If the command line client executable is found the macro<br><pre>  Subversion_WC_INFO(&lt;dir&gt; &lt;var-prefix&gt;)<br></pre>
+    <p>is defined to extract information of a subversion working copy at a given location. The macro defines the following variables:<br><pre>  &lt;var-prefix&gt;_WC_URL - url of the repository (at &lt;dir&gt;)<br>  &lt;var-prefix&gt;_WC_ROOT - root url of the repository<br>  &lt;var-prefix&gt;_WC_REVISION - current revision<br>  &lt;var-prefix&gt;_WC_LAST_CHANGED_AUTHOR - author of last commit<br>  &lt;var-prefix&gt;_WC_LAST_CHANGED_DATE - date of last commit<br>  &lt;var-prefix&gt;_WC_LAST_CHANGED_REV - revision of last commit<br>  &lt;var-prefix&gt;_WC_LAST_CHANGED_LOG - last log of base revision<br>  &lt;var-prefix&gt;_WC_INFO - output of command `svn info &lt;dir&gt;'<br></pre>
+    <p>Example usage:<br><pre>  FIND_PACKAGE(Subversion)<br>  IF(Subversion_FOUND)<br>    Subversion_WC_INFO(${PROJECT_SOURCE_DIR} Project)<br>    MESSAGE("Current revision is ${Project_WC_REVISION}")<br>  ENDIF(Subversion_FOUND)<br></pre>
+    
+  </li>
+  <li>
+    <b><code>FindSWIG</code></b>: Find SWIG<br>
+    <p>This module finds an installed SWIG.  It sets the following variables:<br><pre>  SWIG_FOUND - set to true if SWIG is found<br>  SWIG_DIR - the directory where swig is installed<br>  SWIG_EXECUTABLE - the path to the swig executable<br></pre>
+    
+  </li>
+  <li>
+    <b><code>FindTCL</code></b>: Find Tcl includes and libraries.<br>
+    <p>This module finds if TCL is installed and determines where the include files and libraries are. It also determines what the name of the library is. This code sets the following variables:<br><pre>  TCL_LIBRARY        = path to Tcl library (tcl tcl80)<br>  TCL_LIBRARY_DEBUG  = path to Tcl library (debug)<br>  TCL_STUB_LIBRARY   = path to Tcl stub library<br>  TCL_STUB_LIBRARY_DEBUG = path to debug stub library<br>  TCL_INCLUDE_PATH   = path to where tcl.h can be found<br>  TCL_TCLSH          = path to tclsh binary (tcl tcl80)<br>  TK_LIBRARY         = path to Tk library (tk tk80 etc)<br>  TK_LIBRARY_DEBUG   = path to Tk library (debug)<br>  TK_STUB_LIBRARY    = path to Tk stub library<br>  TK_STUB_LIBRARY_DEBUG = path to debug Tk stub library<br>  TK_INCLUDE_PATH    = path to where tk.h can be found<br>  TK_INTERNAL_PATH   = path to where tkWinInt.h is found<br>  TK_WISH            = full path to the wish executable<br></pre>
+    
+  </li>
+  <li>
+    <b><code>FindTclsh</code></b>: Find tclsh<br>
+    <p>This module finds if TCL is installed and determines where the include files and libraries are. It also determines what the name of the library is. This code sets the following variables:<br><pre>  TCL_TCLSH = the path to the tclsh executable<br></pre>
+    <p>In cygwin, look for the cygwin version first.  Don't look for it later to avoid finding the cygwin version on a Win32 build.
+  </li>
+  <li>
+    <b><code>FindThreads</code></b>: This module determines the thread library of the system.<br>
+    <p>The following variables are set<br><pre>  CMAKE_THREAD_LIBS_INIT     - the thread library<br>  CMAKE_USE_SPROC_INIT       - are we using sproc?<br>  CMAKE_USE_WIN32_THREADS_INIT - using WIN32 threads?<br>  CMAKE_USE_PTHREADS_INIT    - are we using pthreads<br>  CMAKE_HP_PTHREADS_INIT     - are we using hp pthreads<br></pre>
+    
+  </li>
+  <li>
+    <b><code>FindTIFF</code></b>: Find TIFF library<br>
+    <p>Find the native TIFF includes and library This module defines<br><pre>  TIFF_INCLUDE_DIR, where to find tiff.h, etc.<br>  TIFF_LIBRARIES, libraries to link against to use TIFF.<br>  TIFF_FOUND, If false, do not try to use TIFF.<br></pre>
+    <p>also defined, but not for general use are<br><pre>  TIFF_LIBRARY, where to find the TIFF library.<br></pre>
+    
+  </li>
+  <li>
+    <b><code>FindUnixCommands</code></b>: Find unix commands from cygwin<br>
+    <p>This module looks for some usual Unix commands.<br>
+  </li>
+  <li>
+    <b><code>FindVTK</code></b>: Find a VTK installation or build tree.<br>
+    <p>The following variables are set if VTK is found.  If VTK is not found, VTK_FOUND is set to false.<br><pre>  VTK_FOUND         - Set to true when VTK is found.<br>  VTK_USE_FILE      - CMake file to use VTK.<br>  VTK_MAJOR_VERSION - The VTK major version number.<br>  VTK_MINOR_VERSION - The VTK minor version number <br>                       (odd non-release).<br>  VTK_BUILD_VERSION - The VTK patch level <br>                       (meaningless for odd minor).<br>  VTK_INCLUDE_DIRS  - Include directories for VTK<br>  VTK_LIBRARY_DIRS  - Link directories for VTK libraries<br>  VTK_KITS          - List of VTK kits, in CAPS <br>                      (COMMON,IO,) etc.<br>  VTK_LANGUAGES     - List of wrapped languages, in CAPS<br>                      (TCL, PYHTON,) etc.<br></pre>
+    <p>The following cache entries must be set by the user to locate VTK:<br><pre>  VTK_DIR  - The directory containing VTKConfig.cmake.  <br>             This is either the root of the build tree,<br>             or the lib/vtk directory.  This is the <br>             only cache entry.<br></pre>
+    <p>The following variables are set for backward compatibility and should not be used in new code:<br><pre>  USE_VTK_FILE - The full path to the UseVTK.cmake file.<br>                 This is provided for backward <br>                 compatibility.  Use VTK_USE_FILE <br>                 instead.<br></pre>
+    <p><br>
+  </li>
+  <li>
+    <b><code>FindWget</code></b>: Find wget<br>
+    <p>This module looks for wget. This module defines the  following values:<br><pre>  WGET_EXECUTABLE: the full path to the wget tool.<br>  WGET_FOUND: True if wget has been found.<br></pre>
+    
+  </li>
+  <li>
+    <b><code>FindWish</code></b>: Find wish installation<br>
+    <p>This module finds if TCL is installed and determines where the include files and libraries are. It also determines what the name of the library is. This code sets the following variables:<br><pre>  TK_WISH = the path to the wish executable<br></pre>
+    <p><br><p>if UNIX is defined, then it will look for the cygwin version first
+  </li>
+  <li>
+    <b><code>FindwxWidgets</code></b>: Find a wxWidgets (a.k.a., wxWindows) installation.<br>
+    <p>This module finds if wxWidgets is installed and selects a default configuration to use.<br><p>The following variables are searched for and set to defaults in case of multiple choices. Change them if the defaults are not desired:<br><pre>  wxWidgets_ROOT_DIR      - Base wxWidgets directory<br>                            (e.g., C:/wxWidgets-2.6.3).<br>  wxWidgets_LIB_DIR       - Path to wxWidgets libraries<br>                            (e.g., C:/wxWidgets-2.6.3/lib/vc_lib).<br>  wxWidgets_CONFIGURATION - Configuration to use<br>                            (e.g., msw, mswd, mswu, mswunivud, etc.)<br>  wxWidgets_USE_LIBS      - Libraries to use besides the common<br>                            required ones; set to base and core by<br>                            default. You couls also list them in<br>                            FIND_PACKAGE(wxWidgets REQUIRED<br>                                         &lt;components&gt;)<br></pre>
+    <p><br><p>The following are set after configuration is done:<br><pre>  wxWidgets_FOUND            - Set to TRUE if wxWidgets was found.<br>  wxWidgets_INCLUDE_DIRS     - Include directories for WIN32<br>                               i.e., where to find "wx/wx.h" and<br>                               "wx/setup.h"; possibly empty for unices.<br>  wxWidgets_LIBRARIES        - Path to the wxWidgets libraries.<br>  wxWidgets_LIBRARY_DIRS     - compile time link dirs, useful for<br>                               rpath on UNIX. Typically an empty string<br>                               in WIN32 environment.<br>  wxWidgets_DEFINITIONS      - Contains defines required to compile/link<br>                               against WX, e.g. -DWXUSINGDLL<br>  wxWidgets_CXX_FLAGS        - Include dirs and ompiler flags for<br>                               unices, empty on WIN32. Esentially<br>                               "`wx-config --cxxflags`".<br>  wxWidgets_USE_FILE         - convenience include file<br></pre>
+    <p><br><p>Sample usage:<br><pre>   SET(wxWidgets_USE_LIBS base core gl net)<br>   FIND_PACKAGE(wxWidgets)<br>   IF(wxWidgets_FOUND)<br>     INCLUDE(${wxWidgets_USE_FILE})<br>     # and for each of your dependant executable/library targets:<br>     TARGET_LINK_LIBRARIES(&lt;YourTarget&gt; ${wxWidgets_LIBRARIES})<br>   ENDIF(wxWidgets_FOUND)<br></pre>
+    <p><br><p>Sample usage with monolithic wx build:<br><pre>   SET(wxWidgets_USE_LIBS msw26 expat jpeg gl png regex tiff zlib)<br>   ...<br></pre>
+    
+  </li>
+  <li>
+    <b><code>FindwxWindows</code></b>: Find wxWindows (wxWidgets) installation <br>
+    <p>This module finds if wxWindows/wxWidgets is installed and determines where  the include files and libraries are. It also determines what the name of the library is. Please note this file is DEPRECATED and replaced by FindwxWidgets.cmake. This code sets the following variables:<br><pre>  <br>  WXWINDOWS_FOUND     = system has WxWindows <br>  WXWINDOWS_LIBRARIES = path to the wxWindows libraries<br>                        on Unix/Linux with additional <br>                        linker flags from <br>                        "wx-config --libs"<br>  CMAKE_WXWINDOWS_CXX_FLAGS  = Compiler flags for wxWindows, <br>                               essentially "`wx-config --cxxflags`"<br>                               on Linux<br>  WXWINDOWS_INCLUDE_DIR      = where to find "wx/wx.h" and "wx/setup.h"<br>  WXWINDOWS_LINK_DIRECTORIES = link directories, useful for rpath on<br>                                Unix<br>  WXWINDOWS_DEFINITIONS      = extra defines<br></pre>
+    <p><br><p>OPTIONS  If you need OpenGL support please <br><pre>  SET(WXWINDOWS_USE_GL 1) <br></pre>
+    <p>in your CMakeLists.txt *before* you include this file.<br><pre>  HAVE_ISYSTEM      - true required to replace -I by -isystem on g++<br></pre>
+    <p><br><p>For convenience include Use_wxWindows.cmake in your project's CMakeLists.txt using INCLUDE(Use_wxWindows). <br><p>USAGE <br><pre>  SET(WXWINDOWS_USE_GL 1) <br>  FIND_PACKAGE(wxWindows)<br></pre>
+    <p><br><p>NOTES wxWidgets 2.6.x is supported for monolithic builds  e.g. compiled  in wx/build/msw dir as:  <br><pre>  nmake -f makefile.vc BUILD=debug SHARED=0 USE_OPENGL=1 MONOLITHIC=1<br></pre>
+    <p><br><p>DEPRECATED<br><pre>  CMAKE_WX_CAN_COMPILE<br>  WXWINDOWS_LIBRARY<br>  CMAKE_WX_CXX_FLAGS<br>  WXWINDOWS_INCLUDE_PATH<br></pre>
+    <p><br><p>AUTHOR Jan Woetzel &lt;<a href="http://www.mip.informatik.uni-kiel.de/~jw">http://www.mip.informatik.uni-kiel.de/~jw</a>&gt; (07/2003-01/2006)
+  </li>
+  <li>
+    <b><code>FindX11</code></b>: Find X11 installation<br>
+    <p>Try to find X11 on UNIX systems. The following values are defined<br><pre>  X11_FOUND        - True if X11 is available<br>  X11_INCLUDE_DIR  - include directories to use X11<br>  X11_LIBRARIES    - link against these to use X11<br></pre>
+    
+  </li>
+  <li>
+    <b><code>FindXMLRPC</code></b>: Find xmlrpc<br>
+    <p>Find the native XMLRPC headers and libraries.<br><pre>  XMLRPC_INCLUDE_DIRS      - where to find xmlrpc.h, etc.<br>  XMLRPC_LIBRARIES         - List of libraries when using xmlrpc.<br>  XMLRPC_FOUND             - True if xmlrpc found.<br></pre>
+    <p>XMLRPC modules may be specified as components for this find module. Modules may be listed by running "xmlrpc-c-config".  Modules include:<br><pre>  c++            C++ wrapper code<br>  libwww-client  libwww-based client<br>  cgi-server     CGI-based server<br>  abyss-server   ABYSS-based server<br></pre>
+    <p>Typical usage:<br><pre>  FIND_PACKAGE(XMLRPC REQUIRED libwww-client)<br></pre>
+    
+  </li>
+  <li>
+    <b><code>FindZLIB</code></b>: Find zlib<br>
+    <p>Find the native ZLIB includes and library<br><pre>  ZLIB_INCLUDE_DIR - where to find zlib.h, etc.<br>  ZLIB_LIBRARIES   - List of libraries when using zlib.<br>  ZLIB_FOUND       - True if zlib found.<br></pre>
+    
+  </li>
+  <li>
+    <b><code>InstallRequiredSystemLibraries</code></b>:  <br>
+    <p>By including this file, all files in the CMAKE_INSTALL_DEBUG_LIBRARIES, will be installed with INSTALL_PROGRAMS into /bin for WIN32 and /lib for non-win32. If CMAKE_SKIP_INSTALL_RULES is set to TRUE before including this file, then the INSTALL command is not called.  The use can use  the variable CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS to use a custom install  command and install them into any directory they want. If it is the MSVC compiler, then the microsoft run time libraries will be found add automatically added to the CMAKE_INSTALL_DEBUG_LIBRARIES, and installed.   If CMAKE_INSTALL_DEBUG_LIBRARIES is set and it is the MSVC compiler, then the debug libraries are installed when available. If CMAKE_INSTALL_MFC_LIBRARIES is set then the MFC run time libraries are installed as well as the CRT run time libraries.
+  </li>
+  <li>
+    <b><code>MacroAddFileDependencies</code></b>: MACRO_ADD_FILE_DEPENDENCIES(&lt;_file&gt; depend_files...)<br>
+    <p>MACRO_OPTIONAL_FIND_PACKAGE( &lt;name&gt; [QUIT] )
+  </li>
+  <li>
+    <b><code>TestBigEndian</code></b>: Define macro to determine endian type<br>
+    <p>Check if the system is big endian or little endian<br><pre>  TEST_BIG_ENDIAN(VARIABLE)<br>  VARIABLE - variable to store the result to<br></pre>
+    <p><br>
+  </li>
+  <li>
+    <b><code>TestCXXAcceptsFlag</code></b>: Test CXX compiler for a flag<br>
+    <p>Check if the CXX compiler accepts a flag<br><pre>  Macro CHECK_CXX_ACCEPTS_FLAG(FLAGS VARIABLE) -<br>     checks if the function exists<br>  FLAGS - the flags to try<br>  VARIABLE - variable to store the result<br></pre>
+    <p><br>
+  </li>
+  <li>
+    <b><code>TestForANSIForScope</code></b>: Check for ANSI for scope support<br>
+    <p>Check if the compiler supports std:: on stl classes.<br><pre>  CMAKE_NO_STD_NAMESPACE - holds result<br></pre>
+    <p><br>
+  </li>
+  <li>
+    <b><code>TestForANSIStreamHeaders</code></b>: Test for compiler support of ANSI stream headers iostream, etc.<br>
+    <p>check if we they have the standard ansi stream files (without the .h)<br><pre>  CMAKE_NO_ANSI_STREAM_HEADERS - defined by the results<br></pre>
+    <p><br>
+  </li>
+  <li>
+    <b><code>TestForSSTREAM</code></b>:  <br>
+    <p># - Test for std:: namespace support check if the compiler supports std:: on stl classes<br><pre>  CMAKE_NO_STD_NAMESPACE - defined by the results<br></pre>
+    <p><br>
+  </li>
+  <li>
+    <b><code>TestForSTDNamespace</code></b>: Test for std:: namespace support<br>
+    <p>check if the compiler supports std:: on stl classes<br><pre>  CMAKE_NO_STD_NAMESPACE - defined by the results<br></pre>
+    <p><br>
+  </li>
+  <li>
+    <b><code>UseEcos</code></b>: This module defines variables and macros required to build eCos application.<br>
+    <p>This file contains the following macros: ECOS_ADD_INCLUDE_DIRECTORIES() - add the eCos include dirs ECOS_ADD_EXECUTABLE(name source1 ... sourceN ) - create an eCos executable ECOS_ADJUST_DIRECTORY(VAR source1 ... sourceN ) - adjusts the path of the source files and puts the result into VAR<br><p>Macros for selecting the toolchain: ECOS_USE_ARM_ELF_TOOLS()       - enable the ARM ELF toolchain for the directory where it is called ECOS_USE_I386_ELF_TOOLS()      - enable the i386 ELF toolchain for the directory where it is called ECOS_USE_PPC_EABI_TOOLS()      - enable the PowerPC toolchain for the directory where it is called<br><p>It contains the following variables: ECOS_DEFINITIONS ECOSCONFIG_EXECUTABLE for internal use only:<br><pre>  ECOS_ADD_TARGET_LIB<br></pre>
+    
+  </li>
+  <li>
+    <b><code>UsePkgConfig</code></b>: pkg-config module for CMake<br>
+    <p><br><p>Defines the following macros:<br><p>PKGCONFIG(package includedir libdir linkflags cflags)<br><p>Calling PKGCONFIG will fill the desired information into the 4 given arguments, e.g. PKGCONFIG(libart-2.0 LIBART_INCLUDE_DIR LIBART_LINK_DIR LIBART_LINK_FLAGS LIBART_CFLAGS) if pkg-config was NOT found or the specified software package doesn't exist, the variable will be empty when the function returns, otherwise they will contain the respective information<br>
+  </li>
+  <li>
+    <b><code>UseQt4</code></b>: Use Module for QT4<br>
+    <p>Sets up C and C++ to use Qt 4.  It is assumed that FindQt.cmake has already been loaded.  See FindQt.cmake for information on how to load Qt 4 into your CMake project.
+  </li>
+  <li>
+    <b><code>UseSWIG</code></b>: SWIG module for CMake<br>
+    <p>Defines the following macros:<br><pre>   SWIG_ADD_MODULE(name language [ files ])<br>     - Define swig module with given name and specified language<br>   SWIG_LINK_LIBRARIES(name [ libraries ])<br>     - Link libraries to swig module<br></pre>
+    <p>All other macros are for internal use only. To get the actual name of the swig module, use: ${SWIG_MODULE_name_REAL_NAME}. Set Source files properties such as CPLUSPLUS and SWIG_FLAGS to specify special behavior of SWIG. Also global CMAKE_SWIG_FLAGS can be used to add special flags to all swig calls. Another special variable is CMAKE_SWIG_OUTDIR, it allows one to specify  where to write all the swig generated module (swig -outdir option) The name-specific variable SWIG_MODULE_&lt;name&gt;_EXTRA_DEPS may be used to specify extra dependencies for the generated modules.
+  </li>
+  <li>
+    <b><code>UsewxWidgets</code></b>: Convenience include for using wxWidgets library<br>
+    <p>Finds if wxWidgets is installed  and set the appropriate libs, incdirs, flags etc.  INCLUDE_DIRECTORIES, LINK_DIRECTORIES and ADD_DEFINITIONS are called.<br><p>USAGE<br><pre>  SET( wxWidgets_USE_LIBS  gl xml xrc ) # optionally: more than wx std libs<br>  FIND_PACKAGE(wxWidgets REQUIRED)<br>  INCLUDE( ${xWidgets_USE_FILE} )<br>  ... add your targets here, e.g. ADD_EXECUTABLE/ ADD_LIBRARY ...<br>  TARGET_LINK_LIBRARIERS( &lt;yourWxDependantTarget&gt;  ${wxWidgets_LIBRARIES})<br></pre>
+    <p><br><p>DEPRECATED<br><pre>  LINK_LIBRARIES is not called in favor of adding dependencies per target.<br></pre>
+    <p><br><p>AUTHOR<br><pre>  Jan Woetzel &lt;jw -at- mip.informatik.uni-kiel.de&gt;<br></pre>
+    
+  </li>
+  <li>
+    <b><code>Use_wxWindows</code></b>: ---------------------------------------------------<br>
+    <p><br><p>This convenience include finds if wxWindows is installed and set the appropriate libs, incdirs, flags etc.  author Jan Woetzel &lt;jw -at- mip.informatik.uni-kiel.de&gt; (07/2003)<br><p>USAGE: <br><pre>   just include Use_wxWindows.cmake <br>   in your projects CMakeLists.txt<br></pre>
+    <p>INCLUDE( ${CMAKE_MODULE_PATH}/Use_wxWindows.cmake)<br><p>if you are sure you need GL then<br><pre>  SET(WXWINDOWS_USE_GL 1)<br></pre>
+    <p>*before* you include this file.<br><p>16.Feb.2004: changed INCLUDE to FIND_PACKAGE to read from users own non-system CMAKE_MODULE_PATH (Jan Woetzel JW) 07/2006: rewrite as FindwxWidgets.cmake, kept for backward compatibilty JW
+  </li>
+</ul>
+<h2>Copyright</h2>
+<p>Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
+<p>Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+<ul>
+  <li>
+Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+  </li>
+  <li>
+Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+  </li>
+  <li>
+The names of Kitware, Inc., the Insight Consortium, or the names of any consortium members, or of any contributors, may not be used to endorse or promote products derived from this software without specific prior written permission.
+  </li>
+  <li>
+Modified source versions must be plainly marked as such, and must not be misrepresented as being the original software.
+  </li>
+</ul>
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER AND CONTRIBUTORS ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHORS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+<h2>See Also</h2>
+<p>The following resources are available to get help using CMake:
+<ul>
+  <li>
+    <b><code>Home Page</code></b>: <a href="http://www.cmake.org">http://www.cmake.org</a><br>
+    <p>The primary starting point for learning about CMake.
+  </li>
+  <li>
+    <b><code>Frequently Asked Questions</code></b>: <a href="http://www.cmake.org/Wiki/CMake_FAQ">http://www.cmake.org/Wiki/CMake_FAQ</a><br>
+    <p>A Wiki is provided containing answers to frequently asked questions. 
+  </li>
+  <li>
+    <b><code>Online Documentation</code></b>: <a href="http://www.cmake.org/HTML/Documentation.html">http://www.cmake.org/HTML/Documentation.html</a><br>
+    <p>Links to available documentation may be found on this web page.
+  </li>
+  <li>
+    <b><code>Mailing List</code></b>: <a href="http://www.cmake.org/HTML/MailingLists.html">http://www.cmake.org/HTML/MailingLists.html</a><br>
+    <p>For help and discussion about using cmake, a mailing list is provided at cmake@cmake.org. The list is member-post-only but one may sign up on the CMake web page. Please first read the full documentation at <a href="http://www.cmake.org">http://www.cmake.org</a> before posting questions to the list.
+  </li>
+</ul>
+<p>Summary of helpful links:<br><pre>  Home: <a href="http://www.cmake.org">http://www.cmake.org</a><br>  Docs: <a href="http://www.cmake.org/HTML/Documentation.html">http://www.cmake.org/HTML/Documentation.html</a><br>  Mail: <a href="http://www.cmake.org/HTML/MailingLists.html">http://www.cmake.org/HTML/MailingLists.html</a><br>  FAQ:  <a href="http://www.cmake.org/Wiki/CMake_FAQ">http://www.cmake.org/Wiki/CMake_FAQ</a><br></pre>
+    
+</body></html>

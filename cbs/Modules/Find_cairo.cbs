@@ -1,0 +1,7 @@
+
+INCLUDE (${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+FIND_LIB_SIMPLE ( 	cairo 
+					HEADER_FILES cairo.h 
+					HEADER_PATHS /usr/include/cairo 
+					)
+

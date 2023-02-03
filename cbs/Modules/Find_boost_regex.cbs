@@ -1,0 +1,4 @@
+
+INCLUDE ( ${CBS_ROOT_DIR}/Modules/Find_boost_sublib.cbs )
+FIND_BOOST_SUBLIB ( boost_regex "NONE" "NONE" )
+

@@ -1,0 +1,49 @@
+#INCLUDE ( ${CBS_ROOT_DIR}/util_macros.cbs )
+
+# --- DEBUG_SHOW_STANDARD_SETTINGS ---
+# (Debug) shows standard settings for a target or project
+# These are:
+# ${baseName}_INCLUDE_DIR   : Include paths needed for xxlib alone (no dependent include dirs)
+# ${baseName}_XINCLUDE_DIRS  : Inlcude paths needed for xxlib, including including paths for eventual dependant libraries.
+# ${baseName}_LIBRARY       : Library/libraries when using xxlib (no dependent libs).
+# ${baseName}_LIBRARIES     : List of libraries including dependent when using xxlib.
+# ${baseName}_XLINK_DIR      : Linker search paths/dirs needed for linking xxlib.
+# ${baseName}_XLINK_DIRS     : List of all linker search paths/dirs needed (including dependent ones) for linking xxlib.
+# ${baseName}_LINK_TYPE     : Link type requested/used for this library : STATIC or SHARED
+# ${baseName}_FOUND         : True if xx library found/compiled.
+# ${baseName}_FULL_PATH     : XX Not implemented yet!! Full path to the library built.
+# ${baseName}_INFO_USE      : Set to use type actually used for xx library.
+#
+#
+MACRO( DEBUG_SHOW_STANDARD_SETTINGS prjName )  
+
+    MESSAGE( ""                                                                                 		)
+    MESSAGE( "DEBUG - Target        : ${prjName}                     : ${${prjName}_TARGET_TYPE}"		)
+    #IF    ( "${${prjName}_TARGET_TYPE}" MATCHES "LIBRARY" ) 
+        MESSAGE( "DEBUG - Actual used   : ${prjName}_INCLUDE_DIR     = ${${prjName}_INCLUDE_DIR}"		)
+        MESSAGE( "DEBUG - Actual used   : ${prjName}_XINCLUDE_DIRS   = ${${prjName}_XINCLUDE_DIRS}"		)
+        MESSAGE( "DEBUG - Actual used   : ${prjName}_LIBRARY         = ${${prjName}_LIBRARY}"    		)
+        MESSAGE( "DEBUG - Actual used   : ${prjName}_LIBRARIES       = ${${prjName}_LIBRARIES}"   		)
+        MESSAGE( "DEBUG - Actual used   : ${prjName}_XLINK_DIR       = ${${prjName}_XLINK_DIR}"     	)
+        MESSAGE( "DEBUG - Actual used   : ${prjName}_XLINK_DIRS      = ${${prjName}_XLINK_DIRS}"    	)
+        MESSAGE( "DEBUG - Actual used   : ${prjName}_XLINK_LIBRARIES = ${${prjName}_XLINK_LIBRARIES}"   )
+        MESSAGE( "DEBUG - Actual used   : ${prjName}_XDEFINES        = ${${prjName}_XDEFINES}"    		)
+        MESSAGE( "DEBUG - Actual used   : ${prjName}_LINK_TYPE       = ${${prjName}_LINK_TYPE}"    		)
+        MESSAGE( "DEBUG - Actual used   : ${prjName}_FULL_LIBRAY_PATH= ${${prjName}_FULL_LIBRAY_PATH}" 	)
+        MESSAGE( "DEBUG - Actual used   : ${prjName}_FOUND           = ${${prjName}_FOUND}" 	   		)
+    #ENDIF ( "${${prjName}_TARGET_TYPE}" MATCHES "LIBRARY" ) 
+    #IF    ( NOT "${tgtType}" STREQUAL "NOTFOUND" ) 
+        MESSAGE( "DEBUG - Actual used   : ${prjName}_INFO_USE        = ${${prjName}_INFO_USE}"     		)
+        MESSAGE( "DEBUG - Actual used   : ${prjName}_INFO_LINK_TYPE  = ${${prjName}_INFO_LINK_TYPE}"	)
+        MESSAGE( "DEBUG - User requested: ${prjName}_USE             = ${${prjName}_USE}"          		)
+        ##MESSAGE( "DEBUG - Actual used   : ${prjName}_DEFAULT_INSTALL_PREFIX = ${${prjName}_DEFAULT_INSTALL_PREFIX}"     )
+        MESSAGE( "DEBUG - Actual used   : ${prjName}_INSTALL_PREFIX  = ${${prjName}_INSTALL_PREFIX}"	)
+        MESSAGE( "DEBUG - Actual used   : ${prjName}_VERSION_STRING  = ${${prjName}_VERSION_STRING}" 	)
+    #ENDIF  ( NOT "${tgtType}" STREQUAL "NOTFOUND" ) 
+    IF    ( "${${prjName}_TARGET_TYPE}" MATCHES "EXECUTABLE" ) 
+        MESSAGE( "DEBUG - Actual used   : ${prjName}_EXECUTABLE      = ${${prjName}_EXECUTABLE}"  		)
+    ENDIF ( "${${prjName}_TARGET_TYPE}" MATCHES "EXECUTABLE" ) 
+    
+ENDMACRO( DEBUG_SHOW_STANDARD_SETTINGS )
+
+

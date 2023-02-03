@@ -1,0 +1,13 @@
+# -------------------
+# --- Build setup ---
+# -------------------
+ADDX_DEPENDS_ON ( cpaf_filesystem				)
+ADDX_INCLUDE_DIR ( ${CMAKE_CURRENT_SOURCE_DIR}	)
+
+# -------------------
+# --- Add sources ---
+# -------------------
+ADD_SOURCE_FILE ( mylib.cpp	)
+
+
+

@@ -1,0 +1,12 @@
+# -------------------
+# --- Build setup ---
+# -------------------
+ADDX_DEPENDS_ON ( boost_headers	)
+ADDX_INCLUDE_DIR ( ${CMAKE_CURRENT_SOURCE_DIR} 	) 
+
+# -------------------
+# --- Add sources ---
+# -------------------
+ADD_SOURCE_FILE ( cpaf_string_utils.cpp )
+#ADD_SOURCE_FILE ( CURRENTLY NO SOURCE FILES IN THIS LIB - HEADER FILES ONLY !	)
+

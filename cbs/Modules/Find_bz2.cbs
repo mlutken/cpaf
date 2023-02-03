@@ -1,0 +1,3 @@
+
+INCLUDE ( ${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+FIND_LIB_SIMPLE ( bz2 HEADER_FILES bzlib.h )

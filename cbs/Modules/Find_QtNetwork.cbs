@@ -1,0 +1,30 @@
+INCLUDE (${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+IF( CBS_QT4 )
+	FIND_LIB_SIMPLE ( 	QtNetwork 
+						LIB_NAME QtNetwork LINUX QtNetwork4 CBS_WINDOWS_RELEASE QtNetworkd4 CBS_WINDOWS_DEBUG
+						HEADER_FILES QFtp  
+						HEADER_PATHS ${QT_HDR_DIR}/QtNetwork /usr/include/qt4/QtNetwork /usr/include/QtNetwork
+						LIB_PATHS ${QT_LIB_DIR} /usr/lib
+						PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtNetwork ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+						DEPENDS_ON QtCore
+						)
+ELSE( CBS_QT4 )
+	IF (WINDOWS)
+		FIND_LIB_SIMPLE ( 	QtNetwork 
+							LIB_NAME QtNetwork LINUX Qt5Network CBS_WINDOWS_RELEASE Qt5Networkd CBS_WINDOWS_DEBUG
+							HEADER_FILES QFtp  
+							HEADER_PATHS ${QT_HDR_DIR}/QtNetwork /usr/include/qt5/QtNetwork /usr/include/QtNetwork
+							LIB_PATHS ${QT_LIB_DIR} /usr/lib
+							PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtNetwork ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+							DEPENDS_ON QtCore
+							)
+	ELSE (WINDOWS)
+		FIND_LIB_SIMPLE ( 	QtNetwork 
+							LIB_NAME Qt5Network 
+							HEADER_FILES QtNetwork  
+							HEADER_PATHS ${QT_HDR_DIR}/QtNetwork /usr/include/qt5/QtNetwork
+							)
+	ENDIF (WINDOWS)						
+ENDIF( CBS_QT4 )
+
+

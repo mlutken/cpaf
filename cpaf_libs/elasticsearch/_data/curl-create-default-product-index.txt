@@ -1,0 +1,194 @@
+
+
+
+curl -XDELETE "localhost:9200/myproject_products?pretty=1"
+curl -X PUT "localhost:9200/myproject_products?pretty=1" -H 'Content-Type: application/json' -d '@/home/ml/code/crawler/cpaf/cpaf_libs/elasticsearch/_data/_default_product_site_es_mappings.json'
+
+curl -X GET "localhost:9200/myproject_bulk/_search?pretty" -H 'Content-Type: application/json' -d'
+{
+    "query": {
+        "match_all": {}
+    }
+}
+'
+
+
+curl -X POST "localhost:9200/_bulk?pretty" -H 'Content-Type: application/json' -d'
+{ "index" : { "_index" : "myproject_bulk", "_type": "mytype", "_id" : "1" } }
+{ "field" : "value1" }
+{ "index" : { "_index" : "myproject_bulk", "_type": "mytype", "_id" : "2" } }
+{ "field" : "value2" }
+{ "index" : { "_index" : "myproject_bulk", "_type": "mytype", "_id" : "3" } }
+{ "field" : "value3" }
+{ "index" : { "_index" : "myproject_bulk", "_type": "mytype", "_id" : "4" } }
+{ "field" : "value4" }
+'
+
+curl -XDELETE "localhost:9201/test?pretty=1"
+curl -X POST "localhost:9201/_bulk?pretty" -H 'Content-Type: application/json' -d'
+{ "index" : { "_index" : "test", "_id" : "1" } }
+{ "field" : "value1" }
+{ "index" : { "_index" : "test", "_id" : "2" } }
+{ "field" : "value2" }
+{ "index" : { "_index" : "test", "_id" : "3" } }
+{ "field" : "value3" }
+{ "index" : { "_index" : "test", "_id" : "4" } }
+{ "field" : "value4" }
+'
+
+
+curl -X POST "localhost:9200/_bulk?pretty" -H 'Content-Type: application/json' -d'
+{ "index" : { "_index" : "test", "_type" : "type1", "_id" : "1" } }
+{ "field1" : "value1" }
+{ "delete" : { "_index" : "test", "_type" : "type1", "_id" : "2" } }
+{ "create" : { "_index" : "test", "_type" : "type1", "_id" : "3" } }
+{ "field1" : "value3" }
+{ "update" : {"_id" : "1", "_type" : "type1", "_index" : "test"} }
+{ "doc" : {"field2" : "value2"} }
+'
+
+
+
+curl -XPUT "localhost:9200/myproject_products?pretty=1" -H 'Content-Type: application/json' -d'
+{
+    "settings" : {
+      "index" : {
+        "number_of_shards" : "5",
+        "analysis" : {
+          "filter" : {
+            "nGram_filter" : {
+              "type" : "nGram"
+            }
+          },
+          "analyzer" : {
+            "nGram_analyzer" : {
+              "tokenizer" : "whitespace"
+            },
+            "whitespace_analyzer" : {
+              "tokenizer" : "whitespace"
+            }
+          }
+        }
+      }
+    }
+    ,
+    "mappings" : {
+      "product" : {
+        "dynamic_templates" : [
+          {
+            "text_mappings" : {
+              "match" : "^.+_(text|html|htmlraw|textfield|name)$",
+              "match_mapping_type" : "string",
+              "match_pattern" : "regex",
+              "mapping" : {
+                "type" : "text"
+              }
+            }
+          },
+          {
+            "keyword_mappings" : {
+              "match" : ".+_(id|property|type|subtype|typename|group|subgroup|code|url|sha1|sha256)$",
+              "match_mapping_type" : "string",
+              "match_pattern" : "regex",
+              "mapping" : {
+                "type" : "keyword"
+              }
+            }
+          },
+          {
+            "_has__map_to_keyword" : {
+              "match" : "(^has_|^.+_has_).+",
+              "match_mapping_type" : "string",
+              "match_pattern" : "regex",
+              "mapping" : {
+                "type" : "keyword"
+              }
+            }
+          },
+          {
+            "_is__map_to_keyword" : {
+              "match" : "(^is_|^.+_is_).+",
+              "match_mapping_type" : "string",
+              "match_pattern" : "regex",
+              "mapping" : {
+                "type" : "keyword"
+              }
+            }
+          },
+          {
+            "integer_mappings" : {
+              "match" : "^.+_(integer|int|count|int_pct|year)$",
+              "match_mapping_type" : "string",
+              "match_pattern" : "regex",
+              "mapping" : {
+                "type" : "integer"
+              }
+            }
+          },
+          {
+            "float_mappings" : {
+              "match" : "^.+_(float|size|price|eur|percent|unit)$",
+              "match_mapping_type" : "string",
+              "match_pattern" : "regex",
+              "mapping" : {
+                "type" : "float"
+              }
+            }
+          },
+          {
+            "long_mappings" : {
+              "match" : "^.+_(long)$",
+              "match_mapping_type" : "string",
+              "match_pattern" : "regex",
+              "mapping" : {
+                "type" : "long"
+              }
+            }
+          },
+          {
+            "double_mappings" : {
+              "match" : "^.+_(double|timestamp)$",
+              "match_mapping_type" : "string",
+              "match_pattern" : "regex",
+              "mapping" : {
+                "type" : "double"
+              }
+            }
+          },
+          {
+            "date_mappings" : {
+              "match" : "^.+_(date)$",
+              "match_mapping_type" : "string",
+              "match_pattern" : "regex",
+              "mapping" : {
+                "type" : "date"
+              }
+            }
+          },
+          {
+            "location_mappings" : {
+              "match" : "^.+_(location|loc)$",
+              "match_mapping_type" : "string",
+              "match_pattern" : "regex",
+              "mapping" : {
+                "type" : "location"
+              }
+            }
+          },
+          {
+            "boolean_mappings" : {
+              "match" : "^.+_(boolean|bool)$",
+              "match_mapping_type" : "string",
+              "match_pattern" : "regex",
+              "mapping" : {
+                "type" : "boolean"
+              }
+            }
+          }
+        ]
+      }
+    }
+}
+'
+
+

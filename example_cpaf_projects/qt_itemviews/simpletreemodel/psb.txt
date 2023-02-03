@@ -1,0 +1,16 @@
+1 PATIENT: Gert				1 How to familiarize yourself with Qt Designer
+    2 YEARSTUDY: Name 1		2 Connecting widgets using a naming scheme
+        3 SERIES: Series A	3 How to connect widgets without a naming scheme
+        3 SERIES: Series B	3 Using automatic connections
+        3 SERIES: Series C	3 Using automatic connections
+        3 SERIES: Series D	3 Using automatic connections
+        3 SERIES: Series E	3 Using automatic connections
+        3 SERIES: Series F	3 Using automatic connections
+        3 SERIES: Series G	3 Using automatic connections
+
+1 PATIENT: Hans				1 How to familiarize yourself with Qt Designer
+    2 STUDY: Name 2		2 Connecting widgets using a naming scheme
+        3 SERIES: Series A	3 How to connect widgets without a naming scheme
+        3 SERIES: Series B	3 Using automatic connections
+        3 SERIES: Series C	3 Using automatic connections
+

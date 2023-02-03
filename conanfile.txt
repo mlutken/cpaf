@@ -1,0 +1,20 @@
+[requires]
+gtest/cci.20210126
+#nlohmann_json/3.11.2
+fmt/9.1.0
+#qt/6.3.1
+#qt/5.15.6
+
+[options]
+qt:shared=True
+
+[generators]
+cmake
+cmake_find_package
+#cmake_find_package_multi
+#CMakeDeps
+#CMakeToolchain
+
+#-rw-rw-r-- 1 ml ml  263 Oct  7 13:01 CMakeLists.txt
+#-rw-rw-r-- 1 ml ml  101 Oct  7 12:17 conanfile.txt
+#-rw-rw-r-- 1 ml ml  240 Oct  7 13:02 json_test.cpp

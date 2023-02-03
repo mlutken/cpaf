@@ -1,0 +1,14 @@
+
+
+#SET_DEFAULT ( detect_utils_LINK_TYPE		STATIC		)
+
+SET_DEFAULT ( QT_HDR_DIR /usr/include/qt5/ LINUX )
+SET_DEFAULT ( QT_LIB_DIR /usr/lib/x86_64-linux-gnu/ LINUX )
+
+ADD_COMPILE_FLAG ( -fPIC      LINUX   )
+
+ADD_SUBDIR ( "../.."		)
+ADD_SUBDIR ( detect_utils	)
+ADD_SUBDIR ( test1			)
+ADD_SUBDIR ( test2			)
+ADD_SUBDIR ( link_test		)

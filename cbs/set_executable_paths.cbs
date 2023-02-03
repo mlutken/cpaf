@@ -1,0 +1,20 @@
+# ----------------------------
+# --- Set executable paths ---
+# ----------------------------
+# NOTE: Currently only QT related paths
+
+
+IF (WIN32)
+	SET_DEFAULT ( QT_BASE_DIR "$ENV{QT_DIR}"	)
+
+	SET_DEFAULT ( CBS_moc_qt4_EXECUTABLE					${QT_BASE_DIR}/bin/moc )
+	SET_DEFAULT ( CBS_rcc_qt4_EXECUTABLE					${QT_BASE_DIR}/bin/rcc )
+ENDIF (WIN32)
+    
+IF (UNIX)
+	SET_DEFAULT ( CBS_moc_qt4_EXECUTABLE					moc	)
+	SET_DEFAULT ( CBS_rcc_qt4_EXECUTABLE					rcc	)
+ENDIF (UNIX)
+
+##message ( "XXX CBS_rcc_qt4_EXECUTABLE: ${CBS_rcc_qt4_EXECUTABLE}" )
+

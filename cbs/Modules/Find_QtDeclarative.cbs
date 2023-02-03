@@ -1,0 +1,19 @@
+INCLUDE (${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+IF( CBS_QT4 )
+	FIND_LIB_SIMPLE ( 	QtDeclarative 
+						LIB_NAME QtDeclarative LINUX QtDeclarative4 CBS_WINDOWS_RELEASE QtDeclaratived4 CBS_WINDOWS_DEBUG
+						HEADER_FILES QtDeclarative 
+						HEADER_PATHS ${QT_HDR_DIR}/QtDeclarative /usr/include/qt4/QtDeclarative /usr/include/QtDeclarative
+						LIB_PATHS ${QT_LIB_DIR} /usr/lib
+						PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtDeclarative ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+						)
+ELSE( CBS_QT4 )
+	FIND_LIB_SIMPLE ( 	QtDeclarative
+						LIB_NAME QtDeclarative LINUX Qt5Declarative CBS_WINDOWS_RELEASE Qt5Declaratived CBS_WINDOWS_DEBUG
+						HEADER_FILES QtDeclarative 
+						HEADER_PATHS ${QT_HDR_DIR}/QtDeclarative /usr/include/qt5/QtDeclarative /usr/include/QtDeclarative
+						LIB_PATHS ${QT_LIB_DIR} /usr/lib
+						PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtDeclarative ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+						)
+ENDIF( CBS_QT4 )
+

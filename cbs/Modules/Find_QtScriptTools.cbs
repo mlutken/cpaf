@@ -1,0 +1,23 @@
+INCLUDE (${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+IF( CBS_QT4 )
+	FIND_LIB_SIMPLE ( 	QtScriptTools 
+						LIB_NAME QtScriptTools LINUX QtScriptTools4 CBS_WINDOWS_RELEASE QtScriptToolsd4 CBS_WINDOWS_DEBUG
+						HEADER_FILES QScriptEngineDebugger  
+						HEADER_PATHS ${QT_HDR_DIR}/QtScriptTools /usr/include/qt4/QtScriptTools /usr/include/QtScriptTools
+						LIB_PATHS ${QT_LIB_DIR} /usr/lib
+						PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtScriptTools ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+						DEPENDS_ON QtScript
+						)
+ELSE( CBS_QT4 )
+	FIND_LIB_SIMPLE ( 	QtScriptTools 
+						LIB_NAME QtScriptTools LINUX Qt5ScriptTools CBS_WINDOWS_RELEASE Qt5ScriptToolsd CBS_WINDOWS_DEBUG
+						HEADER_FILES QScriptEngineDebugger  
+						HEADER_PATHS ${QT_HDR_DIR}/QtScriptTools /usr/include/qt5/QtScriptTools /usr/include/QtScriptTools
+						LIB_PATHS ${QT_LIB_DIR} /usr/lib
+						PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtScriptTools ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+						DEPENDS_ON QtScript
+						)
+ENDIF( CBS_QT4 )
+
+
+

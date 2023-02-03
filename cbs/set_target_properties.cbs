@@ -1,0 +1,32 @@
+
+LIST ( LENGTH ${CBS_CURRENT}_TARGET_PROPERTY_NAMES listLen )
+SET ( iIndex 0 )
+FOREACH( propName ${${CBS_CURRENT}_TARGET_PROPERTY_NAMES} )
+	LIST ( GET ${CBS_CURRENT}_TARGET_PROPERTY_VALUES ${iIndex} propValue	)
+	IF ( ${propValue} STREQUAL NOTFOUND )
+		SET ( propValue ""	)
+	ENDIF ( ${propValue} STREQUAL NOTFOUND )
+	SET_TARGET_PROPERTIES( ${CBS_CURRENT} PROPERTIES ${propName} "${propValue}" )
+#	MESSAGE ( STATUS "MMMMMMMM: ${CBS_CURRENT}_TARGET_PROPERTY_NAMES: ${iIndex}, ${propName} = ${propValue}" )
+	MATH ( EXPR iIndex "${iIndex} +1" )    
+ENDFOREACH( propName )
+
+# ---------------------------
+# -- Add linker flags ---
+# ---------------------------
+FOREACH( LINKflag ${${CBS_CURRENT}_LINK_FLAGS} )
+	SET_TARGET_PROPERTIES( ${CBS_CURRENT} PROPERTIES LINK_FLAGS "${LINKflag}" )
+ENDFOREACH( LINKflag )
+
+FOREACH( LINKflag ${${CBS_CURRENT}_XLINK_FLAGS} )
+	SET_TARGET_PROPERTIES( ${CBS_CURRENT} PROPERTIES LINK_FLAGS "${LINKflag}" )
+ENDFOREACH( LINKflag )
+
+#   LIST(LENGTH <list> <output variable>)
+#   LIST(GET <list> <element index> [<element index> ...] <output variable>)
+#   LIST(APPEND <list> <element> [<element> ...])
+#   LIST(INSERT <list> <element_index> <element> [<element> ...])
+#   LIST(REMOVE_ITEM <list> <value> [<value> ...])
+#   LIST(REMOVE_AT <list> <index> [<index> ...])
+#   LIST(SORT <list>)
+#   LIST(REVERSE <list>)

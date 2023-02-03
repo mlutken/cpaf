@@ -1,0 +1,90 @@
+/** \dir 
+!!! File and directory manipulation. 
+Portable paths, iteration over directories, and other useful filesystem operations.
+A good deal of this functionality is achieved through boost::filesystem to which 
+documentation we link on this page. 
+
+!! Boost filesystem introduction
+http://www.boost.org/libs/filesystem/doc/index.htm
+
+Central to boost::filesystem is the path #class#. This class handles 
+all purely semantic related operations. Like concatenation (#operator /#) and 
+branch_path() for getting the parent directory.
+
+! path (member) semantic typical functions
+||operator /| Concatenate two paths: $p = p1 / p2$
+||leaf()| Get leaf path name: $ path("/home/svn/file.txt").leaf() == "file.txt"$ 
+||branch_path()| Get parent path name: $ path("/home/svn/file.txt").branch_path() == path("/home/svn")$ 
+||normalize()| Remove redundant '..''s: $path("/home/svn/../mlu").normalize() == path("/home/mlu")$
+||iterator| Standard bidirectional iterator. Use with begin(), end() member functions as usual.
+
+! path system (operations.hpp) typical (non member) functions
+||exists()| Check if file exists.
+||is_directory()| Test wheter path is a directory.
+||is_empty()| Test for file is empty.
+||file_size()| Get file size.
+||create_directory()| Create directory. Or use create_directories() from convenience.hpp
+||remove()| Remove a file.
+||remove_all()| Remove directory recursively. 
+||rename()| Rename file.
+||copy_file()| Copy file. See also cpaf::force_copy_file()
+
+! path convenience (non member) functions ( convenience.hpp )
+||create_directories()| Create all needed directories in a path.
+||extension()| Get file extension.
+||basename()| Get filename without extension.
+||change_extension()| Change extension for filename.
+
+! path contructor and boost:filesystem::native
+boost::filesystem::path might throw exceptions if you use path with non 
+portable characters in them, like spaces, or stuff like "c:\\mydir\\myfile". 
+Such paths are not too well suited for crossplatform use, but as long as you 
+are not storing or sending such paths for use on other platforms, then you 
+can use the constructor with the "native" flag like this:
+\code
+namespace fs = boost::filesystem;
+string sLD_LIBRARY_PATH = get_env("LD_LIBRARY_PATH");
+fs::path ph(sLD_LIBRARY_PATH, fs::native) ); 
+\endcode
+
+! directory_iterator
+See http://www.boost.org/libs/filesystem/doc/operations.htm#directory_iterator.
+For iterating through the files and subdir in a directory with STL like iterator. This 
+iterator does work recursively. We have plans in CPAF for making a recursive version 
+which also supports regular expressions for matching files, but see files_list_recursive() 
+and friends.
+Here's a short example:
+\code
+\include _examples/ex_boost_fs_directory_iterator.cpp
+\endcode
+
+!!! CPAF filesystem introduction
+In CPAF we have added to the functionality in boost::filesystem. There are 
+semantic functions for getting the relative path from one to another
+( cpaf::relative_path() ), for getting the intersection of two paths etc. 
+
+You will also find a force_copy_file() which often might be more convenient 
+to use than the one found in Boost. If you need to get a list of all files of 
+subdirectories in a directory you can call files_list(), files_list_recursive(), 
+subdirectories_list() or subdirectories_list_recursive() which all return a filepaths_t, 
+which is a vector of paths. These functions also support regular expressions so you 
+can match more precisely which files you want.
+
+Finally we have the special_dirs clas which contains static members and functions 
+for getting applicatiob startup directory, users home, "My Documents" and other 
+system libraries.
+
+!! filesystem todo list
+List of currently assigned features (big and small). The numbers (1-4) indicate 
+a loose priority. 
+
+||Description||Priority||Status||Personnel
+| | | |&nbsp;
+|Implemetation of special_dirs class on OSX|2|0%| PH
+|cpaf::filesystem : What about file access functions? |3|0%| MLU, PH
+
+
+\todo Write description of this directory
+*/
+
+

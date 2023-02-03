@@ -1,0 +1,30 @@
+INCLUDE (${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+IF( CBS_QT4 )
+	FIND_LIB_SIMPLE ( 	QtWebKit 
+						LIB_NAME QtWebKit LINUX QtWebKit4 CBS_WINDOWS_RELEASE QtWebKitd4 CBS_WINDOWS_DEBUG
+						HEADER_FILES QWebView  
+						HEADER_PATHS ${QT_HDR_DIR}/QtWebKit /usr/include/qt4/QtWebKit /usr/include/QtWebKit
+						LIB_PATHS ${QT_LIB_DIR} /usr/lib
+						PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtWebKit ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+						DEPENDS_ON QtGui 
+						)
+ELSE( CBS_QT4 )
+	IF (WINDOWS)
+		FIND_LIB_SIMPLE ( 	QtWebKit 
+							LIB_NAME QtWebKit LINUX Qt5WebKit CBS_WINDOWS_RELEASE Qt5WebKitd CBS_WINDOWS_DEBUG
+							HEADER_FILES QWebView  
+							HEADER_PATHS ${QT_HDR_DIR}/QtWebKit /usr/include/qt5/QtWebKit /usr/include/QtWebKit
+							LIB_PATHS ${QT_LIB_DIR} /usr/lib
+							PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtWebKit ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+							DEPENDS_ON QtGui 
+							)
+	ELSE (WINDOWS)
+		FIND_LIB_SIMPLE ( 	QtWebKit 
+							LIB_NAME Qt5WebKit 
+							HEADER_FILES QtWebKit  
+							HEADER_PATHS ${QT_HDR_DIR}/QtWebKit /usr/include/qt5/QtWebKit
+							)
+	ENDIF (WINDOWS)						
+ENDIF( CBS_QT4 )
+
+

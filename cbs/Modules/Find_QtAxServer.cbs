@@ -1,0 +1,19 @@
+INCLUDE (${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+IF( CBS_QT4 )
+	FIND_LIB_SIMPLE ( 	QtAxServer 
+						LIB_NAME QtAxServer LINUX QtAxServer4 CBS_WINDOWS_RELEASE QtAxServerd4 CBS_WINDOWS_DEBUG
+						HEADER_FILES QtAxServer 
+						HEADER_PATHS ${QT_HDR_DIR}/QtAxServer /usr/include/qt4/QtAxServer /usr/include/QtAxServer
+						LIB_PATHS ${QT_LIB_DIR} /usr/lib
+						PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtAxServer ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+						)
+ELSE( CBS_QT4 )
+	FIND_LIB_SIMPLE ( 	QtAxServer
+						LIB_NAME QtAxServer LINUX Qt5AxServer CBS_WINDOWS_RELEASE Qt5AxServerd CBS_WINDOWS_DEBUG
+						HEADER_FILES QtAxServer 
+						HEADER_PATHS ${QT_HDR_DIR}/QtAxServer /usr/include/qt5/QtAxServer /usr/include/QtAxServer
+						LIB_PATHS ${QT_LIB_DIR} /usr/lib
+						PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtAxServer ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+						)
+ENDIF( CBS_QT4 )
+

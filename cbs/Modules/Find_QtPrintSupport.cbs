@@ -1,0 +1,31 @@
+INCLUDE (${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+IF( CBS_QT4 )
+	FIND_LIB_SIMPLE ( 	QtPrintSupport 
+						LIB_NAME QtPrintSupport LINUX QtPrintSupport4 CBS_WINDOWS_RELEASE QtPrintSupportd4 CBS_WINDOWS_DEBUG
+						HEADER_FILES QPrintSupportable  
+						HEADER_PATHS ${QT_HDR_DIR}/QtPrintSupport /usr/include/qt4/QtPrintSupport /usr/include/QtPrintSupport
+						LIB_PATHS ${QT_LIB_DIR} /usr/lib
+						PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtPrintSupport ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+						DEPENDS_ON QtCore
+						)
+ELSE( CBS_QT4 )
+	IF (WINDOWS)
+		FIND_LIB_SIMPLE ( 	QtPrintSupport 
+							LIB_NAME QtPrintSupport LINUX Qt5PrintSupport CBS_WINDOWS_RELEASE Qt5PrintSupportd CBS_WINDOWS_DEBUG
+							HEADER_FILES QPrintSupportable  
+							HEADER_PATHS ${QT_HDR_DIR}/QtPrintSupport /usr/include/qt5/QtPrintSupport /usr/include/QtPrintSupport
+							LIB_PATHS ${QT_LIB_DIR} /usr/lib
+							PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtPrintSupport ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+							DEPENDS_ON QtCore
+							)
+	ELSE (WINDOWS)
+		FIND_LIB_SIMPLE ( 	QtPrintSupport 
+							LIB_NAME Qt5PrintSupport 
+							HEADER_FILES QtPrintSupport  
+							HEADER_PATHS ${QT_HDR_DIR}/QtPrintSupport /usr/include/qt5/QtPrintSupport
+							)
+	ENDIF (WINDOWS)						
+ENDIF( CBS_QT4 )
+
+
+

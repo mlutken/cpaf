@@ -1,0 +1,35 @@
+# -------------------
+# --- Build setup ---
+# -------------------
+ADDX_DEPENDS_ON ( test_lib 		)
+ADDX_DEPENDS_ON ( cpaf_net 		)
+ADDX_DEPENDS_ON ( utf8 			)
+#ADDX_DEPENDS_ON ( minizip       )
+ADDX_DEPENDS_ON ( curl          )
+ADDX_DEPENDS_ON ( cpaf_filesystem           )
+ADDX_DEPENDS_ON ( boost_filesystem          )
+
+##ADDX_DEFINE ( CURL_STATICLIB			1	${CBS_CURRENT}_LINK_TYPE_STATIC	) # Only used in Windows
+
+
+# ADDX_DEPENDS_ON ( boost_thread		)
+# ADDX_DEPENDS_ON ( boost_date_time	)
+
+# ADDX_LINK_LIBRARY ( crypto 			)
+# ADDX_LINK_LIBRARY ( ssl 			)
+
+#ADDX_LINK_LIBRARY ( z			)
+#ADDX_LINK_LIBRARY ( png			)
+
+# ADDX_LINK_LIBRARY ( crypto 			)
+# ADDX_LINK_LIBRARY ( ssl 			)
+
+# ADDX_LINK_LIBRARY ( HEST				)
+ 
+# -------------------
+# --- Add sources ---
+# -------------------
+ADD_SOURCE_FILE ( test_exe.cpp )
+
+
+

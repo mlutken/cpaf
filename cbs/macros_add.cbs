@@ -1,0 +1,601 @@
+
+# Add a depency library, inheriting everything it "exports" like include paths, link libraries, defines etc..
+MACRO ( ADDX_DEPENDS_ON libName ) 
+
+################## debug start #####################	 
+# # 	IF ( ${CBS_CURRENT} STREQUAL "config_test1" )
+# # 		MESSAGE ( "configtest1 ADD_DEP: '${libName}' "	)
+# # 	ENDIF ( ${CBS_CURRENT} STREQUAL "config_test1" )
+# # 	
+# # 	IF ( ${CBS_CURRENT} STREQUAL "ruleengine" )
+# # 		MESSAGE ( "ruleengine ADD_DEP: '${libName}' "	)
+# # 	ENDIF ( ${CBS_CURRENT} STREQUAL "ruleengine" )
+# # 	
+# # 	IF ( ${CBS_CURRENT} STREQUAL "cpaf_filesystem" )
+# # 		MESSAGE ( "cpaf_filesystem ADD_DEP: '${libName}' "	)
+# # 	ENDIF ( ${CBS_CURRENT} STREQUAL "cpaf_filesystem" )
+# #	MESSAGE ( "ADDX_DEPENDS_ON: '${CBS_CURRENT}', '${libName}' "	)
+################## debug end#####################	 
+	SET ( ${libName}_DO_ADDX_DEPENDS_ON  )
+	
+	IF ( ${ARGC} STREQUAL "2" )
+		IF ( NOT ${${ARGV1}} STREQUAL "" )
+			SET ( ${libName}_DO_ADDX_DEPENDS_ON  TRUE )
+		ENDIF ( NOT ${${ARGV1}} STREQUAL "" )
+	ELSE ( ${ARGC} STREQUAL "2" )
+		SET ( ${libName}_DO_ADDX_DEPENDS_ON  TRUE )
+	ENDIF ( ${ARGC} STREQUAL "2" )
+	
+	IF ( ${libName}_DO_ADDX_DEPENDS_ON )
+	    IF ( NOT ${libName}_FOUND )
+			IF   ( ${libName}_USE STREQUAL "SYSTEM" OR NOT ${libName}_USE )
+# # 				MESSAGE ( "**** ADDX_DEPENDS_ON: '${CBS_CURRENT}', '${libName}' ${libName}_FOUND: '${${libName}_FOUND}'"	)
+	 			INCLUDE ( ${CBS_ROOT_DIR}/Modules/Find_${libName}.cbs )
+			ENDIF   ( ${libName}_USE STREQUAL "SYSTEM" OR NOT ${libName}_USE )
+	    ENDIF ( NOT ${libName}_FOUND )
+			
+		LIST_APPEND_UNIQUE ( ${CBS_CURRENT}_XDEPENDS_ON ${libName} ) 
+	ENDIF ( ${libName}_DO_ADDX_DEPENDS_ON )
+	
+ENDMACRO( ADDX_DEPENDS_ON )
+
+# Add a depency library, but don't inherit the defines and compile flags which it possibly exports.
+MACRO ( ADDX_DEPENDS_ON_NO_FLAGS libName )  
+	IF ( ${ARGC} STREQUAL "2" )
+		IF ( NOT ${${ARGV1}} STREQUAL "" )
+			LIST_APPEND_UNIQUE ( ${CBS_CURRENT}_XDEPENDS_ON_NO_FLAGS ${libName} ) 
+		ENDIF ( NOT ${${ARGV1}} STREQUAL "" )
+	ELSE ( ${ARGC} STREQUAL "2" )
+		LIST_APPEND_UNIQUE ( ${CBS_CURRENT}_XDEPENDS_ON_NO_FLAGS ${libName} ) 
+	ENDIF ( ${ARGC} STREQUAL "2" )
+ENDMACRO( ADDX_DEPENDS_ON_NO_FLAGS )
+
+MACRO ( ADD_INCLUDE_DIR dirName )  
+	IF ( ${ARGC} STREQUAL "2" )
+		IF ( NOT ${${ARGV1}} STREQUAL "" )
+			LIST_APPEND_UNIQUE ( ${CBS_CURRENT}_INCLUDE_DIRS ${dirName} ) 
+		ENDIF ( NOT ${${ARGV1}} STREQUAL "" )
+	ELSE ( ${ARGC} STREQUAL "2" )
+		LIST_APPEND_UNIQUE ( ${CBS_CURRENT}_INCLUDE_DIRS ${dirName} ) 
+	ENDIF ( ${ARGC} STREQUAL "2" )
+ENDMACRO( ADD_INCLUDE_DIR )
+
+MACRO ( ADDX_INCLUDE_DIR dirName )  
+	IF ( ${ARGC} STREQUAL "2" )
+		IF ( NOT ${${ARGV1}} STREQUAL "" )
+			LIST_APPEND_UNIQUE ( ${CBS_CURRENT}_XINCLUDE_DIRS ${dirName} ) 
+		ENDIF ( NOT ${${ARGV1}} STREQUAL "" )
+	ELSE ( ${ARGC} STREQUAL "2" )
+		LIST_APPEND_UNIQUE ( ${CBS_CURRENT}_XINCLUDE_DIRS ${dirName} ) 
+	ENDIF ( ${ARGC} STREQUAL "2" )
+ENDMACRO( ADDX_INCLUDE_DIR )
+
+MACRO ( HELPER_DO_ADD_FORCE_INCLUDE fileName )  
+	IF ( COMPILER_MSVC )
+#		SET ( ${CBS_CURRENT}_FORCE_INCLUDE	"${${CBS_CURRENT}_FORCE_INCLUDE} /FI${fileName}" )
+#		add_definitions ( ${CBS_CURRENT}_FORCE_INCLUDE} )
+		add_definitions ( /FI${fileName} )
+	ELSE ( COMPILER_MSVC )	# Assume GCC
+#		SET ( ${CBS_CURRENT}_FORCE_INCLUDE	"${${CBS_CURRENT}_FORCE_INCLUDE} --include ${fileName}" )
+#		add_definitions ( ${${CBS_CURRENT}_FORCE_INCLUDE} )
+		add_definitions ( "--include ${fileName}" )
+	ENDIF ( COMPILER_MSVC ) 
+ENDMACRO( HELPER_DO_ADD_FORCE_INCLUDE )
+
+
+MACRO ( ADD_FORCE_INCLUDE fileName )  
+	IF ( ${ARGC} STREQUAL "2" )
+		IF ( NOT ${${ARGV1}} STREQUAL "" )
+			HELPER_DO_ADD_FORCE_INCLUDE ( ${fileName} )
+		ENDIF ( NOT ${${ARGV1}} STREQUAL "" )
+	ELSE ( ${ARGC} STREQUAL "2" )
+		HELPER_DO_ADD_FORCE_INCLUDE ( ${fileName} )
+	ENDIF ( ${ARGC} STREQUAL "2" )
+ENDMACRO( ADD_FORCE_INCLUDE )
+
+
+
+
+MACRO ( ADD_DEFINE define )  
+	IF ( ${ARGC} STREQUAL "1" )
+	ELSE ( ${ARGC} STREQUAL "1" )
+		IF ( ${ARGC} STREQUAL "3" )
+			IF ( NOT ${${ARGV2}} STREQUAL "" )
+##				MESSAGE ( "DDD(${${ARGV2}}): ${CBS_CURRENT}_DEFINES		${${CBS_CURRENT}_DEFINES}	-D${define}=${ARGV1}"	)
+				#LIST_APPEND_UNIQUE ( ${CBS_CURRENT}_DEFINES "-D${define}=${ARGV1}" ) 
+				SET ( ${CBS_CURRENT}_DEFINES		${${CBS_CURRENT}_DEFINES}	-D${define}=${ARGV1}	)
+			ENDIF ( NOT ${${ARGV2}} STREQUAL "" )
+		ELSE ( ${ARGC} STREQUAL "3" )
+			#LIST_APPEND_UNIQUE ( ${CBS_CURRENT}_DEFINES "-D${define}=${ARGV1}" ) 
+			SET ( ${CBS_CURRENT}_DEFINES			${${CBS_CURRENT}_DEFINES}	-D${define}=${ARGV1}	)
+		ENDIF ( ${ARGC} STREQUAL "3" )
+	ENDIF ( ${ARGC} STREQUAL "1" )
+ENDMACRO( ADD_DEFINE )
+
+
+MACRO ( ADDX_DEFINE define )  
+	IF ( ${ARGC} STREQUAL "1" )
+	ELSE ( ${ARGC} STREQUAL "1" )
+		IF ( ${ARGC} STREQUAL "3" )
+			IF ( NOT ${${ARGV2}} STREQUAL "" )
+				SET ( ${CBS_CURRENT}_XDEFINES		${${CBS_CURRENT}_XDEFINES}	-D${define}=${ARGV1}	)
+			ENDIF ( NOT ${${ARGV2}} STREQUAL "" )
+		ELSE ( ${ARGC} STREQUAL "3" )
+			SET ( ${CBS_CURRENT}_XDEFINES			${${CBS_CURRENT}_XDEFINES}	-D${define}=${ARGV1}	)
+		ENDIF ( ${ARGC} STREQUAL "3" )
+	ENDIF ( ${ARGC} STREQUAL "1" )
+ENDMACRO( ADDX_DEFINE )
+
+
+MACRO ( ADD_COMPILER_OPTION option )  
+	IF ( ${ARGC} STREQUAL "2" )
+		IF ( NOT ${${ARGV1}} STREQUAL "" )
+			LIST_APPEND_UNIQUE ( ${CBS_CURRENT}_COMPILER_OPTIONS 	${option} ) 
+		ENDIF ( NOT ${${ARGV1}} STREQUAL "" )
+	ELSE ( ${ARGC} STREQUAL "2" )
+		LIST_APPEND_UNIQUE ( ${CBS_CURRENT}_COMPILER_OPTIONS 		${option} ) 
+	ENDIF ( ${ARGC} STREQUAL "2" )
+ENDMACRO( ADD_COMPILER_OPTION )
+
+
+MACRO ( ADD_COMPILE_FLAG flag )  
+	IF ( ${ARGC} STREQUAL "2" )
+		IF ( NOT ${${ARGV1}} STREQUAL "" )
+			LIST_APPEND_UNIQUE ( ${CBS_CURRENT}_C_FLAGS 	${flag} ) 
+			LIST_APPEND_UNIQUE ( ${CBS_CURRENT}_CXX_FLAGS 	${flag} ) 
+		ENDIF ( NOT ${${ARGV1}} STREQUAL "" )
+	ELSE ( ${ARGC} STREQUAL "2" )
+		LIST_APPEND_UNIQUE ( ${CBS_CURRENT}_C_FLAGS 	${flag} ) 
+		LIST_APPEND_UNIQUE ( ${CBS_CURRENT}_CXX_FLAGS 	${flag} ) 
+	ENDIF ( ${ARGC} STREQUAL "2" )
+ENDMACRO( ADD_COMPILE_FLAG )
+
+
+MACRO ( ADDX_COMPILE_FLAG flag )  
+	IF ( ${ARGC} STREQUAL "2" )
+		IF ( NOT ${${ARGV1}} STREQUAL "" )
+			LIST_APPEND_UNIQUE ( ${CBS_CURRENT}_XC_FLAGS 	${flag} ) 
+			LIST_APPEND_UNIQUE ( ${CBS_CURRENT}_XCXX_FLAGS 	${flag} ) 
+		ENDIF ( NOT ${${ARGV1}} STREQUAL "" )
+	ELSE ( ${ARGC} STREQUAL "2" )
+		LIST_APPEND_UNIQUE ( ${CBS_CURRENT}_XC_FLAGS 	${flag} ) 
+		LIST_APPEND_UNIQUE ( ${CBS_CURRENT}_XCXX_FLAGS 	${flag} ) 
+	ENDIF ( ${ARGC} STREQUAL "2" )
+ENDMACRO( ADDX_COMPILE_FLAG )
+
+
+MACRO ( ADD_LINK_FLAG flag )  
+	IF ( ${ARGC} STREQUAL "2" )
+		IF ( NOT ${${ARGV1}} STREQUAL "" )
+			LIST_APPEND_UNIQUE ( ${CBS_CURRENT}_LINK_FLAGS 	${flag} ) 
+		ENDIF ( NOT ${${ARGV1}} STREQUAL "" )
+	ELSE ( ${ARGC} STREQUAL "2" )
+		LIST_APPEND_UNIQUE ( ${CBS_CURRENT}_LINK_FLAGS 	${flag} ) 
+	ENDIF ( ${ARGC} STREQUAL "2" )
+ENDMACRO( ADD_LINK_FLAG )
+
+
+MACRO ( ADDX_LINK_FLAG flag )  
+	IF ( ${ARGC} STREQUAL "2" )
+		IF ( NOT ${${ARGV1}} STREQUAL "" )
+			LIST_APPEND_UNIQUE ( ${CBS_CURRENT}_XLINK_FLAGS 	${flag} ) 
+		ENDIF ( NOT ${${ARGV1}} STREQUAL "" )
+	ELSE ( ${ARGC} STREQUAL "2" )
+		LIST_APPEND_UNIQUE ( ${CBS_CURRENT}_XLINK_FLAGS 	${flag} ) 
+	ENDIF ( ${ARGC} STREQUAL "2" )
+ENDMACRO( ADDX_LINK_FLAG )
+
+
+MACRO ( ADD_SOURCE_FILE_DEFINE sourceFile define value )  
+	GET_FILENAME_COMPONENT ( leafSourceFileName ${sourceFile} NAME )
+	IF ( ${ARGC} STREQUAL "4" )
+		IF ( NOT ${${ARGV3}} STREQUAL "" )
+			#set_source_files_properties ( ${sourceFile} COMPILE_FLAGS "-D${define}=${value}"	)
+			SET ( ${leafSourceFileName}SOURCE_FILE_DEFINE	"${${leafSourceFileName}SOURCE_FILE_DEFINE} -D${define}=${value}" )
+			set_source_files_properties ( ${sourceFile} COMPILE_FLAGS "${${leafSourceFileName}SOURCE_FILE_DEFINE}"	)
+		ENDIF ( NOT ${${ARGV3}} STREQUAL "" )
+	ELSE ( ${ARGC} STREQUAL "4" )
+		#MESSAGE ( STATUS "ADD_SOURCE_FILE_DEFINE: ${sourceFile}" ) 
+		#set_source_files_properties ( ${sourceFile} COMPILE_FLAGS "-D${define}=${value}"	)
+		SET ( ${leafSourceFileName}SOURCE_FILE_DEFINE	"${${leafSourceFileName}SOURCE_FILE_DEFINE} -D${define}=${value}" )
+		set_source_files_properties ( ${sourceFile} COMPILE_FLAGS "${${leafSourceFileName}SOURCE_FILE_DEFINE}"	)
+	ENDIF ( ${ARGC} STREQUAL "4" )
+ENDMACRO( ADD_SOURCE_FILE_DEFINE )
+
+
+MACRO ( ADD_SOURCE_FILE_COMPILE_FLAG sourceFile flag )  
+	IF ( ${ARGC} STREQUAL "3" )
+		IF ( NOT ${${ARGV2}} STREQUAL "" )
+			SET ( ${sourceFile}SOURCE_FILE_COMPILE_FLAG	"${${sourceFile}SOURCE_FILE_COMPILE_FLAG} ${flag}" 			)
+			set_source_files_properties ( ${sourceFile} COMPILE_FLAGS "${${sourceFile}SOURCE_FILE_COMPILE_FLAG}"	)
+		ENDIF ( NOT ${${ARGV2}} STREQUAL "" )
+	ELSE ( ${ARGC} STREQUAL "3" )
+		SET ( ${sourceFile}SOURCE_FILE_COMPILE_FLAG	"${${sourceFile}SOURCE_FILE_COMPILE_FLAG} ${flag}" 			)
+		set_source_files_properties ( ${sourceFile} COMPILE_FLAGS "${${sourceFile}SOURCE_FILE_COMPILE_FLAG}"	)
+	ENDIF ( ${ARGC} STREQUAL "3" )
+ENDMACRO( ADD_SOURCE_FILE_COMPILE_FLAG )
+
+
+
+
+MACRO ( ADDX_LINK_DIR linkDir )  
+	IF ( ${ARGC} STREQUAL "2" )
+		IF ( NOT ${${ARGV1}} STREQUAL "" )
+			#SET ( ${CBS_CURRENT}_XLINK_DIRS	${${CBS_CURRENT}_XLINK_DIRS}	${linkDir}	)	# TODO: Should go away
+			LIST_APPEND_UNIQUE ( ${CBS_CURRENT}_XLINK_DIRS ${linkDir} ) 
+		ENDIF ( NOT ${${ARGV1}} STREQUAL "" )
+	ELSE ()
+		#SET ( ${CBS_CURRENT}_XLINK_DIRS		${${CBS_CURRENT}_XLINK_DIRS}	${linkDir}	)	# TODO: Should go away
+		LIST_APPEND_UNIQUE ( ${CBS_CURRENT}_XLINK_DIRS ${linkDir} ) 
+	ENDIF ()
+ENDMACRO( ADDX_LINK_DIR )
+
+
+MACRO ( ADDX_LINK_LIBRARY libName )  
+	IF ( ${ARGC} STREQUAL "2" )
+		IF ( NOT ${${ARGV1}} STREQUAL "" )
+			LIST_APPEND_UNIQUE ( ${CBS_CURRENT}_XLINK_LIBRARIES ${libName} ) 
+			#SET ( ${CBS_CURRENT}_XLINK_LIBRARIES	${${CBS_CURRENT}_XLINK_LIBRARIES}	${libName}	)
+		ENDIF ( NOT ${${ARGV1}} STREQUAL "" )
+	ELSE ( ${ARGC} STREQUAL "2" )
+		LIST_APPEND_UNIQUE ( ${CBS_CURRENT}_XLINK_LIBRARIES ${libName} ) 
+		#SET ( ${CBS_CURRENT}_XLINK_LIBRARIES		${${CBS_CURRENT}_XLINK_LIBRARIES}	${libName}	)
+	ENDIF ( ${ARGC} STREQUAL "2" )
+ENDMACRO( ADDX_LINK_LIBRARY )
+
+# -----------------------
+
+MACRO ( ADD_SOURCE_FILE fileName )  
+	SET ( doAddSourceFile "FALSE" )
+	IF ( ${ARGC} GREATER 1 )
+		IF ( ${ARGC} EQUAL 2 )
+			IF ( NOT ${${ARGV1}} STREQUAL "" )
+				SET ( doAddSourceFile "TRUE" )
+			ENDIF ( NOT ${${ARGV1}} STREQUAL "" )
+		ENDIF ( ${ARGC} EQUAL 2 )
+		IF ( ${ARGC} EQUAL 3 )
+			IF ( "${ARGV1}" STREQUAL "NOT" AND "${${ARGV2}}" STREQUAL "" )
+				SET ( doAddSourceFile "TRUE" )
+			ENDIF ( "${ARGV1}" STREQUAL "NOT" AND "${${ARGV2}}" STREQUAL "" )
+		ENDIF ( ${ARGC} EQUAL 3 )
+	ELSE ( ${ARGC} GREATER 1 )
+		SET ( doAddSourceFile "TRUE" )
+	ENDIF ( ${ARGC} GREATER 1 )
+	IF ( "${doAddSourceFile}" STREQUAL "TRUE" )
+		FIND_HEADER_FOR_CPP_FILE ( headerFile ${fileName} )
+		##message ( "AA: headerFile: ${headerFile}" )
+		SET ( ${CBS_CURRENT}_SRCS		${${CBS_CURRENT}_SRCS}			${fileName}	)
+		SET ( ${CBS_CURRENT}_HDRS		${${CBS_CURRENT}_HDRS}			${headerFile}	)
+	ENDIF ( "${doAddSourceFile}" STREQUAL "TRUE" )
+ENDMACRO( ADD_SOURCE_FILE )
+
+
+MACRO ( ADD_HEADER_FILE fileName )  
+	SET ( doAddHeaderFile "FALSE" )
+	IF ( ${ARGC} GREATER 1 )
+		IF ( ${ARGC} EQUAL 2 )
+			IF ( NOT ${${ARGV1}} STREQUAL "" )
+				SET ( doAddHeaderFile "TRUE" )
+			ENDIF ( NOT ${${ARGV1}} STREQUAL "" )
+		ENDIF ( ${ARGC} EQUAL 2 )
+		IF ( ${ARGC} EQUAL 3 )
+			IF ( "${ARGV1}" STREQUAL "NOT" AND "${${ARGV2}}" STREQUAL "" )
+				SET ( doAddHeaderFile "TRUE" )
+			ENDIF ( "${ARGV1}" STREQUAL "NOT" AND "${${ARGV2}}" STREQUAL "" )
+		ENDIF ( ${ARGC} EQUAL 3 )
+	ELSE ( ${ARGC} GREATER 1 )
+		SET ( doAddHeaderFile "TRUE" )
+	ENDIF ( ${ARGC} GREATER 1 )
+	IF ( "${doAddHeaderFile}" STREQUAL "TRUE" )
+		SET ( ${CBS_CURRENT}_HDRS		${${CBS_CURRENT}_HDRS}			${headerFile}	)
+	ENDIF ( "${doAddHeaderFile}" STREQUAL "TRUE" )
+ENDMACRO( ADD_HEADER_FILE )
+
+MACRO ( ADD_SUBDIR subdir )  
+	IF ( ${ARGC} STREQUAL "2" )
+		IF ( NOT ${${ARGV1}} STREQUAL "" )
+			SET ( ${CBS_CURRENT}_SUBDIRS		${${CBS_CURRENT}_SUBDIRS}			${subdir}	)
+		ENDIF ( NOT ${${ARGV1}} STREQUAL "" )
+	ELSE ( ${ARGC} STREQUAL "2" )
+		SET ( ${CBS_CURRENT}_SUBDIRS			${${CBS_CURRENT}_SUBDIRS}			${subdir}	)
+	ENDIF ( ${ARGC} STREQUAL "2" )
+ENDMACRO( ADD_SUBDIR )
+
+
+MACRO ( ADD_INSTALL_HEADER header )  
+	IF ( ${ARGC} EQUAL 2 )
+		IF ( NOT ${${ARGV1}} STREQUAL "" )
+			SET ( ${CBS_CURRENT}_INSTALL_HEADER		${${CBS_CURRENT}_INSTALL_HEADER}	${header}	)
+		ENDIF ( NOT ${${ARGV1}} STREQUAL "" )
+	ELSE (  ${ARGC} EQUAL 2  )
+		SET ( ${CBS_CURRENT}_INSTALL_HEADER			${${CBS_CURRENT}_INSTALL_HEADER}	${header}	)
+	ENDIF (  ${ARGC} EQUAL 2  )
+ENDMACRO( ADD_INSTALL_HEADER )
+
+
+MACRO ( ADD_TARGET_PROPERTY propName propValue )  
+	IF ( ${ARGC} STREQUAL "3" )
+		IF ( NOT ${${ARGV2}} STREQUAL "" )
+			SET ( ${CBS_CURRENT}_TARGET_PROPERTY_NAMES	${${CBS_CURRENT}_TARGET_PROPERTY_NAMES}		${propName}	)
+			SET ( ${CBS_CURRENT}_TARGET_PROPERTY_VALUES	${${CBS_CURRENT}_TARGET_PROPERTY_VALUES}	${propValue})
+		ENDIF ( NOT ${${ARGV2}} STREQUAL "" )
+	ELSE ( ${ARGC} STREQUAL "3" )
+		SET ( ${CBS_CURRENT}_TARGET_PROPERTY_NAMES	${${CBS_CURRENT}_TARGET_PROPERTY_NAMES}		${propName}	)
+		SET ( ${CBS_CURRENT}_TARGET_PROPERTY_VALUES	${${CBS_CURRENT}_TARGET_PROPERTY_VALUES}	${propValue})
+	ENDIF ( ${ARGC} STREQUAL "3" )
+ENDMACRO( ADD_TARGET_PROPERTY )
+
+
+
+MACRO ( ADD_SOURCE_FILE_QT4 fileName )
+    SET ( doAddSourceFileQT "FALSE" )
+    IF ( ${ARGC} GREATER 1 )
+        IF ( ${ARGC} EQUAL 2 )
+            IF ( NOT ${${ARGV1}} STREQUAL "" )
+                SET ( doAddSourceFileQT "TRUE" )
+            ENDIF ( NOT ${${ARGV1}} STREQUAL "" )
+        ENDIF ( ${ARGC} EQUAL 2 )
+        IF ( ${ARGC} EQUAL 3 )
+            IF ( "${ARGV1}" STREQUAL "NOT" AND "${${ARGV2}}" STREQUAL "" )
+                SET ( doAddSourceFileQT "TRUE" )
+            ENDIF ( "${ARGV1}" STREQUAL "NOT" AND "${${ARGV2}}" STREQUAL "" )
+        ENDIF ( ${ARGC} EQUAL 3 )
+    ELSE ( ${ARGC} GREATER 1 )
+        SET ( doAddSourceFileQT "TRUE" )
+    ENDIF ( ${ARGC} GREATER 1 )
+    IF ( "${doAddSourceFileQT}" STREQUAL "TRUE" )
+        FIND_HEADER_FOR_CPP_FILE ( headerFileQt ${fileName} )
+        ##message ( "AA: headerFile: ${headerFileQt}" )
+        SET ( ${CBS_CURRENT}_SRCS       ${${CBS_CURRENT}_SRCS}          ${fileName}     )
+        SET ( ${CBS_CURRENT}_HDRS       ${${CBS_CURRENT}_HDRS}          ${headerFileQt} )
+        ADD_MOC_QT4_HEADER_FILE ( ${headerFileQt} )
+        
+    ENDIF ( "${doAddSourceFileQT}" STREQUAL "TRUE" )
+
+ENDMACRO ( ADD_SOURCE_FILE_QT4 )
+
+
+# XX TODO: Make documentation for ADD_FLEX_FILE ...
+MACRO( ADD_FLEX_FILE  sourceName buildTarget depends)  
+	SET_DEFAULT ( flex_EXECUTABLE ${CBS_flex_EXECUTABLE} )
+	ADD_CUSTOM_COMMAND(
+		OUTPUTS ${CMAKE_CURRENT_BINARY_DIR}/${sourceName}.c 
+		SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/${sourceName}.l
+		COMMAND ${flex_EXECUTABLE} -o ${CMAKE_CURRENT_BINARY_DIR}/${sourceName}.c ${CMAKE_CURRENT_SOURCE_DIR}/${sourceName}.l 
+		TARGET ${buildTarget} 
+		DEPENDS ${depends}
+	)
+	SET ( ${CBS_CURRENT_TARGET}_SRCS ${${CBS_CURRENT_TARGET}_SRCS} ${CMAKE_CURRENT_BINARY_DIR}/${sourceName}.c)
+	SET_SOURCE_FILES_PROPERTIES(${CMAKE_CURRENT_BINARY_DIR}/${sourceName}.c GENERATED)
+ENDMACRO( ADD_FLEX_FILE )
+
+
+# XX TODO: Make documentation for ADD_BISON_FILE ...
+MACRO( ADD_BISON_FILE  sourceName buildTarget depends)  
+	SET_DEFAULT ( bison_EXECUTABLE ${CBS_bison_EXECUTABLE} )
+	ADD_CUSTOM_COMMAND(
+		OUTPUTS ${CMAKE_CURRENT_BINARY_DIR}/${sourceName}.c 
+		SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/${sourceName}.y
+		COMMAND ${bison_EXECUTABLE}  ${CMAKE_CURRENT_SOURCE_DIR}/${sourceName}.y -o ${CMAKE_CURRENT_BINARY_DIR}/${sourceName}.c
+		TARGET ${buildTarget} 
+		DEPENDS ${depends}
+	)
+	SET ( ${CBS_CURRENT_TARGET}_SRCS ${${CBS_CURRENT_TARGET}_SRCS} ${CMAKE_CURRENT_BINARY_DIR}/${sourceName}.c)
+	SET_SOURCE_FILES_PROPERTIES(${CMAKE_CURRENT_BINARY_DIR}/${sourceName}.c GENERATED)
+ENDMACRO( ADD_BISON_FILE )
+
+
+# Adds an MOC_QT4 header file for moc generation.
+#
+# - PARAMETERS -
+# MOC_QT4File        : [in] Header file.
+# buildTarget        : [in] Any target name fx. cur_tgt_MOC_QT4HeaderTgt, where cur_tgt is 
+#							current library/exe/project name as set in CMakeLists.txt project command. 
+#							So for target 'moz_xpcom_base_' it would be: moz_xpcom_base_MOC_QT4HeaderTgt
+#							Or simpy use something generic like: 'MOC_QT4HeaderTgt'
+# depends           : [in]  Argument for DEPENDS parameter in ADD_CUSTOM_COMMAND
+#
+MACRO( ADD_MOC_QT4_HEADER_FILE  MOC_QT4File )  
+ 	SET_DEFAULT ( moc_qt4_EXECUTABLE 	${CBS_moc_qt4_EXECUTABLE} )
+	
+	IF ( ${ARGC} STREQUAL "2" )
+		SET ( buildTarget	${ARGV1}					)
+	ELSE ( ${ARGC} STREQUAL "2" )
+		SET ( buildTarget	${CBS_CURRENT}_qt4MocTarget	)
+	ENDIF ( ${ARGC} STREQUAL "2" )
+	
+	IF 	  ( NOT ${buildTarget}_ADDED )
+		SET ( ${buildTarget}_ADDED  1 )
+		ADD_CUSTOM_TARGET ( ${buildTarget} ALL echo "Creating MOC_QT4 source file" )	# Create target for the MOC_QT4 files
+	ENDIF (  NOT ${buildTarget}_ADDED )
+	
+  	GET_FILENAME_COMPONENT( MOC_QT4FileWE ${MOC_QT4File}  NAME_WE )
+  	
+# 	GET_FILENAME_COMPONENT( MOC_QT4FilePATH 	${MOC_QT4File}  PATH 		)
+# 	GET_FILENAME_COMPONENT( MOC_QT4FileABSOLUTE	${MOC_QT4File}  ABSOLUTE 	)
+# 	GET_FILENAME_COMPONENT( MOC_QT4FileNAME 	${MOC_QT4File}  NAME 		)
+# 	GET_FILENAME_COMPONENT( MOC_QT4FileEXT 		${MOC_QT4File}  EXT 		)
+# 	
+# 	MESSAGE( STATUS "CCCCCCCCC   MOC_QT4FilePATH	: ${MOC_QT4FilePATH}" 		)
+# 	MESSAGE( STATUS "CCCCCCCCC   MOC_QT4FileABSOLUTE: ${MOC_QT4FileABSOLUTE}" 	)
+# 	MESSAGE( STATUS "CCCCCCCCC   MOC_QT4FileNAME	: ${MOC_QT4FileNAME}" 		)
+# 	MESSAGE( STATUS "CCCCCCCCC   MOC_QT4FileEXT		: ${MOC_QT4FileEXT}" 		)
+# 	MESSAGE( STATUS "CCCCCCCCC   MOC_QT4FileWE		: ${MOC_QT4FileWE}" 		)
+	
+	
+	ADD_CUSTOM_COMMAND(
+		OUTPUTS 	${CMAKE_CURRENT_BINARY_DIR}/moc_${MOC_QT4FileWE}.cpp 
+		SOURCE 		${CMAKE_CURRENT_SOURCE_DIR}/${MOC_QT4File}
+		COMMAND 	${moc_qt4_EXECUTABLE} 	-o ${CMAKE_CURRENT_BINARY_DIR}/moc_${MOC_QT4FileWE}.cpp ${CMAKE_CURRENT_SOURCE_DIR}/${MOC_QT4File}	
+		TARGET 		${buildTarget} 
+	)
+	
+	SET ( ${CBS_CURRENT}_SRCS ${${CBS_CURRENT}_SRCS} ${CMAKE_CURRENT_BINARY_DIR}/moc_${MOC_QT4FileWE}.cpp	)
+	SET_SOURCE_FILES_PROPERTIES( ${CMAKE_CURRENT_BINARY_DIR}/moc_${MOC_QT4FileWE}.cpp	GENERATED 			)
+	##message ( "SOURCES QT: ${${CBS_CURRENT}_SRCS}" )
+ENDMACRO( ADD_MOC_QT4_HEADER_FILE )
+
+
+
+# Adds a simple custom target generating a source file.
+# 
+#
+# - PARAMETERS -
+# inFile			: [in] Input file.
+# outFileName		: [in] Name of of generated sourcefile 
+# 
+# depends           : [in]  Argument for DEPENDS parameter in ADD_CUSTOM_COMMAND
+#
+
+MACRO( ADD_GENERATED_SOURCE_FILE  inFile outFileName cmd1 )  
+	
+#	IF ( ${ARGC} STREQUAL "2" )
+#		SET ( buildTarget	${ARGV1}					)
+#	ELSE ( ${ARGC} STREQUAL "2" )
+#		SET ( buildTarget	${CBS_CURRENT}_qt3MocTarget	)
+#	ENDIF ( ${ARGC} STREQUAL "2" )
+	
+	IF 	  ( NOT ${CBS_CURRENT}_AUTO_CUSTOM_TARGET_ADDED )
+		SET ( ${CBS_CURRENT}_AUTO_CUSTOM_TARGET_ADDED  1 )
+		ADD_CUSTOM_TARGET ( ${CBS_CURRENT}_AUTO_CUSTOM_TARGET ALL echo "${CBS_CURRENT}: Creating auto custom target '${outFileName}' source file" )	# Create target for the MOC_QT3 files
+	ENDIF (  NOT ${CBS_CURRENT}_AUTO_CUSTOM_TARGET_ADDED )
+	
+	STRING ( REPLACE "\\\"" "" ncmd1 ${cmd1} ) 
+	
+ 	MESSAGE( STATUS "CCCCCCCCC   inFile				: ${inFile}" 		)
+ 	MESSAGE( STATUS "CCCCCCCCC   outFileName		: ${outFileName}" 	)
+ 	MESSAGE( STATUS "CCCCCCCCC   cmd1				: ${cmd1}" 			)
+# 	MESSAGE( STATUS "CCCCCCCCC   cmd2				: ${cmd2}" 			)
+# 	MESSAGE( STATUS "CCCCCCCCC   cmd3				: ${cmd3}" 			)
+ 	MESSAGE( STATUS "CCCCCCCCC   ncmd1				: ${ncmd1}" 			)
+	
+	
+	ADD_CUSTOM_COMMAND(
+		OUTPUTS 	${CMAKE_CURRENT_BINARY_DIR}/${outFileName} 
+		SOURCE 		${CMAKE_CURRENT_SOURCE_DIR}/${inFile}
+		COMMAND 	${cmd1}
+		#COMMAND		dir > ${CMAKE_CURRENT_BINARY_DIR}/${outFileName}
+		TARGET 		${CBS_CURRENT}_AUTO_CUSTOM_TARGET
+	)
+	
+	SET ( ${CBS_CURRENT}_SRCS ${${CBS_CURRENT}_SRCS}	${CMAKE_CURRENT_BINARY_DIR}/${outFileName}				)
+	SET_SOURCE_FILES_PROPERTIES(						${CMAKE_CURRENT_BINARY_DIR}/${outFileName}	GENERATED 	)
+ENDMACRO( ADD_GENERATED_SOURCE_FILE )
+
+
+
+# Add defines PACKAGE, PACKAGE_BUGREPORT, PACKAGE_NAME,
+# PACKAGE_STRING, PACKAGE_TARNAME, PACKAGE_VERSION AND 
+# VERSION to command line defines
+MACRO( ADD_PACKAGE_DEFINES )  
+	ADD_DEFINE ( PACKAGE 					\\\\"${PACKAGE}\\\\"			) 
+	ADD_DEFINE ( PACKAGE_BUGREPORT 			\\\\"${PACKAGE_BUGREPORT}\\\\"	) 
+	ADD_DEFINE ( PACKAGE_NAME 				\\\\"${PACKAGE_NAME}\\\\"		) 
+	ADD_DEFINE ( PACKAGE_STRING 			\\"${PACKAGE_STRING}\\"			) 
+	ADD_DEFINE ( PACKAGE_TARNAME 			\\\\"${PACKAGE_TARNAME}\\\\"	) 
+	ADD_DEFINE ( PACKAGE_VERSION 			\\\\"${PACKAGE_VERSION}\\\\"	) 
+	ADD_DEFINE ( VERSION 					\\\\"${VERSION}\\\\"			) 
+	
+# 	ADD_DEFINE ( PACKAGE 					\\"${PACKAGE}\\"			) 
+# 	ADD_DEFINE ( PACKAGE_BUGREPORT 			\\"${PACKAGE_BUGREPORT}\\"	) 
+# 	ADD_DEFINE ( PACKAGE_NAME 				\\"${PACKAGE_NAME}\\"		) 
+# 	ADD_DEFINE ( PACKAGE_STRING 			\\"${PACKAGE_STRING}\\"		) 
+# 	ADD_DEFINE ( PACKAGE_TARNAME 			\\"${PACKAGE_TARNAME}\\"	) 
+# 	ADD_DEFINE ( PACKAGE_VERSION 			\\"${PACKAGE_VERSION}\\"	) 
+# 	ADD_DEFINE ( VERSION 					\\"${VERSION}\\"			) 
+ENDMACRO( ADD_PACKAGE_DEFINES )
+
+
+
+
+# Adds certain C99 compatibilty headers and functions to current target.
+# NOTE: If you need to configure files in a (main)project (i.e. not a target).
+#		Then you should use this macro in the (main)project file to make sure
+#		the am_common_defines gets changed before calling CONFIGURE_FILE.
+#		HOWEVER: This wil NOT add the needed includes and source files, for
+#		this you need to use this macro explicitly in every (sub)target of 
+#		the (main)project.
+# 
+# Should be added before any configuration of files is done, since it might 
+# enable features not set by default in 'am_common_defines(_platform).cbs'
+MACRO ( ADD_MSVC_COMPATIBILITY  )  
+	IF ( COMPILER_MSVC )
+		IF ( ${CBS_CURRENT_IS_TARGET} )
+			ADDX_INCLUDE_DIR		( ${CBS_ROOT_DIR}/compatibility/msvc								)
+			ADD_FORCE_INCLUDE	( ${CBS_ROOT_DIR}/compatibility/msvc/msvc_compatibility_includes.h	)
+			ADD_SOURCE_FILE		( ${CBS_ROOT_DIR}/compatibility/msvc/msvc_snprintf.c				)
+		ENDIF ( ${CBS_CURRENT_IS_TARGET} )
+		
+		# Be sure we adjust settings from 'am_common_defines(_platform).cbs'
+		SET ( HAVE_C99_SNPRINTF 			1 )	# Define if you have a version of the snprintf function with semantics as specified by the ISO C99 standard.
+		SET ( HAVE_SNPRINTF 				1 )	# Define to 1 if you have the `snprintf' function.
+		SET ( HAVE_STDINT_H 				1 )	# Define to 1 if you have the <stdint.h> header file.
+		SET ( HAVE_INTTYPES_H 				1 )	# Define to 1 if you have the <inttypes.h> header file.
+		SET ( HAVE_INTTYPES_H_WITH_UINTMAX 	1 )	# Define if <inttypes.h> exists, doesn't clash with <sys/types.h>, and declares uintmax_t.
+		SET ( HAVE_INTMAX_T 				1 )	# Define if you have the 'intmax_t' type in <stdint.h> or <inttypes.h>.
+		SET ( HAVE_UINTMAX_T				1 ) # Define if you have the 'uintmax_t' type in <stdint.h> or <inttypes.h>. 
+		SET ( HAVE_GOOD_PRINTF 				1 )	# define to use system printf. TODO: Check if this really should be set!
+
+	ENDIF ( COMPILER_MSVC ) 
+ENDMACRO( ADD_MSVC_COMPATIBILITY )
+
+# -------------------------------------------
+# -------------------------------------------
+# -------------------------------------------
+# # MACRO ( ADD_PUBLIC_HEADER_FILE fileName )  
+# # 	IF ( ${ARGC} STREQUAL "2" )
+# # 		IF ( NOT ${${ARGV1}} STREQUAL "" )
+# # 			SET ( ${CBS_CURRENT}_PUBLIC_HEADER		${${CBS_CURRENT}_PUBLIC_HEADER}		${fileName}	)
+# # 		ENDIF ( NOT ${${ARGV1}} STREQUAL "" )
+# # 	ELSE ( ${ARGC} STREQUAL "2" )
+# # 		SET ( ${CBS_CURRENT}_PUBLIC_HEADER			${${CBS_CURRENT}_PUBLIC_HEADER}		${fileName}	)
+# # 	ENDIF ( ${ARGC} STREQUAL "2" )
+# # ENDMACRO( ADD_PUBLIC_HEADER_FILE )
+# # # Defines "exported" to others using this target 
+# # MACRO ( ADD_PUBLIC_DEFINE define value )  
+# # 	IF ( ${ARGC} STREQUAL "3" )
+# # 		IF ( NOT ${${ARGV2}} STREQUAL "" )
+# # 			SET ( ${CBS_CURRENT}_PUBLIC_DEFINE	${${CBS_CURRENT}_PUBLIC_DEFINE}		-D${define}=${value}	)
+# # 		ENDIF ( NOT ${${ARGV2}} STREQUAL "" )
+# # 	ELSE ( ${ARGC} STREQUAL "3" )
+# # 		SET ( ${CBS_CURRENT}_PUBLIC_DEFINE		${${CBS_CURRENT}_PUBLIC_DEFINE}		-D${define}=${value}	)
+# # 	ENDIF ( ${ARGC} STREQUAL "3" )
+# # ENDMACRO( ADD_PUBLIC_DEFINE )
+# # 
+# # 
+# # # Defines used to compile this project only
+# # MACRO ( ADD_PRIVATE_DEFINE define value )  
+# # 	IF ( ${ARGC} STREQUAL "3" )
+# # 		IF ( NOT ${${ARGV2}} STREQUAL "" )
+# # 			SET ( ${CBS_CURRENT}_PRIVATE_DEFINE	${${CBS_CURRENT}_PRIVATE_DEFINE}	-D${define}=${value}	)
+# # 		ENDIF ( NOT ${${ARGV2}} STREQUAL "" )
+# # 	ELSE ( ${ARGC} STREQUAL "3" )
+# # 		SET ( ${CBS_CURRENT}_PRIVATE_DEFINE		${${CBS_CURRENT}_PRIVATE_DEFINE}	-D${define}=${value}	)
+# # 	ENDIF ( ${ARGC} STREQUAL "3" )
+# # ENDMACRO( ADD_PRIVATE_DEFINE )
+# # # MACRO ( ADD_PUBLIC_INCLUDE_DIR dirName )  
+# # # 	IF ( ${ARGC} STREQUAL "2" )
+# # # 		IF ( NOT ${${ARGV1}} STREQUAL "" )
+# # # 			SET ( ${CBS_CURRENT}_PUBLIC_INCLUDE_DIRS		${${CBS_CURRENT}_PUBLIC_INCLUDE_DIRS}	${dirName}	)
+# # # 		ENDIF ( NOT ${${ARGV1}} STREQUAL "" )
+# # # 	ELSE ( ${ARGC} STREQUAL "2" )
+# # # 		SET ( ${CBS_CURRENT}_PUBLIC_INCLUDE_DIRS			${${CBS_CURRENT}_PUBLIC_INCLUDE_DIRS}	${dirName}	)
+# # # 	ENDIF ( ${ARGC} STREQUAL "2" )
+# # # ENDMACRO( ADD_PUBLIC_INCLUDE_DIR )
+# # # 
+# # # 
+# # # MACRO ( ADD_PRIVATE_INCLUDE_DIR dirName )  
+# # # 	IF ( ${ARGC} STREQUAL "2" )
+# # # 		IF ( NOT ${${ARGV1}} STREQUAL "" )
+# # # 			SET ( ${CBS_CURRENT}_PRIVATE_INCLUDE_DIRS	${${CBS_CURRENT}_PRIVATE_INCLUDE_DIRS}	${dirName}	)
+# # # 		ENDIF ( NOT ${${ARGV1}} STREQUAL "" )
+# # # 	ELSE ( ${ARGC} STREQUAL "2" )
+# # # 		SET ( ${CBS_CURRENT}_PRIVATE_INCLUDE_DIRS		${${CBS_CURRENT}_PRIVATE_INCLUDE_DIRS}	${dirName}	)
+# # # 	ENDIF ( ${ARGC} STREQUAL "2" )
+# # # ENDMACRO( ADD_PRIVATE_INCLUDE_DIR )
+
+# -------------------------------------------
+
+
+
+

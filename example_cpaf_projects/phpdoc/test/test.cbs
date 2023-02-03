@@ -1,0 +1,10 @@
+# *** PROJECT: 'test' main cbs file. ***
+
+
+
+# -----------------------------------------------
+# --- Add subdirectories (targets/subprojects ---
+# -----------------------------------------------
+ADD_SUBDIR ( parsertest		)
+ADD_SUBDIR ( structuretest	)
+

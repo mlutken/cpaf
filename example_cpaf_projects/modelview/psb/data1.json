@@ -1,0 +1,100 @@
+{
+    "patients": [
+        {
+            "patient_uid": "101",
+            "patient_name": "Anders And",
+            "studies": [
+                {
+                    "study_uid"     : "2001",
+                    "study_date"    : "03/06/2010",
+                    "study_year"    : "2010",
+                    "series": [
+                        {
+                            "series_uid": "30001",
+                            "series_title": "Arterial 1",
+                            "series_thubmnail": "TODO thumbnail"
+                        },
+                        {
+                            "series_uid": "30002",
+                            "series_title": "Arterial 2",
+                            "series_thubmnail": "TODO thumbnail"
+                        }
+
+                    ]
+                },
+                {
+                    "study_uid"     : "2002",
+                    "study_date"    : "01/02/2011",
+                    "study_year"    : "2011",
+                    "series": [
+                        {
+                            "series_uid": "30003",
+                            "series_title": "Arterial 3",
+                            "series_thubmnail": "TODO thumbnail"
+                        },
+                        {
+                            "series_uid": "30004",
+                            "series_title": "Arterial 4",
+                            "series_thubmnail": "TODO thumbnail"
+                        },
+                        {
+                            "series_uid": "30005",
+                            "series_title": "Arterial 5",
+                            "series_thubmnail": "TODO thumbnail"
+                        }
+
+                    ]
+                }
+            ]
+        },
+        {
+            "patient_uid": "102",
+            "patient_name": "Onkel Joachim",
+            "studies": [
+                {
+                    "study_uid"     : "2101",
+                    "study_date"    : "03/06/2010",
+                    "study_year"    : "2010",
+                    "series": [
+                        {
+                            "series_uid": "31001",
+                            "series_title": "Abdomen 1",
+                            "series_thubmnail": "TODO thumbnail"
+                        },
+                        {
+                            "series_uid": "31002",
+                            "series_title": "Abdomen 2",
+                            "series_thubmnail": "TODO thumbnail"
+                        }
+
+                    ]
+                },
+                {
+                    "study_uid"     : "2102",
+                    "study_date"    : "01/02/2011",
+                    "study_year"    : "2011",
+                    "series": [
+                        {
+                            "series_uid": "31003",
+                            "series_title": "Abdomen 3",
+                            "series_thubmnail": "TODO thumbnail"
+                        },
+                        {
+                            "series_uid": "31004",
+                            "series_title": "Abdomen 4",
+                            "series_thubmnail": "TODO thumbnail"
+                        },
+                        {
+                            "series_uid": "31005",
+                            "series_title": "Abdomen 5",
+                            "series_thubmnail": "TODO thumbnail"
+                        }
+
+                    ]
+                }
+            ]
+        }
+
+    ]
+
+}

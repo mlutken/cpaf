@@ -1,0 +1,7 @@
+# TODO: Not tested yet
+INCLUDE (${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+FIND_LIB_SIMPLE ( 	pixman 
+					HEADER_FILES pixman.h 
+					HEADER_PATHS /usr/include/pixman 
+					)
+

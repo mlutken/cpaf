@@ -1,0 +1,4 @@
+
+ADD_SUBDIR ( myapp				)
+ADD_SUBDIR ( mypython_module	)
+ADD_SUBDIR ( myphp_module		)

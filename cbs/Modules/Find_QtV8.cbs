@@ -1,0 +1,30 @@
+INCLUDE (${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+IF( CBS_QT4 )
+	FIND_LIB_SIMPLE ( 	QtV8 
+						LIB_NAME QtV8 LINUX QtV84 CBS_WINDOWS_RELEASE QtV8d4 CBS_WINDOWS_DEBUG
+						HEADER_FILES QV8Widget  
+						HEADER_PATHS ${QT_HDR_DIR}/QtV8 /usr/include/qt4/QtV8 /usr/include/QtV8
+						LIB_PATHS ${QT_LIB_DIR} /usr/lib
+						PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtV8 ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+						DEPENDS_ON QtGui 
+						)
+ELSE( CBS_QT4 )
+	IF (WINDOWS)
+		FIND_LIB_SIMPLE ( 	QtV8 
+							LIB_NAME QtV8 LINUX Qt5V8 CBS_WINDOWS_RELEASE Qt5V8d CBS_WINDOWS_DEBUG
+							HEADER_FILES QV8Widget  
+							HEADER_PATHS ${QT_HDR_DIR}/QtV8 /usr/include/qt5/QtV8 /usr/include/QtV8
+							LIB_PATHS ${QT_LIB_DIR} /usr/lib
+							PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtV8 ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+							DEPENDS_ON QtGui 
+							)
+	ELSE (WINDOWS)
+		FIND_LIB_SIMPLE ( 	QtV8 
+							LIB_NAME Qt5V8 
+							HEADER_FILES QtV8  
+							HEADER_PATHS ${QT_HDR_DIR}/QtV8 /usr/include/qt5/QtV8
+							)
+	ENDIF (WINDOWS)						
+ENDIF( CBS_QT4 )
+
+

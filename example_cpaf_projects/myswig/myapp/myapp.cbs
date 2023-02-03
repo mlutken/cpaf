@@ -1,0 +1,12 @@
+# -------------------
+# --- Build setup ---
+# -------------------
+##ADDX_DEPENDS_ON ( mylib	)
+
+# -------------------
+# --- Add sources ---
+# -------------------
+ADD_SOURCE_FILE ( myapp.cpp	)
+
+
+

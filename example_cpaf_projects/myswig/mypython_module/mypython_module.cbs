@@ -1,0 +1,25 @@
+# -------------------
+# --- Build setup ---
+# -------------------
+ADDX_INCLUDE_DIR ( .. )
+ADDX_INCLUDE_DIR ( /usr/include/python2.5 )
+
+# -------------------
+# --- Add sources ---
+# -------------------
+ADD_SWIG_SOURCE_CPP ( ../myclasses.i python )	
+ADD_SOURCE_FILE ( ../myclasses.cpp	)
+
+
+#FIND_PACKAGE(SWIG REQUIRED)
+# INCLUDE(${SWIG_USE_FILE})
+# FIND_PACKAGE(PythonLibs)
+# INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_PATH})
+# INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
+# SET(CMAKE_SWIG_FLAGS "")
+# SET_SOURCE_FILES_PROPERTIES( "../myclasses.i" PROPERTIES CPLUSPLUS ON)
+# SET_SOURCE_FILES_PROPERTIES( "../myclasses.i" PROPERTIES SWIG_FLAGS "-includeall")
+# SWIG_ADD_MODULE( myclasses python "../myclasses.i" "../myclasses.cxx" )
+# SWIG_LINK_LIBRARIES( myclasses ${PYTHON_LIBRARIES} )
+
+

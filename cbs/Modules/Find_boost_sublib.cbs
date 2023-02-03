@@ -1,0 +1,38 @@
+
+# Find a boost sub library/project
+# - PARAMETERS -
+# baseName      : Basename of boost sub library like boost_filesystem
+# headerFiles   : Header files to look for. If set to "NONE" searching for include directories is ignored.
+# dependsOn     : Basename of library that this one depends on.
+# - GLOBAL VARIABLES PROVIDED AS "OUTPUT" - :
+# ${baseName}_INCLUDE_DIR   : Include paths needed for xxlib alone (no dependent include dirs)
+# ${baseName}_XINCLUDE_DIRS  : Inlcude paths needed for xxlib, including including paths for eventual dependant libraries.
+# ${baseName}_LIBRARY       : Library/libraries when using xxlib (no dependent libs).
+# ${baseName}_LIBRARIES     : List of libraries including dependent when using xxlib.
+# ${baseName}_XLINK_DIR      : Linker search paths/dirs needed for linking xxlib.
+# ${baseName}_XLINK_DIRS     : List of all linker search paths/dirs needed (including dependent ones) for linking xxlib.
+# ${baseName}_LINK_TYPE     : Link type requested/used for this library : STATIC or SHARED
+# ${baseName}_FOUND         : True if xxlib found.
+
+MACRO( FIND_BOOST_SUBLIB baseName headerFiles dependsOn )  
+    SET ( boostSubPrj   ${baseName} )
+    INCLUDE ( ${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+##    FIND_LIB_SIMPLE ( ${boostSubPrj} HEADER_FILES spirit.hpp )
+    FIND_LIB_SIMPLE ( 	${boostSubPrj} 
+                        HEADER_FILES spirit.hpp  
+                        HEADER_PATHS /usr/include/boost
+                        LIB_PATHS /usr/lib64 /usr/lib
+                        INCLUDE_DIR_LEVELS_UP 1 
+                        )
+    
+#    INCLUDE ( ${CBS_ROOT_DIR}/Modules/Find_boost_Includes.cbs )
+    
+    # Temporary hack using '/usr/include' as hardcoded!
+    SET ( ${boostSubPrj}_INCLUDE_DIR     /usr/include           CACHE STRING "includes dir" FORCE )
+#     SET ( ${boostSubPrj}_INCLUDE_DIR     ${boost_INCLUDE_DIR}           CACHE STRING "Boost includes dir" FORCE )
+#     SET ( ${boostSubPrj}_XINCLUDE_DIRS    ${${boostSubPrj}_INCLUDE_DIR}  CACHE STRING "Boost includes dirs" FORCE )
+###    SET ( boost_INCLUDE_DIR /usr/include CACHE STRING "Boost includes dir" FORCE )
+ENDMACRO( FIND_BOOST_SUBLIB )
+
+
+

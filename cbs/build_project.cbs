@@ -1,0 +1,226 @@
+
+# - Build project
+# Builds (or finds) the project designated by var CBS_CURRENT_PROJECT
+# Most often included "indirectly" via BUILD_LIBRARY macro.
+# NOTE: If you (not recommended) should choose to use this file directly and
+#       not thru the macro BUILD_PROJECT, then before you set  
+#       CBS_CURRENT_PROJECT you should set the parent project to "old" current.
+#       Do something like this:
+#       SET     ( CBS_PARENT_PROJECT       ${CBS_CURRENT_PROJECT}         )   # Remember our parent project
+#       SET     ( CBS_CURRENT_PROJECT      MyPrjName                           )
+#
+#
+# - VARIABLES USED AS "INPUT" -
+# ${baseName}_XDEPENDS_ON    : Names of lib that this project depends on.
+#                             Makes sure that inclæude directories, link libs, 
+#                             link dirs etc. are set correctly for compiling and linking.
+# ${baseName}_LINK_TYPE     : Link type to be used for this project. Overrides default setting
+#                             from command line build.
+#
+# - GLOBAL VARIABLES PROVIDED AS "OUTPUT" - :
+# ${baseName}_INCLUDE_DIR   : Include paths needed for xxlib alone (no dependent include dirs)
+# ${baseName}_XINCLUDE_DIRS  : Inlcude paths needed for xxlib, including including paths for eventual dependant libraries.
+# ${baseName}_LIBRARY       : Library/libraries when using xxlib (no dependent libs).
+# ${baseName}_LIBRARIES     : List of libraries including dependent when using xxlib.
+# ${baseName}_XLINK_DIR      : Linker search paths/dirs needed for linking xxlib.
+# ${baseName}_XLINK_DIRS     : List of all linker search paths/dirs needed (including dependent ones) for linking xxlib.
+# ${baseName}_LINK_TYPE     : Link type requested/used for this project : STATIC or SHARED
+# ${baseName}_FOUND         : True if xx project found/compiled.
+# ${baseName}_FULL_PATH     : XX Not implemented yet!! Full path to the project built.
+# ${baseName}_INFO_USE      : Set to use type actually used for xx project.
+#
+
+# ---------------------------------------------------------------------------
+# --- Determine use type: DISABLED, SYSTEM, PREBUILT, BUILD, ENABLED --- PREBUILT
+# ---------------------------------------------------------------------------
+# Use Parent project's only if not set for current project
+IF ( NOT ${CBS_CURRENT_PROJECT}_USE OR ${CBS_CURRENT_PROJECT}_USE STREQUAL "" )
+    SET ( useType    "${${CBS_PARENT_PROJECT}_USE}" )    # Use parent project setting 
+ELSE ( NOT ${CBS_CURRENT_PROJECT}_USE OR ${CBS_CURRENT_PROJECT}_USE STREQUAL "" )
+    SET ( useType    "${${CBS_CURRENT_PROJECT}_USE}" )    # Use current project setting 
+ENDIF ( NOT ${CBS_CURRENT_PROJECT}_USE OR ${CBS_CURRENT_PROJECT}_USE STREQUAL "" )
+    
+# --- Default "catch-all" in case no use variable is set we set it to CBS_DEFAULT_USE_TYPE ---
+IF ( NOT useType OR "${useType}" STREQUAL "" )
+    SET ( useType    ${CBS_DEFAULT_USE_TYPE} )      # If useType not set default to CBS_DEFAULT_USE_TYPE 
+    
+    # --- In case CBS_CURRENT_PROJECT is same as top-level project, we force useType to BUILD ---
+    IF ( ${CBS_CURRENT_PROJECT} STREQUAL ${CMAKE_PROJECT_NAME} )
+        SET ( useType    BUILD )                      # For very top-level project force useType to ENABLED
+    ENDIF ( ${CBS_CURRENT_PROJECT} STREQUAL ${CMAKE_PROJECT_NAME} )
+ENDIF ( NOT useType OR "${useType}" STREQUAL "" )
+
+
+# --- Allow the finally chosen useType to propagate down to another main project ---
+#    We use set_if_not mainly in case this is the toplevel project and no use var has 
+#   been set. In this case the above default catch-all clause in turn kicks in and 
+#   forces use type to BUILD, which we ONLY want to propagate down in case it was not 
+#   set in some config file by the user.
+SET_IF_NOT ( ${CBS_CURRENT_PROJECT}_USE   ${useType}  )
+
+# --- Add info about chosen useType to cache variable ---    
+SET ( ${CBS_CURRENT_PROJECT}_INFO_USE     ${${CBS_CURRENT_PROJECT}_USE}  CACHE STRING "" FORCE  )
+MARK_AS_ADVANCED ( ${CBS_CURRENT_PROJECT}_INFO_USE )
+
+
+# --------------------------------------------------------------------------
+# --- SYSTEM: User chose to use system installed version of this project ---
+# So we try to set the includes variable if such a Find_xx_Includes.cbs file exists.
+# --------------------------------------------------------------------------
+IF    ( ${useType} STREQUAL "SYSTEM" )
+    IF ( EXISTS ${CBS_ROOT_DIR}/Modules/Find_${CBS_CURRENT_PROJECT}_Includes.cbs )
+        INCLUDE ( ${CBS_ROOT_DIR}/Modules/Find_${CBS_CURRENT_PROJECT}_Includes.cbs )
+    ENDIF ( EXISTS ${CBS_ROOT_DIR}/Modules/Find_${CBS_CURRENT_PROJECT}_Includes.cbs )
+ENDIF ( ${useType} STREQUAL "SYSTEM" )
+
+
+IF    ( ${useType} STREQUAL "BUILD" OR ${useType} STREQUAL "PREBUILT" )
+
+	project ( ${CBS_CURRENT_PROJECT}			)
+	
+	#MESSAGE( STATUS "BUILD_PROJECT (CBS_CURRENT_PROJECT, CBS_PARENT_PROJECT) =  (${CBS_CURRENT_PROJECT}, ${CBS_PARENT_PROJECT})" )
+	
+	# ---Default to (named) inherited values if not allready set ---
+	FOREACH( varNamePostFix ${CBS_NAMED_INHERIT_VARS} )
+		PROJECT_DEFAULT	( ${varNamePostFix} "" )
+	ENDFOREACH( varNamePostFix )
+	
+	#MESSAGE( STATUS "KKKKK ${CBS_CURRENT_PROJECT}_INSTALL_PREFIX_INHERITED: ${${CBS_CURRENT_PROJECT}_INSTALL_PREFIX_INHERITED}" )
+	
+	# # # --- Set target type to project ---
+	# # SET ( ${CBS_CURRENT_PROJECT}_TARGET_TYPE PROJECT  CACHE STRING "" FORCE )	# TODO: Perhaps this var is not used and can be removed
+	
+	
+	SET ( ${CBS_CURRENT_PROJECT}_XDEPENDS_ON  ${${CBS_CURRENT_PROJECT}_XDEPENDS_ON}	CACHE STRING "" FORCE )
+	
+	
+	
+	# --------------------------------------------------------------------
+	# --- Set include directories when building or using (cbs)prebuilt ---
+	# --------------------------------------------------------------------
+	IF    ( ${useType} STREQUAL "BUILD" OR ${useType} STREQUAL "PREBUILT" )
+		# TODO: Make PROMOTE_TO_CACHE_MACRO 
+		IF ( ${CBS_CURRENT_PROJECT}_INCLUDE_DIR )
+			IF ( NOT "${${CBS_CURRENT_PROJECT}_INCLUDE_DIR}" STREQUAL "" )
+				SET ( ${CBS_CURRENT_PROJECT}_INCLUDE_DIR  ${${CBS_CURRENT_PROJECT}_INCLUDE_DIR} CACHE STRING "" FORCE )
+				SET ( ${CBS_CURRENT_PROJECT}_XINCLUDE_DIRS ${${CBS_CURRENT_PROJECT}_INCLUDE_DIR} CACHE STRING "" FORCE )
+				include_directories( ${${CBS_CURRENT_PROJECT}_INCLUDE_DIR} )
+			ENDIF ( NOT "${${CBS_CURRENT_PROJECT}_INCLUDE_DIR}" STREQUAL "" )
+		ENDIF (  ${CBS_CURRENT_PROJECT}_INCLUDE_DIR )
+	ENDIF    ( ${useType} STREQUAL "BUILD" OR ${useType} STREQUAL "PREBUILT" )
+	
+	
+	# -----------------------------------
+	# --- Descend into subdirectories ---
+	# -----------------------------------
+	IF ( NOT "${useType}" STREQUAL "DISABLED" )
+	
+		FOREACH( subProjectDir ${${CBS_CURRENT_PROJECT}_SUBDIRS} )
+			
+			# We need to take special care of sub-projects that are not subdirectories of the current dir.
+			# When specifying the binary dir for the subproject we want to "fake" a project as if it 
+			# was actually a a subdir allthough it really lies in some parent or side-ordered dir.
+			# We detect parent or side ordered subprojects by looking for ".." in the sub-project-dir 
+			# path string. If such ".."'s exist we need to construct a suitable binary dir for the 
+			# cmake add_subdirectory command.
+			# EXAMPLE:
+			# Current source dir:   /home/me/code/projects/myproject
+			# Other prj dir:        /home/me/code/projects/otherproject
+			# If user has written:  myproject_SUBDIRS ${myproject_SUBDIRS}    "../otherproject"
+			# then the add_subdirectory command will use 
+			# ${CMAKE_CURRENT_BINARY_DIR}/projects/otherproject
+			# as the binary dir.
+			# XX more XX
+			IF ( "${subProjectDir}" MATCHES "\\.\\." )  # Match '..'  
+				#MESSAGE( STATUS "EEEE subProjectDir: ${subProjectDir}" 		)
+				
+				SET ( subProjectBinDir  "" )
+				SET ( fullPath  ${CMAKE_SOURCE_DIR}/${subProjectDir} )
+				GET_FILENAME_COMPONENT ( leaf ${fullPath} NAME )
+				WHILE( NOT ${leaf} STREQUAL ".." )
+					SET ( subProjectBinDir  "${leaf}/${subProjectBinDir}" )
+					GET_FILENAME_COMPONENT ( fullPath   ${fullPath} PATH )  
+					GET_FILENAME_COMPONENT ( leaf       ${fullPath} NAME )
+				ENDWHILE( NOT ${leaf} STREQUAL ".." )
+				
+				
+				SET ( iLevelsUp 0 )
+				WHILE( ${leaf} STREQUAL ".." )
+					MATH ( EXPR iLevelsUp "${iLevelsUp} +1" )    
+					GET_FILENAME_COMPONENT ( fullPath   ${fullPath} PATH )  
+					GET_FILENAME_COMPONENT ( leaf       ${fullPath} NAME )
+				ENDWHILE( ${leaf} STREQUAL ".." )
+		
+				WHILE( ${iLevelsUp} GREATER 0 )
+					GET_FILENAME_COMPONENT ( fullPath   ${fullPath} PATH )  
+					MATH ( EXPR iLevelsUp "${iLevelsUp} -1" )    
+				ENDWHILE( ${iLevelsUp} GREATER 0 )
+				
+				# Compose final subpath
+				GET_FILENAME_COMPONENT ( leaf       ${fullPath} NAME )
+				SET ( subProjectBinDir  "${leaf}/${subProjectBinDir}" )
+				
+				
+			ELSE ( "${subProjectDir}" MATCHES "\\.\\." ) 
+				#MESSAGE( STATUS "FFFFF subProjectDir: ${subProjectDir}" 		)
+				SET (subProjectBinDir   ${subProjectDir} )      # Normal case we use project subpath as binary subpath 
+			ENDIF ( "${subProjectDir}" MATCHES "\\.\\." ) 
+			
+			
+			##MESSAGE( STATUS "AA subProjectBinDir: ${subProjectBinDir}" 		)
+			##MESSAGE( STATUS "AA subProjectDir: ${subProjectDir}" 		)
+			##MESSAGE ( STATUS "AA {CMAKE_CURRENT_BINARY_DIR}/{subProjectBinDir}: ${CMAKE_CURRENT_BINARY_DIR}/${subProjectBinDir}" )
+			#TODO: DEBUG_REMOVED_ONLY 
+			add_subdirectory ( ${subProjectDir}    ${CMAKE_CURRENT_BINARY_DIR}/${subProjectBinDir}      )
+		ENDFOREACH( subProjectDir )
+		
+	#	MESSAGE( STATUS "EEEEEEE CBS_ALL_LIBRARIES: ${CBS_ALL_LIBRARIES}" 		)
+	
+		# --- Set release and debug variables ---
+		IF ( ${CMAKE_BUILD_TYPE} STREQUAL Release  ) 
+			SET( ${CBS_CURRENT_TARGET}_Release TRUE CACHE BOOL "True if target is built as Release" )
+			SET( ${CBS_CURRENT_TARGET}_Debug FALSE CACHE BOOL "True if target is built as Debug" )
+		ENDIF ( ${CMAKE_BUILD_TYPE} STREQUAL Release  ) 
+		
+		IF ( ${CMAKE_BUILD_TYPE} STREQUAL Debug  ) 
+			SET( ${CBS_CURRENT_TARGET}_Debug TRUE CACHE BOOL "True if target is built as Debug" )
+			SET( ${CBS_CURRENT_TARGET}_Debug FALSE CACHE BOOL "True if target is built as Debug" )
+		ENDIF ( ${CMAKE_BUILD_TYPE} STREQUAL Debug  ) 
+			
+		SET ( ${CBS_CURRENT_PROJECT}_ROOT_DIR  ${CMAKE_CURRENT_SOURCE_DIR} CACHE STRING "" )
+		MARK_AS_ADVANCED (
+			${CBS_CURRENT_PROJECT}_INCLUDE_DIR
+			${CBS_CURRENT_PROJECT}_XINCLUDE_DIRS
+	##        ${CBS_CURRENT_PROJECT}_INFO_USE
+			${CBS_CURRENT_PROJECT}_ROOT_DIR
+			${CBS_CURRENT_TARGET}_Release
+			${CBS_CURRENT_TARGET}_Debug
+		)
+	
+	ENDIF ( NOT "${useType}" STREQUAL "DISABLED" )
+	
+	
+	# -----------------------------
+	# --- BUILD Examples, Tests ---
+	# -----------------------------
+	IF    ( "${useType}" STREQUAL "BUILD" )
+		IF ( CBS_BUILD_EXAMPLES STREQUAL "ON" )
+			IF ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/_examples )
+				add_subdirectory ( _examples    ${CMAKE_CURRENT_BINARY_DIR}/_examples  )
+			ENDIF ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/_examples )
+		ENDIF ( CBS_BUILD_EXAMPLES STREQUAL "ON" )
+		IF ( CBS_BUILD_TESTS STREQUAL "ON" )
+			IF ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/_tests )
+				add_subdirectory ( _tests    ${CMAKE_CURRENT_BINARY_DIR}/_tests  )
+			ENDIF ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/_tests )
+		ENDIF ( CBS_BUILD_TESTS STREQUAL "ON" )
+	ENDIF    ( "${useType}" STREQUAL "BUILD" )
+ENDIF    ( ${useType} STREQUAL "BUILD" OR ${useType} STREQUAL "PREBUILT" )
+
+
+
+#MESSAGE( STATUS "--- PROJECT --- ${CBS_CURRENT_PROJECT}_INSTALL_PREFIX: ${${CBS_CURRENT_PROJECT}_INSTALL_PREFIX}" )
+MESSAGE( STATUS "--- PROJECT --- ${CBS_CURRENT_PROJECT}_VERSION_STRING: ${${CBS_CURRENT_PROJECT}_VERSION_STRING}" )
+
+#MESSAGE( STATUS "CBS_CURRENT_PROJECT, useType: ${CBS_CURRENT_PROJECT} ${useType}" )
+#MESSAGE( STATUS "CMAKE_PROJECT_NAME: ${CMAKE_PROJECT_NAME}" )

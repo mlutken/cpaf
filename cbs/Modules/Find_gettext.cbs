@@ -1,0 +1,8 @@
+
+INCLUDE (${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+FIND_LIB_SIMPLE ( 	gettext 
+					LIB_NAME gettextlib
+					HEADER_FILES gettext-po.h 
+					DEPENDS_ON asprintf
+					)
+

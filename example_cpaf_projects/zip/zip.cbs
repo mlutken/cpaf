@@ -1,0 +1,13 @@
+# -------------------
+# --- Build setup ---
+# -------------------
+ADDX_DEPENDS_ON ( minizip )
+ADDX_DEPENDS_ON ( z )
+
+# -------------------
+# --- Add sources ---
+# -------------------
+ADD_SOURCE_FILE ( ${minizip_SRC_ROOT}/minizip.c   )
+
+
+

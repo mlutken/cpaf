@@ -1,0 +1,1 @@
+add_playground_cpp_exe(elasticsearch "cpaf_elasticsearch;cpaf_streams")

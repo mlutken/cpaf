@@ -1,0 +1,31 @@
+INCLUDE (${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+IF( CBS_QT4 )
+	FIND_LIB_SIMPLE ( 	QtQuick 
+						LIB_NAME QtQuick LINUX QtQuick4 CBS_WINDOWS_RELEASE QtQuickd4 CBS_WINDOWS_DEBUG
+						HEADER_FILES QQuickable  
+						HEADER_PATHS ${QT_HDR_DIR}/QtQuick /usr/include/qt4/QtQuick /usr/include/QtQuick
+						LIB_PATHS ${QT_LIB_DIR} /usr/lib
+						PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtQuick ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+						DEPENDS_ON QtCore
+						)
+ELSE( CBS_QT4 )
+	IF (WINDOWS)
+		FIND_LIB_SIMPLE ( 	QtQuick 
+							LIB_NAME QtQuick LINUX Qt5Quick CBS_WINDOWS_RELEASE Qt5Quickd CBS_WINDOWS_DEBUG
+							HEADER_FILES QQuickable  
+							HEADER_PATHS ${QT_HDR_DIR}/QtQuick /usr/include/qt5/QtQuick /usr/include/QtQuick
+							LIB_PATHS ${QT_LIB_DIR} /usr/lib
+							PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtQuick ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+							DEPENDS_ON QtCore
+							)
+	ELSE (WINDOWS)
+		FIND_LIB_SIMPLE ( 	QtQuick 
+							LIB_NAME Qt5Quick 
+							HEADER_FILES QtQuick  
+							HEADER_PATHS ${QT_HDR_DIR}/QtQuick /usr/include/qt5/QtQuick
+							)
+	ENDIF (WINDOWS)						
+ENDIF( CBS_QT4 )
+
+
+

@@ -1,0 +1,28 @@
+# *** LIBRARY: 'gui' main cbs file. ***
+
+# -----------------------
+# --- Configure files ---
+# -----------------------
+CONFIGURE_FILE ( ${CMAKE_CURRENT_SOURCE_DIR}/cbs-myconfig.h.in ${CMAKE_CURRENT_BINARY_DIR}/myconfig.h 	)
+
+# -------------------
+# --- Build setup ---
+# -------------------
+ADDX_DEPENDS_ON ( mylib	)
+
+ADDX_INCLUDE_DIR ( ${CMAKE_CURRENT_SOURCE_DIR}			)
+ADDX_INCLUDE_DIR ( ${CMAKE_CURRENT_SOURCE_DIR}/myinclude	)
+ADDX_INCLUDE_DIR ( ${CMAKE_CURRENT_BINARY_DIR}			)
+
+ADD_DEFINE ( MY_DEFINE 				1	) 
+
+
+# -------------------
+# --- Add sources ---
+# -------------------
+ADD_SOURCE_FILE ( MyFile.cpp			)
+
+
+#MESSAGE ( STATUS "My Message " ) 
+
+  

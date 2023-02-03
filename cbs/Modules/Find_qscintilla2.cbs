@@ -1,0 +1,11 @@
+
+INCLUDE (${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+FIND_LIB_SIMPLE ( 	qscintilla2 
+					LIB_NAME qscintilla2 LINUX qscintilla2 CBS_WINDOWS_RELEASE qscintillad2 CBS_WINDOWS_DEBUG
+					HEADER_FILES qsciscintilla.h  
+                    HEADER_PATHS ${QT_HDR_DIR}/Qsci /usr/include/qt5/Qsci /usr/include/qt4/Qsci /usr/include/Qsci
+                    LIB_PATHS ${QT_LIB_DIR} /usr/lib
+                    PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/Qsci ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+					DEPENDS_ON QtCore 
+					)
+

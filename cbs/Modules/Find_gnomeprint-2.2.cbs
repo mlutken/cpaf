@@ -1,0 +1,10 @@
+
+INCLUDE (${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+FIND_LIB_SIMPLE ( 	gnomeprint-2.2 
+					HEADER_FILES gnome-print.h  
+					HEADER_PATHS /usr/include/libgnomeprint-2.2/libgnomeprint /opt/gnome/include/libgnomeprint-2.2/libgnomeprint  
+					INCLUDE_DIR_LEVELS_UP 1 
+					LIB_PATHS /usr/lib /opt/gnome/lib 
+					LIB_NAME gnomeprint-2-2
+					)
+

@@ -1,0 +1,101 @@
+/** \page "CBS Introduction"
+!!! Common Build System Introduction 
+
+I am still a least one half year from releasing something, but I can try to explain the basic idea.
+
+Simple example from my actual codebase. CBS (Common Build System) makefiles for zlib and libpng, which 
+depends on zlib (install stuff not included):
+
+! z.cbs
+\code
+TARGET_DEFAULT_VERSION ( 1 2 3  )
+ADD_SOURCE_FILE ( adler32.c 	) 
+ADD_SOURCE_FILE ( compress.c    ) 
+...
+ADD_SOURCE_FILE ( inffast.c     )
+\endcode
+
+! png.cbs
+\code
+TARGET_DEFAULT_VERSION ( 1 2 16 )
+ADD_DEPENDS_ON (  z  )	
+ADD_SOURCE_FILE ( png.c		)
+ADD_SOURCE_FILE ( pngerror.c	)
+...
+ADD_SOURCE_FILE ( pngwutil.c	)
+\endcode
+
+Note the ADD_DEPENDS_ON ( z ) for png. This single line takes care of all needed includes, 
+linkdirs/libraries etc. thats neeeded to compile and link libpng. For additional include 
+use ADD_INCLUDE_DIR.
+
+In the (in time hopefully rare) cases where you depend on external libraries you use ADD_LINK_DIR, 
+ADD_LINK_LIBRARY 
+
+! Some other ADD_XX commands
+In case you need to add defines you can do ADD_DEFINE or ADD_PUBLIC_DEFINE 
+
+I even made an ADD_SOURCE_FILE_QT which adds a C++ file for normal compilation and if there's 
+an associated header call the moc compiler on that and adds the generated source file to the 
+list of sources. Have also easy handling of flex,bison and in the cbs-files for Mozilla also 
+support for their IDL files using the IDL compiler built in same pass using CBS/CMake.
+
+There are currently a cbmake.py script which simplifies the generation of makefiles for out of 
+source build for all targets. Simply write:
+|| 'cbmake.py -g kdev -b debug -l static' | Debug in KDevelop. All libs default built static 
+| OR   | 
+||'cbmake.py -g vc8 -l shared' | Create VC8 files. All libs default built as DLL's
+
+Also shellscripts/bat files for the most common uses so you at least in Windows never need to 
+see the command line: Just doubleclick a bat file and go open you project in Visual Studio.
+
+About the command line script I do plan for it to also have a GUI at some point similar to 
+Visual Studios Solution Explorer, where you can set your build options add files etc. To make 
+a GUI tool as easy as possible to create I strive to keep the source makefiles really simple 
+like lines of ADD_XX () so parsing and manipulating them from a GUI tool can be done.
+
+
+!Main configuration file
+Lastly I should mention some of the cool stuff you can do in the main configuration file, by 
+this example from (again from my actual codebase):
+\code
+SET ( z_USE     SYSTEM   ) # Use system version (currently not Windows)
+SET ( png_USE   BUILD    ) # Build from sources in this project
+SET ( bz2_USE   PREBUILT ) # Prebuilt (with CBS) from othter source tree.
+
+SET ( z_LINK_TYPE STATIC  ) # Build/use zlib static event though current default for project as a whole is to make shared libs/DLLs.
+\endcode
+     
+As you can see it's possible to intermix the usage of shared/static, own built with a system 
+installed library etc. all from one central place. One hassle for instance getting gcc to use 
+and link with a static version of a system installed library like z(lib) in the example 
+configuration file is also solved since I simply copy static librairies from system dirs to 
+own link dir and directs the linker to look there first - This way gcc is forced to use the 
+static version since the shared one is not present in the same dir.
+
+! About an alternate "CMakeLists.txt" name
+So the reason I need an anternative name 
+for the CMakeLists.txt file is that I wan't CBS makefiles to be able to live side by side with 
+a projects own CMake files. So far the only project I am considering creating CBS files for, 
+which allready uses CMake is KDE, but that might change and I would like allready now to be able 
+to rename my files in preparation and also because I might try and convert KDE in the not too 
+far future. Either I would like my allready (to cmake mailing list proposed patch) to add an "-f" 
+option specifying the name of the CMakefile or as the very least just an alternative name called 
+#CMakeLists.cbs#.
+
+! Contact - Help really needed since it's a big project :-)
+Martin L : nitram@lutken.dk
+
+
+!! Features needed and nice to have
+
+- A way to handle installing of files (make install). This is needed to fully
+  "get rid of" the traditional autoconf/automake scripts which most open source SW uses.
+- Cross compiling support.
+- Python scripts to generate new project files and update existing ones. (nice to have)
+- Python GUI to make the administration and creation of projects even easier. (nice to have)
+
+*/
+
+
+

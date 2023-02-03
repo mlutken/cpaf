@@ -1,0 +1,24 @@
+# TODO: Test this Find
+INCLUDE (${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+IF( CBS_QT4 )
+	FIND_LIB_SIMPLE ( 	QtPlatformSupport 
+						LIB_NAME QtPlatformSupport LINUX QtPlatformSupport4 CBS_WINDOWS_RELEASE QtPlatformSupportd4 CBS_WINDOWS_DEBUG
+						HEADER_FILES QtPlatformSupport  
+						HEADER_PATHS ${QT_HDR_DIR}/QtPlatformSupport /usr/include/qt4/QtPlatformSupport /usr/include/QtPlatformSupport
+						LIB_PATHS ${QT_LIB_DIR} /usr/lib
+						PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtPlatformSupport ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+						DEPENDS_ON QtGui
+						)
+ELSE( CBS_QT4 )
+	FIND_LIB_SIMPLE ( 	QtPlatformSupport 
+						LIB_NAME QtPlatformSupport LINUX Qt5PlatformSupport CBS_WINDOWS_RELEASE Qt5PlatformSupportd CBS_WINDOWS_DEBUG
+						HEADER_FILES QtPlatformSupport  
+						HEADER_PATHS ${QT_HDR_DIR}/QtPlatformSupport /usr/include/qt5/QtPlatformSupport /usr/include/QtPlatformSupport
+						LIB_PATHS ${QT_LIB_DIR} /usr/lib
+						PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtPlatformSupport ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+						DEPENDS_ON QtGui
+						)
+ENDIF( CBS_QT4 )
+
+
+

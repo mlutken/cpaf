@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ROOT>
+	<TIME_SCANNING_START_UTC unit="DATE_ISO">20100617T090132</TIME_SCANNING_START_UTC>
+	<TIME_SCANNING_START_LOCAL unit="DATE_SIMPLE">2010-Jun-17 11:01:32</TIME_SCANNING_START_LOCAL>
+	<URL_SITE>http://www.megastore.se</URL_SITE>
+	<title>
+		<data_record_type>record_store</data_record_type>
+		<record_store_name>Megastore.Se</record_store_name>
+		<record_store_url>http://www.megastore.se</record_store_url>
+		<country_name>Sweden</country_name>
+		<do_insert>record_store</do_insert>
+		<do_update>record_store:record_store_url,country_name</do_update>
+	</title>
+	<TIME_SCANNING_END_UTC unit="DATE_ISO">20100617T090203</TIME_SCANNING_END_UTC>
+	<TIME_SCANNING_END_LOCAL unit="DATE_SIMPLE">2010-Jun-17 11:02:03</TIME_SCANNING_END_LOCAL>
+	<TIME_SCANNING_ELAPSED unit="DATE_ISO">000031</TIME_SCANNING_ELAPSED>
+	<TIME_SCANNING_ELAPSED unit="DATE_SIMPLE">00:00:31</TIME_SCANNING_ELAPSED>
+</ROOT>

@@ -1,0 +1,13 @@
+/** \dir
+!!! Commercially Usable Licensed libraries
+
+Libraries that are released under licenses easily suitable for commercially
+proprietary code. Licences like Mozilla, BSD, Boost ...
+
+Interresting libraries:
+!! JSON
+ - Benchmarks: https://github.com/miloyip/nativejson-benchmark#parsing-time
+ - (fast) https://github.com/chadaustin/sajson
+
+
+*/

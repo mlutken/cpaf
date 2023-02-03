@@ -1,0 +1,8 @@
+
+INCLUDE (${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+FIND_LIB_SIMPLE ( 	xml2 
+					HEADER_FILES xmlunicode.h 
+					HEADER_PATHS /usr/include/libxml2/libxml 
+					DEPENDS_ON z 
+					)
+

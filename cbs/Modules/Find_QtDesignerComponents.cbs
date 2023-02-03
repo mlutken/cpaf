@@ -1,0 +1,19 @@
+INCLUDE (${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+IF( CBS_QT4 )
+	FIND_LIB_SIMPLE ( 	QtDesignerComponents 
+						LIB_NAME QtDesignerComponents LINUX QtDesignerComponents4 CBS_WINDOWS_RELEASE QtDesignerComponentsd4 CBS_WINDOWS_DEBUG
+						HEADER_FILES QtDesignerComponents 
+						HEADER_PATHS ${QT_HDR_DIR}/QtDesignerComponents /usr/include/qt4/QtDesignerComponents /usr/include/QtDesignerComponents
+						LIB_PATHS ${QT_LIB_DIR} /usr/lib
+						PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtDesignerComponents ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+						)
+ELSE( CBS_QT4 )
+	FIND_LIB_SIMPLE ( 	QtDesignerComponents
+						LIB_NAME QtDesignerComponents LINUX Qt5DesignerComponents CBS_WINDOWS_RELEASE Qt5DesignerComponentsd CBS_WINDOWS_DEBUG
+						HEADER_FILES QtDesignerComponents 
+						HEADER_PATHS ${QT_HDR_DIR}/QtDesignerComponents /usr/include/qt5/QtDesignerComponents /usr/include/QtDesignerComponents
+						LIB_PATHS ${QT_LIB_DIR} /usr/lib
+						PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtDesignerComponents ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+						)
+ENDIF( CBS_QT4 )
+

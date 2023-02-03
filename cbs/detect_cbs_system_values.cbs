@@ -1,0 +1,292 @@
+# ---------------------------------------
+# --- Set/Detect common system values ---
+# ---------------------------------------
+
+IF (WIN32)
+	SET ( WINDOWS											1					)
+	SET ( NOT_LINUX											1					)
+	SET ( NOT_DARWIN										1					)
+	SET ( COMPILER_MSVC										1					)
+    SET ( CBS_ADD_HEADERS_TO_SOURCES       					1 					)
+    SET ( CBS_DEFAULT_INSTALL_PREFIX       					""  	            )
+    SET ( CBS_INSTALL_RUNTIME_SUBDIR                        bin             	    )
+    SET ( CBS_INSTALL_STATIC_SUBDIR                         lib             	    )
+    SET ( CBS_INSTALL_SHARED_SUBDIR                         lib             	    )
+    SET ( CBS_INSTALL_MODULE_SUBDIR                         lib                 )
+    SET ( CBS_INSTALL_DATA_SUBDIR                           share               )
+    SET ( CBS_INSTALL_CONFIG_SUBDIR                         etc                 )
+    SET ( CBS_INSTALL_HEADER_SUBDIR                         include             	)
+	SET ( CBS_STATIC_LIB_PREFIX        						"" 			  		)
+ 	SET ( CBS_STATIC_LIB_POSTFIX        						".lib"   			)
+ 	SET ( CBS_DYNAMIC_LIB_POSTFIX        					".dll"   			)
+	SET ( CBS_DYNAMIC_LIB_PREFIX       						"" )
+    SET ( CBS_HOST_MACHINE									"i686-pc-win32" )
+
+    SET ( CBS_INSTALL_RUNTIME_PERMISSIONS                   OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE  )
+    SET ( CBS_INSTALL_STATIC_PERMISSIONS                    OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE  )
+    SET ( CBS_INSTALL_SHARED_PERMISSIONS                    OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE  )
+    SET ( CBS_INSTALL_MODULE_PERMISSIONS                    OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE  )
+    SET ( CBS_INSTALL_HEADER_PERMISSIONS                    OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE  )
+
+    SET ( CBS_PLATFORM_THREAD_LIB                           Kernel32                )
+    
+    SET ( CBS_flex_EXECUTABLE								$ENV{CBS_ROOT_DIR}/bin/windows/flex.exe		)
+    SET ( CBS_bison_EXECUTABLE								$ENV{CBS_ROOT_DIR}/bin/windows/bison.exe	)
+    SET ( CBS_sed_EXECUTABLE									$ENV{CBS_ROOT_DIR}/bin/windows/sed.exe		)
+    SET ( CBS_wget_EXECUTABLE								$ENV{CBS_ROOT_DIR}/bin/windows/wget.exe		)
+	SET ( CBS_swig_EXECUTABLE								swig										)
+##	SET ( CBS_moc_qt4_EXECUTABLE								moc											)
+	SET ( CBS_perl_EXECUTABLE								$ENV{CBS_ROOT_DIR}/bin/windows/perl.exe		)
+	LIST ( APPEND echo_CMD									${CMAKE_COMMAND} -E echo 					)
+##	SET ( echo_include 										"\#include" 								) 
+	SET ( echo_hash 										"\#" 										) 
+ENDIF (WIN32)
+    
+IF (UNIX)
+	SET ( NOT_WINDOWS										1				)
+	SET ( COMPILER_GCC										1				)
+    SET ( LINUX_DIST_NAME   "Ubuntu" )
+
+    IF (CMAKE_SYSTEM_NAME MATCHES "Linux")
+        execute_process(COMMAND sh ${CMAKE_CURRENT_LIST_DIR}/detect-linux-system-name.sh OUTPUT_VARIABLE LINUX_DIST_NAME)
+        message ("Linux distribution name is: '${LINUX_DIST_NAME}'")
+	    SET ( LINUX											1					)
+		SET ( NOT_DARWIN									1					)
+		SET ( NOT_WIN32										1					)
+		SET ( NOT_WINDOWS									1					)
+	    SET ( CBS_HOST_MACHINE								"i686-pc-linux-gnu" )
+    ENDIF(CMAKE_SYSTEM_NAME MATCHES "Linux")
+
+    IF (CMAKE_SYSTEM_NAME MATCHES "Darwin")
+	    SET ( DARWIN										1					)
+	    SET ( NOT_LINUX										1					)
+		SET ( NOT_WIN32										1					)
+		SET ( NOT_WINDOWS									1					)
+    ENDIF(CMAKE_SYSTEM_NAME MATCHES "Darwin")
+
+
+	SET ( CBS_ADD_HEADERS_TO_SOURCES       					1 				)
+    SET ( CBS_DEFAULT_INSTALL_PREFIX                        ""              )
+    SET ( CBS_INSTALL_RUNTIME_SUBDIR                        bin             )
+    SET ( CBS_INSTALL_STATIC_SUBDIR                         lib             )
+    SET ( CBS_INSTALL_SHARED_SUBDIR                         lib             )
+    SET ( CBS_INSTALL_MODULE_SUBDIR                         lib             )
+    SET ( CBS_INSTALL_DATA_SUBDIR                           share           )
+    SET ( CBS_INSTALL_CONFIG_SUBDIR                         etc             )
+    SET ( CBS_INSTALL_HEADER_SUBDIR                         include         )
+	SET ( CBS_STATIC_LIB_PREFIX        						"lib" 	  		)
+	SET ( CBS_STATIC_LIB_POSTFIX        					".a" 	  		)
+	SET ( CBS_DYNAMIC_LIB_POSTFIX        					".so" 	  		)
+	SET ( CBS_DYNAMIC_LIB_PREFIX        					"lib" 	  		)
+   
+	
+    SET ( CBS_INSTALL_RUNTIME_PERMISSIONS                   OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE  )
+    SET ( CBS_INSTALL_STATIC_PERMISSIONS                    OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE  )
+    SET ( CBS_INSTALL_SHARED_PERMISSIONS                    OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE  )
+    SET ( CBS_INSTALL_MODULE_PERMISSIONS                    OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE  )
+    SET ( CBS_INSTALL_HEADER_PERMISSIONS                    OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE  )
+    
+	SET ( CBS_PLATFORM_THREAD_LIB                           pthread         )
+    
+    SET ( CBS_flex_EXECUTABLE								flex			)
+    SET ( CBS_bison_EXECUTABLE								bison			)
+	SET ( CBS_sed_EXECUTABLE								sed				)
+	SET ( CBS_wget_EXECUTABLE								wget			)
+	SET ( CBS_swig_EXECUTABLE								swig			)
+	SET ( CBS_moc_qt4_EXECUTABLE							/usr/bin/moc	)
+	SET ( CBS_rcc_qt4_EXECUTABLE							/usr/bin/rcc	)
+#	SET ( CBS_perl_EXECUTABLE								/usr/bin/perl			)
+	LIST ( APPEND echo_CMD									${CMAKE_COMMAND} -E echo				)
+##	SET ( echo_include 										"\\\#include" 							) 
+	SET ( echo_hash 										"\\\#" 									) 
+
+    IF (LINUX_DIST_NAME MATCHES "Fedora")
+        SET ( CBS_moc_qt4_EXECUTABLE							/usr/lib64/qt5/bin/moc	)
+        SET ( CBS_rcc_qt4_EXECUTABLE							/usr/lib64/qt5/bin/rcc	)
+    ENDIF()
+    message ("Path to QT MOC compiler: '${CBS_moc_qt4_EXECUTABLE}'")
+
+ENDIF (UNIX)
+
+
+
+# -----------------------
+# --- Detect username ---
+# -----------------------
+IF ( NOT CBS_USER )
+    SET ( CBS_USER  "build" )
+    
+    IF ( WIN32 )
+        SET ( CBS_USER  $ENV{USERNAME} )
+    ENDIF ( WIN32 )
+    
+    IF ( UNIX )
+        SET ( CBS_USER  $ENV{USER} )
+    ENDIF ( UNIX )
+ENDIF ( NOT CBS_USER )
+
+
+# **********************************************
+# *** Autodetect System Family/SubsystemType ***
+# **********************************************
+IF ( NOT CBS_SYSTEM_FAMILY )
+    IF (WIN32)
+        SET(CBS_SYSTEM_FAMILY       "CBS_SYSTEM_FAMILY_WINDOWS" )
+        SET(CBS_SYSTEM_SUB_TYPE     "CBS_SUBSYS_WINDOWS_XP" 	)
+    ENDIF (WIN32)
+    
+    IF (UNIX)
+        IF (CMAKE_SYSTEM_NAME MATCHES "Linux")
+            SET(CBS_SYSTEM_FAMILY       "CBS_SYSTEM_FAMILY_LINUX" 	)
+            SET(CBS_SYSTEM_SUB_TYPE     "CBS_SUBSYS_LINUX_LSB" 		)
+        ENDIF(CMAKE_SYSTEM_NAME MATCHES "Linux")
+    
+        IF (CMAKE_SYSTEM_NAME MATCHES "Darwin")
+			SET(CBS_SYSTEM_FAMILY       "CBS_SYSTEM_FAMILY_OSX" 	)
+			SET(CBS_SYSTEM_SUB_TYPE     "CBS_SUBSYS_DARWIN" 		)
+        ENDIF(CMAKE_SYSTEM_NAME MATCHES "Darwin")
+    ENDIF (UNIX)
+ENDIF ( NOT CBS_SYSTEM_FAMILY )
+
+# ************************
+# * CBS_CROSS_COMPILING *
+# ************************
+IF ( NOT CBS_CROSS_COMPILING )
+    SET( CBS_CROSS_COMPILING     "NO" )
+ENDIF ( NOT CBS_CROSS_COMPILING )
+
+
+
+
+
+
+
+
+# *****************
+# *** OLD Stuff ***
+# *****************
+
+# # 
+# # INCLUDE( CheckTypeSize )
+# # 
+# # # --- Get fixed size integer types for current platform ---
+# # # Here we find which typedefs to use for the types: int16_t, int32_t, int64_t
+# # # These typedefs are set in the 'BUILD_DIR/cpaf_config.h' file created from 
+# # # 'cpaf_include/cpaf_config.h.in'
+# # # The unsigned versions (uint16_t, uint32_t, uint64_t) are defined in 
+# # # 'cpaf_include/integer_types.h' by prepending 'unsigned' to the respective intXX_t types.
+# # # The 8 bit types (int8_t and uint8_t) are typedef'ed using 'char' which we 
+# # # assume to allways be 8 bit. Also in file 'cpaf_include/integer_types.h'.
+# # 
+# # 
+# # # Establish a list of integer sizes and one matching list of integer typenames
+# # SET (INTEGER_SIZES 		 short_SIZE 	 int_SIZE 	 long_SIZE	 long_int_SIZE	 long_long_SIZE	)
+# # SET (INTEGER_TYPES		"short"			"int"		"long"		"long int"		"long long"		)
+# # 
+# # # Then get the sizes of the integer types using the compiler
+# # CHECK_TYPE_SIZE( "short"      short_SIZE )
+# # CHECK_TYPE_SIZE( "int"        int_SIZE )
+# # CHECK_TYPE_SIZE( "long"       long_SIZE )
+# # CHECK_TYPE_SIZE( "long int"   long_int_SIZE )
+# # CHECK_TYPE_SIZE( "long long"  long_long_SIZE )
+# # 
+# # 
+# # # --- Algorithm for finding the integer types: ---
+# # # For each of the integer types we want to find:
+# # # Run through the list of integer sizes looking for a size 
+# # # matching the type we want (e.g. int16_t ). When a matching  
+# # # size is found, then assign the corresponding type to the 
+# # # correct INTXX_TYPE variable
+# #     
+# #     
+# # # ----------------------------
+# # # --- Find INT16_TYPE ---
+# # # ----------------------------
+# # IF  ( NOT INT16_TYPE )
+# #     SET ( INT16_TYPE "")
+# #     FOREACH ( Index RANGE 4 )
+# #         LIST(GET INTEGER_TYPES ${Index} IntType )
+# #         LIST(GET INTEGER_SIZES ${Index} IntSize )
+# #         IF ( ${${IntSize}} EQUAL 2 )
+# #             IF ( INT16_TYPE STREQUAL "" )
+# #                 SET ( INT16_TYPE ${IntType})
+# #             ENDIF ( INT16_TYPE STREQUAL "" )
+# #         ENDIF ( ${${IntSize}} EQUAL 2 )
+# #     ENDFOREACH ( Index )
+# # ENDIF  ( NOT INT16_TYPE )
+# #     
+# #     
+# # # ----------------------------
+# # # --- Find INT32_TYPE ---
+# # # ----------------------------
+# # IF  ( NOT INT32_TYPE )
+# #     SET ( INT32_TYPE "")
+# #     FOREACH ( Index RANGE 4 )
+# #         LIST(GET INTEGER_TYPES ${Index} IntType )
+# #         LIST(GET INTEGER_SIZES ${Index} IntSize )
+# #         IF ( ${${IntSize}} EQUAL 4 )
+# #             IF ( INT32_TYPE STREQUAL "" )
+# #                 SET ( INT32_TYPE ${IntType})
+# #             ENDIF ( INT32_TYPE STREQUAL "" )
+# #         ENDIF ( ${${IntSize}} EQUAL 4 )
+# #     ENDFOREACH ( Index )
+# # ENDIF  ( NOT INT32_TYPE )
+# #     
+# # # ----------------------------
+# # # --- Find INT64_TYPE ---
+# # # ----------------------------
+# # IF  ( NOT INT64_TYPE )
+# #     SET ( INT64_TYPE "")
+# #     FOREACH ( Index RANGE 4 )
+# #         LIST(GET INTEGER_TYPES ${Index} IntType )
+# #         LIST(GET INTEGER_SIZES ${Index} IntSize )
+# #         IF ( ${${IntSize}} EQUAL 8 )
+# #             IF ( INT64_TYPE STREQUAL "" )
+# #                 SET ( INT64_TYPE ${IntType})
+# #             ENDIF ( INT64_TYPE STREQUAL "" )
+# #         ENDIF ( ${${IntSize}} EQUAL 8 )
+# #     ENDFOREACH ( Index )
+# # ENDIF ( NOT INT64_TYPE )
+# # 
+# # 
+# # # --- Debug stuff ---
+# # 
+# # #MESSAGE ( STATUS "short_SIZE:                 " ${short_SIZE} )
+# # #MESSAGE ( STATUS "int_SIZE:                   " ${int_SIZE} )
+# # #MESSAGE ( STATUS "long_SIZE:                  " ${long_SIZE} )
+# # #MESSAGE ( STATUS "long_int_SIZE:              " ${long_int_SIZE} )
+# # #MESSAGE ( STATUS "long_long_SIZE:             " ${long_long_SIZE} )
+# # 
+# # 
+# # #  MATH: Mathematical expressions.
+# # #  MATH(EXPR <output variable> "<math expression>")
+# # #EXPR evaluates mathematical expression and return result in the output variable. 
+# # # Example mathematical expression is '5 * ( 10 + 13 )'. 
+# # 
+##IF ( NOT CBS_ENDIANNESS )
+##    INCLUDE( TestBigEndian )
+##    TEST_BIG_ENDIAN( MY_BIG_ENDIAN )
+##    IF ( MY_BIG_ENDIAN )
+##        SET( CBS_ENDIANNESS		"CBS_ENDIANNESS_BIG" )
+### Moved to am_common_defines.cbs       SET( IS_BIG_ENDIAN       1 )
+##    ELSE ( MY_BIG_ENDIAN )
+##        SET( CBS_ENDIANNESS		"CBS_ENDIANNESS_LITTLE" )
+### Moved to am_common_defines.cbs        SET( IS_BIG_ENDIAN         )
+##    ENDIF ( MY_BIG_ENDIAN )
+##ENDIF ( NOT CBS_ENDIANNESS )
+
+## *********************
+## * CBS_SYSTEM_WIDTH *
+## *********************
+IF ( NOT CBS_SYSTEM_WIDTH )
+    INCLUDE( CheckTypeSize )
+    CHECK_TYPE_SIZE( "void *" MY_POINTER_SIZE )
+    IF ( MY_POINTER_SIZE EQUAL 8 )
+        SET( CBS_SYSTEM_WIDTH        "64" )
+    ELSE ( MY_POINTER_SIZE EQUAL 8 )
+        SET( CBS_SYSTEM_WIDTH        "32" )
+    ENDIF ( MY_POINTER_SIZE EQUAL 8 )
+ENDIF ( NOT CBS_SYSTEM_WIDTH )
+
+
+MESSAGE ( "CBS_SYSTEM_WIDTH: '${CBS_SYSTEM_WIDTH}'" )

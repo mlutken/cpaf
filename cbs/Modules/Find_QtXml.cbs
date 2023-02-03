@@ -1,0 +1,22 @@
+INCLUDE (${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+IF( CBS_QT4 )
+	FIND_LIB_SIMPLE ( 	QtXml 
+						LIB_NAME QtXml LINUX QtXml4 CBS_WINDOWS_RELEASE QtXmld4 CBS_WINDOWS_DEBUG
+						HEADER_FILES QXmlReader  
+						HEADER_PATHS ${QT_HDR_DIR}/QtXml /usr/include/qt4/QtXml /usr/include/QtXml
+						LIB_PATHS ${QT_LIB_DIR} /usr/lib
+						PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtXml ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+						DEPENDS_ON QtCore
+						)
+ELSE( CBS_QT4 )
+	FIND_LIB_SIMPLE ( 	QtXml 
+						LIB_NAME QtXml LINUX Qt5Xml CBS_WINDOWS_RELEASE Qt5Xmld CBS_WINDOWS_DEBUG
+						HEADER_FILES QXmlReader  
+						HEADER_PATHS ${QT_HDR_DIR}/QtXml /usr/include/qt5/QtXml /usr/include/QtXml
+						LIB_PATHS ${QT_LIB_DIR} /usr/lib
+						PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtXml ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+						DEPENDS_ON QtCore
+						)
+ENDIF( CBS_QT4 )
+
+

@@ -1,0 +1,28 @@
+# TODO: Test this Find
+INCLUDE (${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+IF( CBS_QT4 )
+	FIND_LIB_SIMPLE ( 	QtOpenVG 
+						LIB_NAME QtOpenVG LINUX QtOpenVG4 CBS_WINDOWS_RELEASE QtOpenVGd4 CBS_WINDOWS_DEBUG
+						HEADER_FILES QtOpenVG  
+						HEADER_PATHS ${QT_HDR_DIR}/QtOpenVG /usr/include/qt4/QtOpenVG /usr/include/QtOpenVG
+						LIB_PATHS ${QT_LIB_DIR} /usr/lib
+						PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtOpenVG ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+						DEPENDS_ON QtGui
+						)
+ELSE( CBS_QT4 )
+	MESSAGE ( "Error Qt5: QtOpenVG" )
+	MESSAGE ( "Error Qt5: QtOpenVG" )
+	MESSAGE ( "Error Qt5: QtOpenVG" )
+	MESSAGE ( "Error Qt5: QtOpenVG" )
+	FIND_LIB_SIMPLE ( 	QtOpenVG 
+						LIB_NAME QtOpenVG LINUX Qt5OpenVG CBS_WINDOWS_RELEASE Qt5OpenVGd CBS_WINDOWS_DEBUG
+						HEADER_FILES QtOpenVG  
+						HEADER_PATHS ${QT_HDR_DIR}/QtOpenVG /usr/include/qt5/QtOpenVG /usr/include/QtOpenVG
+						LIB_PATHS ${QT_LIB_DIR} /usr/lib
+						PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtOpenVG ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+						DEPENDS_ON QtGui
+						)
+ENDIF( CBS_QT4 )
+
+
+

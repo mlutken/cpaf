@@ -1,0 +1,56 @@
+
+# --- Get relative library output path. ---
+# I.e: Relative to CBS_LIBRARY_ROOT_DIR, which defaults to the project root directory.
+# If the CBS_LIBRARY_ROOT_DIR is set to another library by XX the user config file
+# then the libraries are put relative to that path.
+# This is a bit different on VC builds which put Debug/Release on the output path itself 
+# Typical results: static/Release, static/Debug, shared/Release, shared/Debug
+#
+# - PARAMETERS -
+# libraryRelativePath   : [out] Return value which is a result like 'shared/Release'.
+# libType               : [in] Library type: SHARED or STATIC.
+# cmakeBuildType        : [in] Build type: Release, Debug 
+#
+MACRO( GET_LIBRARY_RELATIVE_PATH libraryRelativePath libType cmakeBuildType )  
+    SET( ${libraryRelativePath}         "static" )
+    IF ( ${libType} STREQUAL "SHARED" )
+        SET( ${libraryRelativePath}     "shared" )
+    ENDIF ( ${libType} STREQUAL "SHARED" )
+   
+    IF ( ${CBS_SYSTEM_FAMILY} STREQUAL "CBS_SYSTEM_FAMILY_WINDOWS" ) 
+        IF ( ${CMAKE_GENERATOR} STREQUAL "NMake Makefiles" )
+            SET ( ${libraryRelativePath}  ${${libraryRelativePath}}/${cmakeBuildType} )
+        ENDIF ( ${CMAKE_GENERATOR} STREQUAL "NMake Makefiles" )
+        IF ( ${CMAKE_GENERATOR} STREQUAL "NMake Makefiles JOM" )
+            SET ( ${libraryRelativePath}  ${${libraryRelativePath}}/${cmakeBuildType} )
+        ENDIF ( ${CMAKE_GENERATOR} STREQUAL "NMake Makefiles JOM" )
+    ELSE ( ${CBS_SYSTEM_FAMILY} STREQUAL "CBS_SYSTEM_FAMILY_WINDOWS" )
+        SET( ${libraryRelativePath}       ${${libraryRelativePath}}/${cmakeBuildType} )
+    ENDIF ( ${CBS_SYSTEM_FAMILY} STREQUAL "CBS_SYSTEM_FAMILY_WINDOWS" )
+ENDMACRO( GET_LIBRARY_RELATIVE_PATH )
+
+
+# --- Get relative library output path for prebuilt copy ---
+# I.e: Relative to CBS_LIBRARY_ROOT_DIR, which defaults to the project root directory.
+# If the CBS_LIBRARY_ROOT_DIR is set to another library by XX the user config file
+# then the libraries are put relative to that path.
+# Here we don't need to take special care for VC IDE builds since this prebuilt copy step takes place
+# during project/makes files generation entirely by CMake.
+# Typical results: static/Release, static/Debug, shared/Release, shared/Debug
+#
+# - PARAMETERS -
+# libraryRelativePath   : [out] Return value which is a result like 'shared/Release'.
+# libType                     : [in] Library type: SHARED or STATIC.
+# cmakeBuildType        : [in] Build type: Release, Debug 
+#
+MACRO( GET_LIBRARY_RELATIVE_PATH_PREBUILD libraryRelativePath libType cmakeBuildType )  
+    SET( ${libraryRelativePath}         "static" )
+    IF ( ${libType} STREQUAL "SHARED" )
+        SET( ${libraryRelativePath}     "shared" )
+    ENDIF ( ${libType} STREQUAL "SHARED" )
+	SET ( ${libraryRelativePath}  ${${libraryRelativePath}}/${cmakeBuildType} )
+ENDMACRO( GET_LIBRARY_RELATIVE_PATH_PREBUILD )
+
+
+
+

@@ -1,0 +1,5 @@
+F:\code\crawler\code\cpp>
+build_cbs\libs\shared\Release\crawler.exe f:\code\miners\scripts\airplay\GuccaDk\GuccaDk.php --max-pageloads 10 --upload-result yes
+
+SVN:
+https://svn.code.sf.net/p/cpaf/code/trunk/cpaf/

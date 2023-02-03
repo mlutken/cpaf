@@ -1,0 +1,40 @@
+# -------------------
+# --- Build setup ---
+# -------------------
+ADDX_DEPENDS_ON ( detect_utils	)
+
+ADDX_LINK_DIR       ( ${QT_LIB_DIR} )
+ADDX_INCLUDE_DIR    ( ${CMAKE_CURRENT_SOURCE_DIR}       )
+ADDX_INCLUDE_DIR    ( ${QT_HDR_DIR}                     )
+ADDX_INCLUDE_DIR    ( ${QT_HDR_DIR}/QtCore              )
+ADDX_INCLUDE_DIR    ( ${QT_HDR_DIR}/QtGui               )
+ADDX_INCLUDE_DIR    ( ${QT_HDR_DIR}/QtWidgets           )
+ADDX_INCLUDE_DIR    ( ${QT_HDR_DIR}/QtWebKit            )
+ADDX_INCLUDE_DIR    ( ${QT_HDR_DIR}/QtWebKitWidgets     )
+ADDX_INCLUDE_DIR    ( ${QT_HDR_DIR}/QtNetwork           )
+ADDX_INCLUDE_DIR    ( ${QT_HDR_DIR}/QtANGLE           	)
+ADDX_INCLUDE_DIR    ( ${QT_HDR_DIR}/QtOpenGL           	)
+
+ADDX_LINK_LIBRARY ( Qt5Core             )
+ADDX_LINK_LIBRARY ( Qt5Gui              )
+ADDX_LINK_LIBRARY ( Qt5Widgets          )
+ADDX_LINK_LIBRARY ( Qt5WebKit           )
+ADDX_LINK_LIBRARY ( Qt5WebKitWidgets    )
+ADDX_LINK_LIBRARY ( Qt5Network          )
+ADDX_LINK_LIBRARY ( Qt5OpenGL           )
+
+# -------------------
+# --- Add sources ---
+# -------------------
+ADD_SOURCE_FILE     ( test2.cpp         )
+ADD_SOURCE_FILE     ( PainterTest.h     )
+ADD_SOURCE_FILE     ( PainterTest.cpp	)
+ADD_SOURCE_FILE     ( DetectWidget.h	)
+ADD_SOURCE_FILE_QT4 ( DetectWidget.cpp	)
+ADD_SOURCE_FILE     ( DrawWidget.h      )
+ADD_SOURCE_FILE_QT4 ( DrawWidget.cpp	)
+ADD_SOURCE_FILE     ( DrawWidgetGl.h    )
+ADD_SOURCE_FILE_QT4 ( DrawWidgetGl.cpp	)
+
+
+

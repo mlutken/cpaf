@@ -1,0 +1,8 @@
+
+INCLUDE (${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+FIND_LIB_SIMPLE ( 	SM 
+					HEADER_FILES SM.h  
+					HEADER_PATHS /usr/include/X11/SM 
+					INCLUDE_DIR_LEVELS_UP 2 
+					)
+

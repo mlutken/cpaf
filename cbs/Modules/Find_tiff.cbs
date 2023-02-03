@@ -1,0 +1,3 @@
+
+INCLUDE ( ${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+FIND_LIB_SIMPLE ( tiff HEADER_FILES tiff.h DEPENDS_ON z jpeg )

@@ -1,0 +1,22 @@
+INCLUDE (${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+IF( CBS_QT4 )
+	FIND_LIB_SIMPLE ( 	QtSvg 
+						LIB_NAME QtSvg LINUX QtSvg4 CBS_WINDOWS_RELEASE QtSvgd4 CBS_WINDOWS_DEBUG
+						HEADER_FILES QSvgWidget  
+						HEADER_PATHS ${QT_HDR_DIR}/QtSvg /usr/include/qt4/QtSvg /usr/include/QtSvg
+						LIB_PATHS ${QT_LIB_DIR} /usr/lib
+						PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtSvg ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+						DEPENDS_ON QtGui 
+						)
+ELSE( CBS_QT4 )
+	FIND_LIB_SIMPLE ( 	QtSvg 
+						LIB_NAME QtSvg LINUX Qt5Svg CBS_WINDOWS_RELEASE Qt5Svgd CBS_WINDOWS_DEBUG
+						HEADER_FILES QSvgWidget  
+						HEADER_PATHS ${QT_HDR_DIR}/QtSvg /usr/include/qt5/QtSvg /usr/include/QtSvg
+						LIB_PATHS ${QT_LIB_DIR} /usr/lib
+						PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtSvg ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+						DEPENDS_ON QtGui 
+						)
+ENDIF( CBS_QT4 )
+
+

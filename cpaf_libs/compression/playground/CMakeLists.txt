@@ -1,0 +1,2 @@
+add_playground_cpp_exe(zlib "cpaf_streams;cpaf_compression;cpaf_containers")
+add_playground_cpp_exe(zlib_demo "cpaf_streams;cpaf_compression;cpaf_containers")

@@ -1,0 +1,30 @@
+INCLUDE (${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+IF( CBS_QT4 )
+	FIND_LIB_SIMPLE ( 	QtOpenGL 
+						LIB_NAME QtOpenGL LINUX QtOpenGL4 CBS_WINDOWS_RELEASE QtOpenGLd4 CBS_WINDOWS_DEBUG
+						HEADER_FILES QGLWidget  
+						HEADER_PATHS ${QT_HDR_DIR}/QtOpenGL /usr/include/qt4/QtOpenGL /usr/include/QtOpenGL
+						LIB_PATHS ${QT_LIB_DIR} /usr/lib
+						PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtOpenGL ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+						DEPENDS_ON QtGui
+						)
+ELSE( CBS_QT4 )
+	IF (WINDOWS)
+		FIND_LIB_SIMPLE ( 	QtOpenGL 
+							LIB_NAME QtOpenGL LINUX Qt5OpenGL CBS_WINDOWS_RELEASE Qt5OpenGLd CBS_WINDOWS_DEBUG
+							HEADER_FILES QGLWidget  
+							HEADER_PATHS ${QT_HDR_DIR}/QtOpenGL /usr/include/qt5/QtOpenGL /usr/include/QtOpenGL
+							LIB_PATHS ${QT_LIB_DIR} /usr/lib
+							PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtOpenGL ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+							DEPENDS_ON QtGui
+							)
+	ELSE (WINDOWS)
+		FIND_LIB_SIMPLE ( 	QtOpenGL 
+							LIB_NAME Qt5OpenGL 
+							HEADER_FILES QtOpenGL  
+							HEADER_PATHS ${QT_HDR_DIR}/QtOpenGL /usr/include/qt5/QtOpenGL
+							)
+	ENDIF (WINDOWS)						
+ENDIF( CBS_QT4 )
+
+

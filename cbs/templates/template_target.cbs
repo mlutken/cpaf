@@ -1,0 +1,31 @@
+# *** @TYPE_TO_BUILD@: '@PRJTGT_NAME@' main cbs file. ***
+
+SET_DEFAULT_VERSION ( x x x )
+SET_DEFAULT_PREFIX ( "" )
+# -----------------------
+# --- Configure files ---
+# -----------------------
+CONFIGURE_FILE ( ${CBS_INCLUDE_DIR}/am_common_defines.h.in ${CMAKE_CURRENT_BINARY_DIR}/am_common_defines.h				)
+CONFIGURE_FILE ( ${CMAKE_CURRENT_SOURCE_DIR}/cbs_config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h 						)
+
+# -------------------
+# --- Build setup ---
+# -------------------
+ADDX_DEPENDS_ON ( mylib	)
+
+ADDX_INCLUDE_DIR ( ${CMAKE_CURRENT_BINARY_DIR}		)
+ADDX_INCLUDE_DIR ( ${CMAKE_CURRENT_SOURCE_DIR}		)
+
+ADD_PACKAGE_DEFINES ()
+ADD_DEFINE ( HAVE_CONFIG_H						1	)
+
+
+# -------------------
+# --- Add sources ---
+# -------------------
+ADD_SOURCE_FILE ( MyFile.cpp			)
+
+
+#MESSAGE ( STATUS "My Message " ) 
+
+  

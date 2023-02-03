@@ -1,0 +1,23 @@
+INCLUDE (${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+IF( CBS_QT4 )
+	FIND_LIB_SIMPLE ( 	QtQuickParticles 
+						LIB_NAME QtQuickParticles LINUX QtQuickParticles4 CBS_WINDOWS_RELEASE QtQuickParticlesd4 CBS_WINDOWS_DEBUG
+						HEADER_FILES QQuickParticlesable  
+						HEADER_PATHS ${QT_HDR_DIR}/QtQuickParticles /usr/include/qt4/QtQuickParticles /usr/include/QtQuickParticles
+						LIB_PATHS ${QT_LIB_DIR} /usr/lib
+						PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtQuickParticles ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+						DEPENDS_ON QtCore
+						)
+ELSE( CBS_QT4 )
+	FIND_LIB_SIMPLE ( 	QtQuickParticles 
+						LIB_NAME QtQuickParticles LINUX Qt5QuickParticles CBS_WINDOWS_RELEASE Qt5QuickParticlesd CBS_WINDOWS_DEBUG
+						HEADER_FILES QQuickParticlesable  
+						HEADER_PATHS ${QT_HDR_DIR}/QtQuickParticles /usr/include/qt5/QtQuickParticles /usr/include/QtQuickParticles
+						LIB_PATHS ${QT_LIB_DIR} /usr/lib
+						PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtQuickParticles ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+						DEPENDS_ON QtCore
+						)
+ENDIF( CBS_QT4 )
+
+
+

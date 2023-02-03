@@ -1,0 +1,30 @@
+INCLUDE (${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+IF( CBS_QT4 )
+	FIND_LIB_SIMPLE ( 	QtSql 
+						LIB_NAME QtSql LINUX QtSql4 CBS_WINDOWS_RELEASE QtSqld4 CBS_WINDOWS_DEBUG
+						HEADER_FILES QSqlQuery  
+						HEADER_PATHS ${QT_HDR_DIR}/QtSql /usr/include/qt4/QtSql /usr/include/QtSql
+						LIB_PATHS ${QT_LIB_DIR} /usr/lib
+						PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtSql ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+						DEPENDS_ON QtCore
+						)
+ELSE( CBS_QT4 )
+	IF (WINDOWS)
+		FIND_LIB_SIMPLE ( 	QtSql 
+							LIB_NAME QtSql LINUX Qt5Sql CBS_WINDOWS_RELEASE Qt5Sqld CBS_WINDOWS_DEBUG
+							HEADER_FILES QSqlQuery  
+							HEADER_PATHS ${QT_HDR_DIR}/QtSql /usr/include/qt5/QtSql /usr/include/QtSql
+							LIB_PATHS ${QT_LIB_DIR} /usr/lib
+							PREFER_PROVIDED_PATHS ${QT_HDR_DIR}/QtSql ${QT_LIB_DIR} ${QT_HDR_DIR} ${QT_LIB_DIR}
+							DEPENDS_ON QtCore
+							)
+	ELSE (WINDOWS)
+		FIND_LIB_SIMPLE ( 	QtSql 
+							LIB_NAME Qt5Sql 
+							HEADER_FILES QtSql  
+							HEADER_PATHS ${QT_HDR_DIR}/QtSql /usr/include/qt5/QtSql
+							)
+	ENDIF (WINDOWS)						
+ENDIF( CBS_QT4 )
+
+

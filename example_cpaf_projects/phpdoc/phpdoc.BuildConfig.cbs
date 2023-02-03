@@ -1,0 +1,23 @@
+
+# --- My Project build configuration ---
+SET_CONFIG ( phpdoc_USE			BUILD	)
+#SET_CONFIG ( mylib_USE				BUILD	)
+#SET_CONFIG ( link_test_USE			BUILD	)
+
+# # --- CPAF / 3rd party build configuration ---
+SET_CONFIG ( cpaf_USE						PREBUILT		)
+SET_CONFIG ( boost_USE						PREBUILT		)
+SET_CONFIG ( cpaf_libs_USE					PREBUILT		)
+
+
+
+# On (at least AMD 64 bit linux) we get problems when building the 'ex_dynamiclibs_my_dynlib' shared module when 
+# the dependent libraries are static and not compiled with the '-fPIC' flag. This is the case for some of the system
+# installed libraies that this example depends on like zlib, boost_filesystem, boost_regex. At least on my machine.
+# IF ( ${CBS_LIB_TYPE_TO_BUILD} STREQUAL "STATIC" ) 
+#     IF ( "${bz2_USE}" STREQUAL "SYSTEM" OR  "${boost_USE}" STREQUAL "SYSTEM" )
+#         SET ( ex_dynamiclibs_all_USE        DISABLED     )
+#         SET ( ex_dynamiclibs_my_dynlib_USE  DISABLED     )
+#     ENDIF ( "${bz2_USE}" STREQUAL "SYSTEM" OR  "${boost_USE}" STREQUAL "SYSTEM" )
+# ENDIF ( ${CBS_LIB_TYPE_TO_BUILD} STREQUAL "STATIC" )
+

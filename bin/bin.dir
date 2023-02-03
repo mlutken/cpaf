@@ -1,0 +1,16 @@
+/** \dir
+!!! _XX_Directory_HEADLINE_HERE_XX
+
+\code
+./svn_load_dirs.pl -t 1.41.0 https://cpaf.svn.sourceforge.net/svnroot/cpaf/vendor/boost current  /home/ml/temp/boost_1_41_0
+\end_code
+
+\code
+$ cd cpaf/cul
+$ svn merge https://cpaf.svn.sourceforge.net/svnroot/cpaf/vendor/boost/1.35.0 https://cpaf.svn.sourceforge.net/svnroot/cpaf/vendor/boost/current boost
+… # resolve all the conflicts between their changes and our changes
+$ svn commit -m 'Merging Boost 1.39.0 into the main branch'
+
+\end_code
+
+*/

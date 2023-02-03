@@ -1,0 +1,17 @@
+
+# -------------------
+# --- Build setup ---
+# -------------------
+ADDX_INCLUDE_DIR ( .. )
+ADDX_INCLUDE_DIR ( /usr/include/php5 		)
+ADDX_INCLUDE_DIR ( /usr/include/php5/Zend 	)
+ADDX_INCLUDE_DIR ( /usr/include/php5/TSRM 	)
+ADDX_INCLUDE_DIR ( /usr/include/php5/main	)
+
+# -------------------
+# --- Add sources ---
+# -------------------
+ADD_SWIG_SOURCE_CPP ( ../myclasses.i php5 )	
+ADD_SOURCE_FILE ( ../myclasses.cpp	)
+
+

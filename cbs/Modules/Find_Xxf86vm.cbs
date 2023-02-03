@@ -1,0 +1,8 @@
+
+INCLUDE (${CBS_ROOT_DIR}/Modules/Find_lib_simple.cbs )
+FIND_LIB_SIMPLE ( 	Xxf86vm 
+					HEADER_FILES xf86vmode.h   
+					HEADER_PATHS /usr/include/X11/extensions 
+					INCLUDE_DIR_LEVELS_UP 2 
+					)
+

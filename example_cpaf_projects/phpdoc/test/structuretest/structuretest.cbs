@@ -1,0 +1,14 @@
+# -------------------
+# --- Build setup ---
+# -------------------
+ADDX_DEPENDS_ON ( phpdocument	)
+
+# -------------------
+# --- Add sources ---
+# -------------------
+ADD_SOURCE_FILE ( structuretest.cpp	)
+ADD_SOURCE_FILE ( adhoc_structure_tests.h )
+ADD_SOURCE_FILE ( adhoc_structure_tests.cpp )
+
+
+
