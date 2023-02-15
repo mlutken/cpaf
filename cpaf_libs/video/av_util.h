@@ -82,7 +82,7 @@ inline constexpr int    media_type_first_int    () { return static_cast<int>(med
 inline constexpr size_t media_type_first_size_t () { return static_cast<size_t>(media_type::unknown);}
 
 inline constexpr int    media_type_size_int     () { return static_cast<int>(media_type::SIZE); }
-inline constexpr size_t media_type_size_t       () { return static_cast<size_t>(media_type::SIZE);}
+inline constexpr size_t media_type_size         () { return static_cast<size_t>(media_type::SIZE);}
 
 inline constexpr auto	to_int					(media_type mt) -> int					{ return static_cast<int>(mt);	}
 //inline constexpr auto	to_int					(audio_sample_format_t format) -> int	{ return static_cast<int>(format);}

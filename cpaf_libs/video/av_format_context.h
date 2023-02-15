@@ -95,6 +95,8 @@ public:
     bool                        read_packets_to_queues  (media_type mt, uint32_t fill_to_level);
     const packet_queue_t&       packet_queue            (media_type mt) const { return packet_queue_per_media_type_[to_size_t(mt)]; }
     packet_queue_t&             packet_queue            (media_type mt) { return packet_queue_per_media_type_[to_size_t(mt)]; }
+    void                        packet_queue_pop        (media_type mt);
+    av_packet                   packet_queue_front      (media_type mt);
     get_packet_fun              get_packet_function     (media_type mt);
     std::chrono::microseconds   packet_queue_pts        (media_type mt) const;
     std::chrono::milliseconds   packet_queue_pts_ms     (media_type mt) const;
@@ -132,9 +134,9 @@ private:
     AVCodec*                ff_find_decoder             (size_t stream_index) const;
     AVRational              stream_time_base            (size_t stream_index) const { return ff_format_context_->streams[stream_index]->time_base; }
 
-    std::array<size_t, media_type_size_t()>                 selected_stream_per_media_type_;
-    std::array<std::vector<size_t>, media_type_size_t()>    stream_indices_per_media_type_;
-    std::array<packet_queue_t, media_type_size_t()>         packet_queue_per_media_type_;
+    std::array<size_t, media_type_size()>                 selected_stream_per_media_type_;
+    std::array<std::vector<size_t>, media_type_size()>    stream_indices_per_media_type_;
+    std::array<packet_queue_t, media_type_size()>         packet_queue_per_media_type_;
     std::string                                             resource_path_;
     AVFormatContext*                                        ff_format_context_      = nullptr;
     size_t                                                  packet_queue_capacity_  = 200;

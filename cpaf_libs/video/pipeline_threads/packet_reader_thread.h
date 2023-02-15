@@ -43,9 +43,9 @@ private:
     std::chrono::microseconds       seek_position_requested_;
     seek_dir                        seek_direction_                 = seek_dir::forward;
     av_format_context*              format_context_ptr_             = nullptr;
-    audio_resampler_thread*         audio_resampler_thread_             = nullptr;
-    audio_render_thread*            audio_render_thread_             = nullptr;
-    video_render_thread*            video_render_thread_             = nullptr;
+    audio_resampler_thread*         audio_resampler_thread_         = nullptr;
+    audio_render_thread*            audio_render_thread_            = nullptr;
+    video_render_thread*            video_render_thread_            = nullptr;
 
     std::chrono::microseconds       read_packets_yield_time_        = std::chrono::milliseconds(1);
     uint32_t                        primary_queue_fill_level_       = 30;

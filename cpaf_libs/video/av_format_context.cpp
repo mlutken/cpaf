@@ -378,6 +378,16 @@ bool av_format_context::read_packets_to_queues(media_type mt, uint32_t fill_to_s
     return queue_size >= fill_to_size;
 }
 
+void av_format_context::packet_queue_pop(media_type mt)
+{
+    packet_queue_per_media_type_[to_size_t(mt)].pop();
+}
+
+av_packet av_format_context::packet_queue_front(media_type mt)
+{
+    return std::move(packet_queue_per_media_type_[to_size_t(mt)].front());
+}
+
 av_format_context::get_packet_fun av_format_context::get_packet_function(media_type mt)
 {
     get_packet_fun fn = [this, mt] () {
@@ -506,8 +516,9 @@ void av_format_context::read_codec_contexts()
         const AVMediaType ff_media_type = ff_stream->codecpar->codec_type;
         //        const AVMediaType ff_media_type = ff_format_context_->streams[i]->codecpar->codec_type;
         if ( ff_media_type != AVMEDIA_TYPE_UNKNOWN) {
-//            ff_stream_codec_parameters_[ff_media_type].push_back(ff_format_context_->streams[i]->codecpar);
-            stream_indices_per_media_type_[ff_media_type].push_back(i);
+//           ff_stream_codec_parameters_[ff_media_type].push_back(ff_format_context_->streams[i]->codecpar);
+            const auto index_media_type = static_cast<size_t>(ff_media_type);
+            stream_indices_per_media_type_[index_media_type].push_back(i);
         }
         ///		if ( ff_format_context_->streams[i]->codec->codec_type != AVMEDIA_TYPE_UNKNOWN) {
         ///			ff_stream_codec_contexts_[i].push_back(ff_format_context_->streams[i]->codec);

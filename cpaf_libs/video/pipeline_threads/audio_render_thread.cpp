@@ -41,7 +41,7 @@ void audio_render_thread::audio_callback_function(uint8_t* stream, int32_t lengt
         state__flush_in_progress(stream, length);
         break;
     default:
-        // TODO: How many stated do we really need here! For now we treat remaining states as the normal_flow case!!
+        // TODO: How many states do we really need here! For now we treat remaining states as the normal_flow case!!
         state__normal_flow(stream, length);
         break;
     }
