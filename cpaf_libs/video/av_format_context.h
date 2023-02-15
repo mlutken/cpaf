@@ -94,7 +94,7 @@ public:
     media_type                  max_packet_queue_type   (const std::set<media_type>& media_types_to_test);
     bool                        read_packets_to_queues  (media_type mt, uint32_t fill_to_level);
     const packet_queue_t&       packet_queue            (media_type mt) const { return packet_queue_per_media_type_[to_size_t(mt)]; }
-    packet_queue_t&             packet_queue            (media_type mt) { return packet_queue_per_media_type_[to_size_t(mt)]; }
+    const packet_queue_t&       packet_queue_const      (media_type mt) const { return packet_queue_per_media_type_[to_size_t(mt)]; }
     void                        packet_queue_pop        (media_type mt);
     av_packet                   packet_queue_front      (media_type mt);
     get_packet_fun              get_packet_function     (media_type mt);
@@ -126,6 +126,7 @@ public:
 
 private:
     // --- Helper functions ---
+    packet_queue_t&             packet_queue            (media_type mt) { return packet_queue_per_media_type_[to_size_t(mt)]; }
 
     void                    read_codec_contexts         ();
     size_t                  default_primary_stream_index() const;

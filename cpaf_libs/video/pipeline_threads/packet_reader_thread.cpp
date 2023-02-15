@@ -41,11 +41,11 @@ void packet_reader_thread::read_packets_thread_fn()
         format_context().pipeline_control_set(pipeline_control_t::normal_flow);
         if (!threads_paused()) {
             check_seek_position();
-            const auto FIXMENM_audio_queue_size_before = format_context().packet_queue(media_type::audio).size();
-            const auto FIXMENM_video_queue_size_before = format_context().packet_queue(media_type::video).size();
+            const auto FIXMENM_audio_queue_size_before = format_context().packet_queue_const(media_type::audio).size();
+            const auto FIXMENM_video_queue_size_before = format_context().packet_queue_const(media_type::video).size();
             format_context().read_packets_to_queues(mt, primary_queue_fill_level_);
-            const auto FIXMENM_audio_queue_size_after = format_context().packet_queue(media_type::audio).size();
-            const auto FIXMENM_video_queue_size_after = format_context().packet_queue(media_type::video).size();
+            const auto FIXMENM_audio_queue_size_after = format_context().packet_queue_const(media_type::audio).size();
+            const auto FIXMENM_video_queue_size_after = format_context().packet_queue_const(media_type::video).size();
             const auto FIXMENM_audio_queue_size_diff = FIXMENM_audio_queue_size_after - FIXMENM_audio_queue_size_before;
             const auto FIXMENM_video_queue_size_diff = FIXMENM_video_queue_size_after - FIXMENM_video_queue_size_before;
             if (FIXMENM_audio_queue_size_diff != 0 || FIXMENM_video_queue_size_diff != 0) {

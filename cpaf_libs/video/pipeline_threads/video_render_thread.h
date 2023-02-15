@@ -46,8 +46,10 @@ private:
     av_format_context&          format_context          () { return *format_context_ptr_; }
     const av_format_context&    format_context          () const { return *format_context_ptr_; }
     av_codec_context&           video_codec_ctx         () { return *video_codec_ctx_ptr_; }
-    packet_queue_t&             video_packet_queue      ();
+    av_packet                   video_packet_queue_front();
+    void                        video_packet_queue_pop  ();
     const packet_queue_t&       video_packet_queue      () const;
+    const packet_queue_t&       video_packet_queue_const() const;
     const av_samples_queue_t&   audio_samples_queue     () const { return *audio_samples_queue_ptr_; }
     media_stream_time&          current_media_time      () { return *current_media_time_ptr_; }
 

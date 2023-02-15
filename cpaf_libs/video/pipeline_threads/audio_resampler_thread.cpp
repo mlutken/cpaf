@@ -25,7 +25,7 @@ void audio_resampler_thread::thread_function()
     while(threads_running()) {
         if (!threads_paused()) {
             const auto cur_media_time_pos = current_media_time().current_time_pos();
-            bool add_samples = !format_context().packet_queue(media_type::audio).empty();
+            bool add_samples = !format_context().packet_queue_const(media_type::audio).empty();
             while (add_samples) {
                 resample_frame(add_samples, cur_media_time_pos);
             }
@@ -37,7 +37,7 @@ void audio_resampler_thread::thread_function()
 
 void audio_resampler_thread::resample_frame(bool& add_samples, const std::chrono::microseconds& cur_media_time_pos)
 {
-    if (format_context().packet_queue(media_type::audio).empty()) {
+    if (format_context().packet_queue_const(media_type::audio).empty()) {
         add_samples = false;
         return;
     }

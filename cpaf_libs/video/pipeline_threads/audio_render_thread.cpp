@@ -92,8 +92,8 @@ void audio_render_thread::state__normal_flow(uint8_t* stream, int32_t length)
         render_audio_silence(stream, length);
         if (!empty_audio_buffer_dbg_) {
             cerr << "*** [" << audio_callback_dbg_counter_ << "] ERROR audio samples queue EMPTY!!"
-                 << ", audio_packets_queue().size(): " << format_context().packet_queue(media_type::audio).size()
-                 << ", video_packets_queue().size(): " << format_context().packet_queue(media_type::video).size()
+                 << ", audio_packets_queue().size(): " << format_context().packet_queue_const(media_type::audio).size()
+                 << ", video_packets_queue().size(): " << format_context().packet_queue_const(media_type::video).size()
                  << ", audio_samples_queue().size(): " << audio_samples_queue().size()
                  << "\n";
         }

@@ -181,6 +181,33 @@ std::string av_samples_buffer::dbg_string_short() const
 // --- Samples queue ---
 // ---------------------
 
+av_samples_queue_t::av_samples_queue_t(size_t queue_size)
+    : fifo_(queue_size)
+{
+
+}
+
+av_samples_buffer& av_samples_queue_t::front ()
+{
+    return fifo_.front();
+}
+
+const av_samples_buffer& av_samples_queue_t::front () const
+{
+    return fifo_.front();
+}
+
+void av_samples_queue_t::pop()
+{
+    fifo_.pop();
+}
+
+bool av_samples_queue_t::push (av_samples_buffer buffer)
+{
+    return fifo_.push(std::move(buffer));
+}
+
+
 /** Copy a number of bytes from the samples queue to the destination address.
     @return The number of bytes actually copied */
 int32_t copy_audio_samples(

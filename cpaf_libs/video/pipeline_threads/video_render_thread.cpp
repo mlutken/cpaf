@@ -117,7 +117,7 @@ bool video_render_thread::state__flush_in_progress(av_frame& /*current_frame*/, 
         }
         else {
             //            std::cerr << "FIXMENM video_samples_queue().pop()\n";
-            video_packet_queue().pop();
+            video_packet_queue_pop();
         }
     }
 
@@ -144,12 +144,22 @@ void video_render_thread::debug_video_frame_update(av_frame& current_frame, rend
     ++video_frame_update_dbg_counter_;
 }
 
-packet_queue_t& video_render_thread::video_packet_queue()
+av_packet video_render_thread::video_packet_queue_front()
+{
+    return format_context().packet_queue_front(media_type::video);
+}
+
+void video_render_thread::video_packet_queue_pop()
+{
+    format_context().packet_queue_pop(media_type::video);
+}
+
+const packet_queue_t& video_render_thread::video_packet_queue() const
 {
     return format_context().packet_queue(media_type::video);
 }
 
-const packet_queue_t& video_render_thread::video_packet_queue() const
+const packet_queue_t& video_render_thread::video_packet_queue_const() const
 {
     return format_context().packet_queue(media_type::video);
 }

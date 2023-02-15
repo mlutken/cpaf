@@ -103,7 +103,25 @@ private:
 // --- Samples queue ---
 // ---------------------
 
-using av_samples_queue_t = estl::srsw_fifo<av_samples_buffer>;
+class av_samples_queue_t
+{
+public:
+    explicit av_samples_queue_t(size_t queue_size);
+
+    bool                        empty       () const { return fifo_.empty();    }
+    size_t                      size        () const { return fifo_.size();     }
+    bool                        push        (av_samples_buffer buffer);
+    av_samples_buffer&          front       ();
+    const av_samples_buffer&    front       () const;
+    void                        pop         ();
+
+
+private:
+    estl::srsw_fifo<av_samples_buffer>  fifo_;
+};
+
+
+//using av_samples_queue_t = estl::srsw_fifo<av_samples_buffer>;
 using samples_queue_callback_t = std::function<void(const av_samples_buffer&)>;
 
 
