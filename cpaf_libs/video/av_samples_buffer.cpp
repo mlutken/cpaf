@@ -248,23 +248,22 @@ void av_samples_queue_t::flush ()
 
 /** Copy a number of bytes from the samples queue to the destination address.
     @return The number of bytes actually copied */
-int32_t copy_audio_samples(
+int32_t av_samples_queue_t::copy_audio_samples(
         uint8_t* dest_buf,
-        av_samples_queue_t& samples_queue,
         int32_t bytes_to_copy,
         const samples_queue_callback_t& queue_pop_callback)
 {
     auto bytes_left = bytes_to_copy;
-    while (!samples_queue.empty() && (bytes_left > 0)) {
+    while (!empty() && (bytes_left > 0)) {
         if (queue_pop_callback) {
-            queue_pop_callback(samples_queue.front());
+            queue_pop_callback(front());
         }
-        av_samples_buffer& front = samples_queue.front();
-        const auto bytes_copied = front.copy_out(dest_buf, bytes_left);
+        av_samples_buffer& frnt = front();
+        const auto bytes_copied = frnt.copy_out(dest_buf, bytes_left);
         dest_buf += bytes_copied;
         bytes_left -= bytes_copied;
-        if (front.empty()) {
-            samples_queue.pop();
+        if (frnt.empty()) {
+            pop();
         }
     }
 
@@ -293,42 +292,41 @@ void skip_audio_samples_helper(av_samples_queue_t& samples_queue, const std::chr
 
 /** Copy bytes from samples queue while trying to synch with 'current media time'.
     @return The number of bytes actually copied */
-int32_t copy_audio_samples(
+int32_t av_samples_queue_t::copy_audio_samples(
         uint8_t* dest_buf,
-        av_samples_queue_t& samples_queue,
         int32_t bytes_to_copy,
         const std::chrono::microseconds& sync_to_media_time,
         const std::chrono::microseconds& sync_ok_interval,
         const samples_queue_callback_t& queue_pop_callback)
 {
-    if (samples_queue.empty()) return 0;
-    auto sync_err_difference      = sync_to_media_time - samples_queue.front().presentation_time();
+    if (empty()) return 0;
+    auto sync_err_difference      = sync_to_media_time - front().presentation_time();
     const auto sync_err_difference_abs  = time::abs(sync_err_difference);
     if (sync_err_difference_abs <= sync_ok_interval) {
-        return copy_audio_samples(dest_buf, samples_queue, bytes_to_copy, queue_pop_callback);
+        return copy_audio_samples(dest_buf, bytes_to_copy, queue_pop_callback);
     }
 
 
     if ( sync_err_difference > 0ms ) {
-        if (more_than_a_buffer_behind(samples_queue, sync_to_media_time)) {
-            skip_audio_samples_helper(samples_queue, sync_to_media_time);
+        if (more_than_a_buffer_behind(sync_to_media_time)) {
+            skip_audio_samples_helper(sync_to_media_time);
         }
-        if (samples_queue.empty()) return 0;
+        if (empty()) return 0;
 
-        sync_err_difference = sync_to_media_time - samples_queue.front().presentation_time();
-        samples_queue.front().skip_samples(sync_err_difference);
-        return copy_audio_samples(dest_buf, samples_queue, bytes_to_copy, queue_pop_callback);
+        sync_err_difference = sync_to_media_time - front().presentation_time();
+        front().skip_samples(sync_err_difference);
+        return copy_audio_samples(dest_buf, bytes_to_copy, queue_pop_callback);
     }
     else if ( sync_err_difference < 0ms ) {
-        auto bytes_copied = copy_audio_samples(dest_buf, samples_queue, bytes_to_copy, queue_pop_callback);
+        auto bytes_copied = copy_audio_samples(dest_buf, bytes_to_copy, queue_pop_callback);
 
-        if (samples_queue.empty()) return bytes_copied;
-        samples_queue.front().add_samples(5ms);
+        if (empty()) return bytes_copied;
+        front().add_samples(5ms);
 
         return bytes_copied;
     }
 
-    return copy_audio_samples(dest_buf, samples_queue, bytes_to_copy, queue_pop_callback);
+    return copy_audio_samples(dest_buf, bytes_to_copy, queue_pop_callback);
 }
 
 

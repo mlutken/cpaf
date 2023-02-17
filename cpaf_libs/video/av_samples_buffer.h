@@ -103,6 +103,7 @@ private:
 // ---------------------
 // --- Samples queue ---
 // ---------------------
+using samples_queue_callback_t = std::function<void(const av_samples_buffer&)>;
 
 class av_samples_queue_t
 {
@@ -118,26 +119,30 @@ public:
     av_samples_buffer           pop_front   ();
     void                        flush       ();
 
+    int32_t                     copy_audio_samples  (uint8_t* dest_buf,  int32_t bytes_to_copy,
+                                                     const samples_queue_callback_t& queue_pop_callback);
+    int32_t                     copy_audio_samples  (uint8_t* dest_buf, int32_t bytes_to_copy,
+                                                     const std::chrono::microseconds& sync_to_media_time,
+                                                     const std::chrono::microseconds& sync_ok_interval,
+                                                     const samples_queue_callback_t& queue_pop_callback);
+
 private:
+    bool more_than_a_buffer_behind(const std::chrono::microseconds& sync_to_media_time) const
+    {
+        return (sync_to_media_time - front().presentation_time()) > front().duration();
+    }
+
+    void skip_audio_samples_helper(const std::chrono::microseconds& sync_to_media_time)
+    {
+        while (!empty() && ( (sync_to_media_time - front().presentation_time()) > front().duration()) ) {
+            pop();
+        }
+    }
+
     estl::srsw_fifo<av_samples_buffer>  fifo_;
     std::mutex                          fifo_mutex_;
 };
 
-
-//using av_samples_queue_t = estl::srsw_fifo<av_samples_buffer>;
-using samples_queue_callback_t = std::function<void(const av_samples_buffer&)>;
-
-
-int32_t copy_audio_samples  (uint8_t* dest_buf,
-                             av_samples_queue_t& samples_queue,
-                             int32_t bytes_to_copy,
-                             const samples_queue_callback_t& queue_pop_callback);
-int32_t copy_audio_samples  (uint8_t* dest_buf,
-                             av_samples_queue_t& samples_queue,
-                             int32_t bytes_to_copy,
-                             const std::chrono::microseconds& sync_to_media_time,
-                             const std::chrono::microseconds& sync_ok_interval,
-                             const samples_queue_callback_t& queue_pop_callback);
 
 
 } //END namespace cpaf::video

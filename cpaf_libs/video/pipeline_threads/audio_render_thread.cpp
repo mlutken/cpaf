@@ -118,9 +118,8 @@ void audio_render_thread::state__normal_flow(uint8_t* stream, int32_t length)
 //        }
     };
 
-    const auto bytes_copied = copy_audio_samples(
+    const auto bytes_copied = audio_samples_queue().copy_audio_samples(
                 stream,
-                audio_samples_queue(),
                 length,
                 current_media_time().current_time_pos(),
                 sync_ok_interval,
