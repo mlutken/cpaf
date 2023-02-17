@@ -143,6 +143,9 @@ void pipeline_threads::seek_position(const std::chrono::microseconds& stream_pos
     //    As soon as the threads have seen the pipeline_control_t::first_after_flush marker they can resume
     //    normal state.
 
+//    flush_queues();
+//    packet_reader_thread_.seek_position(stream_pos, dir);
+
     const pipeline_index_t flush_to_idx = packet_reader_thread_.seek_position(stream_pos, dir);
     flush_to_index(flush_to_idx);
 }

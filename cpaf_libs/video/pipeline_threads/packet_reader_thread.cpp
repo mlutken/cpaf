@@ -64,6 +64,11 @@ void packet_reader_thread::check_seek_position()
 {
     if (seek_requested_) {
         std::cerr << "--------- packet_reader_thread::seek_requested_ ------\n";
+
+//        format_context().seek_time_pos(media_type::video, seek_position_requested_, seek_direction_);
+//        seek_requested_ = false;
+//        return;
+
         const auto types_to_read = format_context().set_of_each_media_type();
         const pipeline_index_t flush_to_index = flush_to_index_requested_index_;
         format_context().pipeline_index_set(flush_to_index);
