@@ -143,7 +143,11 @@ void pipeline_threads::seek_position(const std::chrono::microseconds& stream_pos
     //    As soon as the threads have seen the pipeline_control_t::first_after_flush marker they can resume
     //    normal state.
 
-//    flush_queues();
+//    std::cerr << "FIXMENM BEFORE FLUSH:\n" << format_context().queues_info();
+//    std::cerr << "FIXMENM BEFORE FLUSH samples queue size: " << audio_samples_queue().size() << "\n";
+    flush_queues();
+//    std::cerr << "FIXMENM AFTER FLUSH:\n" << format_context().queues_info();
+//    std::cerr << "FIXMENM AFTER FLUSH samples queue size: " << audio_samples_queue().size() << "\n";
 //    packet_reader_thread_.seek_position(stream_pos, dir);
 
     const pipeline_index_t flush_to_idx = packet_reader_thread_.seek_position(stream_pos, dir);
@@ -164,6 +168,7 @@ void pipeline_threads::seek_position(const std::chrono::microseconds& stream_pos
     //    As soon as the threads have seen the pipeline_control_t::first_after_flush marker they can resume
     //    normal state.
 
+    flush_queues();
     const pipeline_index_t flush_to_idx = packet_reader_thread_.seek_position(stream_pos);
     flush_to_index(flush_to_idx);
 
