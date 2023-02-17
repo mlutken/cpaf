@@ -407,13 +407,14 @@ av_packet av_format_context::packet_queue_pop_front(media_type mt)
 av_format_context::get_packet_fun av_format_context::get_packet_function(media_type mt)
 {
     get_packet_fun fn = [this, mt] () {
-        packet_queue_t& queue = packet_queue(mt);
-        if (queue.empty()) {
-            return av_packet{};
-        }
-        av_packet packet = std::move(queue.front());
-        queue.pop();
-        return packet;
+        return this->packet_queue_pop_front(mt);
+///        packet_queue_t& queue = packet_queue(mt);
+///        if (queue.empty()) {
+///            return av_packet{};
+///        }
+///        av_packet packet = std::move(queue.front());
+///        queue.pop();
+///        return packet;
     };
     return fn;
 }
