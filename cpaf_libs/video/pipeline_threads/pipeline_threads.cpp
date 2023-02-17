@@ -196,6 +196,8 @@ void pipeline_threads::flush_to_index(const pipeline_index_t& pipeline_index)
 
 void pipeline_threads::flush_queues()
 {
+    format_context().flush_packet_queues();
+    audio_samples_queue().flush();
     //    flush_audio_packets_requested_ = true;
 }
 
