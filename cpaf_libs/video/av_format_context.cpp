@@ -388,6 +388,22 @@ av_packet av_format_context::packet_queue_front(media_type mt)
     return std::move(packet_queue_per_media_type_[to_size_t(mt)].front());
 }
 
+av_packet av_format_context::packet_queue_pop_front(media_type mt)
+{
+    packet_queue_t& queue = packet_queue(mt);
+    if (queue.empty()) {
+        return av_packet();
+    }
+
+    const std::lock_guard<std::mutex> lock(packet_queues_mutex_);
+    if (queue.empty()) {
+        return av_packet();
+    }
+    auto packet = std::move(queue.front());
+    queue.pop();
+    return packet;
+}
+
 av_format_context::get_packet_fun av_format_context::get_packet_function(media_type mt)
 {
     get_packet_fun fn = [this, mt] () {
@@ -414,6 +430,7 @@ std::chrono::milliseconds av_format_context::packet_queue_pts_ms(media_type mt) 
 
 void av_format_context::flush_packet_queues()
 {
+    const std::lock_guard<std::mutex> lock(packet_queues_mutex_);
     for (auto& queue : packet_queue_per_media_type_) {
         queue.flush();
     }

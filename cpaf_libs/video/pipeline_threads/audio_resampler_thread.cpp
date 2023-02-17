@@ -46,7 +46,7 @@ void audio_resampler_thread::resample_frame(bool& add_samples, const std::chrono
     //    DEBUG_seek_pos_added_index_ = -1;
     const auto frame = audio_codec_ctx().read_frame();
 
-    const std::string valid = frame.is_valid() ? "" : " INVALID! ";
+//    const std::string valid = frame.is_valid() ? "" : " INVALID! ";
 //    std::cerr << "--- stream_threads::resample_frame()"
 //              << valid
 //              << ", video packet queue size: " << format_context().packet_queue(media_type::video).size()

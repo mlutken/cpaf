@@ -11,6 +11,7 @@ extern "C"
 #include <utility>
 #include <array>
 #include <functional>
+#include <mutex>
 #include <concurrent/srsw_fifo.hpp>
 #include <cpaf_libs/video/av_util.h>
 
@@ -114,10 +115,12 @@ public:
     av_samples_buffer&          front       ();
     const av_samples_buffer&    front       () const;
     void                        pop         ();
-
+    av_samples_buffer           pop_front   ();
+    void                        flush       ();
 
 private:
     estl::srsw_fifo<av_samples_buffer>  fifo_;
+    std::mutex                          fifo_mutex_;
 };
 
 

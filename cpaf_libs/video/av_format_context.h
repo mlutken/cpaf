@@ -15,6 +15,7 @@ extern "C"
 #include <queue>
 #include <unordered_map>
 #include <chrono>
+#include <mutex>
 
 #include <cpaf_libs/video/av_util.h>
 #include <cpaf_libs/video/av_codec.h>
@@ -97,6 +98,7 @@ public:
     const packet_queue_t&       packet_queue_const      (media_type mt) const { return packet_queue_per_media_type_[to_size_t(mt)]; }
     void                        packet_queue_pop        (media_type mt);
     av_packet                   packet_queue_front      (media_type mt);
+    av_packet                   packet_queue_pop_front  (media_type mt);
     get_packet_fun              get_packet_function     (media_type mt);
     std::chrono::microseconds   packet_queue_pts        (media_type mt) const;
     std::chrono::milliseconds   packet_queue_pts_ms     (media_type mt) const;
@@ -135,15 +137,16 @@ private:
     AVCodec*                ff_find_decoder             (size_t stream_index) const;
     AVRational              stream_time_base            (size_t stream_index) const { return ff_format_context_->streams[stream_index]->time_base; }
 
-    std::array<size_t, media_type_size()>                 selected_stream_per_media_type_;
-    std::array<std::vector<size_t>, media_type_size()>    stream_indices_per_media_type_;
-    std::array<packet_queue_t, media_type_size()>         packet_queue_per_media_type_;
+    std::array<size_t, media_type_size()>                   selected_stream_per_media_type_;
+    std::array<std::vector<size_t>, media_type_size()>      stream_indices_per_media_type_;
+    std::array<packet_queue_t, media_type_size()>           packet_queue_per_media_type_;
     std::string                                             resource_path_;
     AVFormatContext*                                        ff_format_context_      = nullptr;
     size_t                                                  packet_queue_capacity_  = 200;
     size_t                                                  primary_stream_index_   = no_stream_index;
     pipeline_control_t                                      pipeline_control_       = pipeline_control_t::none;
     pipeline_index_t                                        pipeline_index_         = 1;
+    std::mutex                                              packet_queues_mutex_;
 };
 
 

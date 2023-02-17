@@ -31,21 +31,37 @@ av_samples_buffer av_samples_buffer::create_flush_sample()
 // -------------------------
 
 
+
 av_samples_buffer::~av_samples_buffer()
+
 {
+
     if (resampled_data_) {
+
         av_freep(&resampled_data_[0]);
+
     }
+
     av_freep(&resampled_data_);
+
 }
 
+
+
 void av_samples_buffer::swap(av_samples_buffer& src) noexcept
+
 {
+
     std::swap(presentation_time_, src.presentation_time_);
+
     std::swap(resampled_data_, src.resampled_data_);
+
     std::swap(buffer_size_, src.buffer_size_);
+
     std::swap(buffer_pos_, src.buffer_pos_);
+
     std::swap(bytes_per_microsecond_, src.bytes_per_microsecond_);
+
     std::swap(bytes_per_sample_, src.bytes_per_sample_);
     std::swap(pipeline_control_, src.pipeline_control_);
     std::swap(pipeline_index_, src.pipeline_index_);
@@ -202,9 +218,29 @@ void av_samples_queue_t::pop()
     fifo_.pop();
 }
 
+av_samples_buffer av_samples_queue_t::pop_front ()
+{
+    if (empty()) {
+        return av_samples_buffer();
+    }
+
+    const std::lock_guard<std::mutex> lock(fifo_mutex_);
+    if (empty()) {
+        return av_samples_buffer();
+    }
+    auto buffer = std::move(front());
+    pop();
+    return buffer;
+}
+
 bool av_samples_queue_t::push (av_samples_buffer buffer)
 {
     return fifo_.push(std::move(buffer));
+}
+
+void av_samples_queue_t::flush ()
+{
+    fifo_.flush();
 }
 
 
