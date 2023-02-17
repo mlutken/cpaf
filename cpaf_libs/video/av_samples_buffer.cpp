@@ -235,11 +235,13 @@ av_samples_buffer av_samples_queue_t::pop_front ()
 
 bool av_samples_queue_t::push (av_samples_buffer buffer)
 {
+    const std::lock_guard<std::mutex> lock(fifo_mutex_);
     return fifo_.push(std::move(buffer));
 }
 
 void av_samples_queue_t::flush ()
 {
+    const std::lock_guard<std::mutex> lock(fifo_mutex_);
     fifo_.flush();
 }
 
