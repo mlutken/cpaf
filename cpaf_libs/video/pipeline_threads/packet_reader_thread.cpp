@@ -1,5 +1,6 @@
 #include "packet_reader_thread.h"
 #include <cpaf_libs/video/av_format_context.h>
+#include <cpaf_libs/video/pipeline_threads/pipeline_threads.h>
 
 namespace cpaf::video {
 
@@ -63,11 +64,15 @@ void packet_reader_thread::read_packets_thread_fn()
 void packet_reader_thread::check_seek_position()
 {
     if (seek_requested_) {
+        seek_requested_ = false;
         std::cerr << "--------- packet_reader_thread::seek_requested_ ------\n";
 
-//        format_context().seek_time_pos(media_type::video, seek_position_requested_, seek_direction_);
-//        seek_requested_ = false;
-//        return;
+        const auto mt = format_context().primary_media_type();
+        flush_queues();
+        format_context().seek_time_pos(mt, seek_position_requested_, seek_direction_);
+        format_context().read_packets_to_queues(mt, primary_queue_fill_level_);
+        return;
+
 
         const auto types_to_read = format_context().set_of_each_media_type();
         const pipeline_index_t flush_to_index = flush_to_index_requested_index_;
@@ -90,6 +95,13 @@ void packet_reader_thread::check_seek_position()
         if (!all_packets_read) {
             std::cerr << "WARNING Could mot read all desired packet types from stream SEEK_POS warning!";
         }
+    }
+}
+
+void packet_reader_thread::flush_queues()
+{
+    if (pipeline_threads_ptr_) {
+        pipeline_threads_ptr_->flush_queues();
     }
 }
 

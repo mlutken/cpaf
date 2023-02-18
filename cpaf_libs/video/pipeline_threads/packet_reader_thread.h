@@ -13,11 +13,14 @@ class av_format_context;
 class audio_resampler_thread;
 class audio_render_thread;
 class video_render_thread;
+class pipeline_threads;
+
 
 class packet_reader_thread
 {
 public:
     packet_reader_thread(const std::atomic_bool& threads_running, const std::atomic_bool& threads_paused);
+    void                    pipeline_threads_set    (pipeline_threads* ptr)     { pipeline_threads_ptr_ = ptr; }
     void                    format_context_set      (av_format_context* ctx)    { format_context_ptr_ = ctx; }
     void                    format_context_set      (av_format_context& ctx)    { format_context_ptr_ = &ctx; }
 
@@ -30,6 +33,8 @@ private:
 
     void                    read_packets_thread_fn  ();
     void                    check_seek_position     ();
+    void                    flush_queues            ();
+
 
     av_format_context&      format_context          () { return *format_context_ptr_; }
     const std::atomic_bool& threads_running         () const { return threads_running_; }
@@ -42,10 +47,11 @@ private:
     std::atomic_bool                seek_requested_                 = false;
     std::chrono::microseconds       seek_position_requested_;
     seek_dir                        seek_direction_                 = seek_dir::forward;
+    pipeline_threads*               pipeline_threads_ptr_           = nullptr;
     av_format_context*              format_context_ptr_             = nullptr;
-    audio_resampler_thread*         audio_resampler_thread_         = nullptr;
-    audio_render_thread*            audio_render_thread_            = nullptr;
-    video_render_thread*            video_render_thread_            = nullptr;
+//    audio_resampler_thread*         audio_resampler_thread_         = nullptr;
+//    audio_render_thread*            audio_render_thread_            = nullptr;
+//    video_render_thread*            video_render_thread_            = nullptr;
 
     std::chrono::microseconds       read_packets_yield_time_        = std::chrono::milliseconds(1);
     uint32_t                        primary_queue_fill_level_       = 30;

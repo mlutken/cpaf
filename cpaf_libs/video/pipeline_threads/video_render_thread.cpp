@@ -147,7 +147,7 @@ bool video_render_thread::state__flush_in_progress(av_frame& /*current_frame*/, 
 void video_render_thread::debug_video_frame_update(av_frame& current_frame, render& /*video_render*/)
 {
     if (
-       (false && video_frame_update_dbg_counter_ % 200 == 0)
+       (true && video_frame_update_dbg_counter_ % 2000 == 0)
     )
     {
         const auto video_to_media_ms = (current_frame.presentation_time_ms() - current_media_time().current_time_pos_ms()).count();
