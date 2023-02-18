@@ -212,13 +212,16 @@ av_codec_parameters av_format_context::codec_parameters(size_t stream_index) con
 
 av_codec_context av_format_context::codec_context(size_t stream_index) const
 {
+    if (stream_index == no_stream_index) {
+        return av_codec_context(nullptr, stream_index, AVRational());   // Invalid av_codec_context!
+    }
     const AVRational strm_time_base = stream_time_base(stream_index);
     if (stream_index >= streams_count()) { return av_codec_context(nullptr, stream_index, strm_time_base);   }
     // retrieve audio codec
     AVCodec* ff_codec = ff_find_decoder(stream_index);
     if (ff_codec == nullptr) {
         printf("Unsupported codec!\n");
-        return av_codec_context(nullptr, stream_index, strm_time_base);
+        return av_codec_context(nullptr, stream_index, strm_time_base); // Invalid av_codec_context!
     }
 
     // retrieve codec context
@@ -234,7 +237,7 @@ av_codec_context av_format_context::codec_context(size_t stream_index) const
     ret = avcodec_open2(ff_codec_context, ff_codec, nullptr);
     if (ret < 0) {
         printf("Could not open codec.\n");
-        return av_codec_context(nullptr, stream_index, strm_time_base);
+        return av_codec_context(nullptr, stream_index, strm_time_base); // Invalid av_codec_context!
     }
 
     av_codec_context codec_ctx = av_codec_context(ff_codec_context, stream_index, strm_time_base);
