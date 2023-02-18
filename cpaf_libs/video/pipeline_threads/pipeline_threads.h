@@ -32,10 +32,6 @@ public:
     pipeline_threads& operator=(const pipeline_threads&)  = delete;
 
     pipeline_threads();
-//    explicit pipeline_threads(av_format_context& fmt_ctx, av_codec_context& audio_ctx, audio_resampler& resampler);
-//    explicit pipeline_threads(av_format_context* fmt_ctx, av_codec_context* audio_ctx, audio_resampler* resampler);
-
-//    explicit pipeline_threads(av_format_context* format_context_ptr);
 
     void                format_context_set      (av_format_context* ctx);
     void                format_context_set      (av_format_context& ctx);
@@ -71,11 +67,9 @@ private:
     av_codec_context&   audio_codec_ctx         () { return *audio_codec_ctx_ptr_; }
     av_codec_context&   video_codec_ctx         () { return *video_codec_ctx_ptr_; }
     audio_resampler&    audio_sampler           () { return *audio_resampler_ptr_; }
-    av_samples_queue& audio_samples_queue     () { return *audio_samples_queue_ptr_; }
+    av_samples_queue&   audio_samples_queue     () { return *audio_samples_queue_ptr_; }
     media_stream_time&  current_media_time      () { return *current_media_time_ptr_; }
 
-//    void                check_flush_audio_packets     ();
-//    void                check_seek_position     ();
     const std::atomic_bool&        threads_running  () const { return threads_running_; }
     const std::atomic_bool&        threads_paused   () const { return threads_paused_; }
 
@@ -84,16 +78,14 @@ private:
     av_codec_context*               audio_codec_ctx_ptr_            = nullptr;
     av_codec_context*               video_codec_ctx_ptr_            = nullptr;
     audio_resampler*                audio_resampler_ptr_            = nullptr;
-    av_samples_queue*             audio_samples_queue_ptr_        = nullptr;
+    av_samples_queue*               audio_samples_queue_ptr_        = nullptr;
     media_stream_time*              current_media_time_ptr_         = nullptr;
     std::atomic_bool                threads_running_                = true;
     std::atomic_bool                threads_paused_                 = false;
-//    std::atomic_bool                seek_requested_                 = false;
-//    std::atomic_bool                flush_audio_packets_requested_  = false;
 
-    audio_render_thread             audio_render_thread_;
-    audio_resampler_thread          audio_resampler_thread_;
     packet_reader_thread            packet_reader_thread_;
+    audio_resampler_thread          audio_resampler_thread_;
+    audio_render_thread             audio_render_thread_;
     video_render_thread             video_render_thread_;
 };
 

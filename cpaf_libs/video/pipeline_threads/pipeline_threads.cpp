@@ -17,9 +17,9 @@ namespace cpaf::video {
 
 
 pipeline_threads::pipeline_threads()
-    : audio_render_thread_()
+    : packet_reader_thread_(threads_running_, threads_paused_)
     , audio_resampler_thread_(threads_running_, threads_paused_)
-    , packet_reader_thread_(threads_running_, threads_paused_)
+    , audio_render_thread_()
     , video_render_thread_(threads_running_, threads_paused_)
 {
     packet_reader_thread_.pipeline_threads_set(this);
