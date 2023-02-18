@@ -10,7 +10,7 @@ namespace cpaf::video {
 class av_format_context;
 class av_codec_context;
 class media_stream_time;
-class av_samples_queue_t;
+class av_samples_queue;
 
 
 /** Note this is not running it's own thread, but supplies a callback
@@ -23,8 +23,8 @@ public:
 
     void                    format_context_set      (av_format_context* ctx)    { format_context_ptr_ = ctx; }
     void                    format_context_set      (av_format_context& ctx)    { format_context_ptr_ = &ctx; }
-    void                    audio_samples_queue_set (av_samples_queue_t* queue) { audio_samples_queue_ptr_ = queue; }
-    void                    audio_samples_queue_set (av_samples_queue_t& queue) { audio_samples_queue_ptr_ = &queue; }
+    void                    audio_samples_queue_set (av_samples_queue* queue) { audio_samples_queue_ptr_ = queue; }
+    void                    audio_samples_queue_set (av_samples_queue& queue) { audio_samples_queue_ptr_ = &queue; }
     void                    current_media_time_set  (media_stream_time* mts)    { current_media_time_ptr_ = mts; }
     void                    current_media_time_set  (media_stream_time& mts)    { current_media_time_ptr_ = &mts; }
 
@@ -51,13 +51,13 @@ private:
     void                    debug_audio_callback    (uint8_t* stream, int32_t length);
 
     av_format_context&      format_context          () { return *format_context_ptr_; }
-    av_samples_queue_t&     audio_samples_queue     () { return *audio_samples_queue_ptr_; }
+    av_samples_queue&     audio_samples_queue     () { return *audio_samples_queue_ptr_; }
     media_stream_time&      current_media_time      () { return *current_media_time_ptr_; }
 
     flush_queue_t                   flush_queue_;
     av_format_context*              format_context_ptr_             = nullptr;
     av_codec_context*               audio_codec_ctx_ptr_            = nullptr;
-    av_samples_queue_t*             audio_samples_queue_ptr_        = nullptr;
+    av_samples_queue*             audio_samples_queue_ptr_        = nullptr;
     media_stream_time*              current_media_time_ptr_         = nullptr;
 
     std::chrono::microseconds       sync_ok_interval                = std::chrono::milliseconds(15);

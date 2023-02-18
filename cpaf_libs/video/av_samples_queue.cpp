@@ -18,28 +18,28 @@ namespace cpaf::video {
 // --- Samples queue ---
 // ---------------------
 
-av_samples_queue_t::av_samples_queue_t(size_t queue_size)
+av_samples_queue::av_samples_queue(size_t queue_size)
     : fifo_(queue_size)
 {
 
 }
 
-av_samples_buffer& av_samples_queue_t::front ()
+av_samples_buffer& av_samples_queue::front ()
 {
     return fifo_.front();
 }
 
-const av_samples_buffer& av_samples_queue_t::front () const
+const av_samples_buffer& av_samples_queue::front () const
 {
     return fifo_.front();
 }
 
-void av_samples_queue_t::pop()
+void av_samples_queue::pop()
 {
     fifo_.pop();
 }
 
-av_samples_buffer av_samples_queue_t::pop_front ()
+av_samples_buffer av_samples_queue::pop_front ()
 {
     if (empty()) {
         return av_samples_buffer();
@@ -54,13 +54,13 @@ av_samples_buffer av_samples_queue_t::pop_front ()
     return buffer;
 }
 
-bool av_samples_queue_t::push (av_samples_buffer buffer)
+bool av_samples_queue::push (av_samples_buffer buffer)
 {
     const std::lock_guard<std::mutex> lock(fifo_mutex_);
     return fifo_.push(std::move(buffer));
 }
 
-void av_samples_queue_t::flush ()
+void av_samples_queue::flush ()
 {
     const std::lock_guard<std::mutex> lock(fifo_mutex_);
     fifo_.flush();
@@ -69,7 +69,7 @@ void av_samples_queue_t::flush ()
 
 /** Copy a number of bytes from the samples queue to the destination address.
     @return The number of bytes actually copied */
-int32_t av_samples_queue_t::copy_audio_samples(
+int32_t av_samples_queue::copy_audio_samples(
         uint8_t* dest_buf,
         int32_t bytes_to_copy,
         const samples_queue_callback_t& queue_pop_callback)
@@ -92,7 +92,7 @@ int32_t av_samples_queue_t::copy_audio_samples(
     return bytes_actually_copied;
 }
 
-bool more_than_a_buffer_behind(av_samples_queue_t& samples_queue, const std::chrono::microseconds& sync_to_media_time)
+bool more_than_a_buffer_behind(av_samples_queue& samples_queue, const std::chrono::microseconds& sync_to_media_time)
 {
     return (sync_to_media_time - samples_queue.front().presentation_time()) > samples_queue.front().duration();
 }
@@ -102,7 +102,7 @@ bool more_than_a_buffer_behind(av_samples_queue_t& samples_queue, const std::chr
 //    return (sync_to_media_time - samples_queue.front().presentation_time()) < -samples_queue.front().duration();
 //}
 
-void skip_audio_samples_helper(av_samples_queue_t& samples_queue, const std::chrono::microseconds& sync_to_media_time)
+void skip_audio_samples_helper(av_samples_queue& samples_queue, const std::chrono::microseconds& sync_to_media_time)
 {
     while (!samples_queue.empty()
            && ( (sync_to_media_time - samples_queue.front().presentation_time()) > samples_queue.front().duration()) ) {
@@ -113,7 +113,7 @@ void skip_audio_samples_helper(av_samples_queue_t& samples_queue, const std::chr
 
 /** Copy bytes from samples queue while trying to synch with 'current media time'.
     @return The number of bytes actually copied */
-int32_t av_samples_queue_t::copy_audio_samples(
+int32_t av_samples_queue::copy_audio_samples(
         uint8_t* dest_buf,
         int32_t bytes_to_copy,
         const std::chrono::microseconds& sync_to_media_time,

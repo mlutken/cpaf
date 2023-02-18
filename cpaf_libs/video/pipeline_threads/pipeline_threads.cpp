@@ -79,7 +79,7 @@ void pipeline_threads::audio_resampler_set(audio_resampler& resampler)
     audio_resampler_ptr_ = &resampler;
 }
 
-void pipeline_threads::audio_samples_queue_set(av_samples_queue_t* queue)
+void pipeline_threads::audio_samples_queue_set(av_samples_queue* queue)
 {
     audio_resampler_thread_.audio_samples_queue_set(queue);
     audio_render_thread_.audio_samples_queue_set(queue);
@@ -87,7 +87,7 @@ void pipeline_threads::audio_samples_queue_set(av_samples_queue_t* queue)
     audio_samples_queue_ptr_ = queue;
 }
 
-void pipeline_threads::audio_samples_queue_set(av_samples_queue_t& queue)
+void pipeline_threads::audio_samples_queue_set(av_samples_queue& queue)
 {
     audio_resampler_thread_.audio_samples_queue_set(queue);
     audio_render_thread_.audio_samples_queue_set(queue);

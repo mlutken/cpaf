@@ -45,8 +45,8 @@ public:
     void                audio_codec_ctx_set     (av_codec_context& ctx);
     void                audio_resampler_set     (audio_resampler* resampler);
     void                audio_resampler_set     (audio_resampler& resampler);
-    void                audio_samples_queue_set (av_samples_queue_t* queue);
-    void                audio_samples_queue_set (av_samples_queue_t& queue);
+    void                audio_samples_queue_set (av_samples_queue* queue);
+    void                audio_samples_queue_set (av_samples_queue& queue);
     void                current_media_time_set  (media_stream_time* mts);
     void                current_media_time_set  (media_stream_time& mts);
     play_callback_t     audio_callback_get      ();
@@ -71,7 +71,7 @@ private:
     av_codec_context&   audio_codec_ctx         () { return *audio_codec_ctx_ptr_; }
     av_codec_context&   video_codec_ctx         () { return *video_codec_ctx_ptr_; }
     audio_resampler&    audio_sampler           () { return *audio_resampler_ptr_; }
-    av_samples_queue_t& audio_samples_queue     () { return *audio_samples_queue_ptr_; }
+    av_samples_queue& audio_samples_queue     () { return *audio_samples_queue_ptr_; }
     media_stream_time&  current_media_time      () { return *current_media_time_ptr_; }
 
 //    void                check_flush_audio_packets     ();
@@ -84,7 +84,7 @@ private:
     av_codec_context*               audio_codec_ctx_ptr_            = nullptr;
     av_codec_context*               video_codec_ctx_ptr_            = nullptr;
     audio_resampler*                audio_resampler_ptr_            = nullptr;
-    av_samples_queue_t*             audio_samples_queue_ptr_        = nullptr;
+    av_samples_queue*             audio_samples_queue_ptr_        = nullptr;
     media_stream_time*              current_media_time_ptr_         = nullptr;
     std::atomic_bool                threads_running_                = true;
     std::atomic_bool                threads_paused_                 = false;

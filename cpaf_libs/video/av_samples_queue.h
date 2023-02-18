@@ -22,10 +22,10 @@ namespace cpaf::video {
 // ---------------------
 using samples_queue_callback_t = std::function<void(const av_samples_buffer&)>;
 
-class av_samples_queue_t
+class av_samples_queue
 {
 public:
-    explicit av_samples_queue_t(size_t queue_size);
+    explicit av_samples_queue(size_t queue_size);
 
     bool                        empty       () const { return fifo_.empty();    }
     size_t                      size        () const { return fifo_.size();     }

@@ -12,7 +12,7 @@ namespace cpaf::video {
 class av_format_context;
 class av_codec_context;
 class media_stream_time;
-class av_samples_queue_t;
+class av_samples_queue;
 class render;
 
 class video_render_thread
@@ -24,8 +24,8 @@ public:
     void                        format_context_set      (av_format_context& ctx)    { format_context_ptr_ = &ctx; }
     void                        video_codec_ctx_set     (av_codec_context* ctx)     { video_codec_ctx_ptr_ = ctx; }
     void                        video_codec_ctx_set     (av_codec_context& ctx)     { video_codec_ctx_ptr_ = &ctx; }
-    void                        audio_samples_queue_set (av_samples_queue_t* queue) { audio_samples_queue_ptr_ = queue; }
-    void                        audio_samples_queue_set (av_samples_queue_t& queue) { audio_samples_queue_ptr_ = &queue; }
+    void                        audio_samples_queue_set (av_samples_queue* queue) { audio_samples_queue_ptr_ = queue; }
+    void                        audio_samples_queue_set (av_samples_queue& queue) { audio_samples_queue_ptr_ = &queue; }
     void                        current_media_time_set  (media_stream_time* mts)    { current_media_time_ptr_ = mts; }
     void                        current_media_time_set  (media_stream_time& mts)    { current_media_time_ptr_ = &mts; }
 
@@ -53,7 +53,7 @@ private:
     void                        video_packet_queue_pop  ();
     const packet_queue_t&       video_packet_queue      () const;
     const packet_queue_t&       video_packet_queue_const() const;
-    const av_samples_queue_t&   audio_samples_queue     () const { return *audio_samples_queue_ptr_; }
+    const av_samples_queue&   audio_samples_queue     () const { return *audio_samples_queue_ptr_; }
     media_stream_time&          current_media_time      () { return *current_media_time_ptr_; }
 
     const std::atomic_bool&     threads_running         () const { return threads_running_; }
@@ -65,7 +65,7 @@ private:
 
     av_format_context*              format_context_ptr_             = nullptr;
     av_codec_context*               video_codec_ctx_ptr_            = nullptr;
-    av_samples_queue_t*             audio_samples_queue_ptr_        = nullptr;
+    av_samples_queue*             audio_samples_queue_ptr_        = nullptr;
     media_stream_time*              current_media_time_ptr_         = nullptr;
     pipeline_index_t                flush_in_progress_index_        = 0;
     atomic_pipeline_index_t         current_pipeline_index_         = 0;
