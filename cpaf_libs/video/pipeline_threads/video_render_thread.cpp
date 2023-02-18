@@ -86,8 +86,11 @@ void video_render_thread::switch_state()
 
 bool video_render_thread::state__normal_flow(av_frame& current_frame, render& video_render)
 {
-    if (!current_media_time().time_is_paused()) {
+    if (video_queue_flush_in_progress_) {
+        return false;
+    }
 
+    if (!current_media_time().time_is_paused()) {
         const auto cur_video_time = current_media_time().video_time_pos();
         auto time_dist_to_cur_frame = current_frame.presentation_time() - cur_video_time;
 
