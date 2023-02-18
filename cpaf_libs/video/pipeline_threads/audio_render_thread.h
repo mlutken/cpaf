@@ -29,7 +29,8 @@ public:
 
     void                    start                   ();
     bool                    flush_to_index          (const pipeline_index_t& pipeline_index);
-    void                    audio_queue_flushed     () { audio_queue_flushed_ = true; }
+    void                    audio_queue_flush_start ()                          { audio_queue_flush_in_progress_ = true; }
+    void                    audio_queue_flush_done  ()                          { audio_queue_flush_in_progress_ = false; audio_queue_flushed_ = true; }
     bool                    state_matches           (pipeline_state_t desired_state, const pipeline_index_t& desired_index) const;
 
 
@@ -65,6 +66,7 @@ private:
     atomic_pipeline_index_t         current_pipeline_index_         = 0;
 
     int                             audio_callback_dbg_counter_     = 0;
+    std::atomic_bool                audio_queue_flush_in_progress_  = false;
     std::atomic_bool                audio_queue_flushed_            = false;
     bool                            empty_audio_buffer_dbg_         = false;
 

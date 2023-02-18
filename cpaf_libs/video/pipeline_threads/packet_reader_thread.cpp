@@ -68,9 +68,11 @@ void packet_reader_thread::check_seek_position()
         std::cerr << "--------- packet_reader_thread::seek_requested_ ------\n";
 
         const auto mt = format_context().primary_media_type();
-        flush_queues();
+        signal_flush_start();
         format_context().seek_time_pos(mt, seek_position_requested_, seek_direction_);
+        flush_queues();
         format_context().read_packets_to_queues(mt, primary_queue_fill_level_);
+        signal_flush_done();
         return;
 
 
@@ -102,6 +104,20 @@ void packet_reader_thread::flush_queues()
 {
     if (pipeline_threads_ptr_) {
         pipeline_threads_ptr_->flush_queues();
+    }
+}
+
+void packet_reader_thread::signal_flush_start()
+{
+    if (pipeline_threads_ptr_) {
+        pipeline_threads_ptr_->signal_flush_start();
+    }
+}
+
+void packet_reader_thread::signal_flush_done()
+{
+    if (pipeline_threads_ptr_) {
+        pipeline_threads_ptr_->signal_flush_done();
     }
 }
 

@@ -207,9 +207,20 @@ void pipeline_threads::flush_queues()
 {
     format_context().flush_packet_queues();
     audio_samples_queue().flush();
-    video_render_thread_.video_queue_flushed();
-    audio_render_thread_.audio_queue_flushed();
-    //    flush_audio_packets_requested_ = true;
+}
+
+void pipeline_threads::signal_flush_start()
+{
+    video_render_thread_.video_queue_flush_start();
+    audio_render_thread_.audio_queue_flush_start();
+    audio_resampler_thread_.samples_queue_flush_start();
+}
+
+void pipeline_threads::signal_flush_done()
+{
+    video_render_thread_.video_queue_flush_done();
+    audio_render_thread_.audio_queue_flush_done();
+    audio_resampler_thread_.samples_queue_flush_done();
 }
 
 bool pipeline_threads::video_frame_update(av_frame& current_frame, render& video_render)

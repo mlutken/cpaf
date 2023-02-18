@@ -34,6 +34,8 @@ private:
     void                    read_packets_thread_fn  ();
     void                    check_seek_position     ();
     void                    flush_queues            ();
+    void                    signal_flush_start      ();
+    void                    signal_flush_done       ();
 
 
     av_format_context&      format_context          () { return *format_context_ptr_; }

@@ -28,6 +28,8 @@ public:
     void                    audio_samples_queue_set (av_samples_queue_t& queue) { audio_samples_queue_ptr_ = &queue; }
     void                    current_media_time_set  (media_stream_time* mts)    { current_media_time_ptr_ = mts; }
     void                    current_media_time_set  (media_stream_time& mts)    { current_media_time_ptr_ = &mts; }
+    void                    samples_queue_flush_start()                         { samples_queue_flush_in_progress_ = true; }
+    void                    samples_queue_flush_done()                          { samples_queue_flush_in_progress_ = false; samples_queue_flushed_ = true; }
 
     void                    start                   ();
 
@@ -55,6 +57,8 @@ private:
     uint32_t                        audio_samples_fill_level_       = 30;
     std::chrono::microseconds       audio_samples_yield_time_       = std::chrono::milliseconds(1);
     std::chrono::microseconds       audio_samples_read_ahead_time_  = std::chrono::milliseconds(300);
+    std::atomic_bool                samples_queue_flush_in_progress_= false;
+    std::atomic_bool                samples_queue_flushed_          = false;
 
     std::unique_ptr<std::thread>    thread_object_;
 

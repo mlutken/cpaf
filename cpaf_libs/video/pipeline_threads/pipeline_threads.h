@@ -60,6 +60,8 @@ public:
     void                resume_playback         ();
     void                flush_to_index          (const pipeline_index_t& pipeline_index);
     void                flush_queues            ();
+    void                signal_flush_start      ();
+    void                signal_flush_done       ();
     bool                video_frame_update      (av_frame& current_frame, render& video_render);
 
     std::atomic<int64_t>  DEBUG_seek_pos_added_index_          = -1;
