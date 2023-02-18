@@ -32,7 +32,7 @@ audio_render_thread::play_callback_t audio_render_thread::audio_callback_get()
 
 void audio_render_thread::audio_callback_function(uint8_t* stream, int32_t length)
 {
-    switch_state();
+//    switch_state();
     switch (pipeline_state_) {
     case pipeline_state_t::normal_flow:
         state__normal_flow(stream, length);
@@ -91,13 +91,15 @@ void audio_render_thread::state__normal_flow(uint8_t* stream, int32_t length)
     if (audio_samples_queue().empty()) {
         render_audio_silence(stream, length);
         if (!empty_audio_buffer_dbg_) {
+
             cerr << "*** [" << audio_callback_dbg_counter_ << "] ERROR audio samples queue EMPTY!!"
                  << ", audio_packets_queue().size(): " << format_context().packet_queue_const(media_type::audio).size()
                  << ", video_packets_queue().size(): " << format_context().packet_queue_const(media_type::video).size()
                  << ", audio_samples_queue().size(): " << audio_samples_queue().size()
+                 << ", video_packets_queue() ts: " << format_context().packet_queue_const(media_type::video).front().presentation_time_ms().count()
                  << "\n";
-        }
-//        empty_audio_buffer_dbg_ = true;
+            }
+        empty_audio_buffer_dbg_ = true;
         return;
     }
 

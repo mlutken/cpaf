@@ -30,6 +30,7 @@ public:
 
     void                        start                   ();
     bool                        video_frame_update      (av_frame& current_frame, render& video_render);
+    void                        video_queue_flushed     () { video_queue_flushed_ = true; }
     bool                        flush_to_index          (const pipeline_index_t& pipeline_index);
     bool                        state_matches           (pipeline_state_t desired_state, const pipeline_index_t& desired_index) const;
 
@@ -70,6 +71,7 @@ private:
 
     std::chrono::microseconds       render_video_yield_time_        = std::chrono::milliseconds(1);
     int                             video_frame_update_dbg_counter_ = 0;
+    std::atomic_bool                video_queue_flushed_            = false;
 
 };
 

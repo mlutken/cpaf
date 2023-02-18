@@ -148,10 +148,10 @@ void pipeline_threads::seek_position(const std::chrono::microseconds& stream_pos
     flush_queues();
 //    std::cerr << "FIXMENM AFTER FLUSH:\n" << format_context().queues_info();
 //    std::cerr << "FIXMENM AFTER FLUSH samples queue size: " << audio_samples_queue().size() << "\n";
-//    packet_reader_thread_.seek_position(stream_pos, dir);
+    packet_reader_thread_.seek_position(stream_pos, dir);
 
-    const pipeline_index_t flush_to_idx = packet_reader_thread_.seek_position(stream_pos, dir);
-    flush_to_index(flush_to_idx);
+//    const pipeline_index_t flush_to_idx = packet_reader_thread_.seek_position(stream_pos, dir);
+//    flush_to_index(flush_to_idx);
 }
 
 void pipeline_threads::seek_position(const std::chrono::microseconds& stream_pos)
@@ -169,8 +169,9 @@ void pipeline_threads::seek_position(const std::chrono::microseconds& stream_pos
     //    normal state.
 
     flush_queues();
-    const pipeline_index_t flush_to_idx = packet_reader_thread_.seek_position(stream_pos);
-    flush_to_index(flush_to_idx);
+    packet_reader_thread_.seek_position(stream_pos);
+//    const pipeline_index_t flush_to_idx = packet_reader_thread_.seek_position(stream_pos);
+//    flush_to_index(flush_to_idx);
 
 //    seek_position_requested_ = stream_pos;
     //    seek_requested_ = true;
@@ -206,6 +207,8 @@ void pipeline_threads::flush_queues()
 {
     format_context().flush_packet_queues();
     audio_samples_queue().flush();
+    video_render_thread_.video_queue_flushed();
+    audio_render_thread_.audio_queue_flushed();
     //    flush_audio_packets_requested_ = true;
 }
 
