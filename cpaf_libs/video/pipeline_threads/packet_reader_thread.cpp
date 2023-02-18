@@ -69,7 +69,10 @@ void packet_reader_thread::check_seek_position()
 
         const auto mt = format_context().primary_media_type();
         signal_flush_start();
+        format_context().read_packets_to_queues(mt, primary_queue_fill_level_ + 1);
+//        const auto media_types_to_read = format_context().set_of_each_media_type();
         format_context().seek_time_pos(mt, seek_position_requested_, seek_direction_);
+//        format_context().read_each_type_to_queues(media_types_to_read);
         flush_queues();
         format_context().read_packets_to_queues(mt, primary_queue_fill_level_);
         signal_flush_done();
