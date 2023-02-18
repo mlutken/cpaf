@@ -4,6 +4,7 @@
 
 
 #include <utility>
+#include <mutex>
 #include <concurrent/srsw_fifo.hpp>
 #include <cpaf_libs/video/av_samples_buffer.h>
 
@@ -15,30 +16,48 @@ namespace cpaf::video {
  *
  * Lockless fifo of audio av_samples_buffer(s)
  *  */
-class av_samples_queue
+
+// ---------------------
+// --- Samples queue ---
+// ---------------------
+using samples_queue_callback_t = std::function<void(const av_samples_buffer&)>;
+
+class av_samples_queue_t
 {
 public:
+    explicit av_samples_queue_t(size_t queue_size);
 
-	// --- Constructors etc. ---
-	av_samples_queue();
-	av_samples_queue (const av_samples_queue&) = delete;
+    bool                        empty       () const { return fifo_.empty();    }
+    size_t                      size        () const { return fifo_.size();     }
+    bool                        push        (av_samples_buffer buffer);
+    av_samples_buffer&          front       ();
+    const av_samples_buffer&    front       () const;
+    void                        pop         ();
+    av_samples_buffer           pop_front   ();
+    void                        flush       ();
 
-	av_samples_queue& operator=(const av_samples_queue&)  = delete;
-	~av_samples_queue();
-
-
-
-	size_t					size			() const	{ return samples_queue_.size();}
-//	void					flush			()			{ samples_queue_.flush();}
-
-
-	// --- Info functions ---
-	std::string		dbg_string_short	() const;
+    int32_t                     copy_audio_samples  (uint8_t* dest_buf,  int32_t bytes_to_copy,
+                                                     const samples_queue_callback_t& queue_pop_callback);
+    int32_t                     copy_audio_samples  (uint8_t* dest_buf, int32_t bytes_to_copy,
+                                                     const std::chrono::microseconds& sync_to_media_time,
+                                                     const std::chrono::microseconds& sync_ok_interval,
+                                                     const samples_queue_callback_t& queue_pop_callback);
 
 private:
-	using samples_queue_t = estl::srsw_fifo<av_samples_buffer>;
+    bool more_than_a_buffer_behind(const std::chrono::microseconds& sync_to_media_time) const
+    {
+        return (sync_to_media_time - front().presentation_time()) > front().duration();
+    }
 
-	samples_queue_t		samples_queue_;
+    void skip_audio_samples_helper(const std::chrono::microseconds& sync_to_media_time)
+    {
+        while (!empty() && ( (sync_to_media_time - front().presentation_time()) > front().duration()) ) {
+            pop();
+        }
+    }
+
+    estl::srsw_fifo<av_samples_buffer>  fifo_;
+    std::mutex                          fifo_mutex_;
 };
 
 

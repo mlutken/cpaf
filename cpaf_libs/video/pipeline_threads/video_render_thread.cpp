@@ -5,6 +5,7 @@
 #include <video/av_codec_context.h>
 #include <video/media_stream_time.h>
 #include <video/render/render.h>
+#include <cpaf_libs/video/av_samples_queue.h>
 
 using namespace std::chrono_literals;
 using namespace std::chrono;

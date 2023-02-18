@@ -10,6 +10,7 @@ namespace cpaf::video {
 class av_format_context;
 class av_codec_context;
 class media_stream_time;
+class av_samples_queue_t;
 
 
 /** Note this is not running it's own thread, but supplies a callback

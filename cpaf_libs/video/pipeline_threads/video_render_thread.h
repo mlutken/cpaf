@@ -12,6 +12,7 @@ namespace cpaf::video {
 class av_format_context;
 class av_codec_context;
 class media_stream_time;
+class av_samples_queue_t;
 class render;
 
 class video_render_thread

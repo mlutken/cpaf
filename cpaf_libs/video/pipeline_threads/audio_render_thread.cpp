@@ -3,6 +3,8 @@
 #include <iostream>
 #include <cpaf_libs/video/media_stream_time.h>
 #include <cpaf_libs/video/av_format_context.h>
+#include <cpaf_libs/video/av_samples_queue.h>
+
 
 using namespace std;
 

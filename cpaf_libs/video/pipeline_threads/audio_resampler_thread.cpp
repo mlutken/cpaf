@@ -4,6 +4,7 @@
 #include <cpaf_libs/video/av_format_context.h>
 #include <cpaf_libs/video/av_codec_context.h>
 #include <cpaf_libs/video/audio_resampler.h>
+#include <cpaf_libs/video/av_samples_queue.h>
 
 namespace cpaf::video {
 

@@ -10,6 +10,7 @@ extern "C"
 #include <cpaf_libs/video/av_frame.h>
 #include <cpaf_libs/video/audio_resampler.h>
 #include <cpaf_libs/video/media_stream_time.h>
+#include <cpaf_libs/video/av_samples_queue.h>
 
 using namespace std;
 namespace cpaf::video {

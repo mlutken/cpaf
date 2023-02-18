@@ -13,6 +13,7 @@ class av_format_context;
 class av_codec_context;
 class audio_resampler;
 class media_stream_time;
+class av_samples_queue_t;
 
 class audio_resampler_thread
 {
