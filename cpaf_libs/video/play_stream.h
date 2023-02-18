@@ -5,6 +5,7 @@
 #include <string>
 #include <cpaf_libs/video/av_format_context.h>
 #include <cpaf_libs/video/pipeline_threads/pipeline_threads.h>
+#include <cpaf_libs/video/av_samples_queue.h>
 
 namespace cpaf::video {
 
@@ -14,10 +15,12 @@ namespace cpaf::video {
 class play_stream
 {
 public:
-             play_stream() = default;
+             play_stream();
     explicit play_stream(const std::string& resource_path);
 
     bool                        open                    (const std::string& resource_path);
+    void                        start                   ();
+    void                        terminate               ();
 
     pipeline_threads&           pipeline_threads_temp_only() { return media_pipeline_threads_; }
 
@@ -33,9 +36,17 @@ public:
     size_t                      first_subtitle_index	() const { return format_context_.first_subtitle_index(); }
     size_t                      primary_index           () const { return format_context_.primary_index(); }
     media_type                  primary_media_type      () const { return format_context_.primary_media_type(); }
+    const surface_dimensions_t& render_dimensions       () const { return render_dimensions_; }
 
     av_format_context&          format_context()        { return format_context_; }
     const av_format_context&	format_context() const  { return format_context_; }
+
+    // -----------------------
+    // --- Video functions ---
+    // -----------------------
+    void                        render_dimensions_set   (const surface_dimensions_t& dim);
+    void                        render_width_set        (int32_t render_width);
+    void                        render_height_set       (int32_t render_height);
 
     // --- Play control functions ---
 
@@ -44,8 +55,10 @@ public:
     av_codec_context            codec_context			(size_t stream_index) const { return format_context_.codec_context(stream_index); }
 
 private:
+    av_samples_queue            audio_samples_queue_;
     av_format_context           format_context_;
     pipeline_threads            media_pipeline_threads_;
+    surface_dimensions_t        render_dimensions_;
 };
 
 
