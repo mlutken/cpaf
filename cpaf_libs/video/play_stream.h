@@ -2,14 +2,9 @@
 #define CPAF_VIDEO_PLAY_STREAM_H
 
 
-extern "C"
-{
-#include <libavcodec/avcodec.h>
-#include <libavformat/avformat.h>
-}
-
 #include <string>
 #include <cpaf_libs/video/av_format_context.h>
+#include <cpaf_libs/video/pipeline_threads/pipeline_threads.h>
 
 namespace cpaf::video {
 
@@ -23,6 +18,8 @@ public:
     explicit play_stream(const std::string& resource_path);
 
     bool                        open                    (const std::string& resource_path);
+
+    pipeline_threads&           pipeline_threads_temp_only() { return media_pipeline_threads_; }
 
     // --- Info functions ---
     const std::string&          resource_path			() const { return format_context_.resource_path(); }
@@ -40,13 +37,15 @@ public:
     av_format_context&          format_context()        { return format_context_; }
     const av_format_context&	format_context() const  { return format_context_; }
 
+    // --- Play control functions ---
 
     // --- XXX Functions ---
     av_codec_parameters         codec_parameters        (size_t stream_index) const { return format_context_.codec_parameters(stream_index);}
     av_codec_context            codec_context			(size_t stream_index) const { return format_context_.codec_context(stream_index); }
 
 private:
-    av_format_context		format_context_;
+    av_format_context           format_context_;
+    pipeline_threads            media_pipeline_threads_;
 };
 
 
