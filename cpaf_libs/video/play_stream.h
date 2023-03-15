@@ -53,6 +53,7 @@ public:
     // --- XXX Functions ---
     av_codec_parameters         codec_parameters        (size_t stream_index) const { return format_context_.codec_parameters(stream_index);}
     av_codec_context            codec_context			(size_t stream_index) const { return format_context_.codec_context(stream_index); }
+//    void                        init			(size_t stream_index) const { return format_context_.codec_context(stream_index); }
 
 private:
     av_samples_queue            audio_samples_queue_;
