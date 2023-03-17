@@ -10,6 +10,15 @@ namespace cpaf::video {
 class player
 {
 public:
+
+    // START: TEMPORARY REFACTOR functions ONLY!
+
+    pipeline_threads&           pipeline_threads_temp_only  () { return primary_source_stream_->pipeline_threads_temp_only(); }
+    play_stream&                primary_stream_temp_only    () { return *primary_source_stream_; }
+
+    // END  : TEMPORARY REFACTOR functions ONLY!
+
+
     player();
     bool                        open                    (const std::string& resource_path);
     bool                        open                    (const std::string& resource_path, stream_type_t sti);
