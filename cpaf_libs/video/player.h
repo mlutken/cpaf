@@ -12,6 +12,7 @@ class player
 public:
     player();
     bool                        open                    (const std::string& resource_path);
+    bool                        open                    (const std::string& resource_path, stream_type_t sti);
 
     bool                        has_source_stream       (stream_type_t sti) const;
     const play_stream*          source_stream           (stream_type_t sti) const;

@@ -14,6 +14,11 @@ bool player::open(const std::string& resource_path)
     return open_primary_stream(resource_path);
 }
 
+bool player::open(const std::string& resource_path, stream_type_t sti)
+{
+    return open_stream(resource_path, sti);
+}
+
 bool player::has_source_stream(stream_type_t sti) const
 {
     return source_stream(sti) == nullptr;
