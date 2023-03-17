@@ -62,6 +62,15 @@ enum class pipeline_state_t : int8_t {
     seek_pos
 };
 
+enum struct stream_type_t : size_t {
+    video = 0,
+    audio,
+    subtitle,
+    keyframes,
+    ads,
+    SIZE = ads +1 			///< One past the last as we start from zero
+};
+
 //inline bool operator<(const pipeline_control_t& pc_left, const pipeline_control_t& pc_right) {
 //    using int_type = typename std::underlying_type<pipeline_control_t>::type;
 //    const int_type left_int = static_cast<int_type>(pc_left);
@@ -83,6 +92,7 @@ inline constexpr size_t media_type_first_size_t () { return static_cast<size_t>(
 
 inline constexpr int    media_type_size_int     () { return static_cast<int>(media_type::SIZE); }
 inline constexpr size_t media_type_size         () { return static_cast<size_t>(media_type::SIZE);}
+inline constexpr size_t stream_type_index_size  () { return static_cast<size_t>(stream_type_t::SIZE);}
 
 inline constexpr auto	to_int					(media_type mt) -> int					{ return static_cast<int>(mt);	}
 //inline constexpr auto	to_int					(audio_sample_format_t format) -> int	{ return static_cast<int>(format);}
@@ -91,6 +101,11 @@ inline constexpr auto	to_int					(media_type mt) -> int					{ return static_cast
 inline constexpr auto to_size_t(media_type mt) -> size_t
 {
     return static_cast<size_t>(mt);
+}
+
+inline constexpr auto to_size_t(stream_type_t sti) -> size_t
+{
+    return static_cast<size_t>(sti);
 }
 
 inline constexpr auto illegal_stream_index() -> size_t
