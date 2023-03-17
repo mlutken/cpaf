@@ -27,6 +27,8 @@ public:
     // --- Info functions ---
     const std::string&          resource_path			() const { return format_context_.resource_path(); }
     size_t                      streams_count			() const { return format_context_.streams_count();}
+    size_t                      streams_count			(media_type mt) const   { return format_context_.streams_count(mt);}
+    bool                        has_media_type			(media_type mt) const   { return streams_count(mt) > 0;}
     size_t                      video_streams_count		() const { return format_context_.video_streams_count(); }
     size_t                      audio_streams_count		() const { return format_context_.audio_streams_count(); }
     size_t                      subtitle_streams_count	() const { return format_context_.subtitle_streams_count(); }

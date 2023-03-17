@@ -106,6 +106,14 @@ size_t av_format_context::streams_count() const
     return 0;
 }
 
+size_t av_format_context::streams_count(media_type mt) const
+{
+    if (ff_format_context_) {
+        return stream_indices_per_media_type_[to_size_t(mt)].size();;
+    }
+    return 0;
+}
+
 size_t av_format_context::first_stream_index(media_type mt) const
 {
     if (!media_type_valid(mt)) return no_stream_index;

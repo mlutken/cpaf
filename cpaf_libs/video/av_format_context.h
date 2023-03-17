@@ -61,6 +61,7 @@ public:
     // --- Info functions ---
     const std::string&      resource_path			() const { return resource_path_; }
     size_t                  streams_count			() const;
+    size_t                  streams_count			(media_type mt) const;
     size_t                  video_streams_count		() const { return stream_indices_per_media_type_[to_size_t(media_type::video)].size(); }
     size_t                  audio_streams_count		() const { return stream_indices_per_media_type_[to_size_t(media_type::audio)].size(); }
     size_t                  subtitle_streams_count	() const { return stream_indices_per_media_type_[to_size_t(media_type::subtitle)].size(); }
