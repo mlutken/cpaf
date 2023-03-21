@@ -54,7 +54,6 @@ public:
     void                    seek_relative           (const std::chrono::microseconds& delta_time);
     void                    pause_playback          ();
     void                    resume_playback         ();
-    void                    flush_to_index          (const pipeline_index_t& pipeline_index);
     void                    flush_queues            ();
     void                    signal_flush_start      ();
     void                    signal_flush_done       ();

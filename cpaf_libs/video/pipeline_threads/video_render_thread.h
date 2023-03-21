@@ -33,13 +33,10 @@ public:
     bool                        video_frame_update      (av_frame& current_frame, render& video_render);
     void                        video_queue_flush_start ()                          { video_queue_flush_in_progress_ = true; }
     void                        video_queue_flush_done  ()                          { video_queue_flush_in_progress_ = false; video_queue_flushed_ = true; }
-    bool                        flush_to_index          (const pipeline_index_t& pipeline_index);
 
     const atomic_pipeline_index_t&      current_pipeline_index  () const { return current_pipeline_index_; }
 
 private:
-    using flush_queue_t = estl::srsw_fifo_s<pipeline_index_t, 32>;
-    pipeline_index_t            get_flush_to_index      ();
     bool                        video_frame_do_render   (av_frame& current_frame, render& video_render);
     void                        debug_video_frame_update(av_frame& current_frame, render& video_render);
 
@@ -56,22 +53,19 @@ private:
     const std::atomic_bool&     threads_running         () const { return threads_running_; }
     const std::atomic_bool&     threads_paused          () const { return threads_paused_; }
 
-    const std::atomic_bool&         threads_running_;
-    const std::atomic_bool&         threads_paused_;
-    flush_queue_t                   flush_queue_;
+    const std::atomic_bool&     threads_running_;
+    const std::atomic_bool&     threads_paused_;
 
-    av_format_context*              format_context_ptr_             = nullptr;
-    av_codec_context*               video_codec_ctx_ptr_            = nullptr;
-    av_samples_queue*               audio_samples_queue_ptr_        = nullptr;
-    media_stream_time*              current_media_time_ptr_         = nullptr;
-    pipeline_index_t                flush_in_progress_index_        = 0;
-    atomic_pipeline_index_t         current_pipeline_index_         = 0;
-    pipeline_state_t                pipeline_state_                 = pipeline_state_t::normal_flow;
+    av_format_context*          format_context_ptr_             = nullptr;
+    av_codec_context*           video_codec_ctx_ptr_            = nullptr;
+    av_samples_queue*           audio_samples_queue_ptr_        = nullptr;
+    media_stream_time*          current_media_time_ptr_         = nullptr;
+    pipeline_index_t            flush_in_progress_index_        = 0;
+    atomic_pipeline_index_t     current_pipeline_index_         = 0;
 
-//    std::chrono::microseconds       render_video_yield_time_        = std::chrono::milliseconds(1);
-    int                             video_frame_update_dbg_counter_ = 0;
-    std::atomic_bool                video_queue_flush_in_progress_  = false;
-    std::atomic_bool                video_queue_flushed_            = false;
+    int                         video_frame_update_dbg_counter_ = 0;
+    std::atomic_bool            video_queue_flush_in_progress_  = false;
+    std::atomic_bool            video_queue_flushed_            = false;
 };
 
 } // namespace cpaf::video

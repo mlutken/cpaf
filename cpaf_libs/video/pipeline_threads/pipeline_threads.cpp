@@ -160,12 +160,6 @@ void pipeline_threads::resume_playback()
     threads_paused_ = false;
 }
 
-void pipeline_threads::flush_to_index(const pipeline_index_t& pipeline_index)
-{
-    audio_render_thread_.flush_to_index(pipeline_index);
-    video_render_thread_.flush_to_index(pipeline_index);
-}
-
 void pipeline_threads::flush_queues()
 {
     format_context().flush_packet_queues();

@@ -32,21 +32,6 @@ bool video_render_thread::video_frame_update (av_frame& current_frame, render& v
     return ret_val;
 }
 
-bool video_render_thread::flush_to_index(const pipeline_index_t& pipeline_index)
-{
-    return flush_queue_.push(pipeline_index);
-}
-
-pipeline_index_t video_render_thread::get_flush_to_index()
-{
-    pipeline_index_t flush_index = 0;
-    while (!flush_queue_.empty()) {
-        flush_index = flush_queue_.front();
-        flush_queue_.pop();
-    }
-    return flush_index;
-}
-
 bool video_render_thread::video_frame_do_render(av_frame& current_frame, render& video_render)
 {
     if (video_queue_flush_in_progress_) {
