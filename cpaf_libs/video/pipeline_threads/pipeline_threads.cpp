@@ -132,50 +132,12 @@ void pipeline_threads::terminate()
 
 void pipeline_threads::seek_position(const std::chrono::microseconds& stream_pos, seek_dir dir)
 {
-    std::cerr << "FIXMENM pipeline_threads::seek_position(dir): " << std::chrono::duration_cast<std::chrono::milliseconds>(stream_pos).count() << " ms\n";
-    // TODO:
-    // 1) Set flushing requested for all threads (except the packet reader)
-    // 2) Instruct packet reader to seek to new position, while marking the first packets AFTER the seek with
-    //    pipeline_control_t::first_after_flush
-    // 3) [Happens in the other threads] They will keep flushing/popping from their queues until they see
-    //    a frame/packet marked with pipeline_control_t::first_after_flush
-    //    Also for threads producing packets or frames into queues they can drop incoming except that they
-    //    have to resume putting in their producer queue when they see pipeline_control_t::first_after_flush
-    //    As soon as the threads have seen the pipeline_control_t::first_after_flush marker they can resume
-    //    normal state.
-
-//    std::cerr << "FIXMENM BEFORE FLUSH:\n" << format_context().queues_info();
-//    std::cerr << "FIXMENM BEFORE FLUSH samples queue size: " << audio_samples_queue().size() << "\n";
-//    flush_queues();
-//    std::cerr << "FIXMENM AFTER FLUSH:\n" << format_context().queues_info();
-//    std::cerr << "FIXMENM AFTER FLUSH samples queue size: " << audio_samples_queue().size() << "\n";
     packet_reader_thread_.seek_position(stream_pos, dir);
-
-//    const pipeline_index_t flush_to_idx = packet_reader_thread_.seek_position(stream_pos, dir);
-//    flush_to_index(flush_to_idx);
 }
 
 void pipeline_threads::seek_position(const std::chrono::microseconds& stream_pos)
 {
-    std::cerr << "FIXMENM pipeline_threads::seek_position: " << std::chrono::duration_cast<std::chrono::milliseconds>(stream_pos).count() << " ms\n";
-    // TODO:
-    // 1) Set flushing requested for all threads (except the packet reader)
-    // 2) Instruct packet reader to seek to new position, while marking the first packets AFTER the seek with
-    //    pipeline_control_t::first_after_flush
-    // 3) [Happens in the other threads] They will keep flushing/popping from their queues until they see
-    //    a frame/packet marked with pipeline_control_t::first_after_flush
-    //    Also for threads producing packets or frames into queues they can drop incoming except that they
-    //    have to resume putting in their producer queue when they see pipeline_control_t::first_after_flush
-    //    As soon as the threads have seen the pipeline_control_t::first_after_flush marker they can resume
-    //    normal state.
-
-//    flush_queues();
     packet_reader_thread_.seek_position(stream_pos);
-//    const pipeline_index_t flush_to_idx = packet_reader_thread_.seek_position(stream_pos);
-//    flush_to_index(flush_to_idx);
-
-//    seek_position_requested_ = stream_pos;
-    //    seek_requested_ = true;
 }
 
 void pipeline_threads::seek_relative(const std::chrono::microseconds& delta_time)
