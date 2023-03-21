@@ -78,6 +78,7 @@ bool player::open_stream(const std::string& resource_path, stream_type_t sti)
 
 bool player::open_primary_stream(const std::string& resource_path)
 {
+    primary_resource_path_ = resource_path;
     const auto open_ok = primary_source_stream_->open(resource_path);
     return open_ok;
 }
