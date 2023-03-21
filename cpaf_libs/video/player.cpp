@@ -13,6 +13,11 @@ void player::start()
     pipeline_threads_temp_only().start();
 }
 
+void player::terminate()
+{
+    pipeline_threads_temp_only().terminate();
+}
+
 /// @todo need to support reading "hybrid" resources that (potentially) specify different streams
 ///       for video, audio, key_frames etc.. For now we simply open a single primary stream with this.
 bool player::open(const std::string& resource_path)

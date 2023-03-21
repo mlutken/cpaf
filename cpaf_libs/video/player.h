@@ -23,6 +23,7 @@ public:
 
     player();
     void                        start                   ();
+    void                        terminate               ();
     bool                        open                    (const std::string& resource_path);
     bool                        open                    (const std::string& resource_path, stream_type_t sti);
 
