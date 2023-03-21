@@ -8,6 +8,11 @@ player::player()
 
 }
 
+void player::start()
+{
+    pipeline_threads_temp_only().start();
+}
+
 /// @todo need to support reading "hybrid" resources that (potentially) specify different streams
 ///       for video, audio, key_frames etc.. For now we simply open a single primary stream with this.
 bool player::open(const std::string& resource_path)
@@ -65,6 +70,69 @@ play_stream* player::source_stream(stream_type_t sti)
         }
     }
     return nullptr;
+}
+
+// -----------------------------------------------------
+// --------- TEMP/REFACTOR: pipeline_threads related ---
+// -----------------------------------------------------
+void player::format_context_set(av_format_context* ctx)
+{
+    pipeline_threads_temp_only().format_context_set(ctx);
+}
+
+void player::format_context_set(av_format_context& ctx)
+{
+    pipeline_threads_temp_only().format_context_set(ctx);
+}
+
+void player::video_codec_ctx_set(av_codec_context* ctx)
+{
+    pipeline_threads_temp_only().video_codec_ctx_set(ctx);
+}
+
+void player::video_codec_ctx_set(av_codec_context& ctx)
+{
+    pipeline_threads_temp_only().video_codec_ctx_set(ctx);
+}
+
+void player::audio_codec_ctx_set(av_codec_context* ctx)
+{
+    pipeline_threads_temp_only().audio_codec_ctx_set(ctx);
+}
+
+void player::audio_codec_ctx_set(av_codec_context& ctx)
+{
+    pipeline_threads_temp_only().audio_codec_ctx_set(ctx);
+}
+
+void player::audio_resampler_set(audio_resampler* resampler)
+{
+    pipeline_threads_temp_only().audio_resampler_set(resampler);
+}
+
+void player::audio_resampler_set(audio_resampler& resampler)
+{
+    pipeline_threads_temp_only().audio_resampler_set(resampler);
+}
+
+void player::audio_samples_queue_set(av_samples_queue* queue)
+{
+    pipeline_threads_temp_only().audio_samples_queue_set(queue);
+}
+
+void player::audio_samples_queue_set(av_samples_queue& queue)
+{
+    pipeline_threads_temp_only().audio_samples_queue_set(queue);
+}
+
+void player::current_media_time_set(media_stream_time* mts)
+{
+    pipeline_threads_temp_only().current_media_time_set(mts);
+}
+
+void player::current_media_time_set(media_stream_time& mts)
+{
+    pipeline_threads_temp_only().current_media_time_set(mts);
 }
 
 // ---------------------------------------------

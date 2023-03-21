@@ -22,6 +22,7 @@ public:
 
 
     player();
+    void                        start                   ();
     bool                        open                    (const std::string& resource_path);
     bool                        open                    (const std::string& resource_path, stream_type_t sti);
 
@@ -34,6 +35,22 @@ public:
 
     media_stream_time&          cur_media_time          ()          { return cur_media_time_; }
     const media_stream_time&    cur_media_time          () const    { return cur_media_time_; }
+
+    // -----------------------------------------------------
+    // --------- TEMP/REFACTOR: pipeline_threads related ---
+    // -----------------------------------------------------
+    void                        format_context_set      (av_format_context* ctx);
+    void                        format_context_set      (av_format_context& ctx);
+    void                        video_codec_ctx_set     (av_codec_context* ctx);
+    void                        video_codec_ctx_set     (av_codec_context& ctx);
+    void                        audio_codec_ctx_set     (av_codec_context* ctx);
+    void                        audio_codec_ctx_set     (av_codec_context& ctx);
+    void                        audio_resampler_set     (audio_resampler* resampler);
+    void                        audio_resampler_set     (audio_resampler& resampler);
+    void                        audio_samples_queue_set (av_samples_queue* queue);
+    void                        audio_samples_queue_set (av_samples_queue& queue);
+    void                        current_media_time_set  (media_stream_time* mts);
+    void                        current_media_time_set  (media_stream_time& mts);
 
     // ---------------------------------------------
     // --- Interfacing to surrounding app/system ---
