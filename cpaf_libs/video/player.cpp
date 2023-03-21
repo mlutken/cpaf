@@ -5,7 +5,7 @@ namespace cpaf::video {
 player::player()
 {
     primary_source_stream_ = std::make_unique<play_stream>();
-
+    current_media_time_set(cur_media_time_);
 }
 
 void player::start()
@@ -130,16 +130,6 @@ void player::audio_samples_queue_set(av_samples_queue& queue)
     pipeline_threads_temp_only().audio_samples_queue_set(queue);
 }
 
-void player::current_media_time_set(media_stream_time* mts)
-{
-    pipeline_threads_temp_only().current_media_time_set(mts);
-}
-
-void player::current_media_time_set(media_stream_time& mts)
-{
-    pipeline_threads_temp_only().current_media_time_set(mts);
-}
-
 // ---------------------------------------------
 // --- Interfacing to surrounding app/system ---
 // ---------------------------------------------
@@ -175,11 +165,13 @@ void player::seek_relative(const std::chrono::microseconds& delta_time)
 
 void player::pause_playback()
 {
+    cur_media_time_.pause_time();
     pipeline_threads_temp_only().pause_playback();
 }
 
 void player::resume_playback()
 {
+    cur_media_time_.resume_time();
     pipeline_threads_temp_only().resume_playback();
 }
 
@@ -202,6 +194,17 @@ bool player::open_primary_stream(const std::string& resource_path)
     const auto open_ok = primary_source_stream_->open(resource_path);
     return open_ok;
 }
+
+void player::current_media_time_set(media_stream_time* mts)
+{
+    pipeline_threads_temp_only().current_media_time_set(mts);
+}
+
+void player::current_media_time_set(media_stream_time& mts)
+{
+    pipeline_threads_temp_only().current_media_time_set(mts);
+}
+
 
 } //END namespace cpaf::video
 

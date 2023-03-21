@@ -50,8 +50,6 @@ public:
     void                        audio_resampler_set     (audio_resampler& resampler);
     void                        audio_samples_queue_set (av_samples_queue* queue);
     void                        audio_samples_queue_set (av_samples_queue& queue);
-    void                        current_media_time_set  (media_stream_time* mts);
-    void                        current_media_time_set  (media_stream_time& mts);
 
     // ---------------------------------------------
     // --- Interfacing to surrounding app/system ---
@@ -76,6 +74,8 @@ private:
     // ---------------------------------
     bool                        open_stream             (const std::string& resource_path, stream_type_t sti);
     bool                        open_primary_stream     (const std::string& resource_path);
+    void                        current_media_time_set  (media_stream_time* mts);
+    void                        current_media_time_set  (media_stream_time& mts);
 
 
     // ----------------------------
