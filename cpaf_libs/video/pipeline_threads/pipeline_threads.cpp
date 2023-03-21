@@ -111,7 +111,7 @@ void pipeline_threads::current_media_time_set(media_stream_time& mts)
     current_media_time_ptr_ = &mts;
 }
 
-pipeline_threads::play_callback_t pipeline_threads::audio_callback_get()
+pipeline_threads::audio_play_callback_t pipeline_threads::audio_callback_get()
 {
     return audio_render_thread_.audio_callback_get();
 }
