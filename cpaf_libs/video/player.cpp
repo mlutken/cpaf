@@ -67,6 +67,39 @@ play_stream* player::source_stream(stream_type_t sti)
     return nullptr;
 }
 
+// --------------------
+// --- Play control ---
+// --------------------
+
+void player::seek_position(const std::chrono::microseconds& stream_pos, seek_dir dir)
+{
+    pipeline_threads_temp_only().seek_position(stream_pos, dir);
+}
+
+void player::seek_position(const std::chrono::microseconds& stream_pos)
+{
+    pipeline_threads_temp_only().seek_position(stream_pos);
+}
+
+void player::seek_relative(const std::chrono::microseconds& delta_time)
+{
+    pipeline_threads_temp_only().seek_relative(delta_time);
+}
+
+void player::pause_playback()
+{
+    pipeline_threads_temp_only().pause_playback();
+}
+
+void player::resume_playback()
+{
+    pipeline_threads_temp_only().resume_playback();
+}
+
+// ---------------------------------
+// --- PRIVATE: Helper functions ---
+// ---------------------------------
+
 bool player::open_stream(const std::string& resource_path, stream_type_t sti)
 {
     const auto index = to_size_t(sti);

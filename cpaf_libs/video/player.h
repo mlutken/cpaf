@@ -33,8 +33,20 @@ public:
     media_stream_time&          cur_media_time          ()          { return cur_media_time_; }
     const media_stream_time&    cur_media_time          () const    { return cur_media_time_; }
 
-private:
+    // --------------------
+    // --- Play control ---
+    // --------------------
+    void                        seek_position           (const std::chrono::microseconds& stream_pos, seek_dir dir);
+    void                        seek_position           (const std::chrono::microseconds& stream_pos);
+    void                        seek_relative           (const std::chrono::microseconds& delta_time);
+    void                        pause_playback          ();
+    void                        resume_playback         ();
 
+
+private:
+    // ---------------------------------
+    // --- PRIVATE: Helper functions ---
+    // ---------------------------------
     bool                        open_stream             (const std::string& resource_path, stream_type_t sti);
     bool                        open_primary_stream     (const std::string& resource_path);
 
