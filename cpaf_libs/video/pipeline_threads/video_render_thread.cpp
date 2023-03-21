@@ -27,20 +27,7 @@ void video_render_thread::start()
 
 bool video_render_thread::video_frame_update (av_frame& current_frame, render& video_render)
 {
-//    switch_state();
-    bool ret_val = false;
-    switch (pipeline_state_) {
-    case pipeline_state_t::normal_flow:
-        ret_val = state__normal_flow(current_frame, video_render);
-        break;
-    case pipeline_state_t::flush_in_progress:
-        ret_val = state__flush_in_progress(current_frame, video_render);
-        break;
-    default:
-        // TODO: How many stated do we really need here! For now we treat remaining states as the normal_flow case!!
-        ret_val = state__normal_flow(current_frame, video_render);
-        break;
-    }
+    bool ret_val = video_frame_do_render(current_frame, video_render);
     debug_video_frame_update(current_frame, video_render);
     return ret_val;
 }
@@ -48,11 +35,6 @@ bool video_render_thread::video_frame_update (av_frame& current_frame, render& v
 bool video_render_thread::flush_to_index(const pipeline_index_t& pipeline_index)
 {
     return flush_queue_.push(pipeline_index);
-}
-
-bool video_render_thread::state_matches(pipeline_state_t desired_state, const pipeline_index_t& desired_index) const
-{
-    return desired_state == pipeline_state_ && desired_index == current_pipeline_index_;
 }
 
 pipeline_index_t video_render_thread::get_flush_to_index()
@@ -65,27 +47,7 @@ pipeline_index_t video_render_thread::get_flush_to_index()
     return flush_index;
 }
 
-void video_render_thread::switch_state()
-{
-    switch (pipeline_state_) {
-    case pipeline_state_t::normal_flow:
-        flush_in_progress_index_ = get_flush_to_index();
-        if (flush_in_progress_index_ != 0) {
-            pipeline_state_ = pipeline_state_t::flush_in_progress;
-        }
-        break;
-    case pipeline_state_t::flush_in_progress:
-        if (flush_in_progress_index_ == 0) {
-            pipeline_state_ = pipeline_state_t::normal_flow;
-        }
-        break;
-    default:
-        // Don't change state!!
-        break;
-    }
-}
-
-bool video_render_thread::state__normal_flow(av_frame& current_frame, render& video_render)
+bool video_render_thread::video_frame_do_render(av_frame& current_frame, render& video_render)
 {
     if (video_queue_flush_in_progress_) {
         return false;
@@ -117,34 +79,6 @@ bool video_render_thread::state__normal_flow(av_frame& current_frame, render& vi
         }
 
     }
-    return false;
-}
-
-bool video_render_thread::state__flush_in_progress(av_frame& /*current_frame*/, render& /*video_render*/)
-{
-    std::cerr << "FIXMENM VIDEO state__flush_in_progress video packet queue size: '" <<  video_packet_queue().size() << "'\n";
-    bool flushing_done = false;
-    while (!flushing_done) {
-        if (video_packet_queue().empty()) {
-            //    std::cerr << "FIXMENM VIDEO state__flush_in_progress: '" << flush_in_progress_index_ << "'\n";
-            break;
-        }
-        const auto front_pipeline_index = video_packet_queue().front().pipeline_index();
-        if (front_pipeline_index >= flush_in_progress_index_) {
-            std::cerr << "FIXMENM VIDEO DONE FLUSHING; flushed to index:" << flush_in_progress_index_
-                        << ", video time: " << video_packet_queue().front().presentation_time_ms().count() << " ms"
-                        << ", video packet queue size: " << video_packet_queue().size()
-                        << "\n";
-            current_pipeline_index_ = front_pipeline_index;
-            flush_in_progress_index_ = 0;
-            flushing_done = true;
-        }
-        else {
-            //            std::cerr << "FIXMENM video_samples_queue().pop()\n";
-            video_packet_queue_pop();
-        }
-    }
-
     return false;
 }
 
