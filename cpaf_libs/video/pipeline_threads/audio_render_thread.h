@@ -18,13 +18,13 @@ class av_samples_queue;
 class audio_render_thread
 {
 public:
-    using play_callback_t  = cpaf::audio::device_base::play_callback_t;
+    using audio_play_callback_t  = cpaf::audio::device_base::play_callback_t;
     audio_render_thread() = default;
 
     void                    format_context_set      (av_format_context* ctx)    { format_context_ptr_ = ctx; }
     void                    format_context_set      (av_format_context& ctx)    { format_context_ptr_ = &ctx; }
-    void                    audio_samples_queue_set (av_samples_queue* queue) { audio_samples_queue_ptr_ = queue; }
-    void                    audio_samples_queue_set (av_samples_queue& queue) { audio_samples_queue_ptr_ = &queue; }
+    void                    audio_samples_queue_set (av_samples_queue* queue)   { audio_samples_queue_ptr_ = queue; }
+    void                    audio_samples_queue_set (av_samples_queue& queue)   { audio_samples_queue_ptr_ = &queue; }
     void                    current_media_time_set  (media_stream_time* mts)    { current_media_time_ptr_ = mts; }
     void                    current_media_time_set  (media_stream_time& mts)    { current_media_time_ptr_ = &mts; }
 
@@ -35,7 +35,7 @@ public:
     bool                    state_matches           (pipeline_state_t desired_state, const pipeline_index_t& desired_index) const;
 
 
-    play_callback_t         audio_callback_get      ();
+    audio_play_callback_t   audio_callback_get      ();
 
     const atomic_pipeline_index_t&      current_pipeline_index  () const { return current_pipeline_index_; }
 

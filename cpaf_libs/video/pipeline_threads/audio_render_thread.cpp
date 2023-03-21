@@ -25,7 +25,7 @@ bool audio_render_thread::state_matches(pipeline_state_t desired_state, const pi
     return desired_state == pipeline_state_ && desired_index == current_pipeline_index_;
 }
 
-audio_render_thread::play_callback_t audio_render_thread::audio_callback_get()
+audio_render_thread::audio_play_callback_t audio_render_thread::audio_callback_get()
 {
     return [this](uint8_t* stream, int32_t length) {
         this->audio_callback_function(stream, length);
