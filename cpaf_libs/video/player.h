@@ -2,6 +2,7 @@
 
 #include <array>
 #include <memory>
+#include <cpaf_libs/audio/cpaf_audio_device_base.h>
 #include <cpaf_libs/video/av_util.h>
 #include <cpaf_libs/video/play_stream.h>
 #include <cpaf_libs/video/media_stream_time.h>
@@ -11,6 +12,7 @@ namespace cpaf::video {
 class player
 {
 public:
+    using audio_play_callback_t  = cpaf::audio::device_base::play_callback_t;
 
     // START: TEMPORARY REFACTOR functions ONLY!
 
@@ -32,6 +34,13 @@ public:
 
     media_stream_time&          cur_media_time          ()          { return cur_media_time_; }
     const media_stream_time&    cur_media_time          () const    { return cur_media_time_; }
+
+    // ---------------------------------------------
+    // --- Interfacing to surrounding app/system ---
+    // ---------------------------------------------
+    audio_play_callback_t       audio_callback_get      ();
+    bool                        video_frame_update      (av_frame& current_frame, render& video_render);
+
 
     // --------------------
     // --- Play control ---

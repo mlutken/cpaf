@@ -67,6 +67,20 @@ play_stream* player::source_stream(stream_type_t sti)
     return nullptr;
 }
 
+// ---------------------------------------------
+// --- Interfacing to surrounding app/system ---
+// ---------------------------------------------
+
+player::audio_play_callback_t player::audio_callback_get()
+{
+    return pipeline_threads_temp_only().audio_callback_get();
+}
+
+bool player::video_frame_update(av_frame& current_frame, render& video_render)
+{
+    return pipeline_threads_temp_only().video_frame_update(current_frame, video_render);
+}
+
 // --------------------
 // --- Play control ---
 // --------------------
