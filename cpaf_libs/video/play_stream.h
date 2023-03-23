@@ -16,7 +16,7 @@ class play_stream
 {
 public:
              play_stream();
-    explicit play_stream(const std::string& resource_path);
+//    explicit play_stream(const std::string& resource_path);
 
     bool                        open                    (const std::string& resource_path);
     void                        start                   ();

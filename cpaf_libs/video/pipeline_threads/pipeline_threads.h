@@ -32,6 +32,7 @@ public:
     pipeline_threads& operator=(const pipeline_threads&)  = delete;
 
     pipeline_threads();
+//    pipeline_threads(std::atomic_bool& threads_running, std::atomic_bool& threads_paused);
 
     void                    format_context_set      (av_format_context* ctx);
     void                    format_context_set      (av_format_context& ctx);
@@ -69,8 +70,8 @@ private:
     av_samples_queue&       audio_samples_queue     () { return *audio_samples_queue_ptr_; }
     media_stream_time&      current_media_time      () { return *current_media_time_ptr_; }
 
-    const std::atomic_bool& threads_running         () const { return threads_running_; }
-    const std::atomic_bool& threads_paused          () const { return threads_paused_; }
+    std::atomic_bool&       threads_running         ()  { return threads_running_; }
+    std::atomic_bool&       threads_paused          ()  { return threads_paused_; }
 
 
     av_format_context*              format_context_ptr_             = nullptr;

@@ -15,6 +15,7 @@ void player::start()
 
 void player::terminate()
 {
+    threads_running_ = false;
     pipeline_threads_temp_only().terminate();
 }
 
@@ -166,12 +167,14 @@ void player::seek_relative(const std::chrono::microseconds& delta_time)
 void player::pause_playback()
 {
     cur_media_time_.pause_time();
+    threads_paused_ = true;
     pipeline_threads_temp_only().pause_playback();
 }
 
 void player::resume_playback()
 {
     cur_media_time_.resume_time();
+    threads_paused_ = false;
     pipeline_threads_temp_only().resume_playback();
 }
 

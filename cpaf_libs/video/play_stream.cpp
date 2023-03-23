@@ -12,12 +12,12 @@ play_stream::play_stream()
 
 }
 
-play_stream::play_stream(const std::string& resource_path)
-    : audio_samples_queue_(1000)
-    , format_context_(resource_path)
-{
+//play_stream::play_stream(const std::string& resource_path)
+//    : audio_samples_queue_(1000)
+//    , format_context_(resource_path)
+//{
 
-}
+//}
 
 bool play_stream::open(const std::string& resource_path)
 {

@@ -85,6 +85,10 @@ private:
     std::array<std::unique_ptr<play_stream>, stream_type_index_size()>  source_streams_ = {nullptr, nullptr, nullptr, nullptr, nullptr};
     std::unique_ptr<play_stream>                                        primary_source_stream_;
     media_stream_time                                                   cur_media_time_;
+    std::atomic_bool                                                    threads_running_  = true;
+    std::atomic_bool                                                    threads_paused_   = false;
+
+//    video_render_thread                                                 video_render_thread_;
     std::string                                                         primary_resource_path_;
 
 };

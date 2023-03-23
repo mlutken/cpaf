@@ -16,6 +16,7 @@ using namespace std;
 namespace cpaf::video {
 
 
+//pipeline_threads::pipeline_threads(atomic_bool& /*threads_running*/, atomic_bool& /*threads_paused*/)
 pipeline_threads::pipeline_threads()
     : packet_reader_thread_(threads_running_, threads_paused_)
     , audio_resampler_thread_(threads_running_, threads_paused_)
