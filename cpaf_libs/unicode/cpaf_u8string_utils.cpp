@@ -552,14 +552,26 @@ std::string remove_between_copy  (const std::string& str,
     return s;
 }
 
+/** Remove all in brackets {}, [], ().
+@return String with all inside brackes: {}, [], () including the brackets removed. */
 std::string remove_between_brackets_copy(const std::string& str, post_op post_process)
 {
-    return to_string( remove_between_brackets_copy(to_u16string(str), post_process) );
+    static const std::vector<char> start_chars { '(', '{', '[' };
+    static const std::vector<char> end_chars   { ')', '}', ']' };
+
+    return remove_between_copy(str, start_chars, end_chars, post_process);
 }
 
+/** Remove all html tags from string.
+ * Note this is a very simple implementation, that simply removes all between
+ * pairs of '<' '>' including the arrows.
+ *
+@return . */
 std::string clean_html_tags_copy(const std::string& str, post_op post_process)
 {
-    return to_string( clean_html_tags_copy(to_u16string(str), post_process) );
+    static const std::vector<char> start_chars { '<' };
+    static const std::vector<char> end_chars   { '>' };
+    return remove_between_copy(str, start_chars, end_chars, post_process);
 }
 
 
