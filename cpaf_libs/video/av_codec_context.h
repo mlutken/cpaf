@@ -40,6 +40,7 @@ public:
         return *this;
     }
 
+    av_codec_context() = default;
 
     av_codec_context(AVCodecContext* ff_codec_context,
                      size_t stream_index,

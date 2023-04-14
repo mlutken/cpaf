@@ -6,6 +6,7 @@
 #include <cpaf_libs/video/av_util.h>
 #include <cpaf_libs/video/play_stream.h>
 #include <cpaf_libs/video/media_stream_time.h>
+#include <cpaf_libs/video/audio_resampler.h>
 
 namespace cpaf::video {
 
@@ -27,6 +28,7 @@ public:
     bool                        open                    (const std::string& resource_path);
     bool                        open                    (const std::string& resource_path, stream_type_t sti);
 
+    bool                        has_video_source_stream () const { return has_source_stream(stream_type_t::video); }
     bool                        has_source_stream       (stream_type_t sti) const;
     const play_stream*          source_stream           (stream_type_t sti) const;
     play_stream*                source_stream           (stream_type_t sti);
@@ -50,6 +52,15 @@ public:
     void                        audio_resampler_set     (audio_resampler& resampler);
     void                        audio_samples_queue_set (av_samples_queue* queue);
     void                        audio_samples_queue_set (av_samples_queue& queue);
+
+    audio_resampler&            audio_resampler_get     () { return audio_resampler_; }
+    av_samples_queue&           audio_samples_queue     () { return audio_samples_queue_; }
+
+    // ---------------------------
+    // --- Video setup/control ---
+    // ---------------------------
+    void                        set_video_dimensions    (const surface_dimensions_t& dimensions);
+    av_codec_context&           video_codec_context     ();
 
     // ---------------------------------------------
     // --- Interfacing to surrounding app/system ---
@@ -83,12 +94,15 @@ private:
     // ----------------------------
     // --- PRIVATE: Member vars ---
     // ----------------------------
-//    std::array<play_stream*, stream_type_index_size()>                  source_stream_ptrs_ = {nullptr, nullptr, nullptr, nullptr, nullptr};
     std::array<std::unique_ptr<play_stream>, stream_type_index_size()>  source_streams_ = {nullptr, nullptr, nullptr, nullptr, nullptr};
     std::unique_ptr<play_stream>                                        primary_source_stream_;
     media_stream_time                                                   cur_media_time_;
     std::atomic_bool                                                    threads_running_  = true;
     std::atomic_bool                                                    threads_paused_   = false;
+    av_codec_context                                                    video_codec_ctx_;
+    av_samples_queue                                                    audio_samples_queue_;
+    audio_resampler                                                     audio_resampler_;
+    av_codec_context*               video_codec_ctx_ptr_FIXMENM_            = nullptr;
 
 //    video_render_thread                                                 video_render_thread_;
     std::string                                                         primary_resource_path_;

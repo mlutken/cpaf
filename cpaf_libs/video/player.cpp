@@ -3,6 +3,7 @@
 namespace cpaf::video {
 
 player::player()
+    : audio_samples_queue_(1000)
 {
     primary_source_stream_ = std::make_unique<play_stream>();
     current_media_time_set(cur_media_time_);
@@ -33,7 +34,7 @@ bool player::open(const std::string& resource_path, stream_type_t sti)
 
 bool player::has_source_stream(stream_type_t sti) const
 {
-    return source_stream(sti) == nullptr;
+    return source_stream(sti) != nullptr;
 }
 
 // TODO: A little convoluted this implementation
@@ -129,6 +130,27 @@ void player::audio_samples_queue_set(av_samples_queue* queue)
 void player::audio_samples_queue_set(av_samples_queue& queue)
 {
     pipeline_threads_temp_only().audio_samples_queue_set(queue);
+}
+
+// ---------------------------
+// --- Video setup/control ---
+// ---------------------------
+void player::set_video_dimensions(const surface_dimensions_t& /*dimensions*/)
+{
+//    auto* stream_ptr = source_stream(stream_type_t::video);
+//    if (!stream_ptr) { return; }
+    //    stream_ptr->format_context()
+}
+
+av_codec_context& player::video_codec_context()
+{
+    if (!video_codec_ctx_.is_valid()) {
+
+    }
+    return video_codec_ctx_;
+    // FIXMENM IMPORTANT !!! Change to return this->video_codec_ctx_, when done moving this!!!!
+
+//    return *video_codec_ctx_ptr_FIXMENM_;
 }
 
 // ---------------------------------------------
