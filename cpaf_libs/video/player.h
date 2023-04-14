@@ -66,6 +66,8 @@ public:
     void                        seek_relative           (const std::chrono::microseconds& delta_time);
     void                        pause_playback          ();
     void                        resume_playback         ();
+    void                        toggle_pause_playback   ();
+    bool                        playback_paused         () const { return threads_paused_; }
 
 
 private:

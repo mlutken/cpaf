@@ -178,6 +178,18 @@ void player::resume_playback()
     pipeline_threads_temp_only().resume_playback();
 }
 
+
+void player::toggle_pause_playback()
+{
+    if (playback_paused()) {
+        resume_playback();
+    }
+    else {
+        pause_playback();
+    }
+}
+
+
 // ---------------------------------
 // --- PRIVATE: Helper functions ---
 // ---------------------------------
