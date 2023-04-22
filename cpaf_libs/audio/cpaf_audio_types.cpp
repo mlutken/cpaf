@@ -5,6 +5,24 @@
 namespace cpaf::audio{
 
 
+std::string to_string(channel_layout_t channel_layout)
+{
+    switch (channel_layout) {
+    case channel_layout_t::mono:		return "mono"; break;
+    case channel_layout_t::stereo:		return "stereo"; break;
+    case channel_layout_t::surround2_1:	return "surround 2.1"; break;
+    case channel_layout_t::quad:		return "quad"; break;
+    case channel_layout_t::quad_center:	return "quad+center"; break;
+    case channel_layout_t::surround5_1:	return "surround 5.1"; break;
+    case channel_layout_t::surround6_1:	return "surround 6.1"; break;
+    case channel_layout_t::surround7_1:	return "surround 7.1"; break;
+    case channel_layout_t::SIZE:        return "SIZE"; break;
+    case channel_layout_t::INVALID:     return "INVALID"; break;
+    }
+    return "";
+}
+
+
 std::string to_string(sample_format_t audio_format)
 {
 	switch (audio_format) {
@@ -23,8 +41,17 @@ std::string to_string(sample_format_t audio_format)
 	case sample_format_t::SIZE:	return "SIZE"; break;
 	case sample_format_t::INVALID:	return "INVALID"; break;
 	}
-	return "";
+    return "";
 }
+
+std::string to_string(audio_format_t audio_format)
+{
+    std::string s = "Layout: " + to_string(audio_format.channel_layout);
+    s.append( ", Format: " + to_string(audio_format.sample_format));
+    s.append( ", Sample rate: " + std::to_string(audio_format.sample_rate));
+    return s;
+}
+
 
 
 
