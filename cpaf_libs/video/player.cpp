@@ -23,7 +23,6 @@ void player::start(const std::chrono::microseconds& start_time_pos)
     pipeline_threads_temp_only().audio_resampler_set(audio_resampler_);
     pipeline_threads_temp_only().audio_samples_queue_set(audio_samples_queue_);
 
-
     fmt_ctx.read_packets_to_queues(fmt_ctx.primary_media_type(), 10);
     pipeline_threads_temp_only().format_context_set(fmt_ctx);
     pipeline_threads_temp_only().video_codec_ctx_set(video_codec_context());
