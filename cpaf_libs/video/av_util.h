@@ -3,7 +3,9 @@
 extern "C"
 {
 #include <libavutil/samplefmt.h>
+#include <libswresample/swresample.h>
 }
+
 
 #include <string>
 #include <chrono>
@@ -69,6 +71,13 @@ enum struct stream_type_t : size_t {
     keyframes,
     ads,
     SIZE = ads +1 			///< One past the last as we start from zero
+};
+
+struct audio_format_t
+{
+    uint64_t				channel_layout		= AV_CH_LAYOUT_STEREO;
+    AVSampleFormat          sample_format       = AV_SAMPLE_FMT_S16;
+    int32_t                 sample_rate         = 44100;
 };
 
 //inline bool operator<(const pipeline_control_t& pc_left, const pipeline_control_t& pc_right) {
