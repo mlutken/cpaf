@@ -11,8 +11,15 @@ player::player()
 
 void player::start()
 {
-    auto&  fmt_ctx = primary_stream().format_context();
+    auto&  fmt_ctx = primary_stream().format_context(); // TODO: If we use multiple streams we need to get the right format ctx per stream here!
     video_codec_context().get_packet_function_set(fmt_ctx.get_packet_function(media_type::video));
+    audio_codec_context().get_packet_function_set(fmt_ctx.get_packet_function(media_type::audio));
+
+    pipeline_threads_temp_only().audio_codec_ctx_set(audio_codec_context());
+    pipeline_threads_temp_only().audio_resampler_set(audio_resampler_);
+    pipeline_threads_temp_only().audio_samples_queue_set(audio_samples_queue_);
+
+
     fmt_ctx.read_packets_to_queues(fmt_ctx.primary_media_type(), 10);
     pipeline_threads_temp_only().format_context_set(fmt_ctx);
     pipeline_threads_temp_only().video_codec_ctx_set(video_codec_context());
@@ -23,6 +30,9 @@ void player::start()
 void player::terminate()
 {
     threads_running_ = false;
+    // Reset codec contexts
+    video_codec_ctx_ = av_codec_context{};
+    audio_codec_ctx_ = av_codec_context{};
     pipeline_threads_temp_only().terminate();
 }
 
@@ -154,11 +164,23 @@ av_codec_context& player::video_codec_context() const
     if (!video_codec_ctx_.is_valid()) {
         auto* video_stream = source_stream(stream_type_t::video);
         if (video_stream){
-            video_codec_ctx_ = video_stream->codec_context(video_stream->first_video_index());
+            video_codec_ctx_ = video_stream->codec_context(video_stream_index());
             update_scaling_context();
         }
     }
     return video_codec_ctx_;
+}
+
+av_codec_context& player::audio_codec_context() const
+{
+    if (!audio_codec_ctx_.is_valid()) {
+        auto* audio_stream = source_stream(stream_type_t::audio);
+        if (audio_stream){
+            audio_codec_ctx_ = audio_stream->codec_context(audio_stream_index());
+            //TODO: Should we call update_resampler_context() or similar named function?;
+        }
+    }
+    return audio_codec_ctx_;
 }
 
 // ----------------------------
@@ -179,6 +201,20 @@ surface_dimensions_t player::video_dst_dimensions() const
         return video_src_dimensions();
     }
     return video_dst_dimensions_requested_;
+}
+
+size_t player::video_stream_index() const
+{
+    return video_stream_index_ != no_stream_index ? video_stream_index_ : source_stream(stream_type_t::video)->first_video_index();
+}
+
+// ----------------------------
+// --- Audio info functions ---
+// ----------------------------
+
+size_t player::audio_stream_index() const
+{
+    return audio_stream_index_ != no_stream_index ? audio_stream_index_ : source_stream(stream_type_t::audio)->first_audio_index();
 }
 
 // ---------------------------------------------

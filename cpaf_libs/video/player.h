@@ -62,12 +62,20 @@ public:
     void                        video_scaler_align_set  (int32_t align);
     void                        ff_dst_pixel_fomat_set  (AVPixelFormat pixel_format);
     av_codec_context&           video_codec_context     () const;
+    av_codec_context&           audio_codec_context     () const;
 
     // ----------------------------
     // --- Video info functions ---
     // ----------------------------
     surface_dimensions_t        video_src_dimensions    () const;
     surface_dimensions_t        video_dst_dimensions    () const;
+    size_t                      video_stream_index		() const;
+
+    // ----------------------------
+    // --- Audio info functions ---
+    // ----------------------------
+    size_t                      audio_stream_index		() const;
+
     // ---------------------------------------------
     // --- Interfacing to surrounding app/system ---
     // ---------------------------------------------
@@ -110,7 +118,11 @@ private:
     media_stream_time                                                   cur_media_time_;
     std::atomic_bool                                                    threads_running_                = true;
     std::atomic_bool                                                    threads_paused_                 = false;
+    size_t                                                              video_stream_index_             = no_stream_index;
+    size_t                                                              audio_stream_index_             = no_stream_index;
+
     mutable av_codec_context                                            video_codec_ctx_;
+    mutable av_codec_context                                            audio_codec_ctx_;
     av_samples_queue                                                    audio_samples_queue_;
     audio_resampler                                                     audio_resampler_;
     av_codec_context*               video_codec_ctx_ptr_FIXMENM_            = nullptr;
