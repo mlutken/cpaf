@@ -1,4 +1,5 @@
 #include "ff_audio_format_t.h"
+#include <cpaf_libs/system/cpaf_system_info.h>
 
 namespace cpaf {
 namespace video {
@@ -19,27 +20,22 @@ audio::channel_layout_t to_audio_channel_layout(uint64_t ff_channel_layout)
     return dst_layout;
 }
 
-//case audio::sample_format_t::u8:        return AV_SAMPLE_FMT_U8; break;
-//case audio::sample_format_t::s8:        return AV_SAMPLE_FMT_NONE; break;
-//case audio::sample_format_t::u16:       return AV_SAMPLE_FMT_NONE; break;
-//case audio::sample_format_t::s16:       return AV_SAMPLE_FMT_S16; break;
-//case audio::sample_format_t::u16lsb:    return AV_SAMPLE_FMT_NONE; break;
-//case audio::sample_format_t::s16lsb:    return AV_SAMPLE_FMT_S16; break; // TODO: Need to know platform endiannes here!!
-//case audio::sample_format_t::u16msb:    return AV_SAMPLE_FMT_NONE; break;
-//case audio::sample_format_t::s16msb:    return AV_SAMPLE_FMT_S16; break; // TODO: Need to know platform endiannes here!!
-//case audio::sample_format_t::s32lsb:    return AV_SAMPLE_FMT_S32; break; // TODO: Need to know platform endiannes here!!
-//case audio::sample_format_t::s32msb:    return AV_SAMPLE_FMT_S32; break; // TODO: Need to know platform endiannes here!!
-//case audio::sample_format_t::f32lsb:    return AV_SAMPLE_FMT_FLT; break; // TODO: Need to know platform endiannes here!!
-//case audio::sample_format_t::f32msb:    return AV_SAMPLE_FMT_FLT; break; // TODO: Need to know platform endiannes here!!
-
 audio::sample_format_t to_audio_sample_format(AVSampleFormat ff_sample_format)
 {
     switch (ff_sample_format) {
     case AV_SAMPLE_FMT_NONE:    return audio::sample_format_t::INVALID; break;
     case AV_SAMPLE_FMT_U8:      return audio::sample_format_t::u8; break;
     case AV_SAMPLE_FMT_S16:     return audio::sample_format_t::s16; break;
-    case AV_SAMPLE_FMT_S32:     return audio::sample_format_t::s32lsb; break;      // TODO: Need to know platform endiannes here!!
-    case AV_SAMPLE_FMT_FLT:     return audio::sample_format_t::f32lsb; break;      // TODO: Need to know platform endiannes here!!
+    case AV_SAMPLE_FMT_S32:
+    {
+        if constexpr (system::is_little_endian())   return audio::sample_format_t::s32lsb;
+        else                                        return audio::sample_format_t::s32msb;
+        break;
+    }
+    case AV_SAMPLE_FMT_FLT:
+        if constexpr (system::is_little_endian())   return audio::sample_format_t::f32lsb;
+        else                                        return audio::sample_format_t::f32msb;
+        break;
     case AV_SAMPLE_FMT_DBL:     return audio::sample_format_t::INVALID; break;
 
     case AV_SAMPLE_FMT_U8P:     return audio::sample_format_t::INVALID; break;
@@ -94,13 +90,43 @@ AVSampleFormat to_ff_audio_sample_format(audio::sample_format_t sample_format)
     case audio::sample_format_t::u16:       return AV_SAMPLE_FMT_NONE; break;
     case audio::sample_format_t::s16:       return AV_SAMPLE_FMT_S16; break;
     case audio::sample_format_t::u16lsb:    return AV_SAMPLE_FMT_NONE; break;
-    case audio::sample_format_t::s16lsb:    return AV_SAMPLE_FMT_S16; break; // TODO: Need to know platform endiannes here!!
+    case audio::sample_format_t::s16lsb:
+    {
+        if constexpr (system::is_little_endian())   return AV_SAMPLE_FMT_S16;
+        else                                        return AV_SAMPLE_FMT_NONE;
+        break;
+    }
     case audio::sample_format_t::u16msb:    return AV_SAMPLE_FMT_NONE; break;
-    case audio::sample_format_t::s16msb:    return AV_SAMPLE_FMT_S16; break; // TODO: Need to know platform endiannes here!!
-    case audio::sample_format_t::s32lsb:    return AV_SAMPLE_FMT_S32; break; // TODO: Need to know platform endiannes here!!
-    case audio::sample_format_t::s32msb:    return AV_SAMPLE_FMT_S32; break; // TODO: Need to know platform endiannes here!!
-    case audio::sample_format_t::f32lsb:    return AV_SAMPLE_FMT_FLT; break; // TODO: Need to know platform endiannes here!!
-    case audio::sample_format_t::f32msb:    return AV_SAMPLE_FMT_FLT; break; // TODO: Need to know platform endiannes here!!
+    case audio::sample_format_t::s16msb:
+    {
+        if constexpr (system::is_little_endian())   return AV_SAMPLE_FMT_NONE;
+        else                                        return AV_SAMPLE_FMT_S16;
+        break;
+    }
+    case audio::sample_format_t::s32lsb:
+    {
+        if constexpr (system::is_little_endian())   return AV_SAMPLE_FMT_S32;
+        else                                        return AV_SAMPLE_FMT_NONE;
+        break;
+    }
+    case audio::sample_format_t::s32msb:
+    {
+        if constexpr (system::is_little_endian())   return AV_SAMPLE_FMT_NONE;
+        else                                        return AV_SAMPLE_FMT_S32;
+        break;
+    }
+    case audio::sample_format_t::f32lsb:
+    {
+        if constexpr (system::is_little_endian())   return AV_SAMPLE_FMT_FLT;
+        else                                        return AV_SAMPLE_FMT_NONE;
+        break;
+    }
+    case audio::sample_format_t::f32msb:
+    {
+        if constexpr (system::is_little_endian())   return AV_SAMPLE_FMT_NONE;
+        else                                        return AV_SAMPLE_FMT_FLT;
+        break;
+    }
     case audio::sample_format_t::SIZE:
     case audio::sample_format_t::INVALID:   return AV_SAMPLE_FMT_NONE; break;
     }
