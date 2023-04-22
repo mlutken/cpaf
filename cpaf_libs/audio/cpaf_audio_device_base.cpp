@@ -9,7 +9,7 @@ std::string device_base::dbg_characteristics() const
 {
     std::stringstream ss;
     ss  << "--- Audio device '" << device_name() << "' characteristics ---\n"
-        << "  format          : " << to_string(format()) << "\n"
+        << "  format          : " << to_string(sample_format()) << "\n"
         << "  sample_frequency: " << sample_frequency() << "\n"
         << "  channels_count  : " << channels_count() << "\n"
         << "  samples_count   : " << samples_count() << "\n"

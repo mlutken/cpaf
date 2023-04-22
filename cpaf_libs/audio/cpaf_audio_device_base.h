@@ -1,5 +1,4 @@
-#ifndef CPAF_AUDIO_DEVICE_BASE_H
-#define CPAF_AUDIO_DEVICE_BASE_H
+#pragma once
 
 #include <cstdint>
 #include <memory>
@@ -22,8 +21,8 @@ public:
 
     virtual ~device_base() = default;
     type_t				type					() const { return type_; }
-    sample_format_t		format					() const { return do_format(); }
-    void				format_set				(sample_format_t format) { do_format_set(format); }
+    sample_format_t		sample_format			() const { return do_sample_format(); }
+    void				sample_format_set		(sample_format_t format) { do_sample_format_set(format); }
     int32_t             sample_frequency		() const { return do_sample_frequency(); }
     void				sample_frequency_set	(int32_t sample_freq) { do_sample_frequency_set(sample_freq); }
     int32_t             channels_count			() const { return do_channels_count(); }
@@ -63,8 +62,8 @@ protected:
     void				changed_characteristics_reset();
 
 private:
-    virtual sample_format_t	do_format					() const = 0;
-    virtual void		do_format_set				(sample_format_t format) = 0;
+    virtual sample_format_t	do_sample_format		() const = 0;
+    virtual void		do_sample_format_set		(sample_format_t format) = 0;
     virtual int32_t     do_sample_frequency			() const = 0;
     virtual void		do_sample_frequency_set		(int32_t sample_freq) = 0;
     virtual int32_t     do_channels_count			() const = 0;
@@ -92,8 +91,4 @@ private:
 };
 
 } //END namespace cpaf::audio
-
-
-#endif // CPAF_AUDIO_DEVICE_BASE_H
-
 

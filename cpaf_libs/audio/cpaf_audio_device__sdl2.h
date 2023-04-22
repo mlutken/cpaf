@@ -1,5 +1,4 @@
-#ifndef CPAF_AUDIO_DEVICE_SDL2_H
-#define CPAF_AUDIO_DEVICE_SDL2_H
+#pragma once
 
 #include <SDL2/SDL_audio.h>
 #include <config/cpaf_platform_definitions.h>
@@ -24,8 +23,8 @@ public:
 
 private:
     // --- Platform overrides ---
-    sample_format_t	do_format					() const override;
-    void			do_format_set				(sample_format_t format) override;
+    sample_format_t	do_sample_format					() const override;
+    void			do_sample_format_set				(sample_format_t format) override;
     int32_t         do_sample_frequency			() const  override;
     void			do_sample_frequency_set		(int32_t sample_freq)  override;
     int32_t         do_channels_count           () const override;
@@ -42,8 +41,8 @@ private:
     void			do_pause					() override;
 
     // --- PRIVATE: Helpers  ---
-    static sample_format_t			to_format_t					(SDL_AudioFormat sdl_format);
-    static SDL_AudioFormat	to_sdl_format				(sample_format_t format);
+    static sample_format_t	to_sample_format_t			(SDL_AudioFormat sdl_format);
+    static SDL_AudioFormat	to_sdl_sample_format		(sample_format_t format);
 
     void					set_default_audio_format	();
 
@@ -53,8 +52,3 @@ private:
 
 
 } //END namespace cpaf::audio
-
-
-#endif // CPAF_AUDIO_DEVICE_SDL2_H
-
-

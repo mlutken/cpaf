@@ -47,14 +47,14 @@ device_platform::~device_platform()
 // --- Platform overrides ---
 // --------------------------
 
-sample_format_t device_platform::do_format() const
+sample_format_t device_platform::do_sample_format() const
 {
-    return to_format_t(sdl_audio_spec_.format);
+    return to_sample_format_t(sdl_audio_spec_.format);
 }
 
-void device_platform::do_format_set(sample_format_t format)
+void device_platform::do_sample_format_set(sample_format_t format)
 {
-    sdl_audio_spec_.format = to_sdl_format(format);
+    sdl_audio_spec_.format = to_sdl_sample_format(format);
 }
 
 int32_t device_platform::do_sample_frequency() const
@@ -95,7 +95,7 @@ void device_platform::do_samples_count_set(int32_t samples_count)
 void device_platform::do_characteristics_set(int32_t sample_freq, sample_format_t format, int32_t channels_count, int32_t samples_count)
 {
     sdl_audio_spec_.freq		= static_cast<int>(sample_freq);
-    sdl_audio_spec_.format		= to_sdl_format(format);
+    sdl_audio_spec_.format		= to_sdl_sample_format(format);
     sdl_audio_spec_.channels	= channels_count;
     sdl_audio_spec_.samples		= samples_count;
     sdl_audio_spec_.silence		= 0;
@@ -152,7 +152,7 @@ void device_platform::do_pause()
 // --- PRIVATE: Helpers  ---
 // -------------------------
 
-sample_format_t device_platform::to_format_t(SDL_AudioFormat sdl_format)
+sample_format_t device_platform::to_sample_format_t(SDL_AudioFormat sdl_format)
 {
     static const std::unordered_map<SDL_AudioFormat, sample_format_t> m = {
         {AUDIO_U8,sample_format_t::u8},
@@ -173,7 +173,7 @@ sample_format_t device_platform::to_format_t(SDL_AudioFormat sdl_format)
     return m.at(sdl_format);
 }
 
-SDL_AudioFormat device_platform::to_sdl_format(sample_format_t format)
+SDL_AudioFormat device_platform::to_sdl_sample_format(sample_format_t format)
 {
     static const std::unordered_map<sample_format_t, SDL_AudioFormat> m = {
         {sample_format_t::u8,AUDIO_U8},

@@ -100,7 +100,7 @@ bool audio_resampler::out_formats_set(const audio::device& audio_device)
 {
     out_channel_layout_set_from_channels_count(audio_device.channels_count());
     out_sample_rate_ = audio_device.sample_frequency();
-    return out_sample_format_set(audio_device.format());
+    return out_sample_format_set(audio_device.sample_format());
 }
 
 bool audio_resampler::out_sample_format_set(audio::sample_format_t format)
