@@ -25,25 +25,25 @@ namespace cpaf::video {
 // --- Free functions ---
 // ----------------------
 
-AVSampleFormat to_av_sample_format(audio::format_t device_audio_format)
+AVSampleFormat to_av_sample_format(audio::sample_format_t device_audio_format)
 {
 
     // TODO: Detect platform endiannes and act accordingly!
     // This code assumes platform is Little Endian
     switch (device_audio_format) {
 
-    case audio::format_t::u8: return AV_SAMPLE_FMT_U8; break;
-    case audio::format_t::s8: return AV_SAMPLE_FMT_NONE; break;
-    case audio::format_t::u16: return AV_SAMPLE_FMT_NONE; break;
-    case audio::format_t::s16: return AV_SAMPLE_FMT_S16; break;
-    case audio::format_t::u16lsb: return AV_SAMPLE_FMT_NONE; break;
-    case audio::format_t::s16lsb: return AV_SAMPLE_FMT_S16; break;
-    case audio::format_t::u16msb: return AV_SAMPLE_FMT_NONE; break;
-    case audio::format_t::s16msb: return AV_SAMPLE_FMT_NONE; break;
-    case audio::format_t::s32lsb: return AV_SAMPLE_FMT_S32; break;
-    case audio::format_t::s32msb: return AV_SAMPLE_FMT_NONE; break;
-    case audio::format_t::f32lsb: return AV_SAMPLE_FMT_FLT; break;
-    case audio::format_t::f32msb: return AV_SAMPLE_FMT_NONE; break;
+    case audio::sample_format_t::u8: return AV_SAMPLE_FMT_U8; break;
+    case audio::sample_format_t::s8: return AV_SAMPLE_FMT_NONE; break;
+    case audio::sample_format_t::u16: return AV_SAMPLE_FMT_NONE; break;
+    case audio::sample_format_t::s16: return AV_SAMPLE_FMT_S16; break;
+    case audio::sample_format_t::u16lsb: return AV_SAMPLE_FMT_NONE; break;
+    case audio::sample_format_t::s16lsb: return AV_SAMPLE_FMT_S16; break;
+    case audio::sample_format_t::u16msb: return AV_SAMPLE_FMT_NONE; break;
+    case audio::sample_format_t::s16msb: return AV_SAMPLE_FMT_NONE; break;
+    case audio::sample_format_t::s32lsb: return AV_SAMPLE_FMT_S32; break;
+    case audio::sample_format_t::s32msb: return AV_SAMPLE_FMT_NONE; break;
+    case audio::sample_format_t::f32lsb: return AV_SAMPLE_FMT_FLT; break;
+    case audio::sample_format_t::f32msb: return AV_SAMPLE_FMT_NONE; break;
     default:
         return AV_SAMPLE_FMT_NONE;
     }
@@ -103,7 +103,7 @@ bool audio_resampler::out_formats_set(const audio::device& audio_device)
     return out_sample_format_set(audio_device.format());
 }
 
-bool audio_resampler::out_sample_format_set(audio::format_t format)
+bool audio_resampler::out_sample_format_set(audio::sample_format_t format)
 {
     out_sample_format_ = to_av_sample_format(format);
     return out_sample_format_ != AV_SAMPLE_FMT_NONE;

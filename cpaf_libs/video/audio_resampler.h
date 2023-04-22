@@ -16,7 +16,7 @@ namespace cpaf::audio {
 }
 
 namespace cpaf::video {
-AVSampleFormat   to_av_sample_format    (cpaf::audio::format_t device_audio_format);
+AVSampleFormat   to_av_sample_format    (cpaf::audio::sample_format_t device_audio_format);
 
 class av_codec_context;
 
@@ -40,7 +40,7 @@ public:
     void                    	in_sample_format_set        (AVSampleFormat format) { in_sample_format_ = format;   }
     AVSampleFormat          	out_sample_format           () const                { return out_sample_format_;    }
     void                    	out_sample_format_set       (AVSampleFormat format) { out_sample_format_ = format;  }
-    bool                    	out_sample_format_set       (cpaf::audio::format_t format);
+    bool                    	out_sample_format_set       (cpaf::audio::sample_format_t format);
 
     uint64_t                	in_channel_layout           () const                { return in_channel_layout_;    }
     void                        in_channel_layout_set       (uint64_t layout)       { in_channel_layout_ = layout;  }

@@ -47,12 +47,12 @@ device_platform::~device_platform()
 // --- Platform overrides ---
 // --------------------------
 
-format_t device_platform::do_format() const
+sample_format_t device_platform::do_format() const
 {
     return to_format_t(sdl_audio_spec_.format);
 }
 
-void device_platform::do_format_set(format_t format)
+void device_platform::do_format_set(sample_format_t format)
 {
     sdl_audio_spec_.format = to_sdl_format(format);
 }
@@ -92,7 +92,7 @@ void device_platform::do_samples_count_set(int32_t samples_count)
     sdl_audio_spec_.samples = samples_count;
 }
 
-void device_platform::do_characteristics_set(int32_t sample_freq, format_t format, int32_t channels_count, int32_t samples_count)
+void device_platform::do_characteristics_set(int32_t sample_freq, sample_format_t format, int32_t channels_count, int32_t samples_count)
 {
     sdl_audio_spec_.freq		= static_cast<int>(sample_freq);
     sdl_audio_spec_.format		= to_sdl_format(format);
@@ -152,44 +152,44 @@ void device_platform::do_pause()
 // --- PRIVATE: Helpers  ---
 // -------------------------
 
-format_t device_platform::to_format_t(SDL_AudioFormat sdl_format)
+sample_format_t device_platform::to_format_t(SDL_AudioFormat sdl_format)
 {
-    static const std::unordered_map<SDL_AudioFormat, format_t> m = {
-        {AUDIO_U8,format_t::u8},
-        {AUDIO_S8,format_t::s8},
-        {AUDIO_U16,format_t::u16},
-        {AUDIO_S16,format_t::s16},
-        {AUDIO_U16LSB,format_t::u16lsb},
-        {AUDIO_S16LSB,format_t::u16msb},
-        {AUDIO_U16MSB,format_t::s16lsb},
-        {AUDIO_S16MSB,format_t::s16msb},
-        {AUDIO_S32LSB,format_t::s32lsb},
-        {AUDIO_S32MSB,format_t::s32msb},
-        {AUDIO_F32LSB,format_t::f32lsb},
-        {AUDIO_F32MSB,format_t::f32msb},
-        {0,format_t::SIZE},
-        {1,format_t::INVALID}
+    static const std::unordered_map<SDL_AudioFormat, sample_format_t> m = {
+        {AUDIO_U8,sample_format_t::u8},
+        {AUDIO_S8,sample_format_t::s8},
+        {AUDIO_U16,sample_format_t::u16},
+        {AUDIO_S16,sample_format_t::s16},
+        {AUDIO_U16LSB,sample_format_t::u16lsb},
+        {AUDIO_S16LSB,sample_format_t::u16msb},
+        {AUDIO_U16MSB,sample_format_t::s16lsb},
+        {AUDIO_S16MSB,sample_format_t::s16msb},
+        {AUDIO_S32LSB,sample_format_t::s32lsb},
+        {AUDIO_S32MSB,sample_format_t::s32msb},
+        {AUDIO_F32LSB,sample_format_t::f32lsb},
+        {AUDIO_F32MSB,sample_format_t::f32msb},
+        {0,sample_format_t::SIZE},
+        {1,sample_format_t::INVALID}
     };
     return m.at(sdl_format);
 }
 
-SDL_AudioFormat device_platform::to_sdl_format(format_t format)
+SDL_AudioFormat device_platform::to_sdl_format(sample_format_t format)
 {
-    static const std::unordered_map<format_t, SDL_AudioFormat> m = {
-        {format_t::u8,AUDIO_U8},
-        {format_t::s8,AUDIO_S8},
-        {format_t::u16,AUDIO_U16},
-        {format_t::s16,AUDIO_S16},
-        {format_t::u16lsb,AUDIO_U16LSB},
-        {format_t::u16msb,AUDIO_S16LSB},
-        {format_t::s16lsb,AUDIO_U16MSB},
-        {format_t::s16msb,AUDIO_S16MSB},
-        {format_t::s32lsb,AUDIO_S32LSB},
-        {format_t::s32msb,AUDIO_S32MSB},
-        {format_t::f32lsb,AUDIO_F32LSB},
-        {format_t::f32msb,AUDIO_F32MSB},
-        {format_t::SIZE,0},
-        {format_t::INVALID,1}
+    static const std::unordered_map<sample_format_t, SDL_AudioFormat> m = {
+        {sample_format_t::u8,AUDIO_U8},
+        {sample_format_t::s8,AUDIO_S8},
+        {sample_format_t::u16,AUDIO_U16},
+        {sample_format_t::s16,AUDIO_S16},
+        {sample_format_t::u16lsb,AUDIO_U16LSB},
+        {sample_format_t::u16msb,AUDIO_S16LSB},
+        {sample_format_t::s16lsb,AUDIO_U16MSB},
+        {sample_format_t::s16msb,AUDIO_S16MSB},
+        {sample_format_t::s32lsb,AUDIO_S32LSB},
+        {sample_format_t::s32msb,AUDIO_S32MSB},
+        {sample_format_t::f32lsb,AUDIO_F32LSB},
+        {sample_format_t::f32msb,AUDIO_F32MSB},
+        {sample_format_t::SIZE,0},
+        {sample_format_t::INVALID,1}
     };
     return m.at(format);
 }

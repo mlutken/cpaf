@@ -22,8 +22,8 @@ public:
 
     virtual ~device_base() = default;
     type_t				type					() const { return type_; }
-    format_t			format					() const { return do_format(); }
-    void				format_set				(format_t format) { do_format_set(format); }
+    sample_format_t		format					() const { return do_format(); }
+    void				format_set				(sample_format_t format) { do_format_set(format); }
     int32_t             sample_frequency		() const { return do_sample_frequency(); }
     void				sample_frequency_set	(int32_t sample_freq) { do_sample_frequency_set(sample_freq); }
     int32_t             channels_count			() const { return do_channels_count(); }
@@ -32,7 +32,7 @@ public:
     void				samples_count_set		(int32_t samples_count) { do_samples_count_set(samples_count); }
     int32_t             buffer_size				() const { return do_buffer_size(); }
 
-    void				characteristics_set		(int32_t sample_freq, format_t format,
+    void				characteristics_set		(int32_t sample_freq, sample_format_t format,
                                                  int32_t channels_count, int32_t samples_count) {
                                                     do_characteristics_set(sample_freq, format, channels_count, samples_count); }
 
@@ -63,8 +63,8 @@ protected:
     void				changed_characteristics_reset();
 
 private:
-    virtual format_t	do_format					() const = 0;
-    virtual void		do_format_set				(format_t format) = 0;
+    virtual sample_format_t	do_format					() const = 0;
+    virtual void		do_format_set				(sample_format_t format) = 0;
     virtual int32_t     do_sample_frequency			() const = 0;
     virtual void		do_sample_frequency_set		(int32_t sample_freq) = 0;
     virtual int32_t     do_channels_count			() const = 0;
@@ -72,7 +72,7 @@ private:
     virtual int32_t     do_samples_count			() const = 0;
     virtual void		do_samples_count_set		(int32_t samples_count) = 0;
     virtual int32_t     do_buffer_size				() const = 0;
-    virtual void		do_characteristics_set		(int32_t sample_freq, format_t format,
+    virtual void		do_characteristics_set		(int32_t sample_freq, sample_format_t format,
                                                      int32_t channels_count, int32_t samples_count) = 0;
     virtual bool		do_open						() = 0;
     virtual void		do_close					() = 0;

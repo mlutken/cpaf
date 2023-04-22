@@ -1,5 +1,4 @@
-#ifndef CPAF_AUDIO_TYPES_H
-#define CPAF_AUDIO_TYPES_H
+#pragma once
 
 #include <functional>
 #include <string>
@@ -12,7 +11,7 @@ namespace cpaf::audio {
 */
 
 
-enum class format_t {
+enum class sample_format_t {
 	  u8
 	, s8
 	, u16
@@ -29,11 +28,7 @@ enum class format_t {
 	, INVALID
 };
 
-std::string to_string   (format_t audio_format);
+std::string to_string   (sample_format_t audio_format);
 
 } //END namespace cpaf::audio
-
-
-#endif // CPAF_AUDIO_TYPES_H
-
 

@@ -24,8 +24,8 @@ public:
 
 private:
     // --- Platform overrides ---
-    format_t		do_format					() const override;
-    void			do_format_set				(format_t format) override;
+    sample_format_t	do_format					() const override;
+    void			do_format_set				(sample_format_t format) override;
     int32_t         do_sample_frequency			() const  override;
     void			do_sample_frequency_set		(int32_t sample_freq)  override;
     int32_t         do_channels_count           () const override;
@@ -33,7 +33,7 @@ private:
     int32_t         do_samples_count			() const override;
     int32_t         do_buffer_size				() const override;
     void			do_samples_count_set		(int32_t samples_count) override;
-    void			do_characteristics_set		(int32_t sample_freq, format_t format,
+    void			do_characteristics_set		(int32_t sample_freq, sample_format_t format,
                                                  int32_t channels_count, int32_t samples_count) override;
 
     bool			do_open						() override;
@@ -42,8 +42,8 @@ private:
     void			do_pause					() override;
 
     // --- PRIVATE: Helpers  ---
-    static format_t			to_format_t					(SDL_AudioFormat sdl_format);
-    static SDL_AudioFormat	to_sdl_format				(format_t format);
+    static sample_format_t			to_format_t					(SDL_AudioFormat sdl_format);
+    static SDL_AudioFormat	to_sdl_format				(sample_format_t format);
 
     void					set_default_audio_format	();
 
