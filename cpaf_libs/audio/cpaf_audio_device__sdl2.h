@@ -23,22 +23,24 @@ public:
 
 private:
     // --- Platform overrides ---
-    sample_format_t	do_sample_format					() const override;
-    void			do_sample_format_set				(sample_format_t format) override;
-    int32_t         do_sample_frequency			() const  override;
-    void			do_sample_frequency_set		(int32_t sample_freq)  override;
-    int32_t         do_channels_count           () const override;
-    void			do_channels_count_set		(int32_t channels_count) override;
-    int32_t         do_samples_count			() const override;
-    int32_t         do_buffer_size				() const override;
-    void			do_samples_count_set		(int32_t samples_count) override;
-    void			do_characteristics_set		(int32_t sample_freq, sample_format_t format,
+    sample_format_t     do_sample_format			() const override;
+    void                do_sample_format_set		(sample_format_t format) override;
+    int32_t             do_sample_frequency			() const  override;
+    void                do_sample_frequency_set		(int32_t sample_freq)  override;
+    channel_layout_t    do_channel_layout           () const override;
+    void                do_channel_layout_set		(channel_layout_t channel_layout) override;
+    int32_t             do_channels_count           () const override;
+    void                do_channels_count_set		(int32_t channels_count) override;
+    int32_t             do_samples_count			() const override;
+    int32_t             do_buffer_size				() const override;
+    void                do_samples_count_set		(int32_t samples_count) override;
+    void                do_characteristics_set		(int32_t sample_freq, sample_format_t format,
                                                  int32_t channels_count, int32_t samples_count) override;
 
-    bool			do_open						() override;
-    void			do_close					() override;
-    void			do_play						() override;
-    void			do_pause					() override;
+    bool                do_open						() override;
+    void                do_close					() override;
+    void                do_play						() override;
+    void                do_pause					() override;
 
     // --- PRIVATE: Helpers  ---
     static sample_format_t	to_sample_format_t			(SDL_AudioFormat sdl_format);

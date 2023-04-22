@@ -67,6 +67,39 @@ void device_platform::do_sample_frequency_set(int32_t sample_freq)
     sdl_audio_spec_.freq = sample_freq;
 }
 
+channel_layout_t device_platform::do_channel_layout() const
+{
+    switch (channels_count()) {
+    case 1: return channel_layout_t::mono; break;
+    case 2: return channel_layout_t::stereo; break;
+    case 3: return channel_layout_t::surround2_1; break;    // TODO: Not tested
+    case 4: return channel_layout_t::quad; break;           // TODO: Not tested
+    case 5: return channel_layout_t::quad_center; break;           // TODO: Not tested
+    case 6: return channel_layout_t::surround5_1; break;           // TODO: Not tested
+    case 7: return channel_layout_t::surround6_1; break;           // TODO: Not tested
+    case 8: return channel_layout_t::surround7_1; break;           // TODO: Not tested
+    }
+    return channel_layout_t::INVALID;
+}
+
+void device_platform::do_channel_layout_set(channel_layout_t channel_layout)
+{
+    int32_t cnt_channels = 0;
+    switch (channel_layout) {
+    case channel_layout_t::mono: cnt_channels = 1; break;
+    case channel_layout_t::stereo: cnt_channels = 2; break;
+    case channel_layout_t::surround2_1: cnt_channels = 3; break;    // TODO: Not tested
+    case channel_layout_t::quad: cnt_channels = 4; break ;           // TODO: Not tested
+    case channel_layout_t::quad_center: cnt_channels = 5; break;           // TODO: Not tested
+    case channel_layout_t::surround5_1: cnt_channels = 6; break;           // TODO: Not tested
+    case channel_layout_t::surround6_1: cnt_channels = 7; break;           // TODO: Not tested
+    case channel_layout_t::surround7_1: cnt_channels = 8; break;           // TODO: Not tested
+    case channel_layout_t::SIZE:
+    case channel_layout_t::INVALID: cnt_channels = 0; break;
+    }
+    channels_count_set(cnt_channels);
+}
+
 int32_t device_platform::do_channels_count() const
 {
     return sdl_audio_spec_.channels;
