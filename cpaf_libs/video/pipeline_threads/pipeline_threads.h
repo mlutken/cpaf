@@ -60,8 +60,6 @@ public:
     void                    signal_flush_done       ();
     bool                    video_frame_update      (av_frame& current_frame, render& video_render);
 
-    std::atomic<int64_t>  DEBUG_seek_pos_added_index_          = -1;
-
 private:
     av_format_context&      format_context          () { return *format_context_ptr_; }
     av_codec_context&       audio_codec_ctx         () { return *audio_codec_ctx_ptr_; }
