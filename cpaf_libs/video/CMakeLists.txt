@@ -28,6 +28,7 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/av_samples_buffer.h
     ${CMAKE_CURRENT_LIST_DIR}/av_samples_queue.h
     ${CMAKE_CURRENT_LIST_DIR}/av_util.h
+    ${CMAKE_CURRENT_LIST_DIR}/ff_audio_format_t.h
     ${CMAKE_CURRENT_LIST_DIR}/media_stream_time.h
     ${CMAKE_CURRENT_LIST_DIR}/play_stream.h
     ${CMAKE_CURRENT_LIST_DIR}/player.h
@@ -56,6 +57,7 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/av_samples_buffer.cpp
     ${CMAKE_CURRENT_LIST_DIR}/av_samples_queue.cpp
     ${CMAKE_CURRENT_LIST_DIR}/av_util.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ff_audio_format_t.cpp
     ${CMAKE_CURRENT_LIST_DIR}/media_stream_time.cpp
     ${CMAKE_CURRENT_LIST_DIR}/play_stream.cpp
     ${CMAKE_CURRENT_LIST_DIR}/player.cpp
