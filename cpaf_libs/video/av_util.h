@@ -18,6 +18,7 @@ using atomic_pipeline_index_t = std::atomic<pipeline_index_t>;
 using av_base_duration = std::chrono::duration<int64_t, std::ratio<1, AV_TIME_BASE>>;
 using surface_dimensions_t = cpaf::math::v2<int32_t>;
 constexpr int32_t surface_dimension_auto = -1;
+static constexpr size_t no_stream_index = std::numeric_limits<size_t>::max();
 
 enum class media_type : int8_t {
     unknown		= AVMEDIA_TYPE_UNKNOWN,			///< NB: Is -1!! Usually treated as AVMEDIA_TYPE_DATA

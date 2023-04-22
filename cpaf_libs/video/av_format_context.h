@@ -35,7 +35,6 @@ class av_format_context
 {
 public:
     using get_packet_fun = std::function<av_packet()>;
-    static constexpr size_t no_stream_index = std::numeric_limits<size_t>::max();
 
     // --- Constructors etc. ---
     av_format_context();
