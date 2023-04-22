@@ -1,6 +1,4 @@
-#ifndef CPAF_VIDEO_AUDIO_RESAMPLER_H
-#define CPAF_VIDEO_AUDIO_RESAMPLER_H
-
+#pragma once
 
 extern "C"
 {
@@ -76,8 +74,3 @@ private:
 };
 
 } //END namespace cpaf::video
-
-
-#endif //CPAF_VIDEO_AUDIO_RESAMPLER_H
-
-
