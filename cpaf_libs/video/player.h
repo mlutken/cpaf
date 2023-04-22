@@ -56,12 +56,21 @@ public:
     audio_resampler&            audio_resampler_get     () { return audio_resampler_; }
     av_samples_queue&           audio_samples_queue     () { return audio_samples_queue_; }
 
+
     // ---------------------------
     // --- Video setup/control ---
     // ---------------------------
-    void                        set_video_dimensions    (const surface_dimensions_t& dimensions);
-    av_codec_context&           video_codec_context     ();
+    void                        video_dimensions_set    (int32_t width, int32_t height);
+    void                        video_dimensions_set    (const surface_dimensions_t& dimensions);
+    void                        video_scaler_flags_set  (int32_t flags);
+    void                        video_scaler_align_set  (int32_t align);
+    av_codec_context&           video_codec_context     () const;
 
+    // ----------------------------
+    // --- Video info functions ---
+    // ----------------------------
+    surface_dimensions_t        video_src_dimensions    () const;
+    surface_dimensions_t        video_dst_dimensions    () const;
     // ---------------------------------------------
     // --- Interfacing to surrounding app/system ---
     // ---------------------------------------------
@@ -94,12 +103,15 @@ private:
     // ----------------------------
     // --- PRIVATE: Member vars ---
     // ----------------------------
-    std::array<std::unique_ptr<play_stream>, stream_type_index_size()>  source_streams_ = {nullptr, nullptr, nullptr, nullptr, nullptr};
-    std::unique_ptr<play_stream>                                        primary_source_stream_;
+    std::array<std::unique_ptr<play_stream>, stream_type_index_size()>  source_streams_         = {nullptr, nullptr, nullptr, nullptr, nullptr};
+    std::unique_ptr<play_stream>                                        primary_source_stream_  ;
+    surface_dimensions_t                                                video_dimensions_       = {-1,-1};
+    int32_t                                                             video_scaler_flags_     = SWS_BILINEAR;
+    int32_t                                                             video_scaler_align_     = 32;
     media_stream_time                                                   cur_media_time_;
-    std::atomic_bool                                                    threads_running_  = true;
-    std::atomic_bool                                                    threads_paused_   = false;
-    av_codec_context                                                    video_codec_ctx_;
+    std::atomic_bool                                                    threads_running_        = true;
+    std::atomic_bool                                                    threads_paused_         = false;
+    mutable av_codec_context                                            video_codec_ctx_;
     av_samples_queue                                                    audio_samples_queue_;
     audio_resampler                                                     audio_resampler_;
     av_codec_context*               video_codec_ctx_ptr_FIXMENM_            = nullptr;

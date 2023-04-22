@@ -59,12 +59,14 @@ public:
     // --------------------
 
     /** Default constructor with no initialization. */
-    v2() = default;
+    constexpr v2() = default;
+
+    constexpr v2(const v2& v) = default;
 
     /** Copy constructor. Initializtion with general (v2<T1>) vector.
         Also work as casting operator from general v3<>.*/
     template <typename T1>
-    v2(const v2<T1>& v)
+    constexpr v2(const v2<T1>& v)
 //	: m_d[X](static_cast<T>(v.x())), m_d[Y](static_cast<T>(v.y())) {}
     {
         m_d[X] = static_cast<T>(v.x());
@@ -82,7 +84,7 @@ public:
     /** Assignment. Initializtion with general (v2<T1>) vector.
         Also work as casting operator from general v3<>.*/
     template <typename T1>
-    v2& operator=(const v2<T1>& v)
+    constexpr v2& operator=(const v2<T1>& v)
     {
         if (&v != this) {
             m_d[X] = static_cast<T>(v.x());
@@ -105,15 +107,15 @@ public:
 
 
     /** Constructor with single value initialization. */
-    explicit v2(const T Val)						///< [in] Both x, y are set to this value
+    constexpr explicit v2(const T Val)						///< [in] Both x, y are set to this value
     {
         m_d[X] = Val;
         m_d[Y] = Val;
     }
 
     /** Constructor with 2 value initialization. */
-    v2(	const T fx,									///< [in] x value.
-        const T fy) 								///< [in] y value.
+    constexpr v2(const T fx,								///< [in] x value.
+                 const T fy) 								///< [in] y value.
     {
         m_d[X] = fx; m_d[Y] = fy;
     }
@@ -392,17 +394,17 @@ public:
 
 
 
-    /** Pulls a vector towards a destination vector. But only a fixed angle
-        at a time. Returns true when the destination vector is reached
-        otherwise false.
-        \return True if vector has reached destination vector.
-        \note NOT_IMPLEMENTED YET XXX. */
-    bool_t				pull(const_reference vDest,	///< [in] Destination vector we are pulling towards.
-                             T fMaxMoveAng)			///< [in] Maximum angle to move the vector.
-    {
-        STATIC_CHECK(0, v2_pull_NOT_IMPLEMENTED_YET);
-        return true;
-    }
+//    /** Pulls a vector towards a destination vector. But only a fixed angle
+//        at a time. Returns true when the destination vector is reached
+//        otherwise false.
+//        \return True if vector has reached destination vector.
+//        \note NOT_IMPLEMENTED YET XXX. */
+//    bool_t				pull(const_reference vDest,	///< [in] Destination vector we are pulling towards.
+//                             T fMaxMoveAng)			///< [in] Maximum angle to move the vector.
+//    {
+//        STATIC_CHECK(0, v2_pull_NOT_IMPLEMENTED_YET);
+//        return true;
+//    }
 
 
     // -------------------------

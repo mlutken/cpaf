@@ -135,22 +135,69 @@ void player::audio_samples_queue_set(av_samples_queue& queue)
 // ---------------------------
 // --- Video setup/control ---
 // ---------------------------
-void player::set_video_dimensions(const surface_dimensions_t& /*dimensions*/)
+void player::video_dimensions_set(int32_t width, int32_t height)
 {
+    video_dimensions_set({width, height});
+}
+
+void player::video_dimensions_set(const surface_dimensions_t& dimensions)
+{
+    if (dimensions.y() <= 0 && dimensions.y() <= 0) {
+        video_dimensions_ = video_src_dimensions();
+    }
+    else if (dimensions.y() <= 0) {
+        video_dimensions_ = video_src_dimensions().uniform_scale_x(dimensions.x());
+    }
+    else if (dimensions.x() <= 0) {
+        video_dimensions_ = video_src_dimensions().uniform_scale_y(dimensions.y());
+    }
+    else {
+        video_dimensions_ = dimensions;
+    }
 //    auto* stream_ptr = source_stream(stream_type_t::video);
 //    if (!stream_ptr) { return; }
     //    stream_ptr->format_context()
 }
 
-av_codec_context& player::video_codec_context()
+void player::video_scaler_flags_set(int32_t flags)
+{
+    video_scaler_flags_ = flags;
+}
+
+void player::video_scaler_align_set(int32_t align)
+{
+    video_scaler_align_ = align;
+}
+
+av_codec_context& player::video_codec_context() const
 {
     if (!video_codec_ctx_.is_valid()) {
-
+        auto* video_stream = source_stream(stream_type_t::video);
+        if (video_stream){
+            video_codec_ctx_ = video_stream->codec_context(video_stream->first_video_index());
+        }
     }
     return video_codec_ctx_;
     // FIXMENM IMPORTANT !!! Change to return this->video_codec_ctx_, when done moving this!!!!
 
-//    return *video_codec_ctx_ptr_FIXMENM_;
+    //    return *video_codec_ctx_ptr_FIXMENM_;
+}
+
+// ----------------------------
+// --- Video info functions ---
+// ----------------------------
+
+surface_dimensions_t player::video_src_dimensions() const
+{
+    return video_codec_context().dimensions();
+}
+
+surface_dimensions_t player::video_dst_dimensions() const
+{
+    if (video_dimensions_.x() == -1) {
+        return video_src_dimensions();
+    }
+    return video_dimensions_;
 }
 
 // ---------------------------------------------
