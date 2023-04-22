@@ -8,7 +8,6 @@ packet_reader_thread::packet_reader_thread(const std::atomic_bool& threads_runni
     : threads_running_(threads_running)
     , threads_paused_(threads_paused)
 {
-
 }
 
 void packet_reader_thread::start()
@@ -42,19 +41,7 @@ void packet_reader_thread::read_packets_thread_fn()
         format_context().pipeline_control_set(pipeline_control_t::normal_flow);
         if (!threads_paused()) {
             check_seek_position();
-            const auto FIXMENM_audio_queue_size_before = format_context().packet_queue_const(media_type::audio).size();
-            const auto FIXMENM_video_queue_size_before = format_context().packet_queue_const(media_type::video).size();
             format_context().read_packets_to_queues(mt, primary_queue_fill_level_);
-            const auto FIXMENM_audio_queue_size_after = format_context().packet_queue_const(media_type::audio).size();
-            const auto FIXMENM_video_queue_size_after = format_context().packet_queue_const(media_type::video).size();
-            const auto FIXMENM_audio_queue_size_diff = FIXMENM_audio_queue_size_after - FIXMENM_audio_queue_size_before;
-            const auto FIXMENM_video_queue_size_diff = FIXMENM_video_queue_size_after - FIXMENM_video_queue_size_before;
-            if (FIXMENM_audio_queue_size_diff != 0 || FIXMENM_video_queue_size_diff != 0) {
-//                std::cerr << "FIXMENM audio_queue_size_diff: " << FIXMENM_audio_queue_size_diff
-//                          << ", video_queue_size_diff: " << FIXMENM_video_queue_size_diff
-//                          << "\n";
-            }
-
         }
         std::this_thread::sleep_for(read_packets_yield_time_);
     }
@@ -70,36 +57,10 @@ void packet_reader_thread::check_seek_position()
         const auto mt = format_context().primary_media_type();
         signal_flush_start();
         format_context().read_packets_to_queues(mt, primary_queue_fill_level_ + 1);
-//        const auto media_types_to_read = format_context().set_of_each_media_type();
         format_context().seek_time_pos(mt, seek_position_requested_, seek_direction_);
-//        format_context().read_each_type_to_queues(media_types_to_read);
         flush_queues();
         format_context().read_packets_to_queues(mt, primary_queue_fill_level_);
         signal_flush_done();
-        return;
-
-
-        const auto types_to_read = format_context().set_of_each_media_type();
-        const pipeline_index_t flush_to_index = flush_to_index_requested_index_;
-        format_context().pipeline_index_set(flush_to_index);
-        std::cerr << "FIXMENM seek_requested;  flush_to_index: '" << flush_to_index << "'\n";
-        format_context().seek_time_pos(media_type::video, seek_position_requested_, seek_direction_);
-//        format_context().seek_time_pos(media_type::audio, seek_position_requested_, seek_direction_);
-        bool all_packets_read = format_context().read_each_type_to_queues(types_to_read);
-//        all_packets_read = all_packets_read && format_context().read_each_type_to_queues(types_to_read);
-//        all_packets_read = all_packets_read && format_context().read_each_type_to_queues(types_to_read);
-//        all_packets_read = all_packets_read && format_context().read_each_type_to_queues(types_to_read);
-//        all_packets_read = all_packets_read && format_context().read_each_type_to_queues(types_to_read);
-//        all_packets_read = all_packets_read && format_context().read_each_type_to_queues(types_to_read);
-//        all_packets_read = all_packets_read && format_context().read_each_type_to_queues(types_to_read);
-//        all_packets_read = all_packets_read && format_context().read_each_type_to_queues(types_to_read);
-        format_context().pipeline_control_set(pipeline_control_t::normal_flow);
-        seek_requested_ = false;
-
-
-        if (!all_packets_read) {
-            std::cerr << "WARNING Could mot read all desired packet types from stream SEEK_POS warning!";
-        }
     }
 }
 
