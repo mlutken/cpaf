@@ -10,6 +10,7 @@ extern "C"
 #include <cpaf_libs/video/av_frame.h>
 #include <cpaf_libs/video/av_options.h>
 #include <cpaf_libs/video/av_samples_buffer.h>
+#include <cpaf_libs/video/ff_audio_format_t.h>
 
 namespace cpaf::audio {
     class device;
@@ -29,7 +30,9 @@ public:
     bool                    	init                        ();
 
     void                    	in_formats_set              (const av_codec_context& audio_codec_ctx);
+    void                    	in_formats_set              (const ff_audio_format_t& ff_audio_format);
     bool                    	out_formats_set             (const cpaf::audio::device& audio_device);
+    bool                        out_formats_set             (const ff_audio_format_t& ff_audio_format);
 
     int32_t                 	in_sample_rate              () const                { return in_sample_rate_;       }
     void                    	in_sample_rate_set          (int32_t frequency)     { in_sample_rate_ = frequency;  }

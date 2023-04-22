@@ -96,11 +96,26 @@ void audio_resampler::in_formats_set(const av_codec_context& audio_codec_ctx)
     in_sample_format_   = audio_codec_ctx.sample_format();
 }
 
+void audio_resampler::in_formats_set(const ff_audio_format_t& ff_audio_format)
+{
+    in_channel_layout_  = ff_audio_format.channel_layout;
+    in_sample_rate_     = ff_audio_format.sample_rate;
+    in_sample_format_   = ff_audio_format.sample_format;
+}
+
 bool audio_resampler::out_formats_set(const audio::device& audio_device)
 {
     out_channel_layout_set_from_channels_count(audio_device.channels_count());
     out_sample_rate_ = audio_device.sample_frequency();
     return out_sample_format_set(audio_device.sample_format());
+}
+
+bool audio_resampler::out_formats_set(const ff_audio_format_t& ff_audio_format)
+{
+    out_channel_layout_  = ff_audio_format.channel_layout;
+    out_sample_rate_     = ff_audio_format.sample_rate;
+    out_sample_format_   = ff_audio_format.sample_format;
+    return out_sample_format_ != AV_SAMPLE_FMT_NONE;
 }
 
 bool audio_resampler::out_sample_format_set(audio::sample_format_t format)
