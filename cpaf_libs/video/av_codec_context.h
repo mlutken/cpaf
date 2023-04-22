@@ -1,6 +1,4 @@
-#ifndef CPAF_VIDEO_AV_CODEC_CONTEXT_H
-#define CPAF_VIDEO_AV_CODEC_CONTEXT_H
-
+#pragma once
 
 extern "C"
 {
@@ -63,8 +61,8 @@ public:
     int32_t                 width						() const { return ff_codec_context_->width; }
     int32_t                 height						() const { return ff_codec_context_->height; }
     surface_dimensions_t    dimensions                  () const { return {width(), height()}; }
-    int32_t                 dst_width					() const { return dst_width_; }
-    int32_t                 dst_height					() const { return dst_height_; }
+    int32_t                 dst_width					() const { return dst_width_ <= 0 ? width() : dst_width_; }
+    int32_t                 dst_height					() const { return dst_height_ <= 0 ? height(): dst_height_; }
     surface_dimensions_t    dst_dimensions              () const { return {dst_width(), dst_height()}; }
     int32_t                 dst_image_align				() const { return dst_image_align_; }
     AVPixelFormat           ff_dst_pixel_format			() const { return ff_dst_pixel_format_; }
@@ -85,8 +83,12 @@ public:
 
     // --- Scaling functions ---
     bool                    init_scaling_context        (AVPixelFormat ff_dst_pixel_format,
-                                                         int32_t dst_width = -1,
-                                                         int32_t dst_height = -1,
+                                                         int32_t dst_width = surface_dimension_auto,
+                                                         int32_t dst_height = surface_dimension_auto,
+                                                         int32_t flags = SWS_BILINEAR,
+                                                         int32_t dst_image_align = 32);
+    bool                    init_scaling_context        (AVPixelFormat ff_dst_pixel_format,
+                                                         surface_dimensions_t dst_dimensions = {surface_dimension_auto,surface_dimension_auto},
                                                          int32_t flags = SWS_BILINEAR,
                                                          int32_t dst_image_align = 32);
 
@@ -131,8 +133,4 @@ private:
 
 
 } //END namespace cpaf::video
-
-
-#endif //CPAF_VIDEO_AV_CODEC_CONTEXT_H
-
 

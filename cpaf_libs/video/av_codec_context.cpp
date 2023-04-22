@@ -91,12 +91,18 @@ bool av_codec_context::init_scaling_context(AVPixelFormat ff_dst_pixel_format,
                                             int32_t flags,
                                             int32_t dst_image_align)
 {
+    return init_scaling_context(ff_dst_pixel_format, surface_dimensions_t{dst_width, dst_height}, flags, dst_image_align);
+}
+
+bool av_codec_context::init_scaling_context(AVPixelFormat ff_dst_pixel_format, surface_dimensions_t dst_dimensions, int32_t flags, int32_t dst_image_align)
+{
+    dst_dimensions = scale_surface_dimensions(dimensions(), dst_dimensions);
+    dst_width_  = dst_dimensions.x();
+    dst_height_ = dst_dimensions.y();
+
     sws_freeContext(ff_sws_ctx_);
     ff_dst_pixel_format_ = ff_dst_pixel_format;
     dst_image_align_ = dst_image_align;
-
-    dst_width_ = dst_width > 0 ? dst_width : ff_codec_context_->width;
-    dst_height_ = dst_height > 0 ? dst_height : ff_codec_context_->height;
 
     ff_sws_ctx_ = sws_getContext(
                 ff_codec_context_->width,
