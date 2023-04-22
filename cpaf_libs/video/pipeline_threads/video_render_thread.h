@@ -24,12 +24,13 @@ public:
     void                        format_context_set      (av_format_context& ctx)    { format_context_ptr_ = &ctx; }
     void                        video_codec_ctx_set     (av_codec_context* ctx)     { video_codec_ctx_ptr_ = ctx; }
     void                        video_codec_ctx_set     (av_codec_context& ctx)     { video_codec_ctx_ptr_ = &ctx; }
-    void                        audio_samples_queue_set (av_samples_queue* queue) { audio_samples_queue_ptr_ = queue; }
-    void                        audio_samples_queue_set (av_samples_queue& queue) { audio_samples_queue_ptr_ = &queue; }
+    void                        audio_samples_queue_set (av_samples_queue* queue)   { audio_samples_queue_ptr_ = queue; }
+    void                        audio_samples_queue_set (av_samples_queue& queue)   { audio_samples_queue_ptr_ = &queue; }
     void                        current_media_time_set  (media_stream_time* mts)    { current_media_time_ptr_ = mts; }
     void                        current_media_time_set  (media_stream_time& mts)    { current_media_time_ptr_ = &mts; }
 
     void                        start                   ();
+    void                        terminate               ();
     bool                        video_frame_update      (av_frame& current_frame, render& video_render);
     void                        video_queue_flush_start ()                          { video_queue_flush_in_progress_ = true; }
     void                        video_queue_flush_done  ()                          { video_queue_flush_in_progress_ = false; video_queue_flushed_ = true; }

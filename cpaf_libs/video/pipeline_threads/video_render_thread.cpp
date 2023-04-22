@@ -25,6 +25,11 @@ void video_render_thread::start()
 
 }
 
+void video_render_thread::terminate()
+{
+
+}
+
 bool video_render_thread::video_frame_update (av_frame& current_frame, render& video_render)
 {
     bool ret_val = video_frame_do_render(current_frame, video_render);
