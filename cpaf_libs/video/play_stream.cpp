@@ -24,16 +24,6 @@ bool play_stream::open(const std::string& resource_path)
     return format_context_.open(resource_path);
 }
 
-void play_stream::start()
-{
-    media_pipeline_threads_.start();
-}
-
-void play_stream::terminate()
-{
-    media_pipeline_threads_.terminate();
-}
-
 // -----------------------
 // --- Video functions ---
 // -----------------------

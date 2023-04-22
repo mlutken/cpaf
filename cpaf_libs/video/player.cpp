@@ -2,6 +2,11 @@
 
 namespace cpaf::video {
 
+pipeline_threads& player::pipeline_threads_temp_only()
+{
+    return media_pipeline_threads_;
+}
+
 player::player()
     : audio_samples_queue_(1000)
 {
@@ -11,20 +16,25 @@ player::player()
 
 void player::start(const std::chrono::microseconds& start_time_pos)
 {
-    auto&  fmt_ctx = primary_stream().format_context(); // TODO: If we use multiple streams we need to get the right format ctx per stream here!
-    fmt_ctx.seek_time_pos(start_time_pos);
+    // source_stream(stream_type_t::video)
+    auto&  video_fmt_ctx = primary_stream().format_context(); // TODO: If we use multiple streams we need to get the right format ctx per stream here!
+    auto&  audio_fmt_ctx = primary_stream().format_context(); // TODO: If we use multiple streams we need to get the right format ctx per stream here!
+    auto&  subtitle_fmt_ctx = primary_stream().format_context(); // TODO: If we use multiple streams we need to get the right format ctx per stream here!
+    video_fmt_ctx.seek_time_pos(start_time_pos);
+    audio_fmt_ctx.seek_time_pos(start_time_pos);
+    subtitle_fmt_ctx.seek_time_pos(start_time_pos);
     audio_resampler_.in_formats_set(audio_codec_context());
 
     audio_resampler_.init();
-    video_codec_context().get_packet_function_set(fmt_ctx.get_packet_function(media_type::video));
-    audio_codec_context().get_packet_function_set(fmt_ctx.get_packet_function(media_type::audio));
+    video_codec_context().get_packet_function_set(video_fmt_ctx.get_packet_function(media_type::video));
+    audio_codec_context().get_packet_function_set(video_fmt_ctx.get_packet_function(media_type::audio));
 
     pipeline_threads_temp_only().audio_codec_ctx_set(audio_codec_context());
     pipeline_threads_temp_only().audio_resampler_set(audio_resampler_);
     pipeline_threads_temp_only().audio_samples_queue_set(audio_samples_queue_);
 
-    fmt_ctx.read_packets_to_queues(fmt_ctx.primary_media_type(), 10);
-    pipeline_threads_temp_only().format_context_set(fmt_ctx);
+    video_fmt_ctx.read_packets_to_queues(video_fmt_ctx.primary_media_type(), 10);
+    pipeline_threads_temp_only().format_context_set(video_fmt_ctx);
     pipeline_threads_temp_only().video_codec_ctx_set(video_codec_context());
 
     pipeline_threads_temp_only().start();

@@ -16,13 +16,7 @@ class play_stream
 {
 public:
              play_stream();
-//    explicit play_stream(const std::string& resource_path);
-
     bool                        open                    (const std::string& resource_path);
-    void                        start                   ();
-    void                        terminate               ();
-
-    pipeline_threads&           pipeline_threads_temp_only() { return media_pipeline_threads_; }
 
     // --- Info functions ---
     const std::string&          resource_path			() const { return format_context_.resource_path(); }
@@ -60,7 +54,6 @@ public:
 private:
     av_samples_queue            audio_samples_queue_;
     av_format_context           format_context_;
-    pipeline_threads            media_pipeline_threads_;
     surface_dimensions_t        render_dimensions_;
 };
 

@@ -17,7 +17,7 @@ public:
 
     // START: TEMPORARY REFACTOR functions ONLY!
 
-    pipeline_threads&           pipeline_threads_temp_only  () { return primary_source_stream_->pipeline_threads_temp_only(); }
+    pipeline_threads&           pipeline_threads_temp_only  ();
 
     // END  : TEMPORARY REFACTOR functions ONLY!
 
@@ -140,10 +140,9 @@ private:
     mutable av_codec_context                                            audio_codec_ctx_;
     av_samples_queue                                                    audio_samples_queue_;
     audio_resampler                                                     audio_resampler_;
+    pipeline_threads                                                    media_pipeline_threads_;
 
-//    video_render_thread                                                 video_render_thread_;
     std::string                                                         primary_resource_path_;
-
 };
 
 } //END namespace cpaf::video
