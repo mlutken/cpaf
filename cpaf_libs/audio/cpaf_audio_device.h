@@ -1,5 +1,4 @@
-#ifndef CPAF_AUDIO_DEVICE_H
-#define CPAF_AUDIO_DEVICE_H
+#pragma once
 
 #include <config/cpaf_platform_definitions.h>
 #include <cpaf_libs/audio/cpaf_audio_types.h>
@@ -19,7 +18,5 @@ public:
 
 } //END namespace cpaf::audio
 
-
-#endif // CPAF_AUDIO_DEVICE_H
 
 
