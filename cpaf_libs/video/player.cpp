@@ -132,6 +132,11 @@ void player::audio_samples_queue_set(av_samples_queue& queue)
     pipeline_threads_temp_only().audio_samples_queue_set(queue);
 }
 
+void player::ff_dst_pixel_fomat_set(AVPixelFormat pixel_format)
+{
+    ff_dst_pixel_format_ = pixel_format;
+}
+
 // ---------------------------
 // --- Video setup/control ---
 // ---------------------------
@@ -142,31 +147,20 @@ void player::video_dimensions_set(int32_t width, int32_t height)
 
 void player::video_dimensions_set(const surface_dimensions_t& dimensions)
 {
-    if (dimensions.y() <= 0 && dimensions.y() <= 0) {
-        video_dimensions_ = video_src_dimensions();
-    }
-    else if (dimensions.y() <= 0) {
-        video_dimensions_ = video_src_dimensions().uniform_scale_x(dimensions.x());
-    }
-    else if (dimensions.x() <= 0) {
-        video_dimensions_ = video_src_dimensions().uniform_scale_y(dimensions.y());
-    }
-    else {
-        video_dimensions_ = dimensions;
-    }
-//    auto* stream_ptr = source_stream(stream_type_t::video);
-//    if (!stream_ptr) { return; }
-    //    stream_ptr->format_context()
+    video_dst_dimensions_requested_ = dimensions;
+    update_scaling_context();
 }
 
 void player::video_scaler_flags_set(int32_t flags)
 {
     video_scaler_flags_ = flags;
+    update_scaling_context();
 }
 
 void player::video_scaler_align_set(int32_t align)
 {
     video_scaler_align_ = align;
+    update_scaling_context();
 }
 
 av_codec_context& player::video_codec_context() const
@@ -175,12 +169,10 @@ av_codec_context& player::video_codec_context() const
         auto* video_stream = source_stream(stream_type_t::video);
         if (video_stream){
             video_codec_ctx_ = video_stream->codec_context(video_stream->first_video_index());
+            update_scaling_context();
         }
     }
     return video_codec_ctx_;
-    // FIXMENM IMPORTANT !!! Change to return this->video_codec_ctx_, when done moving this!!!!
-
-    //    return *video_codec_ctx_ptr_FIXMENM_;
 }
 
 // ----------------------------
@@ -194,10 +186,13 @@ surface_dimensions_t player::video_src_dimensions() const
 
 surface_dimensions_t player::video_dst_dimensions() const
 {
-    if (video_dimensions_.x() == -1) {
+    if (video_codec_ctx_.is_valid()) {
+        return video_codec_ctx_.dst_dimensions();
+    }
+    else if (video_dst_dimensions_requested_.x() <= 0 && video_dst_dimensions_requested_.y() <= 0 ) {
         return video_src_dimensions();
     }
-    return video_dimensions_;
+    return video_dst_dimensions_requested_;
 }
 
 // ---------------------------------------------
@@ -287,6 +282,13 @@ void player::current_media_time_set(media_stream_time* mts)
 void player::current_media_time_set(media_stream_time& mts)
 {
     pipeline_threads_temp_only().current_media_time_set(mts);
+}
+
+void player::update_scaling_context() const
+{
+    if (video_codec_ctx_.is_valid()) {
+        video_codec_ctx_.init_scaling_context(ff_dst_pixel_format_, video_dst_dimensions_requested_, video_scaler_flags_, video_scaler_align_);
+    }
 }
 
 

@@ -60,10 +60,11 @@ public:
     // ---------------------------
     // --- Video setup/control ---
     // ---------------------------
-    void                        video_dimensions_set    (int32_t width, int32_t height);
+    void                        video_dimensions_set    (int32_t width, int32_t height = surface_dimension_auto);
     void                        video_dimensions_set    (const surface_dimensions_t& dimensions);
     void                        video_scaler_flags_set  (int32_t flags);
     void                        video_scaler_align_set  (int32_t align);
+    void                        ff_dst_pixel_fomat_set  (AVPixelFormat pixel_format);
     av_codec_context&           video_codec_context     () const;
 
     // ----------------------------
@@ -98,19 +99,21 @@ private:
     bool                        open_primary_stream     (const std::string& resource_path);
     void                        current_media_time_set  (media_stream_time* mts);
     void                        current_media_time_set  (media_stream_time& mts);
+    void                        update_scaling_context  () const;
 
 
     // ----------------------------
     // --- PRIVATE: Member vars ---
     // ----------------------------
-    std::array<std::unique_ptr<play_stream>, stream_type_index_size()>  source_streams_         = {nullptr, nullptr, nullptr, nullptr, nullptr};
-    std::unique_ptr<play_stream>                                        primary_source_stream_  ;
-    surface_dimensions_t                                                video_dimensions_       = {-1,-1};
-    int32_t                                                             video_scaler_flags_     = SWS_BILINEAR;
-    int32_t                                                             video_scaler_align_     = 32;
+    std::array<std::unique_ptr<play_stream>, stream_type_index_size()>  source_streams_                 = {nullptr, nullptr, nullptr, nullptr, nullptr};
+    std::unique_ptr<play_stream>                                        primary_source_stream_          ;
+    surface_dimensions_t                                                video_dst_dimensions_requested_ = {surface_dimension_auto,surface_dimension_auto};
+    int32_t                                                             video_scaler_flags_             = SWS_BILINEAR;
+    int32_t                                                             video_scaler_align_             = 32;
+    AVPixelFormat                                                       ff_dst_pixel_format_            = AV_PIX_FMT_YUV420P;
     media_stream_time                                                   cur_media_time_;
-    std::atomic_bool                                                    threads_running_        = true;
-    std::atomic_bool                                                    threads_paused_         = false;
+    std::atomic_bool                                                    threads_running_                = true;
+    std::atomic_bool                                                    threads_paused_                 = false;
     mutable av_codec_context                                            video_codec_ctx_;
     av_samples_queue                                                    audio_samples_queue_;
     audio_resampler                                                     audio_resampler_;
