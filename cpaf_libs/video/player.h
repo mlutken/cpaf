@@ -28,10 +28,16 @@ public:
     bool                        open                    (const std::string& resource_path);
     bool                        open                    (const std::string& resource_path, stream_type_t sti);
 
-    bool                        has_video_source_stream () const { return has_source_stream(stream_type_t::video); }
+    bool                        has_video_stream        () const { return has_source_stream(stream_type_t::video); }
+    bool                        has_audio_stream        () const { return has_source_stream(stream_type_t::audio); }
+    bool                        has_subtitle_stream     () const { return has_source_stream(stream_type_t::subtitle); }
     bool                        has_source_stream       (stream_type_t sti) const;
     const play_stream*          source_stream           (stream_type_t sti) const;
     play_stream*                source_stream           (stream_type_t sti);
+
+    play_stream*                video_stream            ()  { return source_stream(stream_type_t::video); }
+    play_stream*                audio_stream            ()  { return source_stream(stream_type_t::audio); }
+    play_stream*                subtitle_stream         ()  { return source_stream(stream_type_t::subtitle); }
 
     play_stream&                primary_stream          ()       { return *primary_source_stream_; }
     const play_stream&          primary_stream          () const { return *primary_source_stream_; }
@@ -114,7 +120,6 @@ private:
     void                        current_media_time_set  (media_stream_time* mts);
     void                        current_media_time_set  (media_stream_time& mts);
     void                        update_scaling_context  () const;
-
 
     // ----------------------------
     // --- PRIVATE: Member vars ---
