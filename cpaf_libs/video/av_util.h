@@ -1,6 +1,4 @@
-#ifndef CPAF_VIDEO_AV_UTIL_H
-#define CPAF_VIDEO_AV_UTIL_H
-
+#pragma once
 
 extern "C"
 {
@@ -128,7 +126,5 @@ surface_dimensions_t scale_surface_dimensions(const surface_dimensions_t& src_di
 
 } //END namespace cpaf::video
 
-
-#endif //CPAF_VIDEO_AV_UTIL_H
 
 
