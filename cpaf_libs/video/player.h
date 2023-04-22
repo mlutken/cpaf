@@ -52,7 +52,6 @@ public:
     audio_resampler&            audio_resampler_get     () { return audio_resampler_; }
     av_samples_queue&           audio_samples_queue     () { return audio_samples_queue_; }
 
-
     // ---------------------------
     // --- Video setup/control ---
     // ---------------------------
@@ -100,7 +99,6 @@ public:
     void                        toggle_pause_playback   ();
     bool                        playback_paused         () const { return threads_paused_; }
 
-
 private:
     // ---------------------------------
     // --- PRIVATE: Helper functions ---
@@ -131,7 +129,6 @@ private:
     mutable av_codec_context                                            audio_codec_ctx_;
     av_samples_queue                                                    audio_samples_queue_;
     audio_resampler                                                     audio_resampler_;
-    av_codec_context*               video_codec_ctx_ptr_FIXMENM_            = nullptr;
 
 //    video_render_thread                                                 video_render_thread_;
     std::string                                                         primary_resource_path_;
