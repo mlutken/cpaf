@@ -54,6 +54,25 @@ string to_string(pipeline_state_t ps)
     return "";
 }
 
+surface_dimensions_t scale_surface_dimensions(const surface_dimensions_t& src_dimensions, const surface_dimensions_t& dst_dimensions)
+{
+    if (dst_dimensions.x() <= 0 && dst_dimensions.y() <= 0) {
+        return src_dimensions;
+    }
+
+    surface_dimensions_t dimensions;
+    if (dst_dimensions.y() <= 0) {
+        dimensions = src_dimensions.uniform_scale_x(dst_dimensions.x());
+    }
+    else if (dst_dimensions.x() <= 0) {
+        dimensions = src_dimensions.uniform_scale_y(dst_dimensions.y());
+    }
+    else {
+        dimensions = dst_dimensions;
+    }
+    return dimensions;
+}
+
 
 
 } //END namespace cpaf::video
