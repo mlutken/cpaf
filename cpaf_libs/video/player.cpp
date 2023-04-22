@@ -11,6 +11,11 @@ player::player()
 
 void player::start()
 {
+    auto&  fmt_ctx = primary_stream().format_context();
+    fmt_ctx.read_packets_to_queues(fmt_ctx.primary_media_type(), 10);
+    pipeline_threads_temp_only().format_context_set(fmt_ctx);
+    pipeline_threads_temp_only().video_codec_ctx_set(video_codec_context());
+
     pipeline_threads_temp_only().start();
 }
 
@@ -82,26 +87,6 @@ play_stream* player::source_stream(stream_type_t sti)
 // -----------------------------------------------------
 // --------- TEMP/REFACTOR: pipeline_threads related ---
 // -----------------------------------------------------
-void player::format_context_set(av_format_context* ctx)
-{
-    pipeline_threads_temp_only().format_context_set(ctx);
-}
-
-void player::format_context_set(av_format_context& ctx)
-{
-    pipeline_threads_temp_only().format_context_set(ctx);
-}
-
-void player::video_codec_ctx_set(av_codec_context* ctx)
-{
-    pipeline_threads_temp_only().video_codec_ctx_set(ctx);
-}
-
-void player::video_codec_ctx_set(av_codec_context& ctx)
-{
-    pipeline_threads_temp_only().video_codec_ctx_set(ctx);
-}
-
 void player::audio_codec_ctx_set(av_codec_context* ctx)
 {
     pipeline_threads_temp_only().audio_codec_ctx_set(ctx);

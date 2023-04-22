@@ -42,10 +42,6 @@ public:
     // -----------------------------------------------------
     // --------- TEMP/REFACTOR: pipeline_threads related ---
     // -----------------------------------------------------
-    void                        format_context_set      (av_format_context* ctx);
-    void                        format_context_set      (av_format_context& ctx);
-    void                        video_codec_ctx_set     (av_codec_context* ctx);
-    void                        video_codec_ctx_set     (av_codec_context& ctx);
     void                        audio_codec_ctx_set     (av_codec_context* ctx);
     void                        audio_codec_ctx_set     (av_codec_context& ctx);
     void                        audio_resampler_set     (audio_resampler* resampler);
