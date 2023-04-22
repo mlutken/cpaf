@@ -12,6 +12,7 @@ player::player()
 void player::start()
 {
     auto&  fmt_ctx = primary_stream().format_context();
+    video_codec_context().get_packet_function_set(fmt_ctx.get_packet_function(media_type::video));
     fmt_ctx.read_packets_to_queues(fmt_ctx.primary_media_type(), 10);
     pipeline_threads_temp_only().format_context_set(fmt_ctx);
     pipeline_threads_temp_only().video_codec_ctx_set(video_codec_context());
