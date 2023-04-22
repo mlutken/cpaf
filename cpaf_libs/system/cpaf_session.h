@@ -1,11 +1,7 @@
-#ifndef CPAF_SESSION_H
-#define CPAF_SESSION_H
-
+#pragma once
  
 #include <string>
 #include <boost/cstdint.hpp>
-//#include <iostream>         // NOTE: ML For debug only
-//#include <cbs.h>
 
 
 namespace cpaf { namespace system {
@@ -84,6 +80,5 @@ int getProcessID( const std::string& sProcessName );
 }} //END namespace cpaf::system
 
 
-#endif //CPAF_SESSION_H
 
 
