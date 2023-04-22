@@ -9,9 +9,13 @@ player::player()
     current_media_time_set(cur_media_time_);
 }
 
-void player::start()
+void player::start(const std::chrono::microseconds& start_time_pos)
 {
     auto&  fmt_ctx = primary_stream().format_context(); // TODO: If we use multiple streams we need to get the right format ctx per stream here!
+    fmt_ctx.seek_time_pos(start_time_pos);
+    audio_resampler_.in_formats_set(audio_codec_context());
+
+    audio_resampler_.init();
     video_codec_context().get_packet_function_set(fmt_ctx.get_packet_function(media_type::video));
     audio_codec_context().get_packet_function_set(fmt_ctx.get_packet_function(media_type::audio));
 
@@ -206,6 +210,16 @@ surface_dimensions_t player::video_dst_dimensions() const
 size_t player::video_stream_index() const
 {
     return video_stream_index_ != no_stream_index ? video_stream_index_ : source_stream(stream_type_t::video)->first_video_index();
+}
+
+bool player::audio_out_formats_set(const audio::device& audio_device)
+{
+    return audio_resampler_.out_formats_set(audio_device);
+}
+
+bool player::audio_out_formats_set(const ff_audio_format_t& ff_audio_format)
+{
+    return audio_resampler_.out_formats_set(ff_audio_format);
 }
 
 // ----------------------------

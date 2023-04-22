@@ -23,7 +23,7 @@ public:
 
 
     player();
-    void                        start                   ();
+    void                        start                   (const std::chrono::microseconds& start_time_pos = std::chrono::microseconds(0));
     void                        terminate               ();
     bool                        open                    (const std::string& resource_path);
     bool                        open                    (const std::string& resource_path, stream_type_t sti);
@@ -70,6 +70,12 @@ public:
     surface_dimensions_t        video_src_dimensions    () const;
     surface_dimensions_t        video_dst_dimensions    () const;
     size_t                      video_stream_index		() const;
+
+    // ---------------------------
+    // --- Audio setup/control ---
+    // ---------------------------
+    bool                    	audio_out_formats_set   (const cpaf::audio::device& audio_device);
+    bool                        audio_out_formats_set   (const ff_audio_format_t& ff_audio_format);
 
     // ----------------------------
     // --- Audio info functions ---
