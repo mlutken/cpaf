@@ -33,7 +33,8 @@ public:
     const play_stream*          source_stream           (stream_type_t sti) const;
     play_stream*                source_stream           (stream_type_t sti);
 
-    play_stream&                primary_stream          () { return *primary_source_stream_; }
+    play_stream&                primary_stream          ()       { return *primary_source_stream_; }
+    const play_stream&          primary_stream          () const { return *primary_source_stream_; }
     const std::string&          primary_resource_path	() const { return primary_resource_path_; }
 
     media_stream_time&          cur_media_time          ()          { return cur_media_time_; }
@@ -98,6 +99,11 @@ public:
     void                        resume_playback         ();
     void                        toggle_pause_playback   ();
     bool                        playback_paused         () const { return threads_paused_; }
+
+    // -----------------------
+    // --- Debug functions ---
+    // -----------------------
+    std::string                 queues_info             () const;
 
 private:
     // ---------------------------------

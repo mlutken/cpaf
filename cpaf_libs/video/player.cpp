@@ -288,6 +288,14 @@ void player::toggle_pause_playback()
     }
 }
 
+// -----------------------
+// --- Debug functions ---
+// -----------------------
+std::string player::queues_info() const
+{
+    return primary_stream().format_context().queues_info();
+}
+
 
 // ---------------------------------
 // --- PRIVATE: Helper functions ---
