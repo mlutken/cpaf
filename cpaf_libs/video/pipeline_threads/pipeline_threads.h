@@ -32,6 +32,7 @@ public:
     pipeline_threads& operator=(const pipeline_threads&)  = delete;
 
     pipeline_threads();
+    ~pipeline_threads();
 //    pipeline_threads(std::atomic_bool& threads_running, std::atomic_bool& threads_paused);
 
     void                    format_context_set      (av_format_context* ctx);

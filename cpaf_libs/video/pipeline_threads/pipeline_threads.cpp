@@ -26,6 +26,11 @@ pipeline_threads::pipeline_threads()
     packet_reader_thread_.pipeline_threads_set(this);
 }
 
+pipeline_threads::~pipeline_threads()
+{
+    terminate();
+}
+
 void pipeline_threads::format_context_set(av_format_context* ctx)
 {
     audio_render_thread_.format_context_set(ctx);
