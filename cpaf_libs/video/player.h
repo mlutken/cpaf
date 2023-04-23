@@ -106,13 +106,13 @@ private:
     // ----------------------------
     // --- PRIVATE: Member vars ---
     // ----------------------------
+    media_stream_time                                                   cur_media_time_;
     play_stream                                                         primary_source_stream_;
     std::array<std::unique_ptr<play_stream>, stream_type_index_size()>  source_streams_                 = {nullptr, nullptr, nullptr, nullptr, nullptr};
     surface_dimensions_t                                                video_dst_dimensions_requested_ = {surface_dimension_auto,surface_dimension_auto};
     int32_t                                                             video_scaler_flags_             = SWS_BILINEAR;
     int32_t                                                             video_scaler_align_             = 32;
     AVPixelFormat                                                       ff_dst_pixel_format_            = AV_PIX_FMT_YUV420P;
-    media_stream_time                                                   cur_media_time_;
     std::atomic_bool                                                    threads_running_                = true;
     std::atomic_bool                                                    threads_paused_                 = false;
     size_t                                                              video_stream_index_             = no_stream_index;

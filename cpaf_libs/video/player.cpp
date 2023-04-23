@@ -252,7 +252,6 @@ void player::resume_playback()
     media_pipeline_threads().resume_playback();
 }
 
-
 void player::toggle_pause_playback()
 {
     if (playback_paused()) {
