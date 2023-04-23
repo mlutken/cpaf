@@ -1,6 +1,4 @@
-#ifndef CPAF_VIDEO_PLAY_STREAM_H
-#define CPAF_VIDEO_PLAY_STREAM_H
-
+#pragma once
 
 #include <string>
 #include <cpaf_libs/video/av_format_context.h>
@@ -15,10 +13,15 @@ namespace cpaf::video {
 class play_stream
 {
 public:
-             play_stream();
+    // -------------------------
+    // --- Constructors etc. ---
+    // -------------------------
+             play_stream() = default;
     bool                        open                    (const std::string& resource_path);
 
+    // ----------------------
     // --- Info functions ---
+    // ----------------------
     const std::string&          resource_path			() const { return format_context_.resource_path(); }
     size_t                      streams_count			() const { return format_context_.streams_count();}
     size_t                      streams_count			(media_type mt) const   { return format_context_.streams_count(mt);}
@@ -34,8 +37,13 @@ public:
     media_type                  primary_media_type      () const { return format_context_.primary_media_type(); }
     const surface_dimensions_t& render_dimensions       () const { return render_dimensions_; }
 
-    av_format_context&          format_context()        { return format_context_; }
-    const av_format_context&	format_context() const  { return format_context_; }
+    // ---------------------
+    // --- Context/codec ---
+    // ---------------------
+    av_format_context&          format_context          ()                          { return format_context_; }
+    const av_format_context&	format_context          () const                    { return format_context_; }
+    av_codec_parameters         codec_parameters        (size_t stream_index) const { return format_context_.codec_parameters(stream_index);}
+    av_codec_context            codec_context			(size_t stream_index) const { return format_context_.codec_context(stream_index); }
 
     // -----------------------
     // --- Video functions ---
@@ -44,23 +52,11 @@ public:
     void                        render_width_set        (int32_t render_width);
     void                        render_height_set       (int32_t render_height);
 
-    // --- Play control functions ---
-
-    // --- XXX Functions ---
-    av_codec_parameters         codec_parameters        (size_t stream_index) const { return format_context_.codec_parameters(stream_index);}
-    av_codec_context            codec_context			(size_t stream_index) const { return format_context_.codec_context(stream_index); }
-//    void                        init			(size_t stream_index) const { return format_context_.codec_context(stream_index); }
-
 private:
-    av_samples_queue            audio_samples_queue_;
     av_format_context           format_context_;
     surface_dimensions_t        render_dimensions_;
 };
 
 
 } //END namespace cpaf::video
-
-
-#endif //CPAF_VIDEO_PLAY_STREAM_H
-
 

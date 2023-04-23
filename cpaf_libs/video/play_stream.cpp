@@ -6,23 +6,15 @@
 using namespace std;
 namespace cpaf::video {
 
-play_stream::play_stream()
-    : audio_samples_queue_(1000)
-{
-
-}
-
-//play_stream::play_stream(const std::string& resource_path)
-//    : audio_samples_queue_(1000)
-//    , format_context_(resource_path)
-//{
-
-//}
+// -------------------------
+// --- Constructors etc. ---
+// -------------------------
 
 bool play_stream::open(const std::string& resource_path)
 {
     return format_context_.open(resource_path);
 }
+
 
 // -----------------------
 // --- Video functions ---
@@ -44,9 +36,6 @@ void play_stream::render_height_set(int32_t render_height)
     render_dimensions_.y(render_height);
 }
 
-// -------------------------
-// --- Constructors etc. ---
-// -------------------------
 
 // -----------------------
 // --- Debug functions ---
