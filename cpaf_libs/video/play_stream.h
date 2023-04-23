@@ -17,6 +17,7 @@ public:
     // --- Constructors etc. ---
     // -------------------------
              play_stream() = default;
+             ~play_stream();
     bool                        open                    (const std::string& resource_path);
 
     // ----------------------

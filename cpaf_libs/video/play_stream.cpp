@@ -10,6 +10,11 @@ namespace cpaf::video {
 // --- Constructors etc. ---
 // -------------------------
 
+play_stream::~play_stream()
+{
+    format_context_.close();
+}
+
 bool play_stream::open(const std::string& resource_path)
 {
     return format_context_.open(resource_path);
