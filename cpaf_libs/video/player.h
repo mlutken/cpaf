@@ -15,14 +15,8 @@ class player
 public:
     using audio_play_callback_t  = cpaf::audio::device_base::play_callback_t;
 
-    // START: TEMPORARY REFACTOR functions ONLY!
-
-    pipeline_threads&           pipeline_threads_temp_only  ();
-
-    // END  : TEMPORARY REFACTOR functions ONLY!
-
-
     player();
+    ~player();
     void                        start                   (const std::chrono::microseconds& start_time_pos = std::chrono::microseconds(0));
     void                        terminate               ();
     bool                        open                    (const std::string& resource_path);
@@ -39,25 +33,12 @@ public:
     play_stream*                audio_stream            ()  { return source_stream(stream_type_t::audio); }
     play_stream*                subtitle_stream         ()  { return source_stream(stream_type_t::subtitle); }
 
-    play_stream&                primary_stream          ()       { return *primary_source_stream_; }
-    const play_stream&          primary_stream          () const { return *primary_source_stream_; }
+    play_stream&                primary_stream          ()       { return primary_source_stream_; }
+    const play_stream&          primary_stream          () const { return primary_source_stream_; }
     const std::string&          primary_resource_path	() const { return primary_resource_path_; }
 
     media_stream_time&          cur_media_time          ()          { return cur_media_time_; }
     const media_stream_time&    cur_media_time          () const    { return cur_media_time_; }
-
-    // -----------------------------------------------------
-    // --------- TEMP/REFACTOR: pipeline_threads related ---
-    // -----------------------------------------------------
-    void                        audio_codec_ctx_set     (av_codec_context* ctx);
-    void                        audio_codec_ctx_set     (av_codec_context& ctx);
-    void                        audio_resampler_set     (audio_resampler* resampler);
-    void                        audio_resampler_set     (audio_resampler& resampler);
-    void                        audio_samples_queue_set (av_samples_queue* queue);
-    void                        audio_samples_queue_set (av_samples_queue& queue);
-
-    audio_resampler&            audio_resampler_get     () { return audio_resampler_; }
-    av_samples_queue&           audio_samples_queue     () { return audio_samples_queue_; }
 
     // ---------------------------
     // --- Video setup/control ---
@@ -66,7 +47,7 @@ public:
     void                        video_dimensions_set    (const surface_dimensions_t& dimensions);
     void                        video_scaler_flags_set  (int32_t flags);
     void                        video_scaler_align_set  (int32_t align);
-    void                        ff_dst_pixel_fomat_set  (AVPixelFormat pixel_format);
+    void                        ff_dst_pixel_format_set (AVPixelFormat pixel_format);
     av_codec_context&           video_codec_context     () const;
     av_codec_context&           audio_codec_context     () const;
 
@@ -120,12 +101,13 @@ private:
     void                        current_media_time_set  (media_stream_time* mts);
     void                        current_media_time_set  (media_stream_time& mts);
     void                        update_scaling_context  () const;
+    pipeline_threads&           media_pipeline_threads  () { return media_pipeline_threads_; }
 
     // ----------------------------
     // --- PRIVATE: Member vars ---
     // ----------------------------
+    play_stream                                                         primary_source_stream_;
     std::array<std::unique_ptr<play_stream>, stream_type_index_size()>  source_streams_                 = {nullptr, nullptr, nullptr, nullptr, nullptr};
-    std::unique_ptr<play_stream>                                        primary_source_stream_          ;
     surface_dimensions_t                                                video_dst_dimensions_requested_ = {surface_dimension_auto,surface_dimension_auto};
     int32_t                                                             video_scaler_flags_             = SWS_BILINEAR;
     int32_t                                                             video_scaler_align_             = 32;

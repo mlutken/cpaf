@@ -2,16 +2,18 @@
 
 namespace cpaf::video {
 
-pipeline_threads& player::pipeline_threads_temp_only()
-{
-    return media_pipeline_threads_;
-}
-
 player::player()
     : audio_samples_queue_(1000)
 {
-    primary_source_stream_ = std::make_unique<play_stream>();
+//    primary_source_stream_ = std::make_unique<play_stream>();
     current_media_time_set(cur_media_time_);
+}
+
+player::~player()
+{
+    std::cerr << "FIXMENM player::DESTRUCTOR() 1\n";
+//    primary_source_stream_.reset();
+    std::cerr << "FIXMENM player::DESTRUCTOR() 2\n";
 }
 
 void player::start(const std::chrono::microseconds& start_time_pos)
@@ -29,15 +31,15 @@ void player::start(const std::chrono::microseconds& start_time_pos)
     video_codec_context().get_packet_function_set(video_fmt_ctx.get_packet_function(media_type::video));
     audio_codec_context().get_packet_function_set(video_fmt_ctx.get_packet_function(media_type::audio));
 
-    pipeline_threads_temp_only().audio_codec_ctx_set(audio_codec_context());
-    pipeline_threads_temp_only().audio_resampler_set(audio_resampler_);
-    pipeline_threads_temp_only().audio_samples_queue_set(audio_samples_queue_);
+    media_pipeline_threads().audio_codec_ctx_set(audio_codec_context());
+    media_pipeline_threads().audio_resampler_set(audio_resampler_);
+    media_pipeline_threads().audio_samples_queue_set(audio_samples_queue_);
 
     video_fmt_ctx.read_packets_to_queues(video_fmt_ctx.primary_media_type(), 10);
-    pipeline_threads_temp_only().format_context_set(video_fmt_ctx);
-    pipeline_threads_temp_only().video_codec_ctx_set(video_codec_context());
+    media_pipeline_threads().format_context_set(video_fmt_ctx);
+    media_pipeline_threads().video_codec_ctx_set(video_codec_context());
 
-    pipeline_threads_temp_only().start();
+    media_pipeline_threads().start();
 }
 
 void player::terminate()
@@ -46,7 +48,7 @@ void player::terminate()
     // Reset codec contexts
     video_codec_ctx_ = av_codec_context{};
     audio_codec_ctx_ = av_codec_context{};
-    pipeline_threads_temp_only().terminate();
+    media_pipeline_threads().terminate();
 }
 
 /// @todo need to support reading "hybrid" resources that (potentially) specify different streams
@@ -73,16 +75,14 @@ const play_stream* player::source_stream(stream_type_t sti) const
     if (source_streams_[index]) {
         return source_streams_[index].get();
     }
-    if (primary_source_stream_) {
-        if (sti == stream_type_t::video && primary_source_stream_->has_media_type(media_type::video)) {
-            return primary_source_stream_.get();
-        }
-        else if (sti == stream_type_t::audio && primary_source_stream_->has_media_type(media_type::audio)) {
-            return primary_source_stream_.get();
-        }
-        else if (sti == stream_type_t::subtitle && primary_source_stream_->has_media_type(media_type::subtitle)) {
-            return primary_source_stream_.get();
-        }
+    if (sti == stream_type_t::video && primary_source_stream_.has_media_type(media_type::video)) {
+        return &primary_source_stream_;
+    }
+    else if (sti == stream_type_t::audio && primary_source_stream_.has_media_type(media_type::audio)) {
+        return &primary_source_stream_;
+    }
+    else if (sti == stream_type_t::subtitle && primary_source_stream_.has_media_type(media_type::subtitle)) {
+        return &primary_source_stream_;
     }
     return nullptr;
 }
@@ -94,56 +94,16 @@ play_stream* player::source_stream(stream_type_t sti)
     if (source_streams_[index]) {
         return source_streams_[index].get();
     }
-    if (primary_source_stream_) {
-        if (sti == stream_type_t::video && primary_source_stream_->has_media_type(media_type::video)) {
-            return primary_source_stream_.get();
-        }
-        else if (sti == stream_type_t::audio && primary_source_stream_->has_media_type(media_type::audio)) {
-            return primary_source_stream_.get();
-        }
-        else if (sti == stream_type_t::subtitle && primary_source_stream_->has_media_type(media_type::subtitle)) {
-            return primary_source_stream_.get();
-        }
+    if (sti == stream_type_t::video && primary_source_stream_.has_media_type(media_type::video)) {
+        return &primary_source_stream_;
+    }
+    else if (sti == stream_type_t::audio && primary_source_stream_.has_media_type(media_type::audio)) {
+        return &primary_source_stream_;
+    }
+    else if (sti == stream_type_t::subtitle && primary_source_stream_.has_media_type(media_type::subtitle)) {
+        return &primary_source_stream_;
     }
     return nullptr;
-}
-
-// -----------------------------------------------------
-// --------- TEMP/REFACTOR: pipeline_threads related ---
-// -----------------------------------------------------
-void player::audio_codec_ctx_set(av_codec_context* ctx)
-{
-    pipeline_threads_temp_only().audio_codec_ctx_set(ctx);
-}
-
-void player::audio_codec_ctx_set(av_codec_context& ctx)
-{
-    pipeline_threads_temp_only().audio_codec_ctx_set(ctx);
-}
-
-void player::audio_resampler_set(audio_resampler* resampler)
-{
-    pipeline_threads_temp_only().audio_resampler_set(resampler);
-}
-
-void player::audio_resampler_set(audio_resampler& resampler)
-{
-    pipeline_threads_temp_only().audio_resampler_set(resampler);
-}
-
-void player::audio_samples_queue_set(av_samples_queue* queue)
-{
-    pipeline_threads_temp_only().audio_samples_queue_set(queue);
-}
-
-void player::audio_samples_queue_set(av_samples_queue& queue)
-{
-    pipeline_threads_temp_only().audio_samples_queue_set(queue);
-}
-
-void player::ff_dst_pixel_fomat_set(AVPixelFormat pixel_format)
-{
-    ff_dst_pixel_format_ = pixel_format;
 }
 
 // ---------------------------
@@ -170,6 +130,11 @@ void player::video_scaler_align_set(int32_t align)
 {
     video_scaler_align_ = align;
     update_scaling_context();
+}
+
+void player::ff_dst_pixel_format_set(AVPixelFormat pixel_format)
+{
+    ff_dst_pixel_format_ = pixel_format;
 }
 
 av_codec_context& player::video_codec_context() const
@@ -246,12 +211,12 @@ size_t player::audio_stream_index() const
 
 player::audio_play_callback_t player::audio_callback_get()
 {
-    return pipeline_threads_temp_only().audio_callback_get();
+    return media_pipeline_threads().audio_callback_get();
 }
 
 bool player::video_frame_update(av_frame& current_frame, render& video_render)
 {
-    return pipeline_threads_temp_only().video_frame_update(current_frame, video_render);
+    return media_pipeline_threads().video_frame_update(current_frame, video_render);
 }
 
 // --------------------
@@ -260,31 +225,31 @@ bool player::video_frame_update(av_frame& current_frame, render& video_render)
 
 void player::seek_position(const std::chrono::microseconds& stream_pos, seek_dir dir)
 {
-    pipeline_threads_temp_only().seek_position(stream_pos, dir);
+    media_pipeline_threads().seek_position(stream_pos, dir);
 }
 
 void player::seek_position(const std::chrono::microseconds& stream_pos)
 {
-    pipeline_threads_temp_only().seek_position(stream_pos);
+    media_pipeline_threads().seek_position(stream_pos);
 }
 
 void player::seek_relative(const std::chrono::microseconds& delta_time)
 {
-    pipeline_threads_temp_only().seek_relative(delta_time);
+    media_pipeline_threads().seek_relative(delta_time);
 }
 
 void player::pause_playback()
 {
     cur_media_time_.pause_time();
     threads_paused_ = true;
-    pipeline_threads_temp_only().pause_playback();
+    media_pipeline_threads().pause_playback();
 }
 
 void player::resume_playback()
 {
     cur_media_time_.resume_time();
     threads_paused_ = false;
-    pipeline_threads_temp_only().resume_playback();
+    media_pipeline_threads().resume_playback();
 }
 
 
@@ -323,18 +288,18 @@ bool player::open_stream(const std::string& resource_path, stream_type_t sti)
 bool player::open_primary_stream(const std::string& resource_path)
 {
     primary_resource_path_ = resource_path;
-    const auto open_ok = primary_source_stream_->open(resource_path);
+    const auto open_ok = primary_source_stream_.open(resource_path);
     return open_ok;
 }
 
 void player::current_media_time_set(media_stream_time* mts)
 {
-    pipeline_threads_temp_only().current_media_time_set(mts);
+    media_pipeline_threads().current_media_time_set(mts);
 }
 
 void player::current_media_time_set(media_stream_time& mts)
 {
-    pipeline_threads_temp_only().current_media_time_set(mts);
+    media_pipeline_threads().current_media_time_set(mts);
 }
 
 void player::update_scaling_context() const
