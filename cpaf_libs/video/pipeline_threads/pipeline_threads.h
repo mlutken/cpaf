@@ -56,6 +56,7 @@ public:
     void                    seek_relative           (const std::chrono::microseconds& delta_time);
     void                    pause_playback          ();
     void                    resume_playback         ();
+    bool                    playback_paused         () const { return threads_paused_; }
     void                    flush_queues            ();
     void                    signal_flush_start      ();
     void                    signal_flush_done       ();
@@ -69,10 +70,10 @@ private:
     av_samples_queue&       audio_samples_queue     () { return *audio_samples_queue_ptr_; }
     media_stream_time&      current_media_time      () { return *current_media_time_ptr_; }
 
-    std::atomic_bool&       threads_running         ()  { return threads_running_; }
-    std::atomic_bool&       threads_paused          ()  { return threads_paused_; }
-
-
+    packet_reader_thread            packet_reader_thread_;
+    audio_resampler_thread          audio_resampler_thread_;
+    audio_render_thread             audio_render_thread_;
+    video_render_thread             video_render_thread_;
     av_format_context*              format_context_ptr_             = nullptr;
     av_codec_context*               audio_codec_ctx_ptr_            = nullptr;
     av_codec_context*               video_codec_ctx_ptr_            = nullptr;
@@ -82,10 +83,6 @@ private:
     std::atomic_bool                threads_running_                = true;
     std::atomic_bool                threads_paused_                 = false;
 
-    packet_reader_thread            packet_reader_thread_;
-    audio_resampler_thread          audio_resampler_thread_;
-    audio_render_thread             audio_render_thread_;
-    video_render_thread             video_render_thread_;
 };
 
 
