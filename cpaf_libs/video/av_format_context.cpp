@@ -45,9 +45,7 @@ av_format_context::av_format_context(const std::string& resource_path)
 
 av_format_context::~av_format_context()
 {
-    if (ff_format_context_) {
-        avformat_close_input(&ff_format_context_);
-    }
+    close();
 }
 
 bool av_format_context::open(const std::string& resource_path)
@@ -63,6 +61,13 @@ bool av_format_context::open(const std::string& resource_path)
     read_codec_contexts();
     set_default_selected_streams();
     return true;
+}
+
+void av_format_context::close()
+{
+    if (ff_format_context_) {
+        avformat_close_input(&ff_format_context_);
+    }
 }
 
 void av_format_context::selected_media_index_set(media_type mt, size_t stream_index)
