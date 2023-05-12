@@ -29,13 +29,19 @@ public:
     const play_stream*          source_stream           (stream_type_t sti) const;
     play_stream*                source_stream           (stream_type_t sti);
 
-    play_stream*                video_stream            ()  { return source_stream(stream_type_t::video); }
-    play_stream*                audio_stream            ()  { return source_stream(stream_type_t::audio); }
-    play_stream*                subtitle_stream         ()  { return source_stream(stream_type_t::subtitle); }
+    play_stream*                video_stream            ()       { return source_stream(stream_type_t::video); }
+    const play_stream*          video_stream            () const { return source_stream(stream_type_t::video); }
+    play_stream*                audio_stream            ()       { return source_stream(stream_type_t::audio); }
+    const play_stream*          audio_stream            () const { return source_stream(stream_type_t::audio); }
+    play_stream*                subtitle_stream         ()       { return source_stream(stream_type_t::subtitle); }
+    const play_stream*          subtitle_stream         () const { return source_stream(stream_type_t::subtitle); }
 
     play_stream&                primary_stream          ()       { return primary_source_stream_; }
     const play_stream&          primary_stream          () const { return primary_source_stream_; }
     const std::string&          primary_resource_path	() const { return primary_resource_path_; }
+    std::string                 video_resource_path     () const { return video_stream() ? video_stream()->resource_path() : ""; }
+    std::string                 audio_resource_path     () const { return audio_stream() ? audio_stream()->resource_path() : ""; }
+    std::string                 subtitle_resource_path  () const { return subtitle_stream() ? subtitle_stream()->resource_path() : ""; }
 
     media_stream_time&          cur_media_time          ()          { return cur_media_time_; }
     const media_stream_time&    cur_media_time          () const    { return cur_media_time_; }
