@@ -41,7 +41,7 @@ private:
     av_format_context&      format_context          () { return *format_context_ptr_; }
     av_codec_context&       audio_codec_ctx         () { return *audio_codec_ctx_ptr_; }
     audio_resampler&        audio_sampler           () { return *audio_resampler_ptr_; }
-    av_samples_queue&     audio_samples_queue     () { return *audio_samples_queue_ptr_; }
+    av_samples_queue&       audio_samples_queue     () { return *audio_samples_queue_ptr_; }
     media_stream_time&      current_media_time      () { return *current_media_time_ptr_; }
     const std::atomic_bool& threads_running         () const { return threads_running_; }
     const std::atomic_bool& threads_paused          () const { return threads_paused_; }
@@ -52,7 +52,7 @@ private:
     av_format_context*              format_context_ptr_             = nullptr;
     av_codec_context*               audio_codec_ctx_ptr_            = nullptr;
     audio_resampler*                audio_resampler_ptr_            = nullptr;
-    av_samples_queue*             audio_samples_queue_ptr_        = nullptr;
+    av_samples_queue*               audio_samples_queue_ptr_        = nullptr;
     media_stream_time*              current_media_time_ptr_         = nullptr;
 
     uint32_t                        audio_samples_fill_level_       = 30;
