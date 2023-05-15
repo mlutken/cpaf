@@ -28,6 +28,7 @@ public:
     explicit av_samples_queue(size_t queue_size);
 
     bool                        empty       () const { return fifo_.empty();    }
+    bool                        full        () const { return fifo_.full();     }
     size_t                      size        () const { return fifo_.size();     }
     bool                        push        (av_samples_buffer buffer);
     av_samples_buffer&          front       ();
