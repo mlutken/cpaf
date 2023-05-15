@@ -1,1 +1,0 @@
-add_playground_c_exe(my_dependant_module "my_dependant_module;cesl_debug")
