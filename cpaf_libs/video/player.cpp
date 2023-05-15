@@ -5,15 +5,12 @@ namespace cpaf::video {
 player::player()
     : audio_samples_queue_(1000)
 {
-//    primary_source_stream_ = std::make_unique<play_stream>();
     current_media_time_set(cur_media_time_);
 }
 
 player::~player()
 {
-    std::cerr << "FIXMENM player::DESTRUCTOR() 1\n";
-//    primary_source_stream_.reset();
-    std::cerr << "FIXMENM player::DESTRUCTOR() 2\n";
+    std::cerr << "FIXMENM player::DESTRUCTOR()\n";
 }
 
 void player::start(const std::chrono::microseconds& start_time_pos)
