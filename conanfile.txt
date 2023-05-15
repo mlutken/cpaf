@@ -1,7 +1,12 @@
 [requires]
+cmake/3.26.3
 gtest/cci.20210126
-#nlohmann_json/3.11.2
-fmt/9.1.0
+### openssl/3.1.0
+#boost/1.81.0
+#uwebsockets/20.36.0
+#libtorrent/2.0.8
+nlohmann_json/3.11.2
+fmt/10.0.0
 #qt/6.3.1
 #qt/5.15.6
 
@@ -15,6 +20,3 @@ cmake_find_package
 #CMakeDeps
 #CMakeToolchain
 
-#-rw-rw-r-- 1 ml ml  263 Oct  7 13:01 CMakeLists.txt
-#-rw-rw-r-- 1 ml ml  101 Oct  7 12:17 conanfile.txt
-#-rw-rw-r-- 1 ml ml  240 Oct  7 13:02 json_test.cpp
