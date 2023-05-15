@@ -51,13 +51,13 @@ private:
     void                    debug_audio_callback    (uint8_t* stream, int32_t length);
 
     av_format_context&      format_context          () { return *format_context_ptr_; }
-    av_samples_queue&     audio_samples_queue     () { return *audio_samples_queue_ptr_; }
+    av_samples_queue&       audio_samples_queue     () { return *audio_samples_queue_ptr_; }
     media_stream_time&      current_media_time      () { return *current_media_time_ptr_; }
 
     flush_queue_t                   flush_queue_;
     av_format_context*              format_context_ptr_             = nullptr;
     av_codec_context*               audio_codec_ctx_ptr_            = nullptr;
-    av_samples_queue*             audio_samples_queue_ptr_        = nullptr;
+    av_samples_queue*               audio_samples_queue_ptr_        = nullptr;
     media_stream_time*              current_media_time_ptr_         = nullptr;
 
     std::chrono::microseconds       sync_ok_interval                = std::chrono::milliseconds(15);

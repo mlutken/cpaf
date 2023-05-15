@@ -85,21 +85,21 @@ void audio_render_thread::state__normal_flow(uint8_t* stream, int32_t length)
 
     if (current_media_time().time_is_paused()) {
         render_audio_silence(stream, length);
-        //        cerr << "FIXMENM my_audio_callback time is PAUSED!!!\n";
         return;
     }
-    //    cerr << "FIXMENM my_audio_callback time is NOT PAUSED!!!\n";
 
     if (audio_samples_queue().empty()) {
         render_audio_silence(stream, length);
         if (!empty_audio_buffer_dbg_) {
 
-            cerr << "*** [" << audio_callback_dbg_counter_ << "] ERROR audio samples queue EMPTY!!"
-                 << ", audio_packets_queue().size(): " << format_context().packet_queue_const(media_type::audio).size()
-                 << ", video_packets_queue().size(): " << format_context().packet_queue_const(media_type::video).size()
-                 << ", audio_samples_queue().size(): " << audio_samples_queue().size()
-                 << ", video_packets_queue() ts: " << format_context().packet_queue_const(media_type::video).front().presentation_time_ms().count()
-                 << "\n";
+//            const auto& video_queue = format_context().packet_queue_const(media_type::video);
+
+//            cerr << "*** [" << audio_callback_dbg_counter_ << "] ERROR audio samples queue EMPTY!!"
+//                 << ", audio_packets_queue().size(): " << format_context().packet_queue_const(media_type::audio).size()
+//                 << ", video_packets_queue().size(): " << video_queue.size()
+//                 << ", XX audio_samples_queue().size(): " << audio_samples_queue().size()
+//                 << ", video_packets_queue() ts: " << (video_queue.size() > 0 ? video_queue.front().presentation_time_ms().count() : 0)
+//                 << "\n";
             }
         empty_audio_buffer_dbg_ = true;
         return;
