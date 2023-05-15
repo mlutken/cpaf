@@ -1,6 +1,8 @@
 #include "classification_data_reader_base.h"
 
+#include <iostream>
 #include <utils/cpaf_string_utils.hpp>
+
 
 namespace ba = boost::algorithm;
 

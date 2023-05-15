@@ -1,12 +1,9 @@
-#ifndef CPAF_JSON_UTILS_H
-#define CPAF_JSON_UTILS_H
-
+#pragma once
 #include <string>
 #include <map>
 #include <vector>
 #include <optional>
 #include <nlohmann/json.hpp>
-#include <fifo_map/fifo_map.hpp>
 
 namespace cpaf {
 using json_vec              = std::vector<nlohmann::json>;
@@ -14,15 +11,6 @@ using json_ptr_vec          = std::vector<nlohmann::json*>;
 using json_const_ptr_vec    = std::vector<const nlohmann::json*>;
 
 enum class json_pretty { no, yes };
-
-
-template<class K, class V, class dummy_compare, class A>
-using workaround_fifo_map = nlohmann::fifo_map<K, V, nlohmann::fifo_map_compare<K>, A>;
-
-using my_json = nlohmann::basic_json<workaround_fifo_map>;
-
-
-using fifo_json = nlohmann::basic_json<workaround_fifo_map>;
 
 std::string     simple_json_to_string   (const nlohmann::json& object);
 std::string     to_string               (const nlohmann::json& object, std::string default_value);
@@ -112,6 +100,4 @@ std::map<KEY, VALUE> json_to_std_map(const nlohmann::json& jo)
 }
 
 } // END namespace cpaf
-
-#endif //CPAF_JSON_UTILS_H
 

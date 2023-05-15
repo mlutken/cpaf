@@ -1,14 +1,12 @@
 [requires]
-cmake/3.26.3
+#cmake/3.26.3
 gtest/cci.20210126
+nlohmann_json/3.11.2
+fmt/10.0.0
 ### openssl/3.1.0
 #boost/1.81.0
 #uwebsockets/20.36.0
 #libtorrent/2.0.8
-nlohmann_json/3.11.2
-fmt/10.0.0
-#qt/6.3.1
-#qt/5.15.6
 
 [options]
 qt:shared=True
