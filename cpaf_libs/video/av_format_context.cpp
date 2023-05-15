@@ -318,8 +318,11 @@ Test if packet belongs to one of the selected streams.
 bool av_format_context::packet_in_selected_stream(const av_packet& packet) const
 {
     const media_type mt = packet.media_type_get();
-    const size_t index = packet.stream_index();
-    return selected_stream_per_media_type_[to_size_t(mt)] == index;
+    const size_t packet_index = packet.stream_index();
+    const size_t media_type_int = to_size_t(mt);
+    const size_t media_type_index = selected_stream_per_media_type_[media_type_int];
+    const bool in_selected_stream = media_type_index == packet_index;
+    return in_selected_stream;
 }
 
 /**
@@ -333,7 +336,9 @@ none is found.
 media_type av_format_context::read_packet_to_queue()
 {
     av_packet packet = read_packet_selected();
-    if (!packet.is_valid()) return media_type::SIZE;
+    if (!packet.is_valid()) {
+        return media_type::SIZE;
+    }
     const media_type mt = packet.media_type_get();
 
     packet_queue_t& queue = packet_queue(mt);
@@ -382,7 +387,9 @@ bool av_format_context::read_packets_to_queues(media_type mt, uint32_t fill_to_s
 {
     const packet_queue_t& queue = packet_queue(mt);
 
-    if (queue.size() >= fill_to_size) return true;
+    if (queue.size() >= fill_to_size) {
+        return true;
+    }
 
     media_type mt_read = read_packet_to_queue();
 
