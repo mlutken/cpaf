@@ -55,7 +55,6 @@ public:
     void                        video_scaler_align_set  (int32_t align);
     void                        ff_dst_pixel_format_set (AVPixelFormat pixel_format);
     av_codec_context&           video_codec_context     () const;
-    av_codec_context&           audio_codec_context     () const;
 
     // ----------------------------
     // --- Video info functions ---
@@ -69,11 +68,13 @@ public:
     // ---------------------------
     bool                    	audio_out_formats_set   (const cpaf::audio::device& audio_device);
     bool                        audio_out_formats_set   (const ff_audio_format_t& ff_audio_format);
+    av_codec_context&           audio_codec_context     () const;
 
     // ----------------------------
     // --- Audio info functions ---
     // ----------------------------
     size_t                      audio_stream_index		() const;
+    const av_samples_queue&     audio_samples_queue     () const { return audio_samples_queue_; }
 
     // ---------------------------------------------
     // --- Interfacing to surrounding app/system ---
