@@ -1,20 +1,17 @@
 [requires]
-#cmake/3.26.3
 gtest/cci.20210126
 nlohmann_json/3.11.2
 fmt/10.0.0
-### openssl/3.1.0
+openssl/3.1.0
+sdl/2.26.1
 #boost/1.81.0
 #uwebsockets/20.36.0
 #libtorrent/2.0.8
 
 [options]
-qt:shared=True
+#openssl/3.1.0:shared=False
 
 [generators]
-cmake
-cmake_find_package
-#cmake_find_package_multi
-#CMakeDeps
-#CMakeToolchain
+CMakeDeps
+CMakeToolchain
 

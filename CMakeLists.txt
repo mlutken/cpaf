@@ -1,5 +1,6 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.22)
 project(cpaf)
+message ("(cpaf)CMAKE_PROJECT_NAME      : '${CMAKE_PROJECT_NAME}'")
 
 set ( CPAF_VERSION_MAJOR     1   )
 set ( CPAF_VERSION_MINOR     0   )
@@ -15,13 +16,15 @@ endif ()
 
 
 if (CPAF_IS_TOP_LEVEL_PROJECT)
-    set(CMAKE_CXX_STANDARD 20)
-    set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-    enable_testing()
-
     SET(QT_CREATOR_SKIP_PACKAGE_MANAGER_SETUP TRUE)
     SET(QT_CREATOR_SKIP_CONAN_SETUP TRUE)
+    set (CMAKE_RUNTIME_OUTPUT_DIRECTORY     ${CMAKE_BINARY_DIR}/bin)
+    set (CMAKE_LIBRARY_OUTPUT_DIRECTORY     ${CMAKE_BINARY_DIR}/bin)
+    set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY     ${CMAKE_BINARY_DIR}/lib)
+    set (CMAKE_COMPILE_PDB_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/pdb)
+
+    set(CMAKE_CXX_STANDARD 20)
+    set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
     include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/platform_definitions.cmake)
     include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/default_platform_definitions.cmake)
@@ -44,10 +47,12 @@ if (CPAF_IS_TOP_LEVEL_PROJECT)
     conan_cmake_install(PATH_OR_REFERENCE ${CMAKE_CURRENT_LIST_DIR}
                         BUILD missing
                         REMOTE conancenter
+                        OUTPUT_FOLDER ${CMAKE_BINARY_DIR}
                         SETTINGS ${settings})
 
-    include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-    conan_basic_setup()
+    include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
+    find_package(Threads REQUIRED)
+    find_package(GTest REQUIRED)
 endif()
 
 
@@ -57,6 +62,11 @@ endif()
 # Set some default platform/system names
 if ( (CPAF_AUDIO_SYSTEM_NAME MATCHES "") )
     set (CPAF_AUDIO_SYSTEM_NAME "sdl2")
+endif()
+
+if (CPAF_IS_TOP_LEVEL_PROJECT)
+    message ("INFO: cpaf is top level project!")
+    enable_testing()
 endif()
 
 
