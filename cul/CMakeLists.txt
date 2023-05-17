@@ -2,8 +2,8 @@ add_subdirectory(luepp)
 if ( NOT (CMAKE_SYSTEM_NAME MATCHES "Emscripten") )
 
     # --- WebCC ---
-    set (WEBCC_ENABLE_GZIP TRUE)
-    set (WEBCC_ENABLE_SSL TRUE)
+    set(WEBCC_ENABLE_SSL   1 CACHE STRING "Enable SSL/HTTPS (need OpenSSL)? (1:Yes, 0:No)")
+    set(WEBCC_ENABLE_GZIP  1 CACHE STRING "Enable gzip compression (need Zlib)? (1:Yes, 0:No)")
     add_subdirectory(webcc)
     configure_file( "${CMAKE_CURRENT_LIST_DIR}/webcc/webcc/config.h.in" "${CMAKE_BINARY_DIR}/install/include/webcc/config.h" )
 
