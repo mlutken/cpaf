@@ -13,8 +13,9 @@ sdl/2.26.1
 #sdl_ttf/2.20.1
 icu/73.1
 boost/1.81.0
+libtorrent/2.0.8
+#imgui/cci.20230105+1.89.2.docking
 #uwebsockets/20.36.0
-#libtorrent/2.0.8
 
 [options]
 #openssl/3.1.0:shared=False
