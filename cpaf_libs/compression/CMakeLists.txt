@@ -15,7 +15,7 @@ target_sources(${library_name}
 get_filename_component(PARENT_DIR ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
 get_filename_component(PARENT2_DIR ${PARENT_DIR} DIRECTORY)
 target_link_libraries(${library_name} "cpaf_containers;cpaf_filesystem")
-target_link_libraries(${library_name} Boost::system Boost::regex)
+target_link_libraries(${library_name} Boost::regex)
 target_link_libraries(${library_name} ZLIB::ZLIB)
 target_link_libraries(${library_name} BZip2::BZip2)
 set_target_properties(${library_name} PROPERTIES LINKER_LANGUAGE CXX)
