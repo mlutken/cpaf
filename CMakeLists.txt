@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.22)
 project(cpaf)
 message ("(cpaf)CMAKE_PROJECT_NAME      : '${CMAKE_PROJECT_NAME}'")
 
+# Overide recipe with local version: https://github.com/conan-io/conan/issues/13743
+
 set ( CPAF_VERSION_MAJOR     1   )
 set ( CPAF_VERSION_MINOR     0   )
 set ( CPAF_VERSION_PATCH     0   )
@@ -30,9 +32,9 @@ if (CPAF_IS_TOP_LEVEL_PROJECT)
     include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/default_platform_definitions.cmake)
     include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/set_platform_compiler_defines.cmake)
 
-    list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
-    list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
-    list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/tools/cmake)
+#    list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
+#    list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
+#    list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/tools/cmake)
 
     if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
       file(COPY_FILE "${CMAKE_CURRENT_LIST_DIR}/cul/luepp/3rdparty/conan/conan.cmake" "${CMAKE_BINARY_DIR}/conan.cmake")

@@ -2,9 +2,9 @@ set (library_name cpaf_sdl2)
 
 if ( NOT (CMAKE_SYSTEM_NAME MATCHES "Emscripten") )
 find_package(SDL2 REQUIRED)
-find_package(SDL2_image REQUIRED)
-find_package(SDL2_mixer REQUIRED)
-find_package(SDL2_ttf REQUIRED)
+#find_package(SDL2_image REQUIRED)
+#find_package(SDL2_mixer REQUIRED)
+#find_package(SDL2_ttf REQUIRED)
 endif()
 
 set (Centurion_INCLUDE_DIRS "${CPAF_ROOT_DIR}/cul/centurion/include")
