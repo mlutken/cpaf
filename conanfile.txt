@@ -14,7 +14,7 @@ sdl/2.26.1
 icu/73.1
 boost/1.81.0
 libtorrent/2.0.8
-#imgui/cci.20230105+1.89.2.docking
+imgui/cci.20230105+1.89.2.docking
 #uwebsockets/20.36.0
 
 [options]
