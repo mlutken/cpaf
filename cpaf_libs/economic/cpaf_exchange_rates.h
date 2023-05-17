@@ -1,8 +1,8 @@
 #ifndef CPAF_EXCHANGE_RATES_H
 #define CPAF_EXCHANGE_RATES_H
 
-#include <boost/filesystem/path.hpp>
 #include <nlohmann/json.hpp>
+#include <boost/filesystem/path.hpp>
 
 namespace cpaf {
 

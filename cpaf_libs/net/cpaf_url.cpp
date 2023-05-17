@@ -219,7 +219,7 @@ boost::filesystem::path	url::save_path()		const
 		}
 	}
 	if ( isFile() && !p.empty() ) {
-		p = p.branch_path() / (p.filename().string() + "_FILE_");
+        p = p.parent_path() / (p.filename().string() + "_FILE_");
 	}
 	return p;
 	
@@ -278,8 +278,8 @@ void url::assign (
 	// Split domain and parameters into parts
 	split_domain( sDomain, m_Domain);
 	split_parameters( sParameters, m_Parameters );
-	if ( m_Path.leaf() == "/" || m_Path.leaf() == "." || m_Path.leaf() == ".." )	m_bIsFile = false;
-	else																			m_bIsFile = true;
+    if ( m_Path.filename() == "/" || m_Path.filename() == "." || m_Path.filename() == ".." ) {	m_bIsFile = false; }
+    else                                                                                     {  m_bIsFile = true;  }
 }
 
 // ----------------------
