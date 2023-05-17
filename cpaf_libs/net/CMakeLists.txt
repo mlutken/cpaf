@@ -19,8 +19,8 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/cpaf_webcc_client.cpp
 )
 
-add_library(webcc STATIC IMPORTED)
-set_target_properties(webcc PROPERTIES IMPORTED_LOCATION "${CPAF_INSTALL_DIR}/lib/libwebcc.a")
+#add_library(webcc STATIC IMPORTED)
+#set_target_properties(webcc PROPERTIES IMPORTED_LOCATION "${CPAF_INSTALL_DIR}/lib/libwebcc.a")
 
 get_filename_component(PARENT_DIR ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
 target_link_libraries(${library_name} CURL::libcurl)
