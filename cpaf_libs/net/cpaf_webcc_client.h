@@ -1,13 +1,4 @@
-#ifndef CPAF_NET_WEBCC_CLIENT_H
-#define CPAF_NET_WEBCC_CLIENT_H
-
- 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-#include <webcc/client_session.h>
-#include <webcc/logger.h>
-#pragma GCC diagnostic pop
-
+#pragma once
 
 namespace cpaf { namespace net {
 
@@ -30,7 +21,5 @@ namespace cpaf { namespace net {
 
 }} //END namespace cpaf::net
 
-
-#endif //CPAF_NET_WEBCC_CLIENT_H
 
 

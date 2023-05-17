@@ -1,10 +1,16 @@
-#ifndef CPAF_ELASTICSEARCH_ES_UTILS_H
-#define CPAF_ELASTICSEARCH_ES_UTILS_H
+#pragma once
 
 #include <string>
 #include <vector>
 #include <cpaf_libs/utils/cpaf_json_utils.h>
 #include <cpaf_libs/net/cpaf_webcc_client.h>
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#include <webcc/client_session.h>
+#include <webcc/logger.h>
+#pragma GCC diagnostic pop
+
 
 
 namespace cpaf::elasticsearch
@@ -53,6 +59,3 @@ void bulk_request (
         size_t reserve_hint = 10000);
 
 } //end namespace cpaf::elasticsearch
-
-
-#endif //CPAF_ELASTICSEARCH_ES_UTILS_H
