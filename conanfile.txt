@@ -15,7 +15,7 @@ sdl/2.26.1
 #sdl_net/2.0.1
 #sdl_ttf/2.20.1
 icu/73.1
-boost/1.74.0
+boost/1.79.0
 #uwebsockets/20.36.0
 #libtorrent/2.0.8
 
