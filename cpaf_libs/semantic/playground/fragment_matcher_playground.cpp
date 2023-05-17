@@ -6,7 +6,7 @@
 #include <iomanip>
 #include <bitset>
 #include <memory>
-#include <boost/filesystem/path.hpp>
+#include <filesystem>
 #include <sparsehash/dense_hash_map>
 
 #include <streams/cpaf_json_streams.h>
@@ -19,7 +19,7 @@
 #include <semantic/primitives/word_classes_lookup.h>
 
 using json = nlohmann::json;
-namespace fs = boost::filesystem;
+namespace fs = std::filesystem;
 namespace cfs = cpaf::filesystem;
 namespace cs = cpaf::streams;
 namespace con = cpaf::containers;

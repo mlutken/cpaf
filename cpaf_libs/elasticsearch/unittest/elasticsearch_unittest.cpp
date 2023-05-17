@@ -2,7 +2,7 @@
 #include <memory>
 #include <thread>
 #include <gtest/gtest.h>
-#include <boost/filesystem/path.hpp>
+#include <filesystem>
 #include <nlohmann/json.hpp>
 #include <elasticsearch/es_utils.h>
 #include <elasticsearch/es_connection.h>
@@ -11,7 +11,7 @@
 using namespace testing;
 using namespace std;
 using json = nlohmann::json;
-namespace fs = boost::filesystem;
+namespace fs = std::filesystem;
 namespace cs = cpaf::streams;
 namespace con = cpaf::containers;
 namespace es = cpaf::elasticsearch;

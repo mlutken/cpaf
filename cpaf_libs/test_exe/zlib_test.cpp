@@ -1,4 +1,4 @@
-// #include <boost/filesystem/path.hpp>
+// #include <filesystem>
 // #include <boost/filesystem/convenience.hpp>
 // #include <zlib.h>
 
@@ -7,22 +7,22 @@
 using cpaf::compression::gzCompress;
 using cpaf::compression::gzUnCompress;
 
-namespace fs = boost::filesystem;
+namespace fs = std::filesystem;
 
 /*
 // using namespace std;
 // using namespace cpaf;
-namespace fs = boost::filesystem;
+namespace fs = std::filesystem;
 
 /// Compress a single file to gz format using zlib. 
 /// If \a dstFilePath is an existing directory the file is compressed to here with 
 /// '.gz' appended to the filename.
 bool gzCompress( 
-	const boost::filesystem::path& srcFilePath, 	///< [in] Path to source file
-	const boost::filesystem::path& dstFilePath  	///< [in] Path to destination file. Can be a directory name
+	const std::filesystem::path& srcFilePath, 	///< [in] Path to source file
+	const std::filesystem::path& dstFilePath  	///< [in] Path to destination file. Can be a directory name
 ) 
 {
-	namespace fs = boost::filesystem;
+	namespace fs = std::filesystem;
 	fs::path dstFile(dstFilePath);
 	
 	if ( fs::is_directory(dstFile) ) {
@@ -46,11 +46,11 @@ bool gzCompress(
 /// If \a dstFilePath is an existing directory the file is uncompressed to here with 
 /// '.gz' removed from the filename.
 bool gzUnCompress( 
-	const boost::filesystem::path& srcFilePath, 	///< [in] Path to source file
-	const boost::filesystem::path& dstFilePath  	///< [in] Path to destination file. Can be a directory name
+	const std::filesystem::path& srcFilePath, 	///< [in] Path to source file
+	const std::filesystem::path& dstFilePath  	///< [in] Path to destination file. Can be a directory name
 ) 
 {
-	namespace fs = boost::filesystem;
+	namespace fs = std::filesystem;
 	fs::path dstFile(dstFilePath);
 	
 	if ( fs::is_directory(dstFile) ) {

@@ -11,7 +11,7 @@ class json_classification_data_reader : public classification_fragment_reader_ba
 {
 public:
     explicit json_classification_data_reader(const std::string& path);
-    explicit json_classification_data_reader(const boost::filesystem::path& path);
+    explicit json_classification_data_reader(const std::filesystem::path& path);
 
     const nlohmann::json&       json_data        () const { return json_data_; }
     const nlohmann::json&       values           () const;

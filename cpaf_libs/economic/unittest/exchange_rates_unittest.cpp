@@ -1,9 +1,9 @@
 #include <iostream>
 #include <gtest/gtest.h>
-#include <boost/filesystem/path.hpp>
+#include <filesystem>
 #include <cpaf_libs/economic/cpaf_exchange_rates.h>
 
-namespace fs = boost::filesystem;
+namespace fs = std::filesystem;
 const fs::path exchange_rates_path = fs::path(__FILE__).parent_path() / "exchange_rates.json";
 
 using namespace testing;

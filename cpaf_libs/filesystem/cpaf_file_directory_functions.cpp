@@ -33,10 +33,10 @@ namespace cpaf { namespace filesystem {
  * If t he path does not exists nothing is done.
  * If the path is a directory it is safely removed.
 */
-void remove_safe(const boost::filesystem::path& path)
+void remove_safe(const std::filesystem::path& path)
 {
-    namespace fs = boost::filesystem;
-    boost::system::error_code ec;
+    namespace fs = std::filesystem;
+    std::error_code ec;
     if (fs::exists(path, ec)) {
         if (fs::is_directory(path)) {
             fs::remove_all(path, ec);
@@ -47,7 +47,7 @@ void remove_safe(const boost::filesystem::path& path)
     }
 }
 
-boost::filesystem::path stem_base(const boost::filesystem::path& path)
+std::filesystem::path stem_base(const std::filesystem::path& path)
 {
     auto stem = path.stem();
     while (stem.has_extension()) {
@@ -56,8 +56,8 @@ boost::filesystem::path stem_base(const boost::filesystem::path& path)
     return stem;
 }
 
-boost::filesystem::path stem_remove_extensions(
-        const boost::filesystem::path& path,
+std::filesystem::path stem_remove_extensions(
+        const std::filesystem::path& path,
         const std::vector<std::string>& extensions_remove)
 {
     auto stem = path.filename();
@@ -94,12 +94,12 @@ Retrieves a list of files in a directory.
 \sa subdirectories_list(), subdirectories_list_recursive(), files_list_recursive() */
 filepaths_t		
 files_list              ( 
-    const boost::filesystem::path& path,    ///< Path to directory to retreive files list for.
+    const std::filesystem::path& path,    ///< Path to directory to retreive files list for.
     bool full_paths,                        ///< Select wheter to return full path names or just leaf names.
     const std::string& wild            		///< Only return names that match this wildcard/globbing expression, Use empty string for matching all names.
 )
 {
-    namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
     filepaths_t files;
     fs::directory_iterator dirEnd   = fs::directory_iterator();
     fs::directory_iterator itDir    = fs::directory_iterator(path);
@@ -131,12 +131,12 @@ included in the list.
 \sa subdirectories_list_recursive(), files_list(), files_list_recursive() */
 filepaths_t		
 subdirectories_list     ( 
-    const boost::filesystem::path& path,    ///< Path to directory to retreive subdirectories list for.
+    const std::filesystem::path& path,    ///< Path to directory to retreive subdirectories list for.
     bool full_paths,                        ///< Select wheter to return full path names or just leaf names.
     const std::string& wild            		///< Only return names that match this wildcard/globbing expression, Use empty string for matching all names.
 )
 {
-    namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
     filepaths_t dirs;
     fs::directory_iterator dirEnd   = fs::directory_iterator();
     fs::directory_iterator itDir    = fs::directory_iterator(path);
@@ -164,19 +164,19 @@ Get common part of the two from the start. Finds the intersection of two parts
 from the beginning of the paths. See the example below.
 \return The intersection/common-part (from the root and forward) of the two paths.
 \example
-    namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
     fs::path path1("z:/hello/horse/goat/pig/cow/sheep");
     fs::path path2("z:/hello/horse/whale/dolphin");
     intersection_from_start(inPath, remPath) == fs::path("z:/hello/horse"); 
 \endexample
 */
-boost::filesystem::path 
+std::filesystem::path 
 intersection_from_start(
-    const boost::filesystem::path& path1,  ///< [in] Path 1
-    const boost::filesystem::path& path2   ///< [in] Path 2 
+    const std::filesystem::path& path1,  ///< [in] Path 1
+    const std::filesystem::path& path2   ///< [in] Path 2 
                         )                                         
 {                                                                                 
-    namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
     fs::path::iterator it1  = path1.begin();
     fs::path::iterator it2  = path2.begin();
 
@@ -202,20 +202,20 @@ Remove part of path from beginning. See the example below. If paths does
 not have the same root then inPath is returned.
 \return inPath with the intersection of inPath and remPath removed.
 \example
-    namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
     fs::path inPath("z:/hello/horse/goat/pig/cow/sheep");
     fs::path remPath("z:/hello/horse");
     remove_from_start(inPath, remPath) == fs::path("goat/pig/cow/sheep"); 
 \endexample
 */
 
-boost::filesystem::path 
+std::filesystem::path 
 remove_from_start( 
-    const boost::filesystem::path& inPath,   ///< [in] Path to remove start of path from
-    const boost::filesystem::path& remPath   ///< [in] Path to remove from inPath
+    const std::filesystem::path& inPath,   ///< [in] Path to remove start of path from
+    const std::filesystem::path& remPath   ///< [in] Path to remove from inPath
                   )                                         
 {                                                                                 
-    namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
 	
     fs::path::iterator itIn   = inPath.begin();
     fs::path::iterator itRem  = remPath.begin();
@@ -245,19 +245,19 @@ an absolute from path (no filename only path) and an absolute path to the
 file to link to (path and filename). See examples.
 \return Relative path from pathFrom to fileTo. 
 \example
-    namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
     fs::path linkFrom("z:/hello/horse/goat/pig/cow/sheep" );
     fs::path linkTo("z:/hello/horse/whale/dolphin/seal.txt");
     relative_path(linkFrom, linkTo) == fs::path("../../../../whale/dolphin/seal.txt");
 \endexample
 */
-boost::filesystem::path 
+std::filesystem::path 
 relative_path (
-    const boost::filesystem::path& pathFrom, ///< [in] Path to link from. No file name only path.
-    const boost::filesystem::path& fileTo    ///< [in] Path/filename to link to. Path including the filename to link to.
+    const std::filesystem::path& pathFrom, ///< [in] Path to link from. No file name only path.
+    const std::filesystem::path& fileTo    ///< [in] Path/filename to link to. Path including the filename to link to.
               )                                         
 {                                                                                 
-    namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
     fs::path::iterator itFrom = pathFrom.begin();
     fs::path::iterator itTo   = fileTo.begin();
 
@@ -286,12 +286,12 @@ relative_path (
 /** 
 Get path with redundant separators '/'s removed .
 \return Path with redundanr separators '/'s removed.  */
-boost::filesystem::path 
+std::filesystem::path 
 remove_redundant_separators (
-    const boost::filesystem::path&	filePath	///< [in] Path to normalize.
+    const std::filesystem::path&	filePath	///< [in] Path to normalize.
 )
 {
-    namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
     fs::path  normPath;
     fs::path::const_iterator it = filePath.begin();
     for ( ; it != filePath.end(); ++it ) {
@@ -325,12 +325,12 @@ without_file_extension  (
 Get filename without extension. if more than one extension only the last 
 one is removed.
 \return String containing the filename without it's (last) extension. */
-boost::filesystem::path 
+std::filesystem::path 
 without_file_extension(
-    const boost::filesystem::path& filePath     ///< Path name
+    const std::filesystem::path& filePath     ///< Path name
                       )
 {
-    namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
     fs::path  basePath = filePath.parent_path();
     std::string sLeaf = filePath.filename().string();
     sLeaf = without_file_extension(sLeaf);
@@ -338,9 +338,9 @@ without_file_extension(
 }
 
 /** Replace extension and return path as copy */
-boost::filesystem::path replace_extension_copy(
-        const boost::filesystem::path& path,
-        const boost::filesystem::path& replacement )
+std::filesystem::path replace_extension_copy(
+        const std::filesystem::path& path,
+        const std::filesystem::path& replacement )
 {
     auto p = path;
     p.replace_extension(replacement);
@@ -353,11 +353,11 @@ Force copy file. File is always copied. If file exists it's overwritten.
 If destination path does not exist it is created. */
 bool
 force_copy_file (
-    const boost::filesystem::path& srcFile,  ///< [in] Full path to source file.
-    const boost::filesystem::path& dstFile   ///< [in] Full path to destination file.
+    const std::filesystem::path& srcFile,  ///< [in] Full path to source file.
+    const std::filesystem::path& dstFile   ///< [in] Full path to destination file.
                  )
 {
-    namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
     if ( !fs::exists(srcFile) )       return false;
     if (  fs::is_directory(srcFile) ) return false;
 
@@ -365,8 +365,8 @@ force_copy_file (
     if (!absDstDir.empty()) {
         fs::create_directories( absDstDir );
     }
-    boost::system::error_code ec;
-    fs::copy_file(srcFile, dstFile, fs::copy_option::overwrite_if_exists, ec);
+    std::error_code ec;
+    fs::copy_file(srcFile, dstFile, fs::copy_options::overwrite_existing, ec);
     return ec.value() == boost::system::errc::errc_t::success;
 }
 
@@ -375,8 +375,8 @@ force_copy_file (
 /// \exclude
 static void filesDirsListRecursive ( 
     filepaths_t&            paths,              ///< Vector of paths that we are building (appending to)
-    boost::filesystem::path curSearchPath,      ///< Current path to search for subdirs or files in
-    boost::filesystem::path curPrependPath,     ///< Current path to prepend the actual local leaf name
+    std::filesystem::path curSearchPath,      ///< Current path to search for subdirs or files in
+    std::filesystem::path curPrependPath,     ///< Current path to prepend the actual local leaf name
     bool                    bGetFiles,          ///< Select get list of file or subdirs
     const boost::regex&     re_match,           ///< Only return names that match this regular expression, Use empty (default constructed) regex for matching all names.
     int                     iDepth )            ///< Max recursion depth. -1 means infinite. 
@@ -410,8 +410,8 @@ static void filesDirsListRecursive (
 /// \exclude
 static void filesDirsListRecursive ( 
     filepaths_t&            paths,              ///< Vector of paths that we are building (appending to)
-    boost::filesystem::path curSearchPath,      ///< Current path to search for subdirs or files in
-    boost::filesystem::path curPrependPath,     ///< Current path to prepend the actual local leaf name
+    std::filesystem::path curSearchPath,      ///< Current path to search for subdirs or files in
+    std::filesystem::path curPrependPath,     ///< Current path to prepend the actual local leaf name
     bool                    bGetFiles,          ///< Select get list of file or subdirs
     const std::string&      wild,           	///< Only return names that match this wildcard/globbing expression, Use empty string for matching all names.
     int                     iDepth )            ///< Max recursion depth. -1 means infinite. 
@@ -458,14 +458,14 @@ the input search path.
 \sa subdirectories_list(), subdirectories_list_recursive(), files_list() */
 filepaths_t		
 files_list_recursive    ( 
-    const boost::filesystem::path& path,    ///< Path to directory to retreive files list for.
+    const std::filesystem::path& path,    ///< Path to directory to retreive files list for.
     bool full_paths,                        ///< Select wheter to return full path names or just leaf names.
     const boost::regex& re_match,           ///< Only return names that match this regular expression, Use empty (default constructed) regex for matching all names.
     int recursion_depth                     ///< Max recursion depth. -1 Means infinite. 
                         )
 {
     filepaths_t files;
-    boost::filesystem::path prependPath("");
+    std::filesystem::path prependPath("");
     if ( full_paths )       prependPath = path;
 
     filesDirsListRecursive(files, path, prependPath, true, re_match, recursion_depth);
@@ -481,14 +481,14 @@ the input search path.
 \sa subdirectories_list(), subdirectories_list_recursive(), files_list() */
 filepaths_t		
 files_list_recursive    ( 
-    const boost::filesystem::path& path,    ///< Path to directory to retreive files list for.
+    const std::filesystem::path& path,    ///< Path to directory to retreive files list for.
     bool full_paths,                        ///< Select wheter to return full path names or just leaf names.
     const std::string& wild, 	          	///< Only return names that match this wildcard/globbing expression, Use empty string for matching all names.
     int recursion_depth                     ///< Max recursion depth. -1 Means infinite. 
                         )
 {
     filepaths_t files;
-    boost::filesystem::path prependPath("");
+    std::filesystem::path prependPath("");
     if ( full_paths )       prependPath = path;
 
     filesDirsListRecursive(files, path, prependPath, true, wild, recursion_depth);
@@ -507,14 +507,14 @@ I.e. '.' and '..' are never included in the list.
 \sa subdirectories_list(), files_list(), files_list_recursive() */
 filepaths_t		
 subdirectories_list_recursive       ( 
-    const boost::filesystem::path& path,    ///< Path to directory to retrieve subdirectories list for.
+    const std::filesystem::path& path,    ///< Path to directory to retrieve subdirectories list for.
     bool full_paths,                        ///< Select wheter to return full path names or just leaf names.
     const boost::regex& re_match,           ///< Only return names that match this regular expression, Use empty (default constructed) regex for matching all names.
     int recursion_depth                     ///< Max recursion depth. -1 Means infinite. 
                                     )
 {
     filepaths_t dirs;
-    boost::filesystem::path prependPath("");
+    std::filesystem::path prependPath("");
     if ( full_paths )       prependPath = path;
 
     filesDirsListRecursive(dirs, path, prependPath, false, re_match, recursion_depth);
@@ -532,14 +532,14 @@ I.e. '.' and '..' are never included in the list.
 \sa subdirectories_list(), files_list(), files_list_recursive() */
 filepaths_t		
 subdirectories_list_recursive       ( 
-    const boost::filesystem::path& path,    ///< Path to directory to retrieve subdirectories list for.
+    const std::filesystem::path& path,    ///< Path to directory to retrieve subdirectories list for.
     bool full_paths,                        ///< Select wheter to return full path names or just leaf names.
     const std::string& wild, 	          	///< Only return names that match this wildcard/globbing expression, Use empty string for matching all names.
     int recursion_depth                     ///< Max recursion depth. -1 Means infinite. 
                                     )
 {
     filepaths_t dirs;
-    boost::filesystem::path prependPath("");
+    std::filesystem::path prependPath("");
     if ( full_paths )       prependPath = path;
 
     filesDirsListRecursive(dirs, path, prependPath, false, wild, recursion_depth);
@@ -549,7 +549,7 @@ subdirectories_list_recursive       (
 
 /** Read contents of a file into a string */
 std::string read_file						(
-	const boost::filesystem::path& path 	///< [in] Path to file
+	const std::filesystem::path& path 	///< [in] Path to file
 )
 {
 	return read_file(path.string());
@@ -570,7 +570,7 @@ std::string read_file						(
 /** Read contents of a file into a string */
 bool read_file						(
 	std::string& contents, 					///< [out] Contents of file read
-	const boost::filesystem::path& 	path	///< [in] Path to file
+	const std::filesystem::path& 	path	///< [in] Path to file
 )
 {
 	return read_file(contents, path.string());
@@ -597,21 +597,21 @@ bool read_file						(
 	return true;
 }
 
-void write_file( const boost::filesystem::path& filePath,
+void write_file( const std::filesystem::path& filePath,
                   const char* szString )
 {
     std::ofstream os(filePath.string());
     os << szString;
 }
 
-void write_file( const boost::filesystem::path& filePath,
+void write_file( const std::filesystem::path& filePath,
                   const std::string& str )
 {
     std::ofstream os(filePath.string());
     os << str;
 }
 
-void append_to ( const boost::filesystem::path& filePath,
+void append_to ( const std::filesystem::path& filePath,
                  const char* szString )
 {
     std::ofstream os;
@@ -619,7 +619,7 @@ void append_to ( const boost::filesystem::path& filePath,
     os << szString;
 }
 
-void  append_to ( const boost::filesystem::path& filePath,
+void  append_to ( const std::filesystem::path& filePath,
                   const std::string& str )
 {
     std::ofstream os;
@@ -628,7 +628,7 @@ void  append_to ( const boost::filesystem::path& filePath,
 }
 
 
-void writelines ( const boost::filesystem::path& filePath,
+void writelines ( const std::filesystem::path& filePath,
                   const std::vector<std::string>& vecLines,
                   bool bAppendNewLine )
 {
@@ -643,7 +643,7 @@ void writelines ( const boost::filesystem::path& filePath,
     }
 }
 
-void appendlines ( const boost::filesystem::path& filePath,
+void appendlines ( const std::filesystem::path& filePath,
                    const std::vector<std::string>& vecLines,
                    bool bAppendNewLine )
 {
@@ -661,7 +661,7 @@ void appendlines ( const boost::filesystem::path& filePath,
 
 
 void readlines (std::vector<std::string>& vecLines,
-                const boost::filesystem::path& filePath,
+                const std::filesystem::path& filePath,
                 const size_t maxLineLen )
 {
     std::ifstream is(filePath.string());
@@ -675,15 +675,15 @@ void readlines (std::vector<std::string>& vecLines,
 
 /** Test whether we can write to a given directory.
 \return true if we can write, false otherwise. */
-bool directory_writeable(const boost::filesystem::path& directoryPath )
+bool directory_writeable(const std::filesystem::path& directoryPath )
 {
-	namespace bf = boost::filesystem;
+	namespace bf = std::filesystem;
 	bf::path path = directoryPath;
 	bf::path filePath = path / "___A_VERY_UNLIKELY_FILE_NAME_TO_EXISTS_ALREADY__";
 
 	bool writeable = false;
 	// remove a possibly existing test file
-    boost::system::error_code ec;
+    std::error_code ec;
     if (bf::exists(filePath, ec)) {
         bf::remove(filePath, ec);
     }

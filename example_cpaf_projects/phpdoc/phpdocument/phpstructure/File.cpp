@@ -10,12 +10,12 @@ File::File()
 {
 }
 
-boost::filesystem::path File::filePath() const
+std::filesystem::path File::filePath() const
 {
     return m_filePath;
 }
 
-File* File::setFilePath(const boost::filesystem::path& filePath)
+File* File::setFilePath(const std::filesystem::path& filePath)
 {
     m_filePath = filePath;
     return this;

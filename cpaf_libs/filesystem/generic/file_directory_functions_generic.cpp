@@ -19,9 +19,9 @@ namespace cpaf { namespace filesystem {
 
 
 filepaths_t		
-files_list ( const boost::filesystem::path& path, bool full_paths, const boost::regex& re_match )
+files_list ( const std::filesystem::path& path, bool full_paths, const boost::regex& re_match )
 {
-    namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
     filepaths_t files;
     fs::directory_iterator dirEnd   = fs::directory_iterator();
     fs::directory_iterator itDir    = fs::directory_iterator(path);
@@ -42,9 +42,9 @@ files_list ( const boost::filesystem::path& path, bool full_paths, const boost::
 }
 
 filepaths_t		
-subdirectories_list ( const boost::filesystem::path& path, bool full_paths, const boost::regex& re_match )
+subdirectories_list ( const std::filesystem::path& path, bool full_paths, const boost::regex& re_match )
 {
-    namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
     filepaths_t dirs;
     fs::directory_iterator dirEnd   = fs::directory_iterator();
     fs::directory_iterator itDir    = fs::directory_iterator(path);

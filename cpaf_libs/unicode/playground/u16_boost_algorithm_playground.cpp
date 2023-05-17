@@ -2,7 +2,7 @@
 #include <vector>
 #include <string>
 #include <algorithm>
-#include <boost/filesystem/path.hpp>
+#include <filesystem>
 #include <boost/algorithm/string.hpp>
 #include <streams/cpaf_json_streams.h>
 #include <filesystem/cpaf_special_dirs.h>
@@ -14,7 +14,7 @@
 #include <semantic/classifier/fragments_classifier.h>
 
 using json = nlohmann::json;
-namespace fs = boost::filesystem;
+namespace fs = std::filesystem;
 namespace cfs = cpaf::filesystem;
 namespace cs = cpaf::streams;
 namespace con = cpaf::containers;

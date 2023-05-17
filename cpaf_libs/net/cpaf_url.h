@@ -2,7 +2,7 @@
 #define CPAF_URL_H
 
 #include <vector>
-#include <boost/filesystem/path.hpp>
+#include <filesystem>
 
 #include "cpaf_url_string_functions.h"
 
@@ -36,7 +36,7 @@ public:
 	std::string				protocol()	const	{ return m_sProtocol;	}
 
 	/// Get path
-	boost::filesystem::path	path()		const	{ return m_Path;		}
+	std::filesystem::path	path()		const	{ return m_Path;		}
 
 	/// Get domain parts vector
 	string_vec_t&			domain()			{ return m_Domain;		}
@@ -54,7 +54,7 @@ public:
     // ----------------------------
 	
 	/// Set path part of Url.
-	void					path		( const boost::filesystem::path& path )		///< [in] Path to assign.
+	void					path		( const std::filesystem::path& path )		///< [in] Path to assign.
 		{ m_Path = path; }
 	/// Set file/directory property. 
 	void					bIsFile		( bool bIsFile )							///< [in] Set to true if this URL represents a file. Set to true if it's a directory.	 
@@ -102,7 +102,7 @@ public:
     // ----------------------
     // --- Misc Functions ---
     // ----------------------
-	boost::filesystem::path	save_path()			const;
+	std::filesystem::path	save_path()			const;
 	
 	url&					operator=	(const url& Url);
 	
@@ -125,7 +125,7 @@ private:
     // -------------------
 	std::string				m_sProtocol;
 	string_vec_t			m_Domain;
-	boost::filesystem::path	m_Path;
+	std::filesystem::path	m_Path;
 	parameter_vec_t			m_Parameters;
 	bool					m_bIsFile;		///< True if this URL represents a file, as opposed to
 };

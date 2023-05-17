@@ -2,7 +2,7 @@
 #define CPAF_EXCHANGE_RATES_H
 
 #include <nlohmann/json.hpp>
-#include <boost/filesystem/path.hpp>
+#include <filesystem>
 
 namespace cpaf {
 
@@ -22,7 +22,7 @@ public:
     float       from_eur            (const std::string& to_currency_code,
                                      float amount_in_eur) const;
 
-    void        set_exchange_rates  (const boost::filesystem::path& exchange_rates_file);
+    void        set_exchange_rates  (const std::filesystem::path& exchange_rates_file);
     void        set_exchange_rates  (const nlohmann::json& exchange_rates_jo);
 
 private:

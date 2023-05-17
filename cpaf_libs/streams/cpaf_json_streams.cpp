@@ -5,7 +5,7 @@
 #include "cpaf_json_streams.h"
 
 
-namespace fs = boost::filesystem;
+namespace fs = std::filesystem;
 namespace cs = cpaf::streams;
 using json = nlohmann::json;
 
@@ -17,7 +17,7 @@ void to_file(const std::string& resource_path, const nlohmann::json& jobject, in
     os.os() << std::setw(indentation) << jobject;
 }
 
-void to_file(const boost::filesystem::path& file_path, const nlohmann::json& jobject, int indentation)
+void to_file(const std::filesystem::path& file_path, const nlohmann::json& jobject, int indentation)
 {
     to_file(file_path.string(), jobject, indentation);
 }
@@ -42,7 +42,7 @@ auto to_json(const std::string& resource_path,
     return default_jo;
 }
 
-auto to_json(const boost::filesystem::path& file_path,
+auto to_json(const std::filesystem::path& file_path,
                        const nlohmann::json& default_jo) -> nlohmann::json
 {
     return to_json(file_path.string(), default_jo);

@@ -1,12 +1,12 @@
 #include <iostream>
 #include <vector>
-#include <boost/filesystem/path.hpp>
+#include <filesystem>
 #include <streams/cpaf_streams.h>
 #include <containers/cpaf_dynamic_array.hpp>
 #include <compression/cpaf_compression_functions.h>
 
 using namespace std;
-namespace fs = boost::filesystem;
+namespace fs = std::filesystem;
 namespace con = cpaf::containers;
 namespace com = cpaf::compression;
 namespace cs = cpaf::streams;

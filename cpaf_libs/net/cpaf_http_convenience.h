@@ -3,7 +3,7 @@
 
  
 #include <string>
-#include <boost/filesystem/path.hpp>
+#include <filesystem>
 #include <curl/curl.h>
 
 //#include <iostream>         // NOTE: ML For debug only
@@ -28,8 +28,8 @@ Functions include easy download of a http page to a std::string.
 
 CURLcode curl_http_download_file        ( const std::string sSrcUrl, const std::string sDstFilePath );
 std::string curl_http_download_to_string( const std::string sSrcUrl);
-CURLcode curl_post_upload_file_simple   ( const std::string& sURL, const std::string& sFieldName, const boost::filesystem::path& filePath ) ;
-CURLcode curlPostUploadFileSimple       ( const std::string& sURL, const std::string& sFieldName, const boost::filesystem::path& filePath ) ;
+CURLcode curl_post_upload_file_simple   ( const std::string& sURL, const std::string& sFieldName, const std::filesystem::path& filePath ) ;
+CURLcode curlPostUploadFileSimple       ( const std::string& sURL, const std::string& sFieldName, const std::filesystem::path& filePath ) ;
 
 
 int	http_download_wget	( std::string const& sUrl, std::string& sData );

@@ -57,7 +57,7 @@ int main(void) {
 // ---------------------------------
 // --- OLD Curl POST upload test ---
 // ---------------------------------
-//// #include <boost/filesystem/path.hpp>
+//// #include <filesystem>
 //// #include <curl/curl.h>
 //#include <cpaf_http_convenience.h>
 
@@ -65,7 +65,7 @@ int main(void) {
 
 //using namespace std;
 //// using namespace cpaf;
-//namespace fs = boost::filesystem;
+//namespace fs = std::filesystem;
 
 
 //#include <iostream>

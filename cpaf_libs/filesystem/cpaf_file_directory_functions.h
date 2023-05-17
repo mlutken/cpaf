@@ -1,12 +1,11 @@
-#ifndef _CPAF_FILE_DIRECTORY_FUNCTIONS_H_
-#define _CPAF_FILE_DIRECTORY_FUNCTIONS_H_
+#pragma once
 
  
 //#include "../include/cpaf.h"
 
 //#include <iostream>         // NOTE: ML For debug only
 #include <vector>
-#include <boost/filesystem/path.hpp>
+#include <filesystem>
 #include <boost/filesystem/operations.hpp>
 #include <boost/regex.hpp>
 
@@ -23,8 +22,8 @@ contents of directories.
 \author Martin Lutken 
 */
 
-/// Vector of boost::filesystem::path's for getting lists of files / directories.
-typedef std::vector<boost::filesystem::path>    filepaths_t;
+/// Vector of std::filesystem::path's for getting lists of files / directories.
+typedef std::vector<std::filesystem::path>    filepaths_t;
 
 
 
@@ -43,11 +42,11 @@ enum class copy_mode { single_dir, recursive };
 // --- Functions that needs platform specific implementation ---
 // -------------------------------------------------------------
 
-const boost::filesystem::path
-normalize( boost::filesystem::path& p );
+const std::filesystem::path
+normalize( std::filesystem::path& p );
 
-int move(const boost::filesystem::path& src, const boost::filesystem::path& dst);
-int copy(const boost::filesystem::path& src, const boost::filesystem::path& dst, copy_mode cm);
+int move(const std::filesystem::path& src, const std::filesystem::path& dst);
+int copy(const std::filesystem::path& src, const std::filesystem::path& dst, copy_mode cm);
 
 
 //CBS_EXTERN retval CBS_EXPORT
@@ -60,7 +59,7 @@ Retrieves a list of files in a directory.
 \sa subdirectories_list(), subdirectories_list_recursive(), files_list_recursive() */
 filepaths_t		
 files_list              ( 
-    const boost::filesystem::path& path,    ///< Path to directory to retreive files list for.
+    const std::filesystem::path& path,    ///< Path to directory to retreive files list for.
     bool full_paths,                        ///< Select wheter to return full path names or just leaf names.
     const boost::regex& re_match            ///< Only return names that match this regular expression, Use empty (default constructed) regex for matching all names.
                         );
@@ -74,7 +73,7 @@ included in the list.
 \sa subdirectories_list_recursive(), files_list(), files_list_recursive() */
 filepaths_t		
 subdirectories_list     ( 
-    const boost::filesystem::path& path,    ///< Path to directory to retreive subdirectories list for.
+    const std::filesystem::path& path,    ///< Path to directory to retreive subdirectories list for.
     bool full_paths,                        ///< Select wheter to return full path names or just leaf names.
     const boost::regex& re_match            ///< Only return names that match this regular expression, Use empty (default constructed) regex for matching all names.
                         );
@@ -84,12 +83,12 @@ subdirectories_list     (
 /// Get creation time for a file or directory.
 /// \todo MLU: Is this the same as last_write_time ???
 void		
-creation_time           		( const boost::filesystem::path& path );
+creation_time           		( const std::filesystem::path& path );
 
 // -------------------------------------------------------------------------------------
 // --- Convenience functions. Can freely use platform specific implemented functions ---
 // -------------------------------------------------------------------------------------
-void remove_safe (const boost::filesystem::path& path);
+void remove_safe (const std::filesystem::path& path);
 
 
 /** Get the stem file name without any extenstions.
@@ -101,7 +100,7 @@ stem_base("/foo/bar.gz"); // => 'bar'
 stem_base("/foo/bar"); // => 'bar'
 @endcode
 */
-boost::filesystem::path stem_base(const boost::filesystem::path& path);
+std::filesystem::path stem_base(const std::filesystem::path& path);
 
 /** Get the stem file name, but only remove certain extensions.
 @code
@@ -110,7 +109,7 @@ stem_base("/foo/baz.bar.txt.gz", {".txt", ".gz", ".bar"}); // => 'baz'
 stem_base("/foo/baz.bar.txt.gz", {}); // => 'baz.bar.txt.gz'
 @endcode
 */
-boost::filesystem::path stem_remove_extensions(const boost::filesystem::path& path,
+std::filesystem::path stem_remove_extensions(const std::filesystem::path& path,
                                                const std::vector<std::string>& extensions_remove);
 
 
@@ -118,71 +117,65 @@ media_location  detect_media_location (const std::string& resource_path);
 
 
 filepaths_t		
-files_list 						( const boost::filesystem::path& path, bool full_paths, const std::string& wild );
+files_list 						( const std::filesystem::path& path, bool full_paths, const std::string& wild );
 
 filepaths_t		
-subdirectories_list 			( const boost::filesystem::path& path, bool full_paths, const std::string& wild );
+subdirectories_list 			( const std::filesystem::path& path, bool full_paths, const std::string& wild );
 
 
+std::filesystem::path
+intersection_from_start         ( const std::filesystem::path& path1, const std::filesystem::path& path2 );
 
+std::filesystem::path
+remove_from_start               ( const std::filesystem::path& inPath, const std::filesystem::path& remPath );
 
-boost::filesystem::path 
-intersection_from_start         ( const boost::filesystem::path& path1, const boost::filesystem::path& path2 );
+std::filesystem::path
+relative_path                   ( const std::filesystem::path& pathFrom, const std::filesystem::path& fileTo );                                         
 
-boost::filesystem::path 
-remove_from_start               ( const boost::filesystem::path& inPath, const boost::filesystem::path& remPath );
-
-boost::filesystem::path 
-relative_path                   ( const boost::filesystem::path& pathFrom, const boost::filesystem::path& fileTo );                                         
-
-boost::filesystem::path 
-remove_redundant_separators		( const boost::filesystem::path& filePath );
+std::filesystem::path
+remove_redundant_separators		( const std::filesystem::path& filePath );
 
 std::string 
 without_file_extension          ( const std::string& sFileName );
 
-boost::filesystem::path
-without_file_extension          ( const boost::filesystem::path& path,
-                                  const boost::filesystem::path& replacement );
+std::filesystem::path
+without_file_extension          ( const std::filesystem::path& path,
+                                  const std::filesystem::path& replacement );
 
-boost::filesystem::path
-replace_extension_copy          ( const boost::filesystem::path& path,
-                                  const boost::filesystem::path& replacement );
+std::filesystem::path
+replace_extension_copy          ( const std::filesystem::path& path,
+                                  const std::filesystem::path& replacement );
 
 bool
-force_copy_file                 ( const boost::filesystem::path& srcFile,  const boost::filesystem::path& dstFile );
+force_copy_file                 ( const std::filesystem::path& srcFile,  const std::filesystem::path& dstFile );
 
 filepaths_t		
-files_list_recursive            ( const boost::filesystem::path& path, bool full_paths, const boost::regex& re_match, int recursion_depth );
+files_list_recursive            ( const std::filesystem::path& path, bool full_paths, const boost::regex& re_match, int recursion_depth );
 filepaths_t		
-files_list_recursive            ( const boost::filesystem::path& path, bool full_paths, const std::string& wild, int recursion_depth );
+files_list_recursive            ( const std::filesystem::path& path, bool full_paths, const std::string& wild, int recursion_depth );
 
 filepaths_t		
-subdirectories_list_recursive   ( const boost::filesystem::path& path, bool full_paths, const boost::regex& re_match, int recursion_depth );
+subdirectories_list_recursive   ( const std::filesystem::path& path, bool full_paths, const boost::regex& re_match, int recursion_depth );
 filepaths_t		
-subdirectories_list_recursive   ( const boost::filesystem::path& path, bool full_paths, const std::string& wild, int recursion_depth );
+subdirectories_list_recursive   ( const std::filesystem::path& path, bool full_paths, const std::string& wild, int recursion_depth );
 
 
 // --- read file functions ---
-std::string     read_file   ( const boost::filesystem::path& path );
+std::string     read_file   ( const std::filesystem::path& path );
 std::string     read_file	( const std::string& path );
-bool            read_file	( std::string& contents, const boost::filesystem::path& path );
+bool            read_file	( std::string& contents, const std::filesystem::path& path );
 bool            read_file	( std::string& contents, const std::string& path );
 
-void            write_file   ( const boost::filesystem::path& filePath, const char* szString );
-void            write_file   (const boost::filesystem::path& filePath, const std::string& str );
+void            write_file  ( const std::filesystem::path& filePath, const char* szString );
+void            write_file  ( const std::filesystem::path& filePath, const std::string& str );
 
-void            append_to   (const boost::filesystem::path& filePath, const char* szString );
-void            append_to   (const boost::filesystem::path& filePath, const std::string& str );
-void            writelines  ( const boost::filesystem::path& filePath, const std::vector<std::string>& vecLines, bool bAppendNewLine = true );
-void            appendlines ( const boost::filesystem::path& filePath, const std::vector<std::string>& vecLines, bool bAppendNewLine = true );
-void            readlines   (std::vector<std::string>& vecLines, const boost::filesystem::path& filePath, const size_t maxLineLen = 16384 );
+void            append_to   ( const std::filesystem::path& filePath, const char* szString );
+void            append_to   ( const std::filesystem::path& filePath, const std::string& str );
+void            writelines  ( const std::filesystem::path& filePath, const std::vector<std::string>& vecLines, bool bAppendNewLine = true );
+void            appendlines ( const std::filesystem::path& filePath, const std::vector<std::string>& vecLines, bool bAppendNewLine = true );
+void            readlines   (std::vector<std::string>& vecLines, const std::filesystem::path& filePath, const size_t maxLineLen = 16384 );
 
-bool			directory_writeable	( const boost::filesystem::path& directoryPath );
+bool			directory_writeable	( const std::filesystem::path& directoryPath );
 
 }} // END namespace cpaf::filesystem
-
-
-#endif //_CPAF_FILE_DIRECTORY_FUNCTIONS_H_
-
 

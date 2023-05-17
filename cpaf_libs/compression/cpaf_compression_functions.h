@@ -4,7 +4,7 @@
 #include <vector>
 #include <variant>
 #include <cstdio>
-#include <boost/filesystem/path.hpp>
+#include <filesystem>
 #include <boost/filesystem/convenience.hpp>
 #include <zlib.h>
 #include <bzlib.h>
@@ -31,7 +31,7 @@ typedef std::vector<std::string>	string_vec_t;
 // --------------------------------------
 std::string to_extension(type compression_type);
 type    to_compression_type (const std::string& filePath);
-type    to_compression_type (const boost::filesystem::path& filePath);
+type    to_compression_type (const std::filesystem::path& filePath);
 type    to_compression_type (const char* data, size_t size);
 type    to_compression_type (const unsigned char* data, size_t size);
 
@@ -52,11 +52,11 @@ struct file
 
     file() = default;
     explicit file(const std::string& file_path);
-    explicit file(const boost::filesystem::path& file_path);
+    explicit file(const std::filesystem::path& file_path);
     file(const std::string& file_path, const std::string& mode);
-    file(const boost::filesystem::path&file_path, const std::string& mode);
+    file(const std::filesystem::path&file_path, const std::string& mode);
     file(const std::string& file_path, const std::string& mode, std::size_t max_readline_size);
-    file(const boost::filesystem::path& file_path, const std::string& mode, std::size_t max_readline_size);
+    file(const std::filesystem::path& file_path, const std::string& mode, std::size_t max_readline_size);
     ~file() noexcept;
 
     // ------------------------------------------------
@@ -73,7 +73,7 @@ struct file
     // -----------------------------
     bool                open                (const std::string& mode) noexcept;
     bool                open                (const std::string& file_path, const std::string& mode) noexcept;
-    bool                open                (const boost::filesystem::path& file_path, const std::string& mode) noexcept;
+    bool                open                (const std::filesystem::path& file_path, const std::string& mode) noexcept;
     bool                is_open             () const noexcept {  return is_open_; }
     bool                close               () noexcept;
     bool                eof                 () const noexcept;
@@ -116,14 +116,14 @@ private:
 // --- Any compression type functions ---
 // --------------------------------------
 
-bool        compress    ( const boost::filesystem::path& srcFilePath, const boost::filesystem::path& dstFilePath  	);
-bool        uncompress	( const boost::filesystem::path& srcFilePath, const boost::filesystem::path& dstFilePath 	);
+bool        compress    ( const std::filesystem::path& srcFilePath, const std::filesystem::path& dstFilePath  	);
+bool        uncompress	( const std::filesystem::path& srcFilePath, const std::filesystem::path& dstFilePath 	);
 
-void        append_to   ( const boost::filesystem::path& filePath, const char* szString );
-void        append_to   ( const boost::filesystem::path& filePath, const std::string& sString );
-void        writelines  ( const boost::filesystem::path& filePath, const string_vec_t& vecLines, bool bAppendNewLine = true );
-void        appendlines ( const boost::filesystem::path& filePath, const string_vec_t& vecLines, bool bAppendNewLine = true );
-void        readlines   ( string_vec_t& vecLines, const boost::filesystem::path& filePath, std::size_t maxLineLen = 16384 );
+void        append_to   ( const std::filesystem::path& filePath, const char* szString );
+void        append_to   ( const std::filesystem::path& filePath, const std::string& sString );
+void        writelines  ( const std::filesystem::path& filePath, const string_vec_t& vecLines, bool bAppendNewLine = true );
+void        appendlines ( const std::filesystem::path& filePath, const string_vec_t& vecLines, bool bAppendNewLine = true );
+void        readlines   ( string_vec_t& vecLines, const std::filesystem::path& filePath, std::size_t maxLineLen = 16384 );
 
 // ------------------------------------------------
 // --- gz (zlib) in-memory uncompress functions ---
@@ -140,14 +140,14 @@ cpaf::containers::string8               gz_uncompress_string8(const cpaf::contai
 // --------------------------------
 // --- gz (zlib) file functions ---
 // --------------------------------
-bool        gz_compress 	( const boost::filesystem::path& srcFilePath, const boost::filesystem::path& dstFilePath  	);
-bool        gz_uncompress	( const boost::filesystem::path& srcFilePath, const boost::filesystem::path& dstFilePath 	);
+bool        gz_compress 	( const std::filesystem::path& srcFilePath, const std::filesystem::path& dstFilePath  	);
+bool        gz_uncompress	( const std::filesystem::path& srcFilePath, const std::filesystem::path& dstFilePath 	);
 
-void        gz_append_to    ( const boost::filesystem::path& filePath, const char* szString );
-void        gz_append_to    ( const boost::filesystem::path& filePath, const std::string& sString );
-void        gz_writelines   ( const boost::filesystem::path& filePath, const string_vec_t& vecLines, bool bAppendNewLine = true );
-void        gz_appendlines  ( const boost::filesystem::path& filePath, const string_vec_t& vecLines, bool bAppendNewLine = true );
-void        gz_readlines    ( string_vec_t& vecLines, const boost::filesystem::path& filePath, std::size_t maxLineLen = 16384 );
+void        gz_append_to    ( const std::filesystem::path& filePath, const char* szString );
+void        gz_append_to    ( const std::filesystem::path& filePath, const std::string& sString );
+void        gz_writelines   ( const std::filesystem::path& filePath, const string_vec_t& vecLines, bool bAppendNewLine = true );
+void        gz_appendlines  ( const std::filesystem::path& filePath, const string_vec_t& vecLines, bool bAppendNewLine = true );
+void        gz_readlines    ( string_vec_t& vecLines, const std::filesystem::path& filePath, std::size_t maxLineLen = 16384 );
 
 
 // -------------------------------------------------

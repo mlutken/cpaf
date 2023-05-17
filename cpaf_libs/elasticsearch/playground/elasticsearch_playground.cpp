@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <boost/filesystem/path.hpp>
+#include <filesystem>
 #include <nlohmann/json.hpp>
 
 #include <streams/cpaf_streams.h>
@@ -14,7 +14,7 @@
 
 using namespace std;
 using json = nlohmann::json;
-namespace fs = boost::filesystem;
+namespace fs = std::filesystem;
 namespace cs = cpaf::streams;
 namespace con = cpaf::containers;
 namespace cu = cpaf::unicode;

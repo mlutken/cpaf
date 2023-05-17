@@ -3,7 +3,7 @@
 
 #include <string>
 #include <vector>
-#include <boost/filesystem/path.hpp>
+#include <filesystem>
 
 namespace cpaf::semantic
 {
@@ -63,23 +63,23 @@ For example a snippet from a file with classification data could look like this:
 */
 class semantic_data_resources {
 public:
-    using local_files_vec               = std::vector<boost::filesystem::path>;
+    using local_files_vec               = std::vector<std::filesystem::path>;
     using local_files_const_iterator    = local_files_vec::const_iterator;
 
     void            clear                   ();
     void            add_excluded_file_name  (const std::string& name);
     void            add_resource            (const std::string& resource_path);
-    void            add_resource            (const boost::filesystem::path& file_path);
+    void            add_resource            (const std::filesystem::path& file_path);
     void            add_resource            (const std::string& resource_path, const std::string& pattern);
-    void            add_resource            (const boost::filesystem::path& file_path, const std::string& pattern);
+    void            add_resource            (const std::filesystem::path& file_path, const std::string& pattern);
     void            init                    ();
 
     const local_files_vec&      local_files () const { return all_local_files_; }
 
 private:
     void                        add_local_resource  (const std::string& resource_path, const std::string& pattern);
-    void                        add_local_file      (const boost::filesystem::path& file_path);
-    bool                        file_is_excluded    (const boost::filesystem::path& file_path) const;
+    void                        add_local_file      (const std::filesystem::path& file_path);
+    bool                        file_is_excluded    (const std::filesystem::path& file_path) const;
 
     std::vector<std::string>    original_resources_;    ///< This holds the "original" paths as added using add_resource()
     std::vector<std::string>    excluded_matches_;      ///< List of excluded filenames

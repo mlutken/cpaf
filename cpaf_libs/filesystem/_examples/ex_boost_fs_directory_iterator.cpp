@@ -4,7 +4,7 @@
 
 static void ex_boost_fs_directory_iterator()
 {
-    namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
     namespace cfs = cpaf::filesystem;
     fs::path ph = cfs::special_dirs::startup;
 

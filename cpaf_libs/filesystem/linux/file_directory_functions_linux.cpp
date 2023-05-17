@@ -55,20 +55,20 @@ static int path_exists( const char *inPath )
 // --- Functions that needs platform specific implementation ---
 // -------------------------------------------------------------
 
-const boost::filesystem::path
-normalize( boost::filesystem::path& p )
+const std::filesystem::path
+normalize( std::filesystem::path& p )
 {
     return p.lexically_normal();
 }
 
-int move (const boost::filesystem::path& src, const boost::filesystem::path& dst)
+int move (const std::filesystem::path& src, const std::filesystem::path& dst)
 {
     using namespace std;
     const std::string cmd = "mv -f "s + src.string() + " " + dst.string() + " 2>/dev/null";
     return system(cmd.c_str());
 }
 
-int copy (const boost::filesystem::path& src, const boost::filesystem::path& dst, copy_mode cm)
+int copy (const std::filesystem::path& src, const std::filesystem::path& dst, copy_mode cm)
 {
     using namespace std;
     std::string cmd = cm == copy_mode::recursive ? "cp -fr "s : "cp f"s;
@@ -78,9 +78,9 @@ int copy (const boost::filesystem::path& src, const boost::filesystem::path& dst
 
 
 filepaths_t		
-files_list ( const boost::filesystem::path& path, bool full_paths, const boost::regex& re_match  )
+files_list ( const std::filesystem::path& path, bool full_paths, const boost::regex& re_match  )
 {
-    namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
     filepaths_t files;
 		
 	int ret = path_exists( path.native().c_str() );
@@ -115,9 +115,9 @@ files_list ( const boost::filesystem::path& path, bool full_paths, const boost::
 }
 
 filepaths_t		
-subdirectories_list ( const boost::filesystem::path& path, bool full_paths, const boost::regex& re_match  )
+subdirectories_list ( const std::filesystem::path& path, bool full_paths, const boost::regex& re_match  )
 {
-    namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
     filepaths_t dirs;
 	
 	int ret = path_exists( path.native().c_str() );

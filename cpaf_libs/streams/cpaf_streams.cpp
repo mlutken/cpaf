@@ -10,7 +10,7 @@
 
 #include "cpaf_streams.h"
 
-namespace fs = boost::filesystem;
+namespace fs = std::filesystem;
 namespace al = boost::algorithm;
 namespace io = boost::iostreams;
 namespace con = cpaf::containers;
@@ -61,7 +61,7 @@ cistream create_istream(const std::string& resource_path, std::ios_base::openmod
     return cistream(std::make_unique<std::ifstream>(), std::move(is), file_path);
 }
 
-cistream create_istream(const boost::filesystem::path& file_path, std::ios_base::openmode extra_flags)
+cistream create_istream(const std::filesystem::path& file_path, std::ios_base::openmode extra_flags)
 {
     return create_istream(file_path.string(), extra_flags);
 }
@@ -73,7 +73,7 @@ cistream create_istream_raw(const std::string& resource_path, std::ios_base::ope
     return cistream(std::make_unique<std::ifstream>(), std::move(is), file_path);
 }
 
-cistream create_istream_raw(const boost::filesystem::path& file_path, std::ios_base::openmode extra_flags)
+cistream create_istream_raw(const std::filesystem::path& file_path, std::ios_base::openmode extra_flags)
 {
     return create_istream_raw(file_path.string(), extra_flags);
 }
@@ -118,7 +118,7 @@ costream create_ostream(const std::string& resource_path, std::ios_base::openmod
 
 }
 
-costream create_ostream(const boost::filesystem::path& file_path, std::ios_base::openmode extra_flags)
+costream create_ostream(const std::filesystem::path& file_path, std::ios_base::openmode extra_flags)
 {
     return create_ostream(file_path.string(), extra_flags);
 }
@@ -130,7 +130,7 @@ costream create_ostream_raw(const std::string& resource_path, std::ios_base::ope
     return costream(std::make_unique<std::ofstream>(), std::move(os), file_path);
 }
 
-costream create_ostream_raw(const boost::filesystem::path& file_path, std::ios_base::openmode extra_flags)
+costream create_ostream_raw(const std::filesystem::path& file_path, std::ios_base::openmode extra_flags)
 {
     return create_ostream_raw(file_path.string(), extra_flags);
 }
@@ -185,7 +185,7 @@ to_string8(const std::string& resource_path, std::size_t reserve_size)
     return arr;
 }
 
-containers::string8 to_string8(const boost::filesystem::path& file_path, std::size_t reserve_size)
+containers::string8 to_string8(const std::filesystem::path& file_path, std::size_t reserve_size)
 {
     return to_string8(file_path.string(), reserve_size);
 }
@@ -212,7 +212,7 @@ std::string to_string(const std::string& resource_path, std::size_t reserve_size
     return contents;
 }
 
-std::string to_string(const boost::filesystem::path& file_path, std::size_t reserve_size)
+std::string to_string(const std::filesystem::path& file_path, std::size_t reserve_size)
 {
     return to_string(file_path.string(), reserve_size);
 }
@@ -262,32 +262,32 @@ void to_file(const std::string& resource_path, const std::vector<std::string>& l
     }
 }
 
-void to_file(const boost::filesystem::path& file_path, containers::string8 str)
+void to_file(const std::filesystem::path& file_path, containers::string8 str)
 {
     to_file(file_path.string(), str);
 }
 
-void to_file(const boost::filesystem::path& file_path, const char* sz_str)
+void to_file(const std::filesystem::path& file_path, const char* sz_str)
 {
     to_file(file_path.string(), sz_str);
 }
 
-void to_file(const boost::filesystem::path& file_path, const char* sz_str, std::size_t size)
+void to_file(const std::filesystem::path& file_path, const char* sz_str, std::size_t size)
 {
     to_file(file_path.string(), sz_str, size);
 }
 
-void to_file(const boost::filesystem::path& file_path, const std::string& str)
+void to_file(const std::filesystem::path& file_path, const std::string& str)
 {
     to_file(file_path.string(), str);
 }
 
-void to_file(const boost::filesystem::path& file_path, const std::string_view& str)
+void to_file(const std::filesystem::path& file_path, const std::string_view& str)
 {
     to_file(file_path.string(), str);
 }
 
-void to_file(const boost::filesystem::path& file_path, const std::vector<std::string>& lines, bool append_newline)
+void to_file(const std::filesystem::path& file_path, const std::vector<std::string>& lines, bool append_newline)
 {
     to_file(file_path.string(), lines, append_newline);
 }
@@ -331,27 +331,27 @@ void append_to(const std::string& resource_path, const std::vector<std::string>&
     }
 }
 
-void append_to(const boost::filesystem::path& file_path, containers::string8 str)
+void append_to(const std::filesystem::path& file_path, containers::string8 str)
 {
     append_to(file_path.string(), str);
 }
 
-void append_to(const boost::filesystem::path& file_path, const char* sz_str)
+void append_to(const std::filesystem::path& file_path, const char* sz_str)
 {
     append_to(file_path.string(), sz_str);
 }
 
-void append_to(const boost::filesystem::path& file_path, const std::string& str)
+void append_to(const std::filesystem::path& file_path, const std::string& str)
 {
     append_to(file_path.string(), str);
 }
 
-void append_to(const boost::filesystem::path& file_path, const std::string_view& str)
+void append_to(const std::filesystem::path& file_path, const std::string_view& str)
 {
     append_to(file_path.string(), str);
 }
 
-void append_to(const boost::filesystem::path& file_path, const std::vector<std::string>& lines, bool append_newline)
+void append_to(const std::filesystem::path& file_path, const std::vector<std::string>& lines, bool append_newline)
 {
     append_to(file_path.string(), lines, append_newline);
 }

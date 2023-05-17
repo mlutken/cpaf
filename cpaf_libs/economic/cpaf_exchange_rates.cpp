@@ -27,9 +27,9 @@ float exchange_rates::from_eur(const std::string& to_currency_code, float amount
     return from_eur_[to_currency_code].get<float>() * amount_in_eur;
 }
 
-void exchange_rates::set_exchange_rates(const boost::filesystem::path& exchange_rates_file)
+void exchange_rates::set_exchange_rates(const std::filesystem::path& exchange_rates_file)
 {
-    if (boost::filesystem::exists(exchange_rates_file)) {
+    if (std::filesystem::exists(exchange_rates_file)) {
         set_exchange_rates(streams::to_json(exchange_rates_file));
     }
 }

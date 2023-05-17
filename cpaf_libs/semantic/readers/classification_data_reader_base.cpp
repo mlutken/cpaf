@@ -25,7 +25,7 @@ classification_fragment_reader_base::classification_fragment_reader_base(const s
 {
 }
 
-classification_fragment_reader_base::classification_fragment_reader_base(const boost::filesystem::path& resource_path_or_data)
+classification_fragment_reader_base::classification_fragment_reader_base(const std::filesystem::path& resource_path_or_data)
     : global_weights_per_source_field_(default_weights),
       resource_(resource_path_or_data.string())
 {
@@ -42,7 +42,7 @@ void classification_fragment_reader_base::resource(const std::string& resource_p
     should_read_data_ = true;
 }
 
-void classification_fragment_reader_base::resource(const boost::filesystem::path& path)
+void classification_fragment_reader_base::resource(const std::filesystem::path& path)
 {
     resource_ = path.string();
     should_read_data_ = true;

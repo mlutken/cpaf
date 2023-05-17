@@ -20,11 +20,11 @@ namespace cpaf { namespace filesystem {
 // --- Functions that needs platform specific implementation ---
 // -------------------------------------------------------------
 
-boost::filesystem::path special_dirs::exe_path()
+std::filesystem::path special_dirs::exe_path()
 {
     char szExePath[MAX_PATH] = {0};
     GetModuleFileName(NULL, szExePath, sizeof(szExePath));
-    boost::filesystem::path exePath = boost::filesystem::canonical( szExePath );
+    std::filesystem::path exePath = std::filesystem::canonical( szExePath );
     return exePath;
 }
 
@@ -32,7 +32,7 @@ boost::filesystem::path special_dirs::exe_path()
 filepaths_t          
 special_dirs::system_libs()
 {
-    namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
     filepaths_t paths;
     TCHAR szPath[MAX_PATH];
     if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_SYSTEM, NULL, SHGFP_TYPE_CURRENT, szPath))) {
@@ -42,10 +42,10 @@ special_dirs::system_libs()
 }
 
 
-boost::filesystem::path          
+std::filesystem::path          
 special_dirs::home()
 {
-    namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
     TCHAR szPath[MAX_PATH];
     if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_PROFILE, NULL, SHGFP_TYPE_CURRENT, szPath))) {
         return fs::path(szPath); 
@@ -53,10 +53,10 @@ special_dirs::home()
     else    return fs::path(""); 
 }
 
-boost::filesystem::path          
+std::filesystem::path          
 special_dirs::app_data()
 {
-    namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
     TCHAR szPath[MAX_PATH];
     if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, SHGFP_TYPE_CURRENT, szPath))) {
         return fs::path(szPath); 
@@ -64,10 +64,10 @@ special_dirs::app_data()
     else    return fs::path(""); 
 }
 
-boost::filesystem::path          
+std::filesystem::path          
 special_dirs::app_data_local()
 {
-    namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
     TCHAR szPath[MAX_PATH];
     if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_LOCAL_APPDATA, NULL, SHGFP_TYPE_CURRENT, szPath))) {
         return fs::path(szPath); 
@@ -77,10 +77,10 @@ special_dirs::app_data_local()
 
 
 
-boost::filesystem::path          
+std::filesystem::path          
 special_dirs::documents()
 {
-    namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
     TCHAR szPath[MAX_PATH];
     if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_PERSONAL, NULL, SHGFP_TYPE_CURRENT, szPath))) {
         return fs::path(szPath); 
@@ -89,10 +89,10 @@ special_dirs::documents()
 }
 
 
-boost::filesystem::path          
+std::filesystem::path          
 special_dirs::pictures()
 {
-    namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
     TCHAR szPath[MAX_PATH];
     if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_MYPICTURES, NULL, SHGFP_TYPE_CURRENT, szPath))) {
         return fs::path(szPath); 
@@ -100,10 +100,10 @@ special_dirs::pictures()
     else    return fs::path(""); 
 }
 
-boost::filesystem::path          
+std::filesystem::path          
 special_dirs::music()
 {
-    namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
     TCHAR szPath[MAX_PATH];
     if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_MYMUSIC, NULL, SHGFP_TYPE_CURRENT, szPath))) {
         return fs::path(szPath); 
@@ -112,10 +112,10 @@ special_dirs::music()
 }
 
 
-boost::filesystem::path          
+std::filesystem::path          
 special_dirs::video()
 {
-    namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
     TCHAR szPath[MAX_PATH];
     if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_MYVIDEO, NULL, SHGFP_TYPE_CURRENT, szPath))) {
         return fs::path(szPath); 
@@ -123,10 +123,10 @@ special_dirs::video()
     else    return fs::path(""); 
 }
 
-boost::filesystem::path          
+std::filesystem::path          
 special_dirs::desktop()
 {
-    namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
     TCHAR szPath[MAX_PATH];
     if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_DESKTOP, NULL, SHGFP_TYPE_CURRENT, szPath))) {
         return fs::path(szPath); 
@@ -135,10 +135,10 @@ special_dirs::desktop()
 }
 
 
-boost::filesystem::path          
+std::filesystem::path          
 special_dirs::windows()
 {
-    namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
     TCHAR szPath[MAX_PATH];
     if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_WINDOWS, NULL, SHGFP_TYPE_CURRENT, szPath))) {
         return fs::path(szPath); 
@@ -147,10 +147,10 @@ special_dirs::windows()
 }
 
 
-boost::filesystem::path          
+std::filesystem::path          
 special_dirs::system()
 {
-    namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
     TCHAR szPath[MAX_PATH];
     if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_SYSTEM, NULL, SHGFP_TYPE_CURRENT, szPath))) {
         return fs::path(szPath); 
@@ -158,10 +158,10 @@ special_dirs::system()
     else    return fs::path(""); 
 }
 
-boost::filesystem::path          
+std::filesystem::path          
 special_dirs::program_files()
 {
-    namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
     TCHAR szPath[MAX_PATH];
     if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_PROGRAM_FILES, NULL, SHGFP_TYPE_CURRENT, szPath))) {
         return fs::path(szPath); 

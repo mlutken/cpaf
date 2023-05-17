@@ -21,12 +21,13 @@
 namespace cpaf { namespace filesystem {
 
 //// Initalize special application start up directory
-//const boost::filesystem::path special_dirs::startup = boost::filesystem::initial_path();
+//const std::filesystem::path special_dirs::startup = std::filesystem::initial_path();
 
 
-boost::filesystem::path special_dirs::startup_path()
+/// @todo: special_dirs::startup_path() returnrn current_path() !!!
+std::filesystem::path special_dirs::startup_path()
 {
-    static const boost::filesystem::path pathStartUp = boost::filesystem::initial_path();
+    static const std::filesystem::path pathStartUp = std::filesystem::current_path();
     return pathStartUp;
 }
 

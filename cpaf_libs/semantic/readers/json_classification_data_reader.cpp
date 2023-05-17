@@ -20,7 +20,7 @@ json_classification_data_reader::json_classification_data_reader(const std::stri
 }
 
 json_classification_data_reader::json_classification_data_reader(
-        const boost::filesystem::path& path)
+        const std::filesystem::path& path)
     : classification_fragment_reader_base(path)
 {
 }

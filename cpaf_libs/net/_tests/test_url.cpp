@@ -46,7 +46,7 @@ static const StringVecT				TestUrls = boost::assign::list_of
 void test_Url()
 {
 	cout<<"Testing Url class"<<endl;
-	namespace fs = boost::filesystem;
+	namespace fs = std::filesystem;
 //	fs::path p("/home/ml/") / fs::path("test_Url");	
 //	fs::path p("C:\\Documents and Settings\\mlu") ;	
 //	p /= fs::path("test_Url");

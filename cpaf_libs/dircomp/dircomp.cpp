@@ -19,7 +19,7 @@ using namespace std;
 using namespace boost::lambda;
 using namespace cpaf::filesystem;
 namespace po = boost::program_options;
-namespace fs = boost::filesystem;
+namespace fs = std::filesystem;
 
 
 typedef std::vector<std::string> 	StringVecT;

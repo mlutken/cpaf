@@ -203,9 +203,9 @@ bool url::is_mail_address()	const
 // ----------------------
 
 /** */
-boost::filesystem::path	url::save_path()		const
+std::filesystem::path	url::save_path()		const
 {
-	namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
 	fs::path p;				// The full save path that we return from this function. 
 	if ( has_top_domain() 			)	p /= std::string("_TOPD_") + top_domain();
 	if ( has_second_level_domain() 	)	p /= std::string("_SITE_") + second_level_domain();
@@ -255,7 +255,7 @@ void url::assign (
 {
 	using namespace std;
     using boost::format;
-	namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
 	
 	if ( sUrl.empty() ) return;
 	

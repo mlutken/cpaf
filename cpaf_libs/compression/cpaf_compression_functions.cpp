@@ -3,7 +3,7 @@
 #include <boost/algorithm/string.hpp>
 #include "cpaf_compression_functions.h"
 
-namespace fs = boost::filesystem;
+namespace fs = std::filesystem;
 namespace al = boost::algorithm;
 
 namespace cpaf { namespace compression {
@@ -35,7 +35,7 @@ type to_compression_type (const std::string& filePath)
 
 
 /** Detect file type from file-path's extension. */
-type  to_compression_type (const boost::filesystem::path& filePath)
+type  to_compression_type (const std::filesystem::path& filePath)
 {
     type ft = type::plain;
     if      ( filePath.extension() == ".gz" )   ft = type::gz;
@@ -75,7 +75,7 @@ file::file(const std::string& file_path)
     allocate_read_buffer();
 }
 
-file::file(const boost::filesystem::path& file_path)
+file::file(const std::filesystem::path& file_path)
     : file(file_path.string())
 {
 }
@@ -89,7 +89,7 @@ file::file(const std::string& file_path, const std::string& mode)
     allocate_read_buffer();
 }
 
-file::file(const boost::filesystem::path& file_path, const std::string& mode)
+file::file(const std::filesystem::path& file_path, const std::string& mode)
     : file(file_path.string(), mode)
 {
 }
@@ -100,7 +100,7 @@ file::file(const std::string& file_path, const std::string& mode, std::size_t ma
     max_readline_size_ = max_readline_size;
 }
 
-file::file(const boost::filesystem::path& file_path, const std::string& mode, std::size_t max_readline_size)
+file::file(const std::filesystem::path& file_path, const std::string& mode, std::size_t max_readline_size)
     : file(file_path.string(), mode, max_readline_size)
 {
 }
@@ -151,7 +151,7 @@ bool file::open (const std::string& file_path, const std::string& mode) noexcept
     return is_open_;
 }
 
-bool file::open(const boost::filesystem::path& file_path, const std::string& mode) noexcept
+bool file::open(const std::filesystem::path& file_path, const std::string& mode) noexcept
 {
     return open(file_path.string(), mode);
 }
@@ -287,7 +287,7 @@ void file::deallocate_read_buffer()
 // --- Any compression type functions ---
 // --------------------------------------
 
-bool compress ( const boost::filesystem::path& srcFilePath, const boost::filesystem::path& dstFilePath  	)
+bool compress ( const std::filesystem::path& srcFilePath, const std::filesystem::path& dstFilePath  	)
 {
     type ft = to_compression_type ( dstFilePath );
     switch ( ft )
@@ -300,7 +300,7 @@ bool compress ( const boost::filesystem::path& srcFilePath, const boost::filesys
 }
 
 
-bool uncompress	( const boost::filesystem::path& srcFilePath, const boost::filesystem::path& dstFilePath 	)
+bool uncompress	( const std::filesystem::path& srcFilePath, const std::filesystem::path& dstFilePath 	)
 {
     type ft = to_compression_type ( srcFilePath );
     switch ( ft )
@@ -312,7 +312,7 @@ bool uncompress	( const boost::filesystem::path& srcFilePath, const boost::files
 }
 
 
-void append_to ( const boost::filesystem::path& filePath, const char* szString )
+void append_to ( const std::filesystem::path& filePath, const char* szString )
 {
     type ft = to_compression_type ( filePath );
     switch ( ft )
@@ -323,12 +323,12 @@ void append_to ( const boost::filesystem::path& filePath, const char* szString )
     }
 }
 
-void append_to    ( const boost::filesystem::path& filePath, const std::string& sString )
+void append_to    ( const std::filesystem::path& filePath, const std::string& sString )
 {
     append_to( filePath, sString.c_str() );
 }
 
-void writelines   ( const boost::filesystem::path& filePath, const string_vec_t& vecLines, bool bAppendNewLine )
+void writelines   ( const std::filesystem::path& filePath, const string_vec_t& vecLines, bool bAppendNewLine )
 {
     type ft = to_compression_type ( filePath );
     switch ( ft )
@@ -339,7 +339,7 @@ void writelines   ( const boost::filesystem::path& filePath, const string_vec_t&
     }
 }
 
-void appendlines  ( const boost::filesystem::path& filePath, const string_vec_t& vecLines, bool bAppendNewLine )
+void appendlines  ( const std::filesystem::path& filePath, const string_vec_t& vecLines, bool bAppendNewLine )
 {
     type ft = to_compression_type ( filePath );
     switch ( ft )
@@ -350,7 +350,7 @@ void appendlines  ( const boost::filesystem::path& filePath, const string_vec_t&
     }
 }
 
-void readlines    ( string_vec_t& vecLines, const boost::filesystem::path& filePath, std::size_t maxLineLen )
+void readlines    ( string_vec_t& vecLines, const std::filesystem::path& filePath, std::size_t maxLineLen )
 {
     type ft = to_compression_type ( filePath );
     switch ( ft )
@@ -463,13 +463,13 @@ If \a dstFilePath is an existing directory the file is compressed to here with
 '.gz' appended to the filename.
 */
 bool gz_compress(
-	const boost::filesystem::path& srcFilePath, 	///< [in] Path to source file
-	const boost::filesystem::path& dstFilePath  	///< [in] Path to destination file. Can be a directory name
+	const std::filesystem::path& srcFilePath, 	///< [in] Path to source file
+	const std::filesystem::path& dstFilePath  	///< [in] Path to destination file. Can be a directory name
 ) 
 {
     if ( srcFilePath.empty() )  return false;
 	bool bOk = true;
-    namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
     fs::path dstFile(dstFilePath);
 
     if ( fs::is_directory(dstFile) ) {
@@ -499,13 +499,13 @@ If \a dstFilePath is an existing directory the file is uncompressed to here with
 '.gz' removed from the filename.
 */
 bool gz_uncompress(
-	const boost::filesystem::path& srcFilePath, 	///< [in] Path to source file
-	const boost::filesystem::path& dstFilePath  	///< [in] Path to destination file. Can be a directory name
+	const std::filesystem::path& srcFilePath, 	///< [in] Path to source file
+	const std::filesystem::path& dstFilePath  	///< [in] Path to destination file. Can be a directory name
 ) 
 {
     if ( srcFilePath.empty() )  return false;
     bool bOk = true;
-	namespace fs = boost::filesystem;
+	namespace fs = std::filesystem;
 	fs::path dstFile(dstFilePath);
 	
 	if ( fs::is_directory(dstFile) ) {
@@ -530,19 +530,19 @@ bool gz_uncompress(
 	return bOk;
 }
 
-void gz_append_to  (const boost::filesystem::path& filePath, const char* szString)
+void gz_append_to  (const std::filesystem::path& filePath, const char* szString)
 {
     gzFile file = gzopen( filePath.string().c_str(), "a" );
     gzputs (file, szString);
     gzclose(file);
 }
 
-void gz_append_to  (const boost::filesystem::path& filePath, const std::string& sString)
+void gz_append_to  (const std::filesystem::path& filePath, const std::string& sString)
 {
     gz_append_to( filePath, sString.c_str() );
 }
 
-void gz_writelines (const boost::filesystem::path& filePath, const string_vec_t& vecLines, bool bAppendNewLine)
+void gz_writelines (const std::filesystem::path& filePath, const string_vec_t& vecLines, bool bAppendNewLine)
 {
     gzFile file = gzopen( filePath.string().c_str(), "w" );
     string_vec_t::const_iterator        it    = vecLines.begin();
@@ -556,7 +556,7 @@ void gz_writelines (const boost::filesystem::path& filePath, const string_vec_t&
     gzclose(file);
 }
 
-void    gz_appendlines   ( const boost::filesystem::path& filePath, const string_vec_t& vecLines, bool bAppendNewLine )
+void    gz_appendlines   ( const std::filesystem::path& filePath, const string_vec_t& vecLines, bool bAppendNewLine )
 {
     gzFile file = gzopen( filePath.string().c_str(), "a" );
     string_vec_t::const_iterator        it    = vecLines.begin();
@@ -571,7 +571,7 @@ void    gz_appendlines   ( const boost::filesystem::path& filePath, const string
 }
 
 
-void  gz_readlines ( string_vec_t& vecLines, const boost::filesystem::path& filePath, std::size_t maxLineLen )
+void  gz_readlines ( string_vec_t& vecLines, const std::filesystem::path& filePath, std::size_t maxLineLen )
 {
     char* line = new char[maxLineLen];
     gzFile file = gzopen( filePath.string().c_str(), "r" );

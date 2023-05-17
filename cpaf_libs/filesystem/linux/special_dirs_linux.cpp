@@ -42,7 +42,7 @@ static filepaths_t paths_list_from_string(
 	const std::string& separator 			///< Separator used for separating the paths
 										)
 {
-	namespace fs = boost::filesystem;
+	namespace fs = std::filesystem;
 	filepaths_t paths;
   	
   	typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
@@ -58,23 +58,23 @@ static filepaths_t paths_list_from_string(
 // -------------------------------------------------------------
 // --- Functions that needs platform specific implementation ---
 // -------------------------------------------------------------
-boost::filesystem::path special_dirs::temp()
+std::filesystem::path special_dirs::temp()
 {
     return "/tmp";
 }
 
-boost::filesystem::path special_dirs::exe_path()
+std::filesystem::path special_dirs::exe_path()
 {
-    boost::filesystem::path exePath;
+    std::filesystem::path exePath;
     char szExePath[PATH_MAX] = {0};
     auto iIgnore = readlink("/proc/self/exe", szExePath, sizeof(szExePath));
     if (iIgnore != -1) {
-        exePath = boost::filesystem::canonical( szExePath );
+        exePath = std::filesystem::canonical( szExePath );
     }
     return exePath;
 }
 
-boost::filesystem::path special_dirs::exe_dir()
+std::filesystem::path special_dirs::exe_dir()
 {
     return exe_path().parent_path();
 }
@@ -83,7 +83,7 @@ boost::filesystem::path special_dirs::exe_dir()
 filepaths_t          
 special_dirs::system_libs()
 {
-    namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
     using namespace std;
     filepaths_t paths;
     string sLD_LIBRARY_PATH = get_env("LD_LIBRARY_PATH");
@@ -95,96 +95,96 @@ special_dirs::system_libs()
 }
 
 
-boost::filesystem::path          
+std::filesystem::path          
 special_dirs::home()
 {
-    namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
     return fs::path( get_env("HOME") ); 
 }
 
-boost::filesystem::path          
+std::filesystem::path          
 special_dirs::app_data()
 {
-    namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
     return fs::path( get_env("HOME")); 
 }
 
-boost::filesystem::path          
+std::filesystem::path          
 special_dirs::app_data_local()
 {
-    namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
     return fs::path( get_env("HOME")); 
 }
 
 
 
-boost::filesystem::path          
+std::filesystem::path          
 special_dirs::documents()
 {
-    namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
     std::string sPath = get_env("DOCUMENTS_DIR");
     if ( sPath != "" )	return fs::path( sPath );
     else				return special_dirs::home() / fs::path("Documents"); 
 }
 
 
-boost::filesystem::path          
+std::filesystem::path          
 special_dirs::pictures()
 {
-    namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
     std::string sPath = get_env("PICTURES_DIR");
     if ( sPath != "" )	return fs::path( sPath );
     else				return special_dirs::home() / fs::path("Pictures"); 
 }
 
-boost::filesystem::path          
+std::filesystem::path          
 special_dirs::music()
 {
-    namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
     std::string sPath = get_env("MUSIC_DIR");
     if ( sPath != "" )	return fs::path( sPath );
     else				return special_dirs::home() / fs::path("Music"); 
 }
 
 
-boost::filesystem::path          
+std::filesystem::path          
 special_dirs::video()
 {
-    namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
     std::string sPath = get_env("VIDEO_DIR");
     if ( sPath != "" )	return fs::path( sPath );
     else				return special_dirs::home() / fs::path("Video"); 
 }
 
-boost::filesystem::path          
+std::filesystem::path          
 special_dirs::desktop()
 {
-    namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
     std::string sPath = get_env("DESKTOP_DIR");
     if ( sPath != "" )	return fs::path( sPath );
     else				return special_dirs::home() / fs::path("Desktop"); 
 }
 
 
-boost::filesystem::path          
+std::filesystem::path          
 special_dirs::windows()
 {
-    namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
     return fs::path(""); 
 }
 
 
-boost::filesystem::path          
+std::filesystem::path          
 special_dirs::system()
 {
-    namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
     return fs::path(""); 
 }
 
-boost::filesystem::path          
+std::filesystem::path          
 special_dirs::program_files()
 {
-    namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
     return fs::path(""); 
 }
 

@@ -99,7 +99,7 @@ Upload a single file using HTTP POST, no pasword, user only the file.
 CURLcode curl_post_upload_file_simple   (
           const std::string& sURL
         , const std::string& sFieldName
-        , const boost::filesystem::path& filePath
+        , const std::filesystem::path& filePath
         )
 {
     if ( sURL == "" ) return CURLE_READ_ERROR;
@@ -146,7 +146,7 @@ Upload a single file using HTTP POST, no pasword, user only the file.
 \see http://linux.die.net/man/3/libcurl-tutorial
 \return Curl result code: http://curl.haxx.se/libcurl/c/libcurl-errors.html E.g: CURLE_OK, CURLE_UPLOAD_FAILED, CURLE_READ_ERROR 
 */
-CURLcode curlPostUploadFileSimple( const std::string& sURL, const std::string& sFieldName, const boost::filesystem::path& filePath ) 
+CURLcode curlPostUploadFileSimple( const std::string& sURL, const std::string& sFieldName, const std::filesystem::path& filePath ) 
 {
     if ( sURL == "" ) return CURLE_READ_ERROR;
 	using namespace std;
@@ -210,7 +210,7 @@ Upload a single file using HTTP POST, no pasword, user only the file.
 \see http://linux.die.net/man/3/libcurl-tutorial
 \return Curl result code: http://curl.haxx.se/libcurl/c/libcurl-errors.html E.g: CURLE_OK, CURLE_UPLOAD_FAILED, CURLE_READ_ERROR
 */
-CURLcode curlPostUploadFileSimple( const std::string& sURL, const std::string& sFieldName, const boost::filesystem::path& filePath )
+CURLcode curlPostUploadFileSimple( const std::string& sURL, const std::string& sFieldName, const std::filesystem::path& filePath )
 {
     if ( sURL == "" ) return CURLE_READ_ERROR;
     using namespace std;

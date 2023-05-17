@@ -1,7 +1,7 @@
 #ifndef CPAF_JSON_STREAMS_H
 #define CPAF_JSON_STREAMS_H
 
-#include <boost/filesystem/path.hpp>
+#include <filesystem>
 #include <utils/cpaf_json_utils.h>
 
 namespace cpaf::streams {
@@ -12,10 +12,10 @@ namespace cpaf::streams {
 */
 
 void            to_file (const std::string& resource_path, const nlohmann::json& jobject, int indentation = 0);
-void            to_file (const boost::filesystem::path& file_path, const nlohmann::json& jobject, int indentation = 0);
+void            to_file (const std::filesystem::path& file_path, const nlohmann::json& jobject, int indentation = 0);
 
 nlohmann::json  to_json (const std::string& resource_path, const nlohmann::json& default_jo = {});
-nlohmann::json  to_json (const boost::filesystem::path& file_path, const nlohmann::json& default_jo = {});
+nlohmann::json  to_json (const std::filesystem::path& file_path, const nlohmann::json& default_jo = {});
 
 } //END namespace cpaf::streams
 

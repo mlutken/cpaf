@@ -21,16 +21,16 @@ namespace cpaf { namespace filesystem {
 // --- Functions that needs platform specific implementation ---
 // -------------------------------------------------------------
 
-const boost::filesystem::path
-normalize( boost::filesystem::path& p )
+const std::filesystem::path
+normalize( std::filesystem::path& p )
 {
     return p.normalize();
 }
 
 filepaths_t		
-files_list ( const boost::filesystem::path& path, bool full_paths, const boost::regex& re_match )
+files_list ( const std::filesystem::path& path, bool full_paths, const boost::regex& re_match )
 {
-    namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
     filepaths_t files;
     fs::directory_iterator dirEnd   = fs::directory_iterator();
     fs::directory_iterator itDir    = fs::directory_iterator(path);
@@ -51,9 +51,9 @@ files_list ( const boost::filesystem::path& path, bool full_paths, const boost::
 }
 
 filepaths_t		
-subdirectories_list ( const boost::filesystem::path& path, bool full_paths, const boost::regex& re_match )
+subdirectories_list ( const std::filesystem::path& path, bool full_paths, const boost::regex& re_match )
 {
-    namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
     filepaths_t dirs;
     fs::directory_iterator dirEnd   = fs::directory_iterator();
     fs::directory_iterator itDir    = fs::directory_iterator(path);
@@ -76,9 +76,9 @@ subdirectories_list ( const boost::filesystem::path& path, bool full_paths, cons
 
 
 // filepaths_t		
-// files_list ( const boost::filesystem::path& path, bool full_paths, const boost::regex& re_match )
+// files_list ( const std::filesystem::path& path, bool full_paths, const boost::regex& re_match )
 // {
-    // namespace fs = boost::filesystem;
+    // namespace fs = std::filesystem;
     // struct _finddata_t fileinfo;
     // long hFile;
     // filepaths_t files;
@@ -108,9 +108,9 @@ subdirectories_list ( const boost::filesystem::path& path, bool full_paths, cons
 // }
 
 // filepaths_t		
-// subdirectories_list ( const boost::filesystem::path& path, bool full_paths, const boost::regex& re_match )
+// subdirectories_list ( const std::filesystem::path& path, bool full_paths, const boost::regex& re_match )
 // {
-    // namespace fs = boost::filesystem;
+    // namespace fs = std::filesystem;
     // struct _finddata_t fileinfo;
     // long hFile;
     // filepaths_t dirs;
@@ -121,7 +121,7 @@ subdirectories_list ( const boost::filesystem::path& path, bool full_paths, cons
 	    // do 
 	    // {
 		    // if ( (fileinfo.attrib & _A_SUBDIR) ) {
-                // boost::filesystem::path p(fileinfo.name);
+                // std::filesystem::path p(fileinfo.name);
                 // if ( p.string() == ".." || p.string() == "." ) continue;
 
                 // // If not regular expression is empty, then skip names that does not match

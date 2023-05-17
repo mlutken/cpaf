@@ -21,7 +21,7 @@ public:
     classification_fragment_reader_base();
     virtual ~classification_fragment_reader_base() = default;
     explicit classification_fragment_reader_base(const std::string& resource_path_or_data);
-    explicit classification_fragment_reader_base(const boost::filesystem::path& resource_path_or_data);
+    explicit classification_fragment_reader_base(const std::filesystem::path& resource_path_or_data);
 
     const weights_map&  global_weights  () const { return global_weights_per_source_field_; }
     void                global_weights  (const weights_map& weights) { global_weights_per_source_field_ = weights; should_read_data_ = true; }
@@ -30,7 +30,7 @@ public:
 
     const std::string&  resource        () const;
     void                resource        (const std::string& resource_path_or_data);
-    void                resource        (const boost::filesystem::path& path);
+    void                resource        (const std::filesystem::path& path);
     void                read_data       ();
     void                begin_iterating ();
     bool                iterating_done  ()      { return do_iterating_done();   }

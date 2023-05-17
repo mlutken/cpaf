@@ -4,7 +4,7 @@
 #include <filesystem/cpaf_file_directory_functions.h>
 
 using namespace std;
-namespace fs = boost::filesystem;
+namespace fs = std::filesystem;
 namespace cfs = cpaf::filesystem;
 
 namespace cpaf::semantic
@@ -27,7 +27,7 @@ void semantic_data_resources::add_resource(const string& resource_path)
     add_resource(resource_path, "");
 }
 
-void semantic_data_resources::add_resource(const boost::filesystem::path& file_path)
+void semantic_data_resources::add_resource(const std::filesystem::path& file_path)
 {
     add_resource(file_path.string());
 }
@@ -42,7 +42,7 @@ void semantic_data_resources::add_resource(const string& resource_path, const st
     }
 }
 
-void semantic_data_resources::add_resource(const boost::filesystem::path& file_path, const string& pattern)
+void semantic_data_resources::add_resource(const std::filesystem::path& file_path, const string& pattern)
 {
     add_resource(file_path.string(), pattern);
 }
@@ -70,12 +70,12 @@ void semantic_data_resources::add_local_resource(const string& resource_path, co
     }
 }
 
-void semantic_data_resources::add_local_file(const boost::filesystem::path& file_path)
+void semantic_data_resources::add_local_file(const std::filesystem::path& file_path)
 {
     all_local_files_.push_back(file_path);
 }
 
-bool semantic_data_resources::file_is_excluded(const boost::filesystem::path& file_path) const
+bool semantic_data_resources::file_is_excluded(const std::filesystem::path& file_path) const
 {
     using namespace boost::algorithm;
     const auto leaf_name = file_path.filename().string();

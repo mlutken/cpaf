@@ -6,7 +6,7 @@ static void ex_filesystem_subdirectories_list()
 {
     using namespace std;
     using namespace cpaf::filesystem;
-    namespace   fs = boost::filesystem;
+    namespace   fs = std::filesystem;
 
     filepaths_t files;
     fs::path    ph          = special_dirs::home();
