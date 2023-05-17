@@ -331,7 +331,7 @@ without_file_extension(
                       )
 {
     namespace fs = boost::filesystem;
-    fs::path  basePath = filePath.branch_path();
+    fs::path  basePath = filePath.parent_path();
     std::string sLeaf = filePath.filename().string();
     sLeaf = without_file_extension(sLeaf);
     return basePath / fs::path(sLeaf);
@@ -361,7 +361,7 @@ force_copy_file (
     if ( !fs::exists(srcFile) )       return false;
     if (  fs::is_directory(srcFile) ) return false;
 
-    fs::path absDstDir = dstFile.branch_path();
+    fs::path absDstDir = dstFile.parent_path();
     if (!absDstDir.empty()) {
         fs::create_directories( absDstDir );
     }
@@ -399,7 +399,7 @@ static void filesDirsListRecursive (
     // Recurse
     for ( it = subDirs.begin(); it != subDirs.end(); ++it ) {
        // std::cout<<"Recur: "<<(curSearchPath / *it).string()<<std::endl;
-        if ( !symbolic_link_exists( curSearchPath / *it ) ) {
+        if ( !is_symlink( curSearchPath / *it ) ) {
             filesDirsListRecursive(paths, curSearchPath / *it, curPrependPath / *it, bGetFiles, re_match, iDepth );
         }
     }
@@ -441,7 +441,7 @@ static void filesDirsListRecursive (
 
     // Recurse
     for ( it = subDirs.begin(); it != subDirs.end(); ++it ) {
-        if ( !symbolic_link_exists( curSearchPath / *it ) ) {
+        if ( !is_symlink( curSearchPath / *it ) ) {
             filesDirsListRecursive(paths, curSearchPath / *it, curPrependPath / *it, bGetFiles, wild, iDepth );
         }
     }

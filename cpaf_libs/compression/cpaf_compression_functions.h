@@ -1,6 +1,4 @@
-#ifndef CPAF_COMPRESSION_FUNCTIONS_H
-#define CPAF_COMPRESSION_FUNCTIONS_H
-
+#pragma once
  
 #include <string>
 #include <vector>
@@ -240,8 +238,4 @@ gz_uncompress(const cpaf::containers::dynamic_array<CHAR_TYPE, EXTRA_CAPACITY>& 
 
 
 }} //END namespace cpaf::compression
-
-
-#endif //CPAF_COMPRESSION_FUNCTIONS_H
-
 

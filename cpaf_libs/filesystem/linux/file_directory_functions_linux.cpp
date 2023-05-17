@@ -58,7 +58,7 @@ static int path_exists( const char *inPath )
 const boost::filesystem::path
 normalize( boost::filesystem::path& p )
 {
-    return p.normalize();
+    return p.lexically_normal();
 }
 
 int move (const boost::filesystem::path& src, const boost::filesystem::path& dst)

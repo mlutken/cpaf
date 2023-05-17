@@ -509,7 +509,7 @@ bool gz_uncompress(
 	fs::path dstFile(dstFilePath);
 	
 	if ( fs::is_directory(dstFile) ) {
-		dstFile /= srcFilePath.leaf();
+        dstFile /= srcFilePath.filename();
 		dstFile.replace_extension("");
 	}
 	
