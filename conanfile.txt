@@ -4,9 +4,6 @@ nlohmann_json/3.11.2
 fmt/10.0.0
 zlib/1.2.13
 bzip2/1.0.8
-#xz_utils/5.4.2
-#conan_recipes/libunwind
-#libtiff/4.5.0
 libcurl/8.0.1
 openssl/3.1.0
 sdl/2.26.1
@@ -15,7 +12,7 @@ sdl/2.26.1
 #sdl_net/2.0.1
 #sdl_ttf/2.20.1
 icu/73.1
-boost/1.79.0
+boost/1.81.0
 #uwebsockets/20.36.0
 #libtorrent/2.0.8
 
