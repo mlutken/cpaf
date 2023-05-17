@@ -2,7 +2,7 @@
 
 #include <string>
 #include <vector>
-#include <boost/range.hpp>
+#include <boost/range/iterator.hpp>
 #include <cpaf_libs/unicode/cpaf_unicode_common.h>
 
 
