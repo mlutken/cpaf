@@ -1,5 +1,4 @@
-#ifndef CPAF_STRING_UTILS_H
-#define CPAF_STRING_UTILS_H
+#pragma once
 
 #include <vector>
 #include <algorithm>
@@ -7,6 +6,7 @@
 #include <sstream>
 #include <boost/algorithm/string.hpp>
 #include <boost/format.hpp>
+
 
 namespace cpaf {
 //typedef std::vector<std::string>	string_vec_t;
@@ -39,8 +39,8 @@ std::vector<std::string>	splitv_trim	( const std::string& sToSplit, const std::s
 
 void                        split_int	( std::vector<int>& resultVec, const std::string& sToSplit, const std::string& sSplitAt= " ", int iDefault = 0 );
 std::vector<int>            split_int	( const std::string& sToSplit, const std::string& sSplitAt= " ", int iDefault = 0 );
-void		split_float	( std::vector<float>& resultVec, const std::string& sToSplit, const std::string& sSplitAt= " ", float fDefault = 0 );
-std::vector<float>	split_float	( const std::string& sToSplit, const std::string& sSplitAt= " ", float fDefault = 0 );
+void                        split_float	( std::vector<float>& resultVec, const std::string& sToSplit, const std::string& sSplitAt= " ", float fDefault = 0 );
+std::vector<float>          split_float	( const std::string& sToSplit, const std::string& sSplitAt= " ", float fDefault = 0 );
 
 void		join		( std::string& sResult, const StringVecT& toJoin, const std::string& sJoinWith= " " );
 std::string	join		( const StringVecT& toJoin, const std::string& sJoinWith= " " );
@@ -451,6 +451,3 @@ std::string to_string_c_locale ( T object )
 }
 
 } // END namespace cpaf
-
-#endif //CPAF_STRING_UTILS_H
-
