@@ -2,8 +2,7 @@ set (library_name cpaf_unicode)
 add_library(${library_name} STATIC "")
 
 find_package(Boost ${BOOST_MIN_VERSION} REQUIRED)
-find_package(ICU REQUIRED COMPONENTS data uc i18n io tu)
-# /usr/share/cmake-3.10/Modules/FindICU.cmake
+find_package(ICU REQUIRED)
 
 target_sources(${library_name}
     PUBLIC
@@ -28,7 +27,7 @@ target_sources(${library_name}
 get_filename_component(PARENT_DIR ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
 get_filename_component(PARENT2_DIR ${PARENT_DIR} DIRECTORY)
 target_link_libraries(${library_name} "cpaf_utils")
-target_link_libraries(${library_name} "${ICU_LIBRARIES}")
+target_link_libraries(${library_name} ICU::data ICU::uc ICU::i18n ICU::io ICU::tu)
 target_link_libraries(${library_name} "boost_locale")
 #target_link_libraries(${library_name} Boost::locale)
 set_target_properties(${library_name} PROPERTIES LINKER_LANGUAGE CXX)
