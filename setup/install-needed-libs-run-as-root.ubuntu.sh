@@ -10,6 +10,7 @@ sudo apt-get install -y libsm-dev
 sudo apt-get install -y libxau-dev
 sudo apt-get install -y libxaw7-dev
 sudo apt-get install -y libxcb-cursor-dev
+sudo apt-get install -y libvdpau-dev
 
 cd $SAVE_DIR_CPAF_SETUP
 

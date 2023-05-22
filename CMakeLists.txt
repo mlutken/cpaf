@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.22)
 project(cpaf)
 message ("(cpaf)CMAKE_PROJECT_NAME      : '${CMAKE_PROJECT_NAME}'")
 
-# Overide recipe with local version: https://github.com/conan-io/conan/issues/13743
+
 
 set ( CPAF_VERSION_MAJOR     1   )
 set ( CPAF_VERSION_MINOR     0   )
@@ -29,31 +29,28 @@ if (CPAF_IS_TOP_LEVEL_PROJECT)
     set(CMAKE_CXX_STANDARD 20)
     set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+    include (${CMAKE_CURRENT_LIST_DIR}/cul/luepp/tools/cmake/conan_utils.cmake)
     include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/platform_definitions.cmake)
     include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/default_platform_definitions.cmake)
     include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/set_platform_compiler_defines.cmake)
 
-#    list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
-#    list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
-#    list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/tools/cmake)
 
-    if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
-      file(COPY_FILE "${CMAKE_CURRENT_LIST_DIR}/cul/luepp/3rdparty/conan/conan.cmake" "${CMAKE_BINARY_DIR}/conan.cmake")
-    #  file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/0.18.1/conan.cmake" "${CMAKE_BINARY_DIR}/conan.cmake" TLS_VERIFY ON)
+    if (NOT CMAKE_TOOLCHAIN_FILE)
+        conan_utils_get_profile_settings(conan_profile_settings)
+        conan_utils_get_profile_name(conan_profile_name)
+
+        message ("INFO! Using Conan profile name: ${conan_profile_name}")
+        message ("INFO! Using Conan settings: ${conan_profile_settings}")
+
+        conan_utils_cmake_install(PATH_OR_REFERENCE ${CMAKE_CURRENT_LIST_DIR}
+                                  BUILD missing
+                                  REMOTE conancenter
+                                  OUTPUT_FOLDER ${CMAKE_BINARY_DIR}
+                                  SETTINGS ${conan_profile_settings})
+
+        include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
     endif()
 
-
-    include(${CMAKE_BINARY_DIR}/conan.cmake)
-
-    conan_cmake_autodetect(settings)
-
-    conan_cmake_install(PATH_OR_REFERENCE ${CMAKE_CURRENT_LIST_DIR}
-                        BUILD missing
-                        REMOTE conancenter
-                        OUTPUT_FOLDER ${CMAKE_BINARY_DIR}
-                        SETTINGS ${settings})
-
-    include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
     find_package(Threads REQUIRED)
     find_package(GTest REQUIRED)
 endif()

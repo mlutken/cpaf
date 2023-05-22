@@ -2,25 +2,30 @@
 gtest/cci.20210126
 nlohmann_json/3.11.2
 fmt/10.0.0
-zlib/1.2.13
-bzip2/1.0.8
-libcurl/8.0.1
 openssl/3.1.0
+libcurl/8.0.1
+ffmpeg/5.1
 sdl/2.26.1
-#sdl_image/2.0.5
-#sdl_mixer/2.0.4
-#sdl_net/2.0.1
-#sdl_ttf/2.20.1
 icu/73.1
 boost/1.81.0
 libtorrent/2.0.8
 imgui/cci.20230105+1.89.2.docking
-#uwebsockets/20.36.0
 
 [options]
-#openssl/3.1.0:shared=False
+openssl/3.1.0:shared=False
+libunwind/1.6.2:minidebuginfo=False
+#ffmpeg/5.1:with_openjpeg=False
 
 [generators]
 CMakeDeps
 CMakeToolchain
 
+
+
+#openjpeg/2.5.0
+#ffmpeg/5.1
+#uwebsockets/20.36.0
+#ffmpeg/5.1
+#xz_utils/5.4.0
+#xz_utils/5.4.0
+#angelscript/2.36.0
