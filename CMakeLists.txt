@@ -37,16 +37,17 @@ if (CPAF_IS_TOP_LEVEL_PROJECT)
 
     if (NOT CMAKE_TOOLCHAIN_FILE)
         conan_utils_get_profile_settings(conan_profile_settings)
-        conan_utils_get_profile_name(conan_profile_name)
+        conan_utils_get_profile_name(conan_profile)
 
-        message ("INFO! Using Conan profile name: ${conan_profile_name}")
+        message ("INFO! Using Conan profile : ${conan_profile}")
         message ("INFO! Using Conan settings: ${conan_profile_settings}")
 
         conan_utils_cmake_install(PATH_OR_REFERENCE ${CMAKE_CURRENT_LIST_DIR}
-                                  BUILD missing
-                                  REMOTE conancenter
-                                  OUTPUT_FOLDER ${CMAKE_BINARY_DIR}
-                                  SETTINGS ${conan_profile_settings})
+                                BUILD missing
+                                REMOTE conancenter
+                                OUTPUT_FOLDER ${CMAKE_BINARY_DIR}
+                                PROFILE ${conan_profile}
+                                SETTINGS ${conan_profile_settings})
 
         include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
     endif()
