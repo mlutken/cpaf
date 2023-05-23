@@ -133,7 +133,7 @@ private:
     size_t                  default_primary_stream_index() const;
     AVStream*               ff_stream                   (size_t stream_index) const;
     AVCodecParameters*      ff_codec_parameters         (size_t stream_index) const;
-    AVCodec*                ff_find_decoder             (size_t stream_index) const;
+    const AVCodec*          ff_find_decoder             (size_t stream_index) const;
     AVRational              stream_time_base            (size_t stream_index) const { return ff_format_context_->streams[stream_index]->time_base; }
 
     std::array<size_t, media_type_size()>                   selected_stream_per_media_type_;
