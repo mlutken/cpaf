@@ -43,11 +43,11 @@ if (CPAF_IS_TOP_LEVEL_PROJECT)
         message ("INFO! Using Conan settings: ${conan_profile_settings}")
 
         conan_utils_cmake_install(PATH_OR_REFERENCE ${CMAKE_CURRENT_LIST_DIR}
-                                BUILD missing
-                                REMOTE conancenter
-                                OUTPUT_FOLDER ${CMAKE_BINARY_DIR}
-                                PROFILE ${conan_profile}
-                                SETTINGS ${conan_profile_settings})
+                                  BUILD missing
+                                  REMOTE conancenter
+                                  OUTPUT_FOLDER ${CMAKE_BINARY_DIR}
+                                  PROFILE ${conan_profile}
+                                  SETTINGS ${conan_profile_settings})
 
         include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
     endif()
@@ -55,6 +55,8 @@ if (CPAF_IS_TOP_LEVEL_PROJECT)
     find_package(Threads REQUIRED)
     find_package(GTest REQUIRED)
 endif()
+
+include (${CMAKE_CURRENT_LIST_DIR}/cul/luepp/tools/cmake/std_utils.cmake)
 
 
 if ( NOT (CMAKE_SYSTEM_NAME MATCHES "Emscripten") )
