@@ -28,6 +28,9 @@ if (CPAF_IS_TOP_LEVEL_PROJECT)
 
     set(CMAKE_CXX_STANDARD 20)
     set(CMAKE_CXX_STANDARD_REQUIRED ON)
+    if (${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
+        set (CMAKE_EXECUTABLE_SUFFIX    ".html" )
+    endif ()
 
     include (${CMAKE_CURRENT_LIST_DIR}/cul/luepp/tools/cmake/conan_utils.cmake)
     include (${CMAKE_CURRENT_LIST_DIR}/tools/cmake/platform_definitions.cmake)
