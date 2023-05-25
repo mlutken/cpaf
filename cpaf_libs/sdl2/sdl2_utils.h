@@ -1,6 +1,4 @@
-#ifndef CPAF_SDL2_UTILS_H
-#define CPAF_SDL2_UTILS_H
-
+#pragma once
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
@@ -18,6 +16,5 @@ SDL_Rect                texture_destination_rect(SDL_Texture* texture, int32_t x
 } //END namespace cpaf::sdl2
 
 
-#endif //CPAF_SDL2_UTILS_H
 
 

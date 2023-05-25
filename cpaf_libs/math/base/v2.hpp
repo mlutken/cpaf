@@ -1,5 +1,4 @@
-#ifndef _GMATH_V2_
-#define _GMATH_V2_
+#pragma once
 // ****************************************************************************
 // CREATED_ON	: 17-06-03 17:00:19
 // CREATED_BY	: Martin Lutken
@@ -624,7 +623,3 @@ typedef v2<int>     v2i;
 
 
 _GMATH_END_NAMESPACE
-
-#endif	// _GMATH_V2_
-
-

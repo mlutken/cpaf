@@ -22,7 +22,7 @@ target_sources(${library_name}
 )
 
 get_filename_component(PARENT_DIR ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
-target_include_directories(${library_name} INTERFACE ${Boost_INCLUDE_DIRS} ${PARENT_DIR})
+target_include_directories(${library_name} INTERFACE ${PARENT_DIR})
 #     target_compile_options(${library_name} INTERFACE ${STANDARD_COMPILE_FLAGS})
 
 add_subdirectories_standard()
