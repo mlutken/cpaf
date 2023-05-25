@@ -14,7 +14,10 @@ imgui/cci.20230105+1.89.2.docking
 [options]
 openssl/3.1.0:shared=False
 libunwind/1.6.2:minidebuginfo=False
-#ffmpeg/5.1:with_openjpeg=False
+##boost/1.81.0:without_locale=True
+##boost/1.81.0:i18n_backend_iconv=off
+##boost/1.81.0:header_only=True
+
 
 [generators]
 CMakeDeps
@@ -29,3 +32,6 @@ CMakeToolchain
 #xz_utils/5.4.0
 #xz_utils/5.4.0
 #angelscript/2.36.0
+
+
+# Boost Build Error Emscripten: https://github.com/boostorg/regex/issues/59
