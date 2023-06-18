@@ -9,7 +9,6 @@
 #include <stdlib.h>
 
 using namespace std;
-// using namespace boost::posix_time;
 
 SDL_Window *window;
 SDL_Renderer *sdl_renderer;
