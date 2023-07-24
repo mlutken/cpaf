@@ -6,7 +6,6 @@
 #include <utils/cpaf_string_utils.hpp>
 #include <config/cpaf_platform_definitions.h>
 
-
 // ---------------------------------------------------------------
 // --- Choose correct implementation file for current platform ---
 // ---------------------------------------------------------------
