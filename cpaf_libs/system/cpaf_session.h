@@ -1,7 +1,7 @@
 #pragma once
  
 #include <string>
-#include <boost/cstdint.hpp>
+#include <cstdint>
 
 
 namespace cpaf { namespace system {
@@ -44,20 +44,20 @@ bool reboot ( bool force					///< If true, shutdown is forced. Open files will n
 Get time since last user input. Typically the time since user last moved/clicked 
 the mouse or types at the keyboard.
 \return Time in miliseconds since last user activity */
-boost::uint32_t last_input_time ();
+uint32_t last_input_time ();
 
 
 /** 
 Retrieves the number of milliseconds that have elapsed since the system was started. 
 Counter wraps a appr. 49.7 days, so use get_tick_count64 if this is a problem.
 \return Number of milliseconds that have elapsed since the system was started. */
-boost::uint32_t get_tick_count32 ();
+uint32_t get_tick_count32 ();
 
 /** 
 Retrieves the number of milliseconds that have elapsed since the system was started. 
 \sa get_tick_count32
 \return Number of milliseconds that have elapsed since the system was started. */
-boost::uint64_t get_tick_count64 ();
+uint64_t get_tick_count64 ();
 
 void sleep_ms (uint32_t milli_seconds);
 

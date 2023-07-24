@@ -43,18 +43,18 @@ bool reboot ( bool /*force*/ )
     return false;
 }
 
-boost::uint32_t last_input_time () 
+uint32_t last_input_time()
 {
     return 0;
 }
 
-boost::uint32_t get_tick_count32 ()
+uint32_t get_tick_count32()
 {
     return 0;
 }
 
 // http://msdn2.microsoft.com/en-us/library/ms724411.aspx
-boost::uint64_t get_tick_count64 ()
+uint64_t get_tick_count64()
 {
     return 0;
 }
