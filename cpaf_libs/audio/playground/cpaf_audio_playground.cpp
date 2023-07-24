@@ -3,7 +3,6 @@
 #include <thread>
 #include <chrono>
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_mixer.h>
 
 #include <cpaf_libs/audio/cpaf_audio_device.h>
 #include <cpaf_libs/audio/cpaf_audio_system.h>

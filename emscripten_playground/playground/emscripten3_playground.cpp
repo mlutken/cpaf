@@ -4,7 +4,6 @@
 #endif
 #include <cpaf_libs/sdl2/cpaf_sdl2.h>
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_mixer.h>
 #include <stdlib.h>
 
 SDL_Window *window;
