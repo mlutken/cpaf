@@ -7,7 +7,7 @@
 #include <filesystem>
 #include <boost/filesystem/convenience.hpp>
 #include <zlib.h>
-#include <bzlib.h>
+//#include <bzlib.h>
 #include <containers/cpaf_container_utils.h>
 #include <containers/cpaf_dynamic_array.hpp>
 #include <containers/cpaf_string8.h>

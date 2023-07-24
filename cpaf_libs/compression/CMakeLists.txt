@@ -12,14 +12,26 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/cpaf_compression_functions.cpp
 )
 
+
+##message("FIXMENM Boost::regex: '${Boost::regex}'")
+#message("FIXMENM ZLIB::ZLIB  : '${ZLIB_LIBRARIES}'")
+#message("FIXMENM ZLIB_INCLUDE_DIRS  : '${ZLIB_INCLUDE_DIRS}'")
+#message("FIXMENM BZip2::BZip2  : '${BZip2_LIBRARIES}'")
+#message("FIXMENM BZip2::INC  : '${BZip2_INCLUDE_DIRS}'")
+#message("FIXMENM ZLIB_LIBRARIES  : '${ZLIB_LIBRARIES}'")
+##message("FIXMENM BZip2::BZip2: '${BZip2::BZip2}'")
+#message("FIXMENM Boost_INCLUDE_DIRS: '${Boost_INCLUDE_DIRS}'")
+
+
 get_filename_component(PARENT_DIR ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
 get_filename_component(PARENT2_DIR ${PARENT_DIR} DIRECTORY)
-target_link_libraries(${library_name} "cpaf_containers;cpaf_filesystem")
-target_link_libraries(${library_name} Boost::regex)
-target_link_libraries(${library_name} ZLIB::ZLIB)
-target_link_libraries(${library_name} BZip2::BZip2)
+target_link_libraries(${library_name} PUBLIC "BZip2::BZip2;ZLIB::ZLIB;cpaf_containers;cpaf_filesystem")
+#target_link_libraries(${library_name} PUBLIC Boost::filesystem)
+#target_link_libraries(${library_name} PUBLIC ZLIB::ZLIB)
+#target_link_libraries(${library_name} PUBLIC BZip2::BZip2)
+#target_link_libraries(${library_name}  PUBLIC ${ZLIB_LIBRARIES})
 set_target_properties(${library_name} PROPERTIES LINKER_LANGUAGE CXX)
-target_include_directories(${library_name} INTERFACE ${Boost_INCLUDE_DIRS} ${PARENT2_DIR} ${PARENT_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(${library_name} INTERFACE  ${PARENT2_DIR} ${PARENT_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
 target_compile_options(${library_name} PRIVATE ${STANDARD_COMPILE_FLAGS})
 
 add_subdirectories_standard()
