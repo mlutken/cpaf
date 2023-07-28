@@ -14,12 +14,15 @@ extern "C"
 #include <unordered_map>
 #include <chrono>
 #include <mutex>
+#include <memory>
 
 #include <cpaf_libs/video/av_util.h>
 #include <cpaf_libs/video/av_codec.h>
 #include <cpaf_libs/video/av_codec_context.h>
 #include <cpaf_libs/video/av_codec_parameters.h>
 #include <cpaf_libs/video/av_packet.h>
+
+class custom_io_base;
 
 namespace cpaf::video {
 
@@ -146,6 +149,7 @@ private:
     pipeline_control_t                                      pipeline_control_       = pipeline_control_t::none;
     pipeline_index_t                                        pipeline_index_         = 1;
     std::mutex                                              packet_queues_mutex_;
+    std::unique_ptr<custom_io_base>                         custom_io_ptr_;
 };
 
 

@@ -6,11 +6,15 @@ extern "C"
 #include <libavutil/channel_layout.h>
 }
 
+#include <cpaf_libs/unicode/cpaf_u8string_utils.h>
+
 // FIND: ^(.+)\s*$
 // REPLACE: case \1: return "\1"; break;
 
 
 using namespace std;
+namespace cu = cpaf::unicode;
+
 namespace cpaf::video {
 
 string to_string(media_type mt)
@@ -71,6 +75,11 @@ surface_dimensions_t scale_surface_dimensions(const surface_dimensions_t& src_di
         dimensions = dst_dimensions;
     }
     return dimensions;
+}
+
+string protocol_from_uri(const std::string& uri)
+{
+    return cu::substring_between(uri, "", ":");
 }
 
 

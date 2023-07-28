@@ -127,6 +127,7 @@ std::string to_string						(pipeline_state_t ps);
 
 surface_dimensions_t scale_surface_dimensions(const surface_dimensions_t& src_dimensions, const surface_dimensions_t& dst_dimensions);
 
+std::string             protocol_from_uri   (const std::string& uri);
 
 } //END namespace cpaf::video
 

@@ -19,6 +19,7 @@ extern "C"
 #include <iostream>
 #include <thread>
 #include <algorithm>
+#include <cpaf_libs/video/io/custom_io_base.h>
 
 using namespace std;
 using namespace std::chrono;
@@ -51,7 +52,25 @@ av_format_context::~av_format_context()
 bool av_format_context::open(const std::string& resource_path)
 {
     resource_path_ = resource_path;
-    if ( avformat_open_input(&ff_format_context_, resource_path_.c_str(), nullptr, nullptr) != 0) {
+
+    const string protocol_name = protocol_from_uri(resource_path);
+    custom_io_ptr_ = custom_io_base::create(protocol_name);
+    if (custom_io_ptr_) {
+        if (!custom_io_ptr_->open(resource_path)) {
+            return false;
+        }
+        if (!(ff_format_context_ = avformat_alloc_context())) {
+            return false;
+        }
+
+        if (!custom_io_ptr_->init(ff_format_context_)) {
+            return false;
+        }
+        if ( avformat_open_input(&ff_format_context_, nullptr, nullptr, nullptr) != 0) {
+            return false;
+        }
+    }
+    else if ( avformat_open_input(&ff_format_context_, resource_path_.c_str(), nullptr, nullptr) != 0) {
         return false; // Couldn't open resource/file
     }
 

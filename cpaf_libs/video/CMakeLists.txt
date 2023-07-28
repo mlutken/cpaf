@@ -23,6 +23,10 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/play_stream.h
     ${CMAKE_CURRENT_LIST_DIR}/player.h
 
+    ${CMAKE_CURRENT_LIST_DIR}/io/custom_io_base.h
+    ${CMAKE_CURRENT_LIST_DIR}/io/torrent_io.h
+    ${CMAKE_CURRENT_LIST_DIR}/io/my_file_io.h
+
     ${CMAKE_CURRENT_LIST_DIR}/pipeline_threads/pipeline_threads_types.h
     ${CMAKE_CURRENT_LIST_DIR}/pipeline_threads/pipeline_threads.h
     ${CMAKE_CURRENT_LIST_DIR}/pipeline_threads/audio_render_thread.h
@@ -52,6 +56,10 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/play_stream.cpp
     ${CMAKE_CURRENT_LIST_DIR}/player.cpp
 
+    ${CMAKE_CURRENT_LIST_DIR}/io/custom_io_base.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/io/torrent_io.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/io/my_file_io.cpp
+
     ${CMAKE_CURRENT_LIST_DIR}/pipeline_threads/pipeline_threads.cpp
     ${CMAKE_CURRENT_LIST_DIR}/pipeline_threads/audio_render_thread.cpp
     ${CMAKE_CURRENT_LIST_DIR}/pipeline_threads/audio_resampler_thread.cpp
@@ -65,7 +73,7 @@ target_sources(${library_name}
 
 get_filename_component(PARENT_DIR ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
 get_filename_component(PARENT2_DIR ${PARENT_DIR} DIRECTORY)
-target_link_libraries(${library_name} "cpaf_audio;cpaf_utils;cpaf_math;cpaf_time;luepp_concurrent;luepp_containers")
+target_link_libraries(${library_name} "cpaf_audio;cpaf_unicode;cpaf_utils;cpaf_math;cpaf_time;luepp_concurrent;luepp_containers")
 target_link_libraries(${library_name} ffmpeg::ffmpeg )
 
 set_target_properties(${library_name} PROPERTIES LINKER_LANGUAGE CXX)
