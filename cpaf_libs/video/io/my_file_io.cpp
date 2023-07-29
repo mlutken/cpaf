@@ -43,6 +43,7 @@ int my_file_io::do_read_packet(uint8_t* buf, int buf_size)
  * @see https://ffmpeg.org/doxygen/trunk/avio_read_callback_8c-example.html
  * @see https://ffmpeg.org/doxygen/trunk/structAVIOContext.html
  */
+
 int64_t my_file_io::do_seek(int64_t offset, int whence)
 {
     switch(whence) {
@@ -109,6 +110,10 @@ int my_file_io::do_read_packet(uint8_t* buf, int buf_size)
  */
 int64_t my_file_io::do_seek(int64_t offset, int whence)
 {
+    // Seeking does NOT work properly if file is in a fail state....
+    if (stream_.fail()) {
+        stream_.clear();
+    }
     const auto off = static_cast<fstream::off_type>(offset);
     switch(whence) {
     case AVSEEK_SIZE:
@@ -119,7 +124,7 @@ int64_t my_file_io::do_seek(int64_t offset, int whence)
         //        return static_cast<int64_t>(std::filesystem::file_size(resource_file_path_));
         break;
     case SEEK_SET:
-        stream_.seekg(off, std::ios_base::beg);
+        stream_.seekg(off);
         break;
     case SEEK_CUR:
         stream_.seekg(off, std::ios_base::cur);
