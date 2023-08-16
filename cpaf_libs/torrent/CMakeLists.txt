@@ -7,8 +7,10 @@ add_library(${library_name} STATIC "")
 
 target_sources(${library_name}
     PUBLIC
+    ${CMAKE_CURRENT_LIST_DIR}/file.h
     ${CMAKE_CURRENT_LIST_DIR}/server.h
     PRIVATE
+    ${CMAKE_CURRENT_LIST_DIR}/file.cpp
     ${CMAKE_CURRENT_LIST_DIR}/server.cpp
 )
 
