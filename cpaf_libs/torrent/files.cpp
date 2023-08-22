@@ -4,6 +4,9 @@
 #include <libtorrent/magnet_uri.hpp>
 #include <libtorrent/alert_types.hpp>
 #include <cpaf_libs/torrent/torrent_utils.h>
+#include <cpaf_libs/torrent/temp_storage.h>
+#include <libtorrent/posix_disk_io.hpp>
+
 
 using namespace std;
 using namespace std::filesystem;
@@ -22,7 +25,12 @@ void files::start()
     }
 
     session_params_ = lt::session_params(settings_pack_);
-
+    lt::session_params ses_params(settings_pack_);
+    if (storage_mode() == storage_mode_t::memory) {
+        ses_params.disk_io_constructor = temp_disk_constructor;
+    }
+    ////    ses_params.disk_io_constructor = lt::posix_disk_io_constructor;
+    session_ptr_ = make_unique<lt::session>(ses_params);
 }
 
 void files::stop()
@@ -32,7 +40,7 @@ void files::stop()
 
 void files::frame_update()
 {
-
+    handle_alerts();
 }
 
 file files::open(const std::string& uri_or_name)
@@ -75,7 +83,7 @@ file files::create(const std::string& uri_or_name)
 
     lt::parse_magnet_uri(uri_or_name, add_torrent_params, ec);
     add_torrent_params.save_path = base_torrents_path_.string();
-    lt::torrent_handle handle = session_.add_torrent(std::move(add_torrent_params));
+    lt::torrent_handle handle = session_ptr_->add_torrent(std::move(add_torrent_params));
     const auto f = file(uri_or_name, handle, this);
     files_map_[f.name()] = f;
     return f;
@@ -84,7 +92,7 @@ file files::create(const std::string& uri_or_name)
 void files::handle_alerts()
 {
     std::vector<lt::alert*> alerts;
-    session_.pop_alerts(&alerts);
+    session_ptr_->pop_alerts(&alerts);
 
     for (lt::alert const* a : alerts) {
         if (debug_print_alerts()) {

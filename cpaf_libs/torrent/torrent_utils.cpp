@@ -44,6 +44,46 @@ std::string largest_file_name(const libtorrent::torrent_handle& handle)
 
 }
 
+std::vector<string> all_file_names(const libtorrent::torrent_handle& handle)
+{
+    std::vector<string> names;
+
+    auto torinfo_ptr = handle.torrent_file();
+    if (!torinfo_ptr) {
+        return names;
+    }
+
+    const auto& storage = torinfo_ptr->files();
+    const auto iter_range = storage.file_range();
+
+    for (auto file_index: iter_range) {
+        names.push_back(string(storage.file_name(file_index)));
+    }
+
+    return names;
+}
+
+std::vector<string> all_file_paths(const libtorrent::torrent_handle& handle)
+{
+    std::vector<string> paths;
+
+    auto torinfo_ptr = handle.torrent_file();
+    if (!torinfo_ptr) {
+        return paths;
+    }
+
+    const auto& storage = torinfo_ptr->files();
+    const auto iter_range = storage.file_range();
+
+    for (auto file_index: iter_range) {
+        paths.push_back(string(storage.file_path(file_index)));
+    }
+
+    return paths;
+
+}
+
+
 std::filesystem::path largest_file_local_file_path(const libtorrent::torrent_handle& handle, const std::filesystem::path& base_torrents_path)
 {
     const auto largest = largest_file_index(handle);
@@ -101,6 +141,8 @@ bool is_fully_downloaded(const libtorrent::torrent_handle& handle)
         return false;
     }
 }
+
+
 
 
 } // namespace cpaf::torrent

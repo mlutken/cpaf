@@ -35,6 +35,8 @@
 
 using namespace std;
 using namespace std::filesystem;
+using namespace std::chrono;
+using namespace std::chrono_literals;
 namespace tor = cpaf::torrent;
 
 // /home/ml/.conan2/p/b/libto704fbe9751615/b/src/docs/streaming.rst
@@ -44,6 +46,58 @@ namespace tor = cpaf::torrent;
 // void lt::torrent_handle::set_piece_deadline(piece_index_t index, int deadline, deadline_flags_t flags = {}) const;
 // void lt::torrent_handle::reset_piece_deadline(piece_index_t index) const;
 //  Gnutella is a decentralized Peer to Peer information exchanging network: https://gtk-gnutella.sourceforge.io/?lang=en&page=faq#general0
+
+#if 1
+int main(int argc, char const* argv[])
+{
+
+    const path base_torrents_path = "/tmp/torrents";
+
+    fmt::println ("--- torfile_playground  ---");
+    if (argc != 2) {
+        fmt::println("usage: {} <magnet-url>", argv[0]);
+        return 1;
+    }
+
+
+
+    const string magnet_url = argv[1];
+
+    fmt::println("torrent_name('gert'): '{}'", tor::torrent_name("gert"));
+    fmt::println("torrent_name('{}'): '{}'", magnet_url, tor::torrent_name(magnet_url));
+
+
+    tor::files my_torrents;
+    my_torrents.debug_print_alerts_set(true);
+    my_torrents.start();
+    tor::file tor_file = my_torrents.open(magnet_url);
+
+    while (!tor_file.has_meta_data()) {
+        std::cerr << "Waiting for meta data for '" << tor_file.name() << "'\n";
+        my_torrents.frame_update();
+        this_thread::sleep_for(200ms);
+    }
+    for (const auto& file_name : tor_file.all_file_names()) {
+        cerr << "File in torrent: '" << file_name << "'\n";
+    }
+
+    cerr << "Largest file       : '" << tor_file.largest_file_local_file_path() << "'\n";
+    cerr << "Number of pieces   : " << tor_file.num_pieces() << "\n";
+    cerr << "Piece len          : " << tor_file.piece_length() << "\n";
+
+    for (;;) {
+        my_torrents.frame_update();
+        this_thread::sleep_for(200ms);
+    }
+
+
+    return 0;
+}
+
+
+
+
+#else
 
 int main(int argc, char const* argv[])
 {
@@ -116,7 +170,7 @@ int main(int argc, char const* argv[])
         for (lt::alert const* a : alerts) {
             if (auto pfinished_alert = lt::alert_cast<lt::piece_finished_alert>(a)) {
 //                if (pfinished_alert->piece_index < 30) {
-                    std::cerr << a->message() << "\n";
+                    std::cerr << "ALERT: " << a->message() << "\n";
                     if (pfinished_alert->piece_index < 30) {
                         std::cerr << "pfinished_alert->piece_index: " << pfinished_alert->piece_index << "\n";
                     }
@@ -137,4 +191,5 @@ done:
     return 0;
 }
 
+#endif
 

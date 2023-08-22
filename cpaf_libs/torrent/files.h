@@ -1,9 +1,10 @@
 #pragma once
 
-#include <libtorrent/session.hpp>
-#include <cpaf_libs/torrent/file.h>
 #include <filesystem>
 #include <unordered_map>
+#include <memory>
+#include <libtorrent/session.hpp>
+#include <cpaf_libs/torrent/file.h>
 
 namespace cpaf::torrent {
 
@@ -23,37 +24,38 @@ class files
 {
 public:
     files();
-    void                    base_torrents_path_set  (const std::filesystem::path& base_tor_path)    { base_torrents_path_ = base_tor_path;  }
-    void                    settings_pack_set       (const lt::settings_pack& settings_pack)        { settings_pack_ = settings_pack;       }
+    const std::filesystem::path&    base_torrents_path      () const                                        { return base_torrents_path_;  }
+    void                            base_torrents_path_set  (const std::filesystem::path& base_tor_path)    { base_torrents_path_ = base_tor_path;  }
+    void                            settings_pack_set       (const lt::settings_pack& settings_pack)        { settings_pack_ = settings_pack;       }
 
-    void                    start                   ();
-    void                    stop                    ();
-    void                    frame_update            ();
+    void                            start                   ();
+    void                            stop                    ();
+    void                            frame_update            ();
 
-    file                    open                    (const std::string& uri_or_name);
-    void                    delete_file             (const std::string& uri_or_name);
-    bool                    has_file                (const std::string& uri_or_name) const;
+    file                            open                    (const std::string& uri_or_name);
+    void                            delete_file             (const std::string& uri_or_name);
+    bool                            has_file                (const std::string& uri_or_name) const;
 
-    storage_mode_t          storage_mode            () const                                        { return storage_mode_;         }
-    void                    storage_mode_set        (storage_mode_t storage_mode)                   { storage_mode_ = storage_mode; }
+    storage_mode_t                  storage_mode            () const                                        { return storage_mode_;         }
+    void                            storage_mode_set        (storage_mode_t storage_mode)                   { storage_mode_ = storage_mode; }
 
-    bool                    debug_print_alerts      () const                                        { return debug_print_alerts_; }
-    void                    debug_print_alerts_set  (bool newDebug_print_alerts);
+    bool                            debug_print_alerts      () const                                        { return debug_print_alerts_; }
+    void                            debug_print_alerts_set  (bool newDebug_print_alerts);
 
 private:
     using files_map_t = std::unordered_map<std::string, file>;
 
-    file                    create                  (const std::string& uri_or_name);
-    void                    handle_alerts           ();
+    file                            create                  (const std::string& uri_or_name);
+    void                            handle_alerts           ();
 
-    lt::session             session_;
-    lt::settings_pack       settings_pack_;
-    lt::session_params      session_params_;
+    std::unique_ptr<lt::session>    session_ptr_;
+    lt::settings_pack               settings_pack_;
+    lt::session_params              session_params_;
 
-    files_map_t             files_map_;
-    std::filesystem::path   base_torrents_path_     = "/tmp/torrents";
-    storage_mode_t          storage_mode_           = storage_mode_t::filesystem;
-    bool                    debug_print_alerts_     = false;
+    files_map_t                     files_map_;
+    std::filesystem::path           base_torrents_path_     = "/tmp/torrents";
+    storage_mode_t                  storage_mode_           = storage_mode_t::filesystem;
+    bool                            debug_print_alerts_     = false;
 
 };
 
