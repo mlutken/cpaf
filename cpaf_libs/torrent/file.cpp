@@ -1,76 +1,110 @@
 #include "file.h"
 
-#include <cpaf_libs/torrent/torrent_utils.h>
+using namespace std;
+using namespace std::filesystem;
 
-#include <cpaf_libs/torrent/files.h>
+namespace cpaf {
+namespace torrent {
 
-namespace cpaf::torrent {
-
-file::file(const std::string& uri_or_name, libtorrent::torrent_handle handle, files* parent_files_ptr) :
+file::file(libtorrent::file_index_t file_index, libtorrent::torrent_handle handle, torrent* parent_torrent_ptr) :
+    file_index_(file_index),
     handle_(handle),
-    parent_files_ptr_(parent_files_ptr)
+    parent_torrent_ptr_(parent_torrent_ptr)
 {
-    if (string_is_uri(uri_or_name)) {
-        uri_ = uri_or_name;
+
+}
+
+size_t file::read(void* buffer, std::size_t bytes_to_read) const
+{
+    size_t bytes_stil_to_copy = bytes_to_read;
+    const auto data_pieces = get_file_data(offsett_, bytes_to_read);
+
+    for (const auto& data_piece : data_pieces) {
+        const size_t bytes_to_copy = std::min(static_cast<size_t>(data_piece.size), bytes_stil_to_copy);
+        memcpy(buffer, &data_piece.buffer[0], bytes_to_copy);
+        bytes_stil_to_copy -= bytes_to_copy;
+        if (bytes_stil_to_copy == 0) {
+            break;
+        }
     }
-    name_ = torrent_name(uri_or_name);
+
+    return bytes_to_read - bytes_stil_to_copy;
 }
 
+// from stdio.h
+//#define SEEK_SET	0	/* Seek from beginning of file.  */
+//#define SEEK_CUR	1	/* Seek from current position.  */
+//#define SEEK_END	2	/* Seek from end of file.  */
 
-std::size_t file::read(void* /*buffer*/, std::size_t /*size_in_bytes*/)
+int file::seek(int64_t offset, int whence)
 {
+    const auto filesize = size();
+    switch (whence) {
+    case SEEK_SET:
+        offsett_ = offset;
+    break;
+    case SEEK_CUR:
+        offsett_ = offsett_ + offset;
+    break;
+    case SEEK_END:
+        offsett_ = filesize - abs(offset);
+    break;
 
-    return 0;   // No bytes read!
+    }
+    return 0 <= offsett_ && offsett_ < filesize;
 }
 
-int file::seek(int64_t /*offset*/, int /*whence*/)
+std::int64_t file::size() const
 {
-
-    return 1; // Error
+    return files_storage().file_size(file_index_);
 }
 
-std::string file::largest_file_name() const
+int64_t file::offset() const
 {
-    return cpaf::torrent::largest_file_name(handle_);
+    return files_storage().file_offset(file_index_);
 }
 
-std::filesystem::path file::largest_file_local_file_path() const
+std::string file::name() const
 {
-    return cpaf::torrent::largest_file_local_file_path(handle_, parent_files_ptr_->base_torrents_path());
+    return string(files_storage().file_name(file_index_));
 }
 
-std::vector<std::string> file::all_file_names() const
+std::string file::path() const
 {
-    return cpaf::torrent::all_file_names(handle_);
+    return string(files_storage().file_path(file_index_));
 }
 
-std::vector<std::string> file::all_file_paths() const
+libtorrent::piece_index_t file::piece_index_start() const
 {
-    return cpaf::torrent::all_file_paths(handle_);
+    return files_storage().piece_index_at_file(file_index_);
 }
 
-int file::piece_length() const
+libtorrent::peer_request file::map_file(int64_t offset, int size) const
 {
-    const auto torinfo_ptr = handle_.torrent_file();
-    if (!torinfo_ptr) { return 0; }
-    return torinfo_ptr->piece_length();
+    return files_storage().map_file(file_index_, offset, size);
 }
 
-int file::num_pieces() const
+const libtorrent::file_storage& file::files_storage() const
 {
-    const auto torinfo_ptr = handle_.torrent_file();
-    if (!torinfo_ptr) { return 0; }
-    return torinfo_ptr->num_pieces();
+    return handle_.torrent_file()->files();
 }
 
-bool file::has_meta_data() const
+cache_piece_data file::get_file_data(int64_t offset) const
 {
-    return cpaf::torrent::has_meta_data(handle_);
+    cache_piece_data pd;
+
+    return pd;
+
 }
 
-bool file::is_fully_downloaded() const
+std::vector<cache_piece_data> file::get_file_data(int64_t offset, int size) const
 {
-    return cpaf::torrent::is_fully_downloaded(handle_);
+    std::vector<cache_piece_data> data_pieces;
+
+
+    return data_pieces;
 }
 
-} // namespace cpaf::torrent
+
+} // namespace torrent
+} // namespace cpaf

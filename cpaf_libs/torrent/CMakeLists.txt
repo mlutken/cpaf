@@ -8,13 +8,18 @@ add_library(${library_name} STATIC "")
 target_sources(${library_name}
     PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/file.h
-    ${CMAKE_CURRENT_LIST_DIR}/files.h
+    ${CMAKE_CURRENT_LIST_DIR}/streaming_cache.h
+    ${CMAKE_CURRENT_LIST_DIR}/torrent.h
+    ${CMAKE_CURRENT_LIST_DIR}/torrents.h
     ${CMAKE_CURRENT_LIST_DIR}/torrent_utils.h
 
     ${CMAKE_CURRENT_LIST_DIR}/temp_storage.h
+
     PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/file.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/files.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/streaming_cache.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/torrent.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/torrents.cpp
     ${CMAKE_CURRENT_LIST_DIR}/torrent_utils.cpp
 
     ${CMAKE_CURRENT_LIST_DIR}/temp_storage.cpp
@@ -23,6 +28,7 @@ target_sources(${library_name}
 get_filename_component(PARENT_DIR ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
 get_filename_component(PARENT2_DIR ${PARENT_DIR} DIRECTORY)
 target_link_libraries(${library_name} "cpaf_utils")
+target_link_libraries(${library_name} luepp_concurrent)
 target_link_libraries(${library_name} LibtorrentRasterbar::torrent-rasterbar)
 target_link_libraries(${library_name} fmt::fmt)
 set_target_properties(${library_name} PROPERTIES LINKER_LANGUAGE CXX)
