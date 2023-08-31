@@ -51,9 +51,9 @@ void torrents::frame_update()
     handle_alerts();
 }
 
-torrent torrents::add_torrent(const std::string& uri_or_name)
+std::shared_ptr<torrent> torrents::add_torrent(const std::string& uri_or_name)
 {
-    if (!has_torrent(uri_or_name)) {
+     if (!has_torrent(uri_or_name)) {
         return create(uri_or_name);
     }
     else {
@@ -84,7 +84,7 @@ void torrents::debug_print_alerts_set(bool newDebug_print_alerts)
 // --- PRIVATE: Helper functions ---
 // ---------------------------------
 
-torrent torrents::create(const std::string& uri_or_name)
+std::shared_ptr<torrent> torrents::create(const std::string& uri_or_name)
 {
     lt::error_code ec;
     lt::add_torrent_params add_torrent_params;
@@ -93,11 +93,11 @@ torrent torrents::create(const std::string& uri_or_name)
     add_torrent_params.save_path = base_torrents_path_.string();
     add_torrent_params.storage_mode = lt::storage_mode_t::storage_mode_sparse; // storage_mode_sparse, storage_mode_allocate
     lt::torrent_handle handle = session_ptr_->add_torrent(std::move(add_torrent_params));
-//    handle.set_sequential_download(true);
     handle.set_flags(lt::torrent_flags::sequential_download);
-    const auto f = torrent(uri_or_name, handle, this);
-    torrents_map_[f.name()] = f;
-    return f;
+
+    const auto tor_ptr = std::shared_ptr<torrent>( new torrent(uri_or_name, handle, this));
+    torrents_map_[tor_ptr->name()] = tor_ptr;
+    return tor_ptr;
 }
 
 void torrents::handle_alerts()
@@ -110,22 +110,35 @@ void torrents::handle_alerts()
             std::cerr << a->message() << "\n";
         }
 
-//        set_piece_downloaded()
 
         if (auto pfa = lt::alert_cast<lt::piece_finished_alert>(a)) {
+            if (pfa->piece_index < 3) {
+                std::cerr << "### piece_finished_alert! piece index: " << pfa->piece_index << "\n";
+            }
+            auto tor_ptr = torrents_map_[pfa->torrent_name()];
+            if (tor_ptr) {
+                tor_ptr->set_piece_downloaded(pfa->piece_index);
+                if (tor_ptr->has_meta_data()) {
+//                    std::cerr << "    >>>> Request read piece\n";
+//                    pfa->handle.read_piece(pfa->piece_index);
+                }
+                else {
+//                    std::cerr << "    >>>> Torrent has no meta_data!\n";
+                }
+
+            }
 //            std::cerr << "piece finished index: " << pfa->piece_index << ", torrent name: " << pfa->torrent_name() << "\n";
-            torrents_map_[pfa->torrent_name()].set_piece_downloaded(pfa->piece_index);
-//                if (pfinished_alert->piece_index < 30) {
-//            pfa->handle.read_piece(pfa->piece_index);
-                if (pfa->piece_index < 30) {
-//                    std::cerr << "pfinished_alert->piece_index: " << pfinished_alert->piece_index << "\n";
-                }
         }
-        else if (auto read_piece_alert = lt::alert_cast<lt::read_piece_alert>(a)) {
-//                if (pfinished_alert->piece_index < 30) {
-                if (pfa->piece_index < 30) {
-                    std::cerr << "!!! read_piece_alert->piece_index: " << pfa->piece_index << "\n";
+        if (auto rpa = lt::alert_cast<lt::read_piece_alert>(a)) {
+            auto tor_ptr = torrents_map_[rpa->torrent_name()];
+            if (tor_ptr) {
+                if (rpa->piece < 3) {
+                    std::cerr << "!!! read_piece_alert! piece index: " << rpa->piece << "\n";
                 }
+
+                tor_ptr->piece_data_cache.insert_piece_data(rpa);
+            }
+//            rpa->handle.read_piece(rpa->piece);
         }
 
 

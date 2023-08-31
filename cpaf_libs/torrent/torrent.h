@@ -7,6 +7,7 @@
 #include <libtorrent/torrent_handle.hpp>
 
 #include <cpaf_libs/torrent/file.h>
+#include <cpaf_libs/torrent/streaming_cache.h>
 
 
 namespace cpaf::torrent {
@@ -20,8 +21,8 @@ private:
     /// Use torrents::open() to create instances of torrent!
     explicit                            torrent                         (const std::string& uri_or_name, lt::torrent_handle handle, torrents* parent_torrents_ptr);
 public:
-    torrent    ()                  = default;
-    torrent    (const torrent& other) = default;
+    torrent    ()                       = default;
+    torrent    (const torrent& other)   = default;
 
     torrent&                            operator=                       (const torrent& other) = default;
 
@@ -34,7 +35,6 @@ public:
 
 
     std::string                         largest_file_name               () const;
-//    std::optional<lt::file_index_t>     largest_file_index              ();
     lt::file_index_t                    largest_file_index              () const;
     std::filesystem::path               largest_file_local_file_path    () const;
     std::vector<std::string>            all_file_names                  () const;
@@ -53,21 +53,41 @@ public:
     bool                                is_valid                        () const                                    { return parent_torrents_ptr_ != nullptr; }
     bool                                has_meta_data                   () const;
     bool                                is_fully_downloaded             () const;
-    void                                read_piece                      (lt::piece_index_t piece) const;
+    bool                                prepare_streaming               ();
+
+
+    lt::piece_index_t                   file_offset_to_piece_index      (lt::file_index_t file_index, std::int64_t offset) const;
+    lt::peer_request                    file_offset_to_peer_request     (lt::file_index_t file_index, std::int64_t offset, size_t size) const;
+    cache_piece_data_t                  get_piece_data                  (lt::file_index_t file_index, std::int64_t offset) const;
+    cache_pieces_t                      get_pieces_data                 (lt::file_index_t file_index, int64_t offset, size_t size) const;
+    bool                                read_piece                      (lt::piece_index_t piece) const;
+    bool                                read_pieces                     (const pieces_range_t& range) const;
+
+    void                                prioritize_piece                (lt::piece_index_t piece, int32_t deadline_in_ms = 0) const;
+    void                                prioritize_pieces               (const pieces_range_t& range, int32_t deadline_in_ms = 0) const;
+
+    pieces_range_t                      get_pieces_range                (lt::file_index_t file_index, std::int64_t offset, size_t size) const;
+    pieces_range_t                      get_pieces_read_ahead_range     (lt::file_index_t file_index, lt::piece_index_t from_piece, size_t read_ahead_size) const;
 
     void                                set_piece_downloaded            (lt::piece_index_t piece) ;
     bool                                is_piece_downloaded             (lt::piece_index_t piece) const;
-    bool                                read_all_downloaded_pieces      () const;
+////    bool                                read_all_downloaded_pieces      () const;
+
+    void                                dbg_print_downloaded_indices    () const;
+    void                                dbg_print_cache_piece_indices   () const;
+
+    streaming_cache                     piece_data_cache;
 
 private:
     using pieces_downloaded_set_t = std::unordered_set<lt::piece_index_t>;
     const lt::file_storage&             files_storage                   () const;
 
+    pieces_downloaded_set_t             pieces_downloaded_;
+    lt::torrent_handle                  handle_;
     std::string                         uri_;
     std::string                         name_;
-    lt::torrent_handle                  handle_;
-    pieces_downloaded_set_t             pieces_downloaded_;
-    torrents*                           parent_torrents_ptr_ = nullptr;
+    torrents*                           parent_torrents_ptr_        = nullptr;
+    size_t                              default_read_ahead_size_    = 10'000'000; // 10 Mb
 };
 
 } // namespace cpaf::torrent

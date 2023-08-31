@@ -1,5 +1,8 @@
 #include "file.h"
 
+#include <iostream>
+#include <cpaf_libs/torrent/torrent.h>
+
 using namespace std;
 using namespace std::filesystem;
 
@@ -17,11 +20,19 @@ file::file(libtorrent::file_index_t file_index, libtorrent::torrent_handle handl
 size_t file::read(void* buffer, std::size_t bytes_to_read) const
 {
     size_t bytes_stil_to_copy = bytes_to_read;
-    const auto data_pieces = get_file_data(offsett_, bytes_to_read);
+    const auto data_pieces = get_pieces_data(offsett_, bytes_to_read);
+    auto* byte_buf = static_cast<std::byte*>(buffer);
 
-    for (const auto& data_piece : data_pieces) {
+    auto start = data_pieces.piece_begin_start_offset;
+    for (const auto& data_piece : data_pieces.pieces) {
+        if (!data_piece.buffer) {
+            std::cerr << "ERROR file::read() data_piece.buffer is NULL\n";
+            return 0;
+        }
         const size_t bytes_to_copy = std::min(static_cast<size_t>(data_piece.size), bytes_stil_to_copy);
-        memcpy(buffer, &data_piece.buffer[0], bytes_to_copy);
+        std::memcpy(byte_buf, &data_piece.buffer[start], bytes_to_copy);
+        byte_buf += bytes_to_copy;  // Move destination buffer pointer
+        start = 0; // Any following pieces for this data will have start at '0'
         bytes_stil_to_copy -= bytes_to_copy;
         if (bytes_stil_to_copy == 0) {
             break;
@@ -79,7 +90,7 @@ libtorrent::piece_index_t file::piece_index_start() const
     return files_storage().piece_index_at_file(file_index_);
 }
 
-libtorrent::peer_request file::map_file(int64_t offset, int size) const
+libtorrent::peer_request file::file_offset_to_peer_request(int64_t offset, int size) const
 {
     return files_storage().map_file(file_index_, offset, size);
 }
@@ -89,20 +100,26 @@ const libtorrent::file_storage& file::files_storage() const
     return handle_.torrent_file()->files();
 }
 
-cache_piece_data file::get_file_data(int64_t offset) const
+cache_piece_data_t file::get_file_data(int64_t offset) const
 {
-    cache_piece_data pd;
 
-    return pd;
+    return parent_torrent_ptr_->get_piece_data(file_index_, offset);
 
 }
 
-std::vector<cache_piece_data> file::get_file_data(int64_t offset, int size) const
+cache_pieces_t file::get_pieces_data(int64_t offset, size_t size) const
 {
-    std::vector<cache_piece_data> data_pieces;
+    return parent_torrent_ptr_->get_pieces_data(file_index_, offset, size);
+}
 
+pieces_range_t file::get_pieces_range(int64_t offset, size_t size) const
+{
+    return parent_torrent_ptr_->get_pieces_range(file_index_, offset, size);
+}
 
-    return data_pieces;
+pieces_range_t file::get_pieces_read_ahead_range(libtorrent::piece_index_t from_piece, size_t read_ahead_size) const
+{
+    return parent_torrent_ptr_->get_pieces_read_ahead_range(file_index_, from_piece, read_ahead_size);
 }
 
 

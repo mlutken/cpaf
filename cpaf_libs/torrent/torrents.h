@@ -32,7 +32,7 @@ public:
     void                            stop                    ();
     void                            frame_update            ();
 
-    torrent                         add_torrent             (const std::string& uri_or_name);
+    std::shared_ptr<torrent>        add_torrent             (const std::string& uri_or_name);
     void                            delete_torrent          (const std::string& uri_or_name);
     bool                            has_torrent             (const std::string& uri_or_name) const;
 
@@ -43,9 +43,9 @@ public:
     void                            debug_print_alerts_set  (bool newDebug_print_alerts);
 
 private:
-    using torrents_map_t = std::unordered_map<std::string, torrent>;
+    using torrents_map_t = std::unordered_map<std::string, std::shared_ptr<torrent>>;
 
-    torrent                         create                  (const std::string& uri_or_name);
+    std::shared_ptr<torrent>        create                  (const std::string& uri_or_name);
     void                            handle_alerts           ();
 
     std::unique_ptr<lt::session>    session_ptr_;
