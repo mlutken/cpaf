@@ -21,10 +21,10 @@ private:
     /// Use torrents::open() to create instances of torrent!
     explicit                            torrent                         (const std::string& uri_or_name, lt::torrent_handle handle, torrents* parent_torrents_ptr);
 public:
-    torrent    ()                       = default;
-    torrent    (const torrent& other)   = default;
+    torrent    ()                       = delete;
+    torrent    (const torrent& other)   = delete;
 
-    torrent&                            operator=                       (const torrent& other) = default;
+    torrent&                            operator=                       (const torrent& other) = delete;
 
     file                                open                            (lt::file_index_t file_index);
 
@@ -71,19 +71,20 @@ public:
 
     void                                set_piece_downloaded            (lt::piece_index_t piece) ;
     bool                                is_piece_downloaded             (lt::piece_index_t piece) const;
-////    bool                                read_all_downloaded_pieces      () const;
+    bool                                are_pieces_downloaded           (const pieces_range_t& range) const;
+
+    void                                insert_piece_data_in_cache      (const lt::read_piece_alert* rpa);
 
     void                                dbg_print_downloaded_indices    () const;
     void                                dbg_print_cache_piece_indices   () const;
 
-    streaming_cache                     piece_data_cache;
 
 private:
     using pieces_downloaded_set_t = std::unordered_set<lt::piece_index_t>;
     const lt::file_storage&             files_storage                   () const;
 
-    pieces_downloaded_set_t             pieces_downloaded_;
     lt::torrent_handle                  handle_;
+    streaming_cache                     piece_data_cache_;
     std::string                         uri_;
     std::string                         name_;
     torrents*                           parent_torrents_ptr_        = nullptr;

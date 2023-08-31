@@ -136,7 +136,7 @@ void torrents::handle_alerts()
                     std::cerr << "!!! read_piece_alert! piece index: " << rpa->piece << "\n";
                 }
 
-                tor_ptr->piece_data_cache.insert_piece_data(rpa);
+                tor_ptr->insert_piece_data_in_cache(rpa);
             }
 //            rpa->handle.read_piece(rpa->piece);
         }

@@ -14,16 +14,20 @@ class streaming_cache
 {
 public:
 
+    explicit streaming_cache(lt::torrent_handle handle);
 
     void                                insert_piece_data               (const lt::read_piece_alert* rpa);
+    void                                update_current_streaming_piece  (lt::piece_index_t piece);
 
 
-    bool                                has_piece                       (lt::piece_index_t piece) const;
+    bool                                is_piece_in_cache               (lt::piece_index_t piece) const;
+    bool                                are_pieces_in_cache             (const pieces_range_t& range) const;
     cache_piece_data_t                  get_piece_data                  (lt::piece_index_t piece) const;
     cache_pieces_t                      get_pieces_data                 (const pieces_range_t& range) const;
 
     void                                set_piece_downloaded            (lt::piece_index_t piece) ;
     bool                                is_piece_downloaded             (lt::piece_index_t piece) const;
+    bool                                are_pieces_downloaded           (const pieces_range_t& range) const;
     std::vector<lt::piece_index_t>      all_downloaded_indices          () const;
 
     void                                dbg_print_downloaded_indices    () const;
@@ -32,9 +36,11 @@ public:
 private:
     using pieces_downloaded_set_t = std::unordered_set<lt::piece_index_t>;
 
+    lt::torrent_handle                                                  torrent_handle_;
     mutable std::unordered_map<lt::piece_index_t, cache_piece_data_t>   cache_map_;
     pieces_downloaded_set_t                                             pieces_downloaded_;
     mutable std::mutex                                                  cache_mutex_;
+    lt::piece_index_t                                                   cur_streaming_piece_ = 0;
 
 };
 

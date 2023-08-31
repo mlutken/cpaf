@@ -11,6 +11,7 @@ namespace cpaf::torrent {
 
 torrent::torrent(const std::string& uri_or_name, libtorrent::torrent_handle handle, torrents* parent_torrents_ptr) :
     handle_(handle),
+    piece_data_cache_(handle),
     parent_torrents_ptr_(parent_torrents_ptr)
 {
     if (string_is_uri(uri_or_name)) {
@@ -144,17 +145,17 @@ cache_piece_data_t torrent::get_piece_data(libtorrent::file_index_t file_index, 
 {
     constexpr int64_t size_not_used = 1;
     libtorrent::peer_request  pr = file_offset_to_peer_request(file_index, offset, size_not_used);
-    return piece_data_cache.get_piece_data(pr.piece);
+    return piece_data_cache_.get_piece_data(pr.piece);
 }
 
 cache_pieces_t torrent::get_pieces_data(libtorrent::file_index_t file_index, int64_t offset, size_t size) const
 {
-    return piece_data_cache.get_pieces_data(get_pieces_range(file_index, offset, size));
+    return piece_data_cache_.get_pieces_data(get_pieces_range(file_index, offset, size));
 }
 
 bool torrent::read_piece(libtorrent::piece_index_t piece) const
 {
-    if (piece_data_cache.has_piece(piece)) {
+    if (piece_data_cache_.is_piece_in_cache(piece)) {
         return true;
     }
     if (is_piece_downloaded(piece)) {
@@ -170,7 +171,8 @@ bool torrent::read_pieces(const pieces_range_t& range) const
     bool all_read = true;
     for (auto piece = range.piece_begin; piece != range.piece_end; ++piece) {
         cerr << " piece: '" << piece << "\n";
-        all_read = all_read && read_piece(piece);
+        const bool could_read = read_piece(piece);
+        all_read = all_read && could_read;
     }
     cerr << "FIXMENM DONE torrent::read_pieces(range)\n";
     return all_read;
@@ -267,39 +269,32 @@ pieces_range_t torrent::get_pieces_read_ahead_range(libtorrent::file_index_t fil
 
 void torrent::set_piece_downloaded(libtorrent::piece_index_t piece)
 {
-    pieces_downloaded_.insert(piece);
+    piece_data_cache_.set_piece_downloaded(piece);
 }
 
 bool torrent::is_piece_downloaded(libtorrent::piece_index_t piece) const
 {
-    return pieces_downloaded_.contains(piece);
+    return piece_data_cache_.is_piece_downloaded(piece);
 }
 
-//bool torrent::read_all_downloaded_pieces() const
-//{
-//    cerr << "FIXMENM torrent::read_all_downloaded_pieces(), count: " << pieces_downloaded_.size() << " ... ";
-//    if (!has_meta_data()) {
-//        return false;
-//    }
-//    for (const auto& piece: pieces_downloaded_) {
-//        read_piece(piece);
-//    }
-//    cerr << "  DONE reading pieces!\n";
-//    return true;
-//}
+bool torrent::are_pieces_downloaded(const pieces_range_t& range) const
+{
+    return piece_data_cache_.are_pieces_downloaded(range);
+}
+
+void torrent::insert_piece_data_in_cache(const libtorrent::read_piece_alert* rpa)
+{
+    piece_data_cache_.insert_piece_data(rpa);
+}
 
 void torrent::dbg_print_downloaded_indices() const
 {
-    cerr << "dbg_print_downloaded_indices(): ";
-    for (const auto& piece: pieces_downloaded_) {
-        cerr << piece << ", ";
-    }
-    cerr << endl;
+    piece_data_cache_.dbg_print_downloaded_indices();
 }
 
 void torrent::dbg_print_cache_piece_indices() const
 {
-    piece_data_cache.dbg_print_piece_indices();
+    piece_data_cache_.dbg_print_piece_indices();
 }
 
 

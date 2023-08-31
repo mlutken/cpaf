@@ -7,6 +7,12 @@ using namespace std::filesystem;
 
 namespace cpaf::torrent {
 
+streaming_cache::streaming_cache(libtorrent::torrent_handle handle) :
+    torrent_handle_(handle)
+{
+
+}
+
 void streaming_cache::insert_piece_data(const libtorrent::read_piece_alert* rpa)
 {
     if (rpa) {
@@ -19,10 +25,27 @@ void streaming_cache::insert_piece_data(const libtorrent::read_piece_alert* rpa)
     }
 }
 
-bool streaming_cache::has_piece(libtorrent::piece_index_t piece) const
+void streaming_cache::update_current_streaming_piece(libtorrent::piece_index_t piece)
+{
+    cur_streaming_piece_ = piece;
+    // TODO: Implement rest. For example prioritizing and reading pieces to cache
+}
+
+bool streaming_cache::is_piece_in_cache(libtorrent::piece_index_t piece) const
 {
     scoped_lock lock(cache_mutex_);
     return cache_map_.contains(piece);
+}
+
+bool streaming_cache::are_pieces_in_cache(const pieces_range_t& range) const
+{
+    scoped_lock lock(cache_mutex_);
+    for (auto piece = range.piece_begin; piece != range.piece_end; ++piece) {
+        if (!cache_map_.contains(piece)) {
+            return false;
+        }
+    }
+    return true;
 }
 
 cache_piece_data_t streaming_cache::get_piece_data(libtorrent::piece_index_t piece) const
@@ -58,6 +81,17 @@ bool streaming_cache::is_piece_downloaded(libtorrent::piece_index_t piece) const
 {
     scoped_lock lock(cache_mutex_);
     return pieces_downloaded_.contains(piece);
+}
+
+bool streaming_cache::are_pieces_downloaded(const pieces_range_t& range) const
+{
+    scoped_lock lock(cache_mutex_);
+    for (auto piece = range.piece_begin; piece != range.piece_end; ++piece) {
+        if (!pieces_downloaded_.contains(piece)) {
+            return false;
+        }
+    }
+    return true;
 }
 
 std::vector<libtorrent::piece_index_t> streaming_cache::all_downloaded_indices() const
