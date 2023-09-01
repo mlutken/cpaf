@@ -19,6 +19,8 @@ public:
 
     void                                insert_piece_data               (const lt::read_piece_alert* rpa);
     void                                update_current_streaming_piece  (lt::piece_index_t piece);
+    void                                update_current_streaming_range  (pieces_range_t range, int32_t deadline_in_ms);
+    void                                clear_current_streaming_range   ();
 
 
     bool                                is_piece_requested              (lt::piece_index_t piece) const;
@@ -38,13 +40,6 @@ public:
     void                                request_pieces                  (const pieces_range_t& range, int32_t deadline_in_ms = 0) const;
     void                                handle_piece_finished           (const lt::piece_finished_alert* pfa);
     void                                handle_piece_read               (const lt::read_piece_alert* rpa);
-
-    void                                prioritize_piece                (lt::piece_index_t piece, int32_t deadline_in_ms = 0) const;
-    void                                prioritize_pieces               (const pieces_range_t& range, int32_t deadline_in_ms = 0) const;
-
-    bool                                read_piece                      (lt::piece_index_t piece) const;
-    bool                                read_pieces                     (const pieces_range_t& range) const;
-
 
     void                                dbg_print_downloaded_indices    () const;
     void                                dbg_print_piece_indices         () const;
@@ -67,6 +62,8 @@ private:
     void                                prioritize_piece_impl           (lt::piece_index_t piece, int32_t deadline_in_ms) const  { torrent_handle_.set_piece_deadline(piece, deadline_in_ms, lt::torrent_handle::alert_when_available); }
     void                                read_piece_impl                 (lt::piece_index_t piece) const                          { torrent_handle_.read_piece(piece); }
 
+    void                                clear_current_streaming_range_impl ();
+
     using pieces_indices_set_t = std::unordered_set<lt::piece_index_t>;
 
     lt::torrent_handle                                                  torrent_handle_;
@@ -75,6 +72,7 @@ private:
     mutable pieces_indices_set_t                                        pieces_requested_;
     mutable std::mutex                                                  cache_mutex_;
     lt::piece_index_t                                                   cur_streaming_piece_ = 0;
+    pieces_range_t                                                      cur_streaming_range_;
 
 };
 

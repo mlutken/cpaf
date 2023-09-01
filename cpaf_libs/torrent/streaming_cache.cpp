@@ -21,8 +21,25 @@ void streaming_cache::insert_piece_data(const libtorrent::read_piece_alert* rpa)
 
 void streaming_cache::update_current_streaming_piece(libtorrent::piece_index_t piece)
 {
+    torrent_handle_.clear_piece_deadlines();
     cur_streaming_piece_ = piece;
     // TODO: Implement rest. For example prioritizing and reading pieces to cache
+}
+
+void streaming_cache::update_current_streaming_range(pieces_range_t range, int32_t deadline_in_ms)
+{
+    {
+        scoped_lock lock(cache_mutex_);
+        clear_current_streaming_range_impl();
+        cur_streaming_range_ = range;
+    }
+    request_pieces(range, deadline_in_ms);
+}
+
+void streaming_cache::clear_current_streaming_range()
+{
+    scoped_lock lock(cache_mutex_);
+    clear_current_streaming_range_impl();
 }
 
 bool streaming_cache::is_piece_requested(libtorrent::piece_index_t piece) const
@@ -103,7 +120,7 @@ std::vector<libtorrent::piece_index_t> streaming_cache::all_downloaded_indices()
 
 void streaming_cache::request_piece(libtorrent::piece_index_t piece, int32_t deadline_in_ms) const
 {
-    if (piece < 3) {
+    if (piece < 3000) {
         std::cerr << "!!! request_piece !!!  index: " << piece << " is_piece_downloaded_impl: '" << is_piece_downloaded_impl(piece) << "'\n";
     }
     scoped_lock lock(cache_mutex_);
@@ -130,7 +147,7 @@ void streaming_cache::request_pieces(const pieces_range_t& range, int32_t deadli
 void streaming_cache::handle_piece_finished(const libtorrent::piece_finished_alert* pfa)
 {
     const auto piece = pfa->piece_index;
-    if (piece < 3) {
+    if (piece < 3000) {
         std::cerr << "!!! handle_piece_finished !!!  index: " << piece << " is_requested: '" << is_piece_requested_impl(piece) << "'\n";
     }
 
@@ -146,54 +163,11 @@ void streaming_cache::handle_piece_finished(const libtorrent::piece_finished_ale
 void streaming_cache::handle_piece_read(const libtorrent::read_piece_alert* rpa)
 {
     const auto piece = rpa->piece;
-    if (piece < 3) {
+    if (piece < 3000) {
         std::cerr << "!!! handle_piece_read !!! index: " << piece << "\n";
     }
     scoped_lock lock(cache_mutex_);
     insert_piece_data_impl(rpa);
-}
-
-
-void streaming_cache::prioritize_piece(libtorrent::piece_index_t piece, int32_t deadline_in_ms) const
-{
-    scoped_lock lock(cache_mutex_);
-    if (is_piece_downloaded_impl(piece)) {
-        return;
-    }
-
-    prioritize_piece_impl(piece, deadline_in_ms);
-}
-
-void streaming_cache::prioritize_pieces(const pieces_range_t& range, int32_t deadline_in_ms) const
-{
-    for (auto piece = range.piece_begin; piece != range.piece_end; piece++) {
-        prioritize_piece(piece, deadline_in_ms);
-    }
-}
-
-bool streaming_cache::read_piece(libtorrent::piece_index_t piece) const
-{
-    if (is_piece_in_cache(piece)) {
-        return true;
-    }
-    if (is_piece_downloaded(piece)) {
-        torrent_handle_.read_piece(piece);
-        return true;
-    }
-    return false;
-}
-
-bool streaming_cache::read_pieces(const pieces_range_t& range) const
-{
-    cerr << "FIXMENM streaming_cache::read_pieces(range)\n";
-    bool all_read = true;
-    for (auto piece = range.piece_begin; piece != range.piece_end; ++piece) {
-        cerr << " piece: '" << piece << "\n";
-        const bool could_read = read_piece(piece);
-        all_read = all_read && could_read;
-    }
-    cerr << "FIXMENM DONE streaming_cache::read_pieces(range)\n";
-    return all_read;
 }
 
 void streaming_cache::dbg_print_downloaded_indices() const
@@ -225,10 +199,12 @@ void streaming_cache::insert_piece_data_impl(const libtorrent::read_piece_alert*
     cache_map_[piece] = std::move(cpd);
 }
 
+void streaming_cache::clear_current_streaming_range_impl()
+{
+    for (auto piece = cur_streaming_range_.piece_begin; piece != cur_streaming_range_.piece_end; ++piece) {
+        torrent_handle_.reset_piece_deadline(piece);
+    }
+}
 
-//bool streaming_cache::push_data(const libtorrent::read_piece_alert* rpa)
-//{
-//    return fifo_.push(piece_data(rpa));
-//}
 
 } // namespace cpaf::torrent

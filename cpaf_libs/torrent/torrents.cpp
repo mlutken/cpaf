@@ -104,7 +104,7 @@ std::shared_ptr<torrent> torrents::create(const std::string& uri_or_name)
     add_torrent_params.save_path = base_torrents_path_.string();
     add_torrent_params.storage_mode = lt::storage_mode_t::storage_mode_sparse; // storage_mode_sparse, storage_mode_allocate
     lt::torrent_handle handle = session_ptr_->add_torrent(std::move(add_torrent_params));
-    handle.set_flags(lt::torrent_flags::sequential_download);
+//    handle.set_flags(lt::torrent_flags::sequential_download);
 
     const auto tor_ptr = std::shared_ptr<torrent>( new torrent(uri_or_name, handle, this));
     auto tor_name = tor_ptr->name();
