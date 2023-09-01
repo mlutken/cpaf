@@ -94,14 +94,12 @@ int main(int argc, char const* argv[])
 
     std::cerr << "Waiting for meta data for '" << my_torrent_ptr->name() << "' ... ";
     while (!my_torrent_ptr->has_meta_data()) {
-        my_torrents.frame_update();
+        //// my_torrents.frame_update();
 //        std::cerr << "State: " << my_torrent_ptr->state() << "\n";
         this_thread::sleep_for(0ms);
     }
-    my_torrents.frame_update();
     std::cerr << " done!\n";
     my_torrent_ptr->prepare_streaming();
-    my_torrents.frame_update();
 
     for (const auto& file_name : my_torrent_ptr->all_file_names()) {
         cerr << "File in torrent: '" << file_name << "'\n";
@@ -191,7 +189,7 @@ int main(int argc, char const* argv[])
     text.fill('X');
 
     for (int i  = 0;; ++i) {
-        my_torrents.frame_update();
+        //// my_torrents.frame_update();
         this_thread::sleep_for(20ms);
         if (my_torrent_ptr->is_fully_downloaded()) {
             break;
@@ -206,14 +204,12 @@ int main(int argc, char const* argv[])
                 cerr << " >>>> file_0  content: '" << text.data() << "'\n";
             }
 
-
             cerr << std::flush; cout << std::flush;
         }
-//        my_torrent_ptr->dbg_print_downloaded_indices();
-//        my_torrent_ptr->dbg_print_cache_piece_indices();
 
     }
 
+    my_torrents.stop();
     fmt::println ("Torrent: {} downloaded!", my_torrent_ptr->name());
     cerr << std::flush; cout << std::flush;
     my_torrent_ptr->dbg_print_downloaded_indices();

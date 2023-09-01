@@ -3,8 +3,10 @@
 #include <filesystem>
 #include <unordered_map>
 #include <memory>
+#include <thread>
 #include <libtorrent/session.hpp>
 #include <cpaf_libs/torrent/torrent.h>
+
 
 namespace cpaf::torrent {
 
@@ -46,6 +48,7 @@ private:
     using torrents_map_t = std::unordered_map<std::size_t, std::shared_ptr<torrent>>;
 
     std::shared_ptr<torrent>        create                  (const std::string& uri_or_name);
+    void                            background_process_fun  ();
     void                            handle_alerts           ();
 
     std::unique_ptr<lt::session>    session_ptr_;
@@ -54,7 +57,9 @@ private:
 
     torrents_map_t                  torrents_map_;
     std::filesystem::path           base_torrents_path_     = "/tmp/torrents";
+    std::unique_ptr<std::jthread>   background_process_thread_;
     storage_mode_t                  storage_mode_           = storage_mode_t::filesystem;
+    std::atomic<bool>               is_running_             = true;
     bool                            debug_print_alerts_     = false;
 
 };

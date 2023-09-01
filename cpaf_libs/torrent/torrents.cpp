@@ -11,6 +11,8 @@
 
 using namespace std;
 using namespace std::filesystem;
+using namespace std::chrono;
+using namespace std::chrono_literals;
 
 namespace cpaf::torrent {
 
@@ -39,16 +41,17 @@ void torrents::start()
         ses_params.disk_io_constructor = lt::mmap_disk_io_constructor;
     }
     session_ptr_ = make_unique<lt::session>(ses_params);
+    background_process_thread_ = make_unique<jthread>( [this] () {this->background_process_fun(); });
 }
 
 void torrents::stop()
 {
-
+    is_running_ = false;
 }
 
 void torrents::frame_update()
 {
-    handle_alerts();
+//    handle_alerts();
 }
 
 std::shared_ptr<torrent> torrents::add_torrent(const std::string& uri_or_name)
@@ -112,6 +115,14 @@ std::shared_ptr<torrent> torrents::create(const std::string& uri_or_name)
     cerr << "FIXMENM torrents::create(), torrent_name '" << tor_name << "'  thash: '" << thash << "'\n";
     torrents_map_[thash] = tor_ptr;
     return tor_ptr;
+}
+
+void torrents::background_process_fun()
+{
+    while (is_running_) {
+        handle_alerts();
+        this_thread::sleep_for(0ms);
+    }
 }
 
 void torrents::handle_alerts()
