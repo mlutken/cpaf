@@ -75,6 +75,11 @@ public:
 
     void                                insert_piece_data_in_cache      (const lt::read_piece_alert* rpa);
 
+    void                                handle_piece_finished           (const lt::piece_finished_alert* pfa);
+    void                                handle_piece_read               (const lt::read_piece_alert* rpa);
+    void                                handle_torrent_finished         (const lt::torrent_finished_alert* tfa);
+    void                                handle_torrent_error            (const lt::torrent_error_alert* tea);
+
     void                                dbg_print_downloaded_indices    () const;
     void                                dbg_print_cache_piece_indices   () const;
 

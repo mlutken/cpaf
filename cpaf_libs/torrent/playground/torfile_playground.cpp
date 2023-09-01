@@ -81,10 +81,6 @@ int main(int argc, char const* argv[])
         magnet_url = argv[1];
     }
 
-
-
-
-    fmt::println("torrent_name('gert'): '{}'", tor::torrent_name("gert"));
     fmt::println("torrent_name('{}'): '{}'", magnet_url, tor::torrent_name(magnet_url));
 
 
@@ -186,6 +182,8 @@ int main(int argc, char const* argv[])
 //    this_thread::sleep_for(10s);
 //    return 0; // FIXMENM
 
+    std::array<char, 1024> text;
+    text.fill('X');
 
     for (int i  = 0;; ++i) {
         my_torrents.frame_update();
@@ -196,8 +194,6 @@ int main(int argc, char const* argv[])
 
         if (i % 100 == 0) {
             cerr << "* file_0  name  : '" << file_0.name() << "'  i: " << i << "\n";
-            std::array<char, 1024> text;
-            text.fill('X');
 
             const auto bytes_read = file_0.read(text.data(), std::min((size_t)file_0.size(), text.size()));
             if (bytes_read > 0) {
@@ -217,6 +213,12 @@ int main(int argc, char const* argv[])
     cerr << std::flush; cout << std::flush;
     my_torrent_ptr->dbg_print_downloaded_indices();
     my_torrent_ptr->dbg_print_cache_piece_indices();
+
+    const auto bytes_read = file_0.read(text.data(), std::min((size_t)file_0.size(), text.size()));
+    if (bytes_read > 0) {
+        text[bytes_read] = 0;
+        cerr << "!TORRENT DONE!\n -> file_0  content: '" << text.data() << "'\n";
+    }
 
     return 0;
 }

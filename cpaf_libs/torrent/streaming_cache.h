@@ -3,6 +3,7 @@
 #include <mutex>
 #include <vector>
 #include <unordered_map>
+#include <unordered_set>
 #include <libtorrent/alert_types.hpp>
 #include <cpaf_libs/torrent/torrent_utils.h>
 
@@ -20,31 +21,58 @@ public:
     void                                update_current_streaming_piece  (lt::piece_index_t piece);
 
 
+    bool                                is_piece_requested              (lt::piece_index_t piece) const;
+    bool                                is_piece_downloaded             (lt::piece_index_t piece) const;
     bool                                is_piece_in_cache               (lt::piece_index_t piece) const;
+
+    bool                                are_pieces_downloaded           (const pieces_range_t& range) const;
     bool                                are_pieces_in_cache             (const pieces_range_t& range) const;
+
     cache_piece_data_t                  get_piece_data                  (lt::piece_index_t piece) const;
     cache_pieces_t                      get_pieces_data                 (const pieces_range_t& range) const;
 
     void                                set_piece_downloaded            (lt::piece_index_t piece) ;
-    bool                                is_piece_downloaded             (lt::piece_index_t piece) const;
-    bool                                are_pieces_downloaded           (const pieces_range_t& range) const;
     std::vector<lt::piece_index_t>      all_downloaded_indices          () const;
+
+    void                                request_piece                   (lt::piece_index_t piece, int32_t deadline_in_ms = 0) const;
+    void                                request_pieces                  (const pieces_range_t& range, int32_t deadline_in_ms = 0) const;
+    void                                handle_piece_finished           (const lt::piece_finished_alert* pfa);
+    void                                handle_piece_read               (const lt::read_piece_alert* rpa);
+
+    void                                prioritize_piece                (lt::piece_index_t piece, int32_t deadline_in_ms = 0) const;
+    void                                prioritize_pieces               (const pieces_range_t& range, int32_t deadline_in_ms = 0) const;
 
     bool                                read_piece                      (lt::piece_index_t piece) const;
     bool                                read_pieces                     (const pieces_range_t& range) const;
 
-    void                                prioritize_piece                (lt::piece_index_t piece, int32_t deadline_in_ms = 0) const;
-    void                                prioritize_pieces               (const pieces_range_t& range, int32_t deadline_in_ms = 0) const;
 
     void                                dbg_print_downloaded_indices    () const;
     void                                dbg_print_piece_indices         () const;
 
 private:
-    using pieces_downloaded_set_t = std::unordered_set<lt::piece_index_t>;
+
+    bool                                is_piece_requested_impl         (lt::piece_index_t piece) const { return pieces_requested_.contains(piece); }
+    bool                                is_piece_downloaded_impl        (lt::piece_index_t piece) const { return pieces_downloaded_.contains(piece); }
+    bool                                is_piece_in_cache_impl          (lt::piece_index_t piece) const { return cache_map_.contains(piece); }
+
+    void                                set_piece_requested_impl        (lt::piece_index_t piece) const { pieces_requested_.insert(piece); }
+    void                                set_piece_downloaded_impl       (lt::piece_index_t piece)       { pieces_downloaded_.insert(piece); }
+    void                                insert_piece_data_impl          (const lt::read_piece_alert* rpa);
+
+    bool                                clear_piece_requested_impl      (lt::piece_index_t piece) const { return pieces_requested_.erase(piece); }
+    bool                                clear_piece_downloaded_impl     (lt::piece_index_t piece)       { return pieces_downloaded_.erase(piece); }
+    bool                                clear_piece_in_cache_impl       (lt::piece_index_t piece)       { return cache_map_.erase(piece); }
+
+
+    void                                prioritize_piece_impl           (lt::piece_index_t piece, int32_t deadline_in_ms) const  { torrent_handle_.set_piece_deadline(piece, deadline_in_ms, lt::torrent_handle::alert_when_available); }
+    void                                read_piece_impl                 (lt::piece_index_t piece) const                          { torrent_handle_.read_piece(piece); }
+
+    using pieces_indices_set_t = std::unordered_set<lt::piece_index_t>;
 
     lt::torrent_handle                                                  torrent_handle_;
     mutable std::unordered_map<lt::piece_index_t, cache_piece_data_t>   cache_map_;
-    pieces_downloaded_set_t                                             pieces_downloaded_;
+    pieces_indices_set_t                                                pieces_downloaded_;
+    mutable pieces_indices_set_t                                        pieces_requested_;
     mutable std::mutex                                                  cache_mutex_;
     lt::piece_index_t                                                   cur_streaming_piece_ = 0;
 

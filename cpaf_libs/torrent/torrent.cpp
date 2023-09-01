@@ -291,6 +291,32 @@ void torrent::insert_piece_data_in_cache(const libtorrent::read_piece_alert* rpa
     piece_data_cache_.insert_piece_data(rpa);
 }
 
+void torrent::handle_piece_finished(const libtorrent::piece_finished_alert* pfa)
+{
+    if (pfa->piece_index < 3) {
+        std::cerr << "!!! torrent::handle_piece_finished !!!  index: " << pfa->piece_index << "\n";
+    }
+    piece_data_cache_.set_piece_downloaded(pfa->piece_index);
+}
+
+void torrent::handle_piece_read(const libtorrent::read_piece_alert* rpa)
+{
+    if (rpa->piece < 3) {
+        std::cerr << "!!! torrent::handle_piece_read !!! index: " << rpa->piece << "\n";
+    }
+    piece_data_cache_.insert_piece_data(rpa);
+}
+
+void torrent::handle_torrent_finished(const libtorrent::torrent_finished_alert* tfa)
+{
+    std::cerr << "!!! handle_torrent_finished !!! Torrent Name: " << tfa->torrent_name() << "\n";
+}
+
+void torrent::handle_torrent_error(const libtorrent::torrent_error_alert* tea)
+{
+    std::cerr << "!!! handle_torrent_error !!! Torrent Name: " << tea->torrent_name() << "\n";
+}
+
 void torrent::dbg_print_downloaded_indices() const
 {
     piece_data_cache_.dbg_print_downloaded_indices();

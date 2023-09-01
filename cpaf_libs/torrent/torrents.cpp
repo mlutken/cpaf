@@ -124,7 +124,7 @@ void torrents::handle_alerts()
             std::cerr << a->message() << "\n";
         }
 
-
+#if 0
         if (auto pfa = lt::alert_cast<lt::piece_finished_alert>(a)) {
             const auto thash = lt::hash_value(pfa->handle);
             if (pfa->piece_index < 3) {
@@ -162,11 +162,32 @@ void torrents::handle_alerts()
 //            rpa->handle.read_piece(rpa->piece);
         }
 
+#endif
 
-//        if (lt::alert_cast<lt::torrent_finished_alert>(a)) {
-//        }
-//        if (lt::alert_cast<lt::torrent_error_alert>(a)) {
-//        }
+        if (auto pfa = lt::alert_cast<lt::piece_finished_alert>(a)) {
+            auto tor_ptr = torrents_map_[lt::hash_value(pfa->handle)];
+            if (tor_ptr) {
+                tor_ptr->handle_piece_finished(pfa);
+            }
+        }
+        if (auto rpa = lt::alert_cast<lt::read_piece_alert>(a)) {
+            auto tor_ptr = torrents_map_[lt::hash_value(rpa->handle)];
+            if (tor_ptr) {
+                tor_ptr->handle_piece_read(rpa);
+            }
+        }
+        if (auto tfa = lt::alert_cast<lt::torrent_finished_alert>(a)) {
+            auto tor_ptr = torrents_map_[lt::hash_value(tfa->handle)];
+            if (tor_ptr) {
+                tor_ptr->handle_torrent_finished(tfa);
+            }
+        }
+        if (auto tea = lt::alert_cast<lt::torrent_error_alert>(a)) {
+            auto tor_ptr = torrents_map_[lt::hash_value(tea->handle)];
+            if (tor_ptr) {
+                tor_ptr->handle_torrent_error(tea);
+            }
+        }
     }
 }
 
