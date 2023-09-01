@@ -30,6 +30,12 @@ public:
     bool                                are_pieces_downloaded           (const pieces_range_t& range) const;
     std::vector<lt::piece_index_t>      all_downloaded_indices          () const;
 
+    bool                                read_piece                      (lt::piece_index_t piece) const;
+    bool                                read_pieces                     (const pieces_range_t& range) const;
+
+    void                                prioritize_piece                (lt::piece_index_t piece, int32_t deadline_in_ms = 0) const;
+    void                                prioritize_pieces               (const pieces_range_t& range, int32_t deadline_in_ms = 0) const;
+
     void                                dbg_print_downloaded_indices    () const;
     void                                dbg_print_piece_indices         () const;
 

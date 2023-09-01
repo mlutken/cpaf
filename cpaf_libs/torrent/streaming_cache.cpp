@@ -101,6 +101,53 @@ std::vector<libtorrent::piece_index_t> streaming_cache::all_downloaded_indices()
 }
 
 
+////////
+
+bool streaming_cache::read_piece(libtorrent::piece_index_t piece) const
+{
+    if (is_piece_in_cache(piece)) {
+        return true;
+    }
+    if (is_piece_downloaded(piece)) {
+        torrent_handle_.read_piece(piece);
+        return true;
+    }
+    return false;
+}
+
+bool streaming_cache::read_pieces(const pieces_range_t& range) const
+{
+    cerr << "FIXMENM streaming_cache::read_pieces(range)\n";
+    bool all_read = true;
+    for (auto piece = range.piece_begin; piece != range.piece_end; ++piece) {
+        cerr << " piece: '" << piece << "\n";
+        const bool could_read = read_piece(piece);
+        all_read = all_read && could_read;
+    }
+    cerr << "FIXMENM DONE streaming_cache::read_pieces(range)\n";
+    return all_read;
+}
+
+void streaming_cache::prioritize_piece(libtorrent::piece_index_t piece, int32_t deadline_in_ms) const
+{
+    if (is_piece_downloaded(piece)) {
+        return;
+    }
+
+    torrent_handle_.set_piece_deadline(piece, deadline_in_ms, lt::torrent_handle::alert_when_available);
+
+}
+
+void streaming_cache::prioritize_pieces(const pieces_range_t& range, int32_t deadline_in_ms) const
+{
+    for (auto piece = range.piece_begin; piece != range.piece_end; piece++) {
+        prioritize_piece(piece, deadline_in_ms);
+    }
+}
+
+/////////
+
+
 void streaming_cache::dbg_print_downloaded_indices() const
 {
     cerr << "dbg_print_downloaded_indices(): ";

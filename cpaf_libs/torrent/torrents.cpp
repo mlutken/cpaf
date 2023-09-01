@@ -57,8 +57,13 @@ std::shared_ptr<torrent> torrents::add_torrent(const std::string& uri_or_name)
         return create(uri_or_name);
     }
     else {
-        return torrents_map_[uri_or_name];
+         for (auto [hash, tor_ptr]: torrents_map_) {
+             if (tor_ptr->name() == torrent_name(uri_or_name)) {
+                 return tor_ptr;
+             }
+         }
     }
+    return nullptr;
 }
 
 
@@ -70,7 +75,13 @@ void torrents::delete_torrent(const std::string& uri_or_name)
 
 bool torrents::has_torrent(const std::string& uri_or_name) const
 {
-    return torrents_map_.contains(torrent_name(uri_or_name));
+//    return torrents_map_.contains(torrent_name(uri_or_name));
+    for (auto [hash, tor_ptr]: torrents_map_) {
+        if (tor_ptr->name() == torrent_name(uri_or_name)) {
+            return true;
+        }
+    }
+    return false;
 }
 
 
@@ -96,7 +107,10 @@ std::shared_ptr<torrent> torrents::create(const std::string& uri_or_name)
     handle.set_flags(lt::torrent_flags::sequential_download);
 
     const auto tor_ptr = std::shared_ptr<torrent>( new torrent(uri_or_name, handle, this));
-    torrents_map_[tor_ptr->name()] = tor_ptr;
+    auto tor_name = tor_ptr->name();
+    const auto thash = lt::hash_value(handle);
+    cerr << "FIXMENM torrents::create(), torrent_name '" << tor_name << "'  thash: '" << thash << "'\n";
+    torrents_map_[thash] = tor_ptr;
     return tor_ptr;
 }
 
@@ -112,10 +126,12 @@ void torrents::handle_alerts()
 
 
         if (auto pfa = lt::alert_cast<lt::piece_finished_alert>(a)) {
+            const auto thash = lt::hash_value(pfa->handle);
             if (pfa->piece_index < 3) {
                 std::cerr << "### piece_finished_alert! piece index: " << pfa->piece_index << "\n";
             }
-            auto tor_ptr = torrents_map_[pfa->torrent_name()];
+            auto tor_ptr = torrents_map_[thash];
+//            auto tor_ptr = torrents_map_[pfa->torrent_name()];
             if (tor_ptr) {
                 tor_ptr->set_piece_downloaded(pfa->piece_index);
                 if (tor_ptr->has_meta_data()) {
@@ -127,10 +143,15 @@ void torrents::handle_alerts()
                 }
 
             }
+            else {
+                std::cerr << "ERROR piece finished. Torrent not found!  index: " << pfa->piece_index << ", torrent name: '" << pfa->torrent_name() << "'\n";
+                std::cerr << "              Torrent not found!  index: " << pfa->piece_index << ", torrent hash : '" << lt::hash_value(pfa->handle) << "'\n";
+            }
 //            std::cerr << "piece finished index: " << pfa->piece_index << ", torrent name: " << pfa->torrent_name() << "\n";
         }
         if (auto rpa = lt::alert_cast<lt::read_piece_alert>(a)) {
-            auto tor_ptr = torrents_map_[rpa->torrent_name()];
+            const auto thash = lt::hash_value(rpa->handle);
+            auto tor_ptr = torrents_map_[thash];
             if (tor_ptr) {
                 if (rpa->piece < 3) {
                     std::cerr << "!!! read_piece_alert! piece index: " << rpa->piece << "\n";

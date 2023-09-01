@@ -27,6 +27,8 @@
  * NASA torrents: https://www.vuze.com/content/channel.php?id=48&name=NASACast%20Video
  * Magnet link example 1: "magnet:?xt=urn:btih:a2aeda9a399ab8dbbf1edb46ba74841256567f6f&dn=This%5FWeek%5F%40NASA,%5FJuly%5F27,%5F2018%5BV004850366%5D.mp4&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80%2Fannounce&tr=udp%3A%2F%2Ftracker.publicbt.com%3A80%2Fannounce&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&ws=http%3A%2F%2Fwww.nasa.gov%2Fsites%2Fdefault%2Ffiles%2Fatoms%2Fvideo%2Fnhq%5F20180727%5Fthis%5Fweek%5Fnasa%5F1.mp4"
  * Magnet link example 2: "magnet:?xt=urn:btih:8567e2d162aba1bfd3b81cf88b257ce462eee761&dn=Rambo.First.Blood.1982.REMASTERED.1080p.BluRay.x265-RARBG&tr=http%3A%2F%2Ftracker.trackerfix.com%3A80%2Fannounce&tr=udp%3A%2F%2F9.rarbg.me%3A2890&tr=udp%3A%2F%2F9.rarbg.to%3A2890"
+ * Magnet link example 3: "magnet:?xt=urn:btih:E4EC2A938F38AB62D4930436798F8ADD42F94ABE&dn=The%20Lost%20City%20(2022)%20%5B1080p%5D%20%5BBluRay%5D%20%5B5.1%5D&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337&tr=udp%3A%2F%2Fmovies.zsw.ca%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.dler.org%3A6969%2Fannounce&tr=udp%3A%2F%2Fopentracker.i2p.rocks%3A6969%2Fannounce&tr=udp%3A%2F%2Fopen.stealth.si%3A80%2Fannounce&tr=udp%3A%2F%2Ftracker.0x.tf%3A6969%2Fannounce"
+ * Magnet link example 4: "magnet:?xt=urn:btih:EF947A280CE7AD1BC6752848F204A9F111F5C7D3&dn=The%20Lost%20City%20(2022)%20%5B1080p%5D%20%5BWEBRip%5D%20%5B5.1%5D&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337&tr=udp%3A%2F%2Fmovies.zsw.ca%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.dler.org%3A6969%2Fannounce&tr=udp%3A%2F%2Fopentracker.i2p.rocks%3A6969%2Fannounce&tr=udp%3A%2F%2Fopen.stealth.si%3A80%2Fannounce&tr=udp%3A%2F%2Ftracker.0x.tf%3A6969%2Fannounce"
  * Legal torrent sources: https://www.techworm.net/2020/07/best-legal-torrenting-sites.html
  *                        https://www.vuze.com/content/
  *
@@ -71,7 +73,8 @@ static const path base_torrents_path = "/tmp/torrents";
 int main(int argc, char const* argv[])
 {
 
-    string magnet_url = "magnet:?xt=urn:btih:8567e2d162aba1bfd3b81cf88b257ce462eee761&dn=Rambo.First.Blood.1982.REMASTERED.1080p.BluRay.x265-RARBG&tr=http%3A%2F%2Ftracker.trackerfix.com%3A80%2Fannounce&tr=udp%3A%2F%2F9.rarbg.me%3A2890&tr=udp%3A%2F%2F9.rarbg.to%3A2890";
+//    string magnet_url = "magnet:?xt=urn:btih:8567e2d162aba1bfd3b81cf88b257ce462eee761&dn=Rambo.First.Blood.1982.REMASTERED.1080p.BluRay.x265-RARBG&tr=http%3A%2F%2Ftracker.trackerfix.com%3A80%2Fannounce&tr=udp%3A%2F%2F9.rarbg.me%3A2890&tr=udp%3A%2F%2F9.rarbg.to%3A2890";
+    string magnet_url = "magnet:?xt=urn:btih:E4EC2A938F38AB62D4930436798F8ADD42F94ABE&dn=The%20Lost%20City%20(2022)%20%5B1080p%5D%20%5BBluRay%5D%20%5B5.1%5D&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337&tr=udp%3A%2F%2Fmovies.zsw.ca%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.dler.org%3A6969%2Fannounce&tr=udp%3A%2F%2Fopentracker.i2p.rocks%3A6969%2Fannounce&tr=udp%3A%2F%2Fopen.stealth.si%3A80%2Fannounce&tr=udp%3A%2F%2Ftracker.0x.tf%3A6969%2Fannounce";
 
     fmt::println ("--- torfile_playground  ---");
     if (argc >= 2) {
@@ -136,9 +139,9 @@ int main(int argc, char const* argv[])
 //    cout << "* file_1  offset: '" << file_1.offset() << "'\n";
 //    fmt::println ("* file_1  piece_index_start: '{}'", int(file_1.piece_index_start()));
 
-    tor::file file_3 = my_torrent_ptr->open(3);
-    cout << "* file_3  name  : '" << file_3.name() << "'\n";
-    cout << "* file_3  path  : '" << file_3.path() << "'\n";
+//    tor::file file_3 = my_torrent_ptr->open(3);
+//    cout << "* file_3  name  : '" << file_3.name() << "'\n";
+//    cout << "* file_3  path  : '" << file_3.path() << "'\n";
 //    cout << "* file_3  size  : '" << file_3.size() << "'\n";
 //    cout << "* file_3  offset: '" << file_3.offset() << "'\n";
 //    fmt::println ("* file_3  piece_index_start: '{}'", int(file_3.piece_index_start()));
@@ -161,10 +164,10 @@ int main(int argc, char const* argv[])
         tor::pieces_range_t range1  = file_0.get_pieces_range(0, 10);
         fmt::println ("File 0 begin: {}, end: {}, offset: {}, size: {}", (int)range1.piece_begin, (int)range1.piece_end, range1.piece_begin_start_offset, range1.data_size);
     }
-    {
-        tor::pieces_range_t range1  = file_3.get_pieces_range(0, 10);
-        fmt::println ("File 3 begin: {}, end: {}, offset: {}, size: {}", (int)range1.piece_begin, (int)range1.piece_end, range1.piece_begin_start_offset, range1.data_size);
-    }
+//    {
+//        tor::pieces_range_t range1  = file_3.get_pieces_range(0, 10);
+//        fmt::println ("File 3 begin: {}, end: {}, offset: {}, size: {}", (int)range1.piece_begin, (int)range1.piece_end, range1.piece_begin_start_offset, range1.data_size);
+//    }
 
     {
         tor::pieces_range_t range1  = largest_file.get_pieces_range(0, 10);
@@ -196,7 +199,7 @@ int main(int argc, char const* argv[])
             std::array<char, 1024> text;
             text.fill('X');
 
-            const auto bytes_read = file_0.read(text.data(), file_0.size());
+            const auto bytes_read = file_0.read(text.data(), std::min((size_t)file_0.size(), text.size()));
             if (bytes_read > 0) {
                 text[bytes_read] = 0;
                 cerr << " >>>> file_0  content: '" << text.data() << "'\n";

@@ -150,49 +150,53 @@ cache_piece_data_t torrent::get_piece_data(libtorrent::file_index_t file_index, 
 
 cache_pieces_t torrent::get_pieces_data(libtorrent::file_index_t file_index, int64_t offset, size_t size) const
 {
-    return piece_data_cache_.get_pieces_data(get_pieces_range(file_index, offset, size));
+    const auto range = get_pieces_range(file_index, offset, size);
+    return piece_data_cache_.get_pieces_data(range);
 }
 
 bool torrent::read_piece(libtorrent::piece_index_t piece) const
 {
-    if (piece_data_cache_.is_piece_in_cache(piece)) {
-        return true;
-    }
-    if (is_piece_downloaded(piece)) {
-        handle_.read_piece(piece);
-        return true;
-    }
-    return false;
+    return piece_data_cache_.read_piece(piece);
+//    if (piece_data_cache_.is_piece_in_cache(piece)) {
+//        return true;
+//    }
+//    if (is_piece_downloaded(piece)) {
+//        handle_.read_piece(piece);
+//        return true;
+//    }
+//    return false;
 }
 
 bool torrent::read_pieces(const pieces_range_t& range) const
 {
-    cerr << "FIXMENM torrent::read_pieces(range)\n";
-    bool all_read = true;
-    for (auto piece = range.piece_begin; piece != range.piece_end; ++piece) {
-        cerr << " piece: '" << piece << "\n";
-        const bool could_read = read_piece(piece);
-        all_read = all_read && could_read;
-    }
-    cerr << "FIXMENM DONE torrent::read_pieces(range)\n";
-    return all_read;
+    return piece_data_cache_.read_pieces(range);
+//    cerr << "FIXMENM torrent::read_pieces(range)\n";
+//    bool all_read = true;
+//    for (auto piece = range.piece_begin; piece != range.piece_end; ++piece) {
+//        cerr << " piece: '" << piece << "\n";
+//        const bool could_read = read_piece(piece);
+//        all_read = all_read && could_read;
+//    }
+//    cerr << "FIXMENM DONE torrent::read_pieces(range)\n";
+//    return all_read;
 }
 
 void torrent::prioritize_piece(libtorrent::piece_index_t piece, int32_t deadline_in_ms) const
 {
-    if (is_piece_downloaded(piece)) {
-        return;
-    }
+    piece_data_cache_.prioritize_piece(piece, deadline_in_ms);
+//    if (is_piece_downloaded(piece)) {
+//        return;
+//    }
 
-    handle_.set_piece_deadline(piece, deadline_in_ms, lt::torrent_handle::alert_when_available);
-
+//    handle_.set_piece_deadline(piece, deadline_in_ms, lt::torrent_handle::alert_when_available);
 }
 
 void torrent::prioritize_pieces(const pieces_range_t& range, int32_t deadline_in_ms) const
 {
-    for (auto piece = range.piece_begin; piece != range.piece_end; piece++) {
-        prioritize_piece(piece, deadline_in_ms);
-    }
+    piece_data_cache_.prioritize_pieces(range, deadline_in_ms);
+//    for (auto piece = range.piece_begin; piece != range.piece_end; piece++) {
+//        prioritize_piece(piece, deadline_in_ms);
+//    }
 }
 
 pieces_range_t torrent::get_pieces_range(libtorrent::file_index_t file_index, int64_t offset, size_t size) const

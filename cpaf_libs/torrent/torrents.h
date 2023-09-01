@@ -43,7 +43,7 @@ public:
     void                            debug_print_alerts_set  (bool newDebug_print_alerts);
 
 private:
-    using torrents_map_t = std::unordered_map<std::string, std::shared_ptr<torrent>>;
+    using torrents_map_t = std::unordered_map<std::size_t, std::shared_ptr<torrent>>;
 
     std::shared_ptr<torrent>        create                  (const std::string& uri_or_name);
     void                            handle_alerts           ();

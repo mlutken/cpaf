@@ -29,6 +29,10 @@ size_t file::read(void* buffer, std::size_t bytes_to_read) const
             std::cerr << "ERROR file::read() data_piece.buffer is NULL\n";
             return 0;
         }
+        if (!data_piece.is_valid()) {
+            std::cerr << "ERROR file::read() data_piece is invalid!\n";
+            return 0;
+        }
         const size_t bytes_to_copy = std::min(static_cast<size_t>(data_piece.size), bytes_stil_to_copy);
         std::memcpy(byte_buf, &data_piece.buffer[start], bytes_to_copy);
         byte_buf += bytes_to_copy;  // Move destination buffer pointer
