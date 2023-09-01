@@ -53,7 +53,7 @@ private:
 
     bool                                is_piece_requested_impl         (lt::piece_index_t piece) const { return pieces_requested_.contains(piece); }
     bool                                is_piece_downloaded_impl        (lt::piece_index_t piece) const { return pieces_downloaded_.contains(piece); }
-    bool                                is_piece_in_cache_impl          (lt::piece_index_t piece) const { return cache_map_.contains(piece); }
+    bool                                is_piece_in_cache_impl          (lt::piece_index_t piece) const { return cache_map_[piece].is_valid(); }
 
     void                                set_piece_requested_impl        (lt::piece_index_t piece) const { pieces_requested_.insert(piece); }
     void                                set_piece_downloaded_impl       (lt::piece_index_t piece)       { pieces_downloaded_.insert(piece); }

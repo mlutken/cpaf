@@ -32,6 +32,7 @@ public:
     int                                 seek                            (int64_t offset, int whence);
     const std::string&                  uri                             () const                                    { return uri_; }
     const std::string&                  name                            () const                                    { return name_; }
+    lt::torrent_status::state_t         state                           () const                                    { return handle_.status().state;   }
 
 
     std::string                         largest_file_name               () const;
@@ -60,20 +61,20 @@ public:
     lt::peer_request                    file_offset_to_peer_request     (lt::file_index_t file_index, std::int64_t offset, size_t size) const;
     cache_piece_data_t                  get_piece_data                  (lt::file_index_t file_index, std::int64_t offset) const;
     cache_pieces_t                      get_pieces_data                 (lt::file_index_t file_index, int64_t offset, size_t size) const;
-    bool                                read_piece                      (lt::piece_index_t piece) const;
-    bool                                read_pieces                     (const pieces_range_t& range) const;
+//    bool                                read_piece                      (lt::piece_index_t piece) const;
+//    bool                                read_pieces                     (const pieces_range_t& range) const;
 
-    void                                prioritize_piece                (lt::piece_index_t piece, int32_t deadline_in_ms = 0) const;
-    void                                prioritize_pieces               (const pieces_range_t& range, int32_t deadline_in_ms = 0) const;
+//    void                                prioritize_piece                (lt::piece_index_t piece, int32_t deadline_in_ms = 0) const;
+//    void                                prioritize_pieces               (const pieces_range_t& range, int32_t deadline_in_ms = 0) const;
 
     pieces_range_t                      get_pieces_range                (lt::file_index_t file_index, std::int64_t offset, size_t size) const;
     pieces_range_t                      get_pieces_read_ahead_range     (lt::file_index_t file_index, lt::piece_index_t from_piece, size_t read_ahead_size) const;
 
-    void                                set_piece_downloaded            (lt::piece_index_t piece) ;
-    bool                                is_piece_downloaded             (lt::piece_index_t piece) const;
-    bool                                are_pieces_downloaded           (const pieces_range_t& range) const;
+//    void                                set_piece_downloaded            (lt::piece_index_t piece) ;
+//    bool                                is_piece_downloaded             (lt::piece_index_t piece) const;
+//    bool                                are_pieces_downloaded           (const pieces_range_t& range) const;
 
-    void                                insert_piece_data_in_cache      (const lt::read_piece_alert* rpa);
+//    void                                insert_piece_data_in_cache      (const lt::read_piece_alert* rpa);
 
     void                                handle_piece_finished           (const lt::piece_finished_alert* pfa);
     void                                handle_piece_read               (const lt::read_piece_alert* rpa);

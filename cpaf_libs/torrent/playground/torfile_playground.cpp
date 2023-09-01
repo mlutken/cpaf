@@ -89,14 +89,19 @@ int main(int argc, char const* argv[])
     my_torrents.debug_print_alerts_set(false);
     my_torrents.start();
     auto my_torrent_ptr = my_torrents.add_torrent(magnet_url);
+    const auto initital_state = my_torrent_ptr->state();
+    std::cerr << "initital_state: " << initital_state << "\n";
 
     std::cerr << "Waiting for meta data for '" << my_torrent_ptr->name() << "' ... ";
     while (!my_torrent_ptr->has_meta_data()) {
         my_torrents.frame_update();
-        this_thread::sleep_for(20ms);
+//        std::cerr << "State: " << my_torrent_ptr->state() << "\n";
+        this_thread::sleep_for(0ms);
     }
+    my_torrents.frame_update();
     std::cerr << " done!\n";
     my_torrent_ptr->prepare_streaming();
+    my_torrents.frame_update();
 
     for (const auto& file_name : my_torrent_ptr->all_file_names()) {
         cerr << "File in torrent: '" << file_name << "'\n";
