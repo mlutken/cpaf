@@ -69,9 +69,36 @@ static const path base_torrents_path = "/tmp/torrents";
 //fmt::println("usage: {} <magnet-url>", argv[0]);
 //return 1;
 
+
+void dbg_read_from_file(std::shared_ptr<tor::torrent> torrent_ptr, lt::file_index_t file_index)
+{
+    std::array<char, 1024*16> text;
+    text.fill('X');
+
+    tor::file file = torrent_ptr->open(file_index);
+    fmt::println("*******************************************");
+    fmt::println("*** DEBUG read from file index : '{}' ***", (int)file_index);
+    fmt::println("*******************************************");
+    cout << "* file  name  : '" << file.name() << "'\n";
+    cout << "* file  path  : '" << file.path() << "'\n";
+    cout << "* file  size  : '" << file.size() << "'\n";
+    cout << "* file  offset: '" << file.offset() << "'\n";
+    fmt::println ("* file piece_index_start: '{}'", int(file.piece_index_start()));
+
+    const auto bytes_read = file.read(text.data(), std::min(static_cast<size_t>(file.size()), text.size()));
+    if (bytes_read > 0) {
+        text[bytes_read] = 0;
+        cerr << "  *** Blocking read of file '" << file.name() << "' content ***\n'" << text.data() << "'\n";
+        cerr << "***********************************************************************\n";
+    }
+    cerr << std::flush;
+}
+
 #if 1
 int main(int argc, char const* argv[])
 {
+    std::array<char, 1024*1024> text;
+    text.fill('X');
 
 //    string magnet_url = "magnet:?xt=urn:btih:8567e2d162aba1bfd3b81cf88b257ce462eee761&dn=Rambo.First.Blood.1982.REMASTERED.1080p.BluRay.x265-RARBG&tr=http%3A%2F%2Ftracker.trackerfix.com%3A80%2Fannounce&tr=udp%3A%2F%2F9.rarbg.me%3A2890&tr=udp%3A%2F%2F9.rarbg.to%3A2890";
     string magnet_url = "magnet:?xt=urn:btih:E4EC2A938F38AB62D4930436798F8ADD42F94ABE&dn=The%20Lost%20City%20(2022)%20%5B1080p%5D%20%5BBluRay%5D%20%5B5.1%5D&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337&tr=udp%3A%2F%2Fmovies.zsw.ca%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.dler.org%3A6969%2Fannounce&tr=udp%3A%2F%2Fopentracker.i2p.rocks%3A6969%2Fannounce&tr=udp%3A%2F%2Fopen.stealth.si%3A80%2Fannounce&tr=udp%3A%2F%2Ftracker.0x.tf%3A6969%2Fannounce";
@@ -92,6 +119,8 @@ int main(int argc, char const* argv[])
     const auto initital_state = my_torrent_ptr->state();
     std::cerr << "initital_state: " << initital_state << "\n";
 
+
+
     std::cerr << "Waiting for meta data for '" << my_torrent_ptr->name() << "' ... ";
     while (!my_torrent_ptr->has_meta_data()) {
         //// my_torrents.frame_update();
@@ -101,14 +130,11 @@ int main(int argc, char const* argv[])
     std::cerr << " done!\n";
     my_torrent_ptr->prepare_streaming();
 
-    for (const auto& file_name : my_torrent_ptr->all_file_names()) {
-        cerr << "File in torrent: '" << file_name << "'\n";
+    for (auto index : my_torrent_ptr->all_file_indices()) {
+        auto file = my_torrent_ptr->open(index);
+        fmt::println ("[{} => {}] File in torrent: '{}'", (int)index, (int)file.piece_index_start(), file.name());
     }
 
-
-    cout << "XXXXXXXXXXXXXXXXXXXXXX\n";
-    cout << "XXXXXXXXXXXXXXXXXXXXXX\n";
-    cout << "XXXXXXXXXXXXXXXXXXXXXX\n";
     cout << "Largest file index       : '" << my_torrent_ptr->largest_file_index() << "'\n";
     cout << "Largest file             : '" << my_torrent_ptr->largest_file_local_file_path() << "'\n";
     cout << "Number of pieces         : " << my_torrent_ptr->num_pieces() << "\n";
@@ -120,37 +146,17 @@ int main(int argc, char const* argv[])
     cout << "file_index_at_offset(130): " << my_torrent_ptr->file_index_at_offset(130) << "\n";
     cerr << std::flush; cout << std::flush;
 
-//    my_torrent_ptr->read_all_downloaded_pieces();
-//    my_torrent_ptr->read_pieces(tor::pieces_range_t(0, 2));
-
+    dbg_read_from_file(my_torrent_ptr, 1);
 
     tor::file file_0 = my_torrent_ptr->open(0);
-    cout << "* file_0  name  : '" << file_0.name() << "'\n";
-    cout << "* file_0  path  : '" << file_0.path() << "'\n";
-    cout << "* file_0  size  : '" << file_0.size() << "'\n";
-    cout << "* file_0  offset: '" << file_0.offset() << "'\n";
     fmt::println ("* file_0  piece_index_start: '{}'", int(file_0.piece_index_start()));
-
-    tor::file file_1 = my_torrent_ptr->open(1);
-//    cout << "* file_1  name  : '" << file_1.name() << "'\n";
-//    cout << "* file_1  path  : '" << file_1.path() << "'\n";
-//    cout << "* file_1  size  : '" << file_1.size() << "'\n";
-//    cout << "* file_1  offset: '" << file_1.offset() << "'\n";
-//    fmt::println ("* file_1  piece_index_start: '{}'", int(file_1.piece_index_start()));
-
-//    tor::file file_3 = my_torrent_ptr->open(3);
-//    cout << "* file_3  name  : '" << file_3.name() << "'\n";
-//    cout << "* file_3  path  : '" << file_3.path() << "'\n";
-//    cout << "* file_3  size  : '" << file_3.size() << "'\n";
-//    cout << "* file_3  offset: '" << file_3.offset() << "'\n";
-//    fmt::println ("* file_3  piece_index_start: '{}'", int(file_3.piece_index_start()));
-
-    tor::file largest_file = my_torrent_ptr->open(my_torrent_ptr->largest_file_index());
-//    cout << "* largest_file  name                   : '" << largest_file.name() << "'\n";
-//    cout << "* largest_file  path                   : '" << largest_file.path() << "'\n";
-//    cout << "* largest_file  size                   : '" << largest_file.size() << "'\n";
-//    fmt::println ("* largest_file  offset           : '{}'", largest_file.offset());
-//    fmt::println ("* largest_file  piece_index_start: '{}'", int(largest_file.piece_index_start()));
+    tor::file largest_file = my_torrent_ptr->open_largest_file_streaming(10'000'000);
+    fmt::println ("* largest_file  index            : {}", (int)largest_file.file_index());
+    fmt::println ("* largest_file  name             : {}", largest_file.name());
+    fmt::println ("* largest_file  path             : {}", largest_file.path());
+    fmt::println ("* largest_file  size             : {:.4} Gb", largest_file.size()/1E9f);
+    fmt::println ("* largest_file  offset           : {}", largest_file.offset());
+    fmt::println ("* largest_file  piece_index_start: {}", int(largest_file.piece_index_start()));
 //    cout << "* largest_file  piece_index_start  : '" << largest_file.piece_index_start() << "'\n";
 
     lt::peer_request pr1 = largest_file.file_offset_to_peer_request(0, 32);
@@ -161,51 +167,48 @@ int main(int argc, char const* argv[])
 
     {
         tor::pieces_range_t range1  = file_0.get_pieces_range(0, 10);
-        fmt::println ("File 0 begin: {}, end: {}, offset: {}, size: {}", (int)range1.piece_begin, (int)range1.piece_end, range1.piece_begin_start_offset, range1.data_size);
+        fmt::println ("File 0 begin: {}, end: {}, offset: {}, size: {}", (int)range1.piece_begin, (int)range1.piece_end, range1.piece_begin_data_start_offset(), range1.data_size);
     }
-//    {
-//        tor::pieces_range_t range1  = file_3.get_pieces_range(0, 10);
-//        fmt::println ("File 3 begin: {}, end: {}, offset: {}, size: {}", (int)range1.piece_begin, (int)range1.piece_end, range1.piece_begin_start_offset, range1.data_size);
-//    }
+    {
+        tor::file file = my_torrent_ptr->open(1);
+        tor::pieces_range_t range  = file.get_pieces_range(0, 10);
+        fmt::println ("File 1 begin: {}, end: {}, offset: {}, size: {}", (int)range.piece_begin, (int)range.piece_end, range.piece_begin_data_start_offset(), range.data_size);
+    }
 
     {
         tor::pieces_range_t range1  = largest_file.get_pieces_range(0, 10);
-        fmt::println ("largest_file begin: {}, end: {}, offset: {}, size: {}", (int)range1.piece_begin, (int)range1.piece_end, range1.piece_begin_start_offset, range1.data_size);
+        fmt::println ("get_pieces_range            begin: {}, end: {}, offset: {}, size: {}", (int)range1.piece_begin, (int)range1.piece_end, range1.piece_begin_data_start_offset(), range1.data_size);
     }
     {
-        tor::pieces_range_t range1  = largest_file.get_pieces_range(0, 3'000'000);
-        fmt::println ("largest_file begin: {}, end: {}, offset: {}, size: {}", (int)range1.piece_begin, (int)range1.piece_end, range1.piece_begin_start_offset, range1.data_size);
+        tor::pieces_range_t range1  = largest_file.get_pieces_range(2, 3'000'000);
+        fmt::println ("get_pieces_range            begin: {}, end: {}, offset: {}, size: {}", (int)range1.piece_begin, (int)range1.piece_end, range1.piece_begin_data_start_offset(), range1.data_size);
     }
     {
-        tor::pieces_range_t range1  = largest_file.get_pieces_read_ahead_range(2, 6'000'000);
-        fmt::println ("largest_file begin: {}, end: {}, offset: {}, size: {}", (int)range1.piece_begin, (int)range1.piece_end, range1.piece_begin_start_offset, range1.data_size);
+        tor::pieces_range_t range1  = largest_file.get_pieces_read_ahead_range(2, 3'000'000);
+        fmt::println ("get_pieces_read_ahead_range begin: {}, end: {}, offset: {}, size: {}", (int)range1.piece_begin, (int)range1.piece_end, range1.piece_begin_data_start_offset(), range1.data_size);
     }
-    cerr << std::flush; cout << std::flush;
-
-//    this_thread::sleep_for(10s);
-//    return 0; // FIXMENM
-
-    std::array<char, 1024> text;
-    text.fill('X');
+    cerr << std::endl << std::flush; cout << std::endl << std::flush;
 
     for (int i  = 0;; ++i) {
-        //// my_torrents.frame_update();
+        const auto bytes_read = largest_file.read(text.data(), std::min(16'000ul, text.size()));
+//        fmt::println("Bytes read from largest file: {}, current offset: {}", bytes_read, largest_file.offset());
+        cerr << "Bytes read from largest file: " << bytes_read << ",  current offset: " << largest_file.offset() << "\n";
         this_thread::sleep_for(20ms);
         if (my_torrent_ptr->is_fully_downloaded()) {
             break;
         }
 
-        if (i % 100 == 0) {
-            cerr << "* file_0  name  : '" << file_0.name() << "'  i: " << i << "\n";
+//        if (i % 100 == 0) {
+//            cerr << "* file_0  name  : '" << file_0.name() << "'  i: " << i << "\n";
 
-            const auto bytes_read = file_0.read(text.data(), std::min((size_t)file_0.size(), text.size()));
-            if (bytes_read > 0) {
-                text[bytes_read] = 0;
-                cerr << " >>>> file_0  content: '" << text.data() << "'\n";
-            }
+//            const auto bytes_read = file_0.read(text.data(), std::min((size_t)file_0.size(), text.size()));
+//            if (bytes_read > 0) {
+//                text[bytes_read] = 0;
+//                cerr << " >>>> file_0  content: '" << text.data() << "'\n";
+//            }
 
-            cerr << std::flush; cout << std::flush;
-        }
+//            cerr << std::flush; cout << std::flush;
+//        }
 
     }
 
@@ -215,11 +218,6 @@ int main(int argc, char const* argv[])
     my_torrent_ptr->dbg_print_downloaded_indices();
     my_torrent_ptr->dbg_print_cache_piece_indices();
 
-    const auto bytes_read = file_0.read(text.data(), std::min((size_t)file_0.size(), text.size()));
-    if (bytes_read > 0) {
-        text[bytes_read] = 0;
-        cerr << "!TORRENT DONE!\n -> file_0  content: '" << text.data() << "'\n";
-    }
 
     return 0;
 }

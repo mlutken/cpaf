@@ -4,6 +4,7 @@
 #include <vector>
 #include <unordered_map>
 #include <unordered_set>
+#include <chrono>
 #include <libtorrent/alert_types.hpp>
 #include <cpaf_libs/torrent/torrent_utils.h>
 
@@ -30,8 +31,8 @@ public:
     bool                                are_pieces_downloaded           (const pieces_range_t& range) const;
     bool                                are_pieces_in_cache             (const pieces_range_t& range) const;
 
-    cache_piece_data_t                  get_piece_data                  (lt::piece_index_t piece) const;
-    cache_pieces_t                      get_pieces_data                 (const pieces_range_t& range) const;
+    cache_pieces_t                      get_pieces_data                 (const pieces_range_t& range, std::chrono::milliseconds timeout) const;
+    cache_pieces_t                      try_get_pieces_data             (const pieces_range_t& range) const;
 
     void                                set_piece_downloaded            (lt::piece_index_t piece) ;
     std::vector<lt::piece_index_t>      all_downloaded_indices          () const;
@@ -61,6 +62,7 @@ private:
 
     void                                prioritize_piece_impl           (lt::piece_index_t piece, int32_t deadline_in_ms) const  { torrent_handle_.set_piece_deadline(piece, deadline_in_ms, lt::torrent_handle::alert_when_available); }
     void                                read_piece_impl                 (lt::piece_index_t piece) const                          { torrent_handle_.read_piece(piece); }
+    cache_pieces_t                      try_get_pieces_data_impl        (const pieces_range_t& range) const;
 
     void                                clear_current_streaming_range_impl ();
 

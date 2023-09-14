@@ -23,23 +23,26 @@ bool                                is_fully_downloaded             (const libto
 
 struct cache_piece_data_t {
     cache_piece_data_t                          ()                      = default;
-    explicit cache_piece_data_t                 (const lt::read_piece_alert& rpa) : buffer(rpa.buffer), piece(rpa.piece), size(rpa.size) {}
-    explicit cache_piece_data_t                 (const lt::read_piece_alert* rpa) : buffer(rpa->buffer), piece(rpa->piece), size(rpa->size) {}
+    explicit cache_piece_data_t                 (const lt::read_piece_alert& rpa) : buffer(rpa.buffer), piece(rpa.piece), data_size(rpa.size) {}
+    explicit cache_piece_data_t                 (const lt::read_piece_alert* rpa) : buffer(rpa->buffer), piece(rpa->piece), data_size(rpa->size) {}
     cache_piece_data_t                          (const cache_piece_data_t& other)  = default;
 
     cache_piece_data_t&       operator=         (const cache_piece_data_t& other) = default;
-    bool                    is_valid          () const { return size != -1; }
-
+    bool                    is_valid            () const { return data_size != -1 && (buffer != nullptr); }
+    size_t                  bytes_left          () const { return data_size < 0 ? 0 : static_cast<size_t>(data_size - data_start_offset); }
+    char*                   buffer_begin        () const { return &buffer[data_start_offset]; }
 
     boost::shared_array<char>           buffer;
     lt::piece_index_t                   piece;
-    int64_t                             size = -1;
+    int64_t                             data_size = -1;
+    int64_t                             data_start_offset = 0;
 };
 
 struct cache_pieces_t {
     std::vector<cache_piece_data_t>     pieces;
-    int64_t                             piece_begin_start_offset    = -1;
     size_t                              data_size                   = 0;
+    bool                                is_valid                        () const;
+    lt::piece_index_t                   last_piece_index                () const;
 };
 
 struct pieces_range_t {
@@ -48,14 +51,16 @@ struct pieces_range_t {
     explicit    pieces_range_t  (lt::piece_index_t begin) : piece_begin(begin), piece_end(begin + lt::piece_index_t(1)) {}
                 pieces_range_t  (lt::piece_index_t begin, lt::piece_index_t end) : piece_begin(begin), piece_end(end) {}
 
-    lt::piece_index_t                   piece_begin             = -1;
-    lt::piece_index_t                   piece_end               = -1;
+    lt::piece_index_t                   piece_begin                 = -1;
+    lt::piece_index_t                   piece_end                   = -1;
 
-    int64_t                             piece_begin_start_offset= -1;
-    size_t                              data_size               = 0;
-    lt::file_index_t                    file_index              = -1;
+    int64_t                             piece_begin_start_offset    = -1;
+    size_t                              data_size                   = 0;
+    lt::file_index_t                    file_index                  = -1;
 
-    bool                                is_valid          () const { return piece_begin != -1; }
+    int64_t                             piece_begin_data_start_offset   () const    { return piece_begin_start_offset; }
+    bool                                is_valid                        () const    { return piece_begin != -1; }
+    std::string                         dbg_string                      () const;
 };
 
 } // namespace cpaf::torrent

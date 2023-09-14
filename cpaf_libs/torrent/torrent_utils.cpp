@@ -1,6 +1,7 @@
 #include "torrent_utils.h"
 
 #include <algorithm>
+#include <fmt/format.h>
 #include <boost/algorithm/string.hpp>
 
 #include <libtorrent/torrent_status.hpp>
@@ -161,6 +162,36 @@ bool is_fully_downloaded(const libtorrent::torrent_handle& handle)
     default:
         return false;
     }
+}
+
+// ----------------------
+// --- cache_pieces_t ---
+// ----------------------
+
+bool cache_pieces_t::is_valid() const
+{
+    if (pieces.empty()) { return false; }
+    for (const auto& cache_piece_data : pieces) {
+        if (!cache_piece_data.is_valid()) {
+            return false;
+        }
+    }
+    return true;
+}
+
+libtorrent::piece_index_t cache_pieces_t::last_piece_index() const
+{
+    if (pieces.empty()) { return -1; }
+    return pieces.back().piece;
+}
+
+// ----------------------
+// --- pieces_range_t ---
+// ----------------------
+
+string pieces_range_t::dbg_string() const
+{
+    return fmt::format("Piece begin;offset: {};{}, end: {}, file: {}, size: {:.4} Mb", (int)piece_begin, piece_begin_start_offset, (int)piece_end, (int)file_index, data_size/1e6 );
 }
 
 

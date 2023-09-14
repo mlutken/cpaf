@@ -1,6 +1,7 @@
 #include "file.h"
 
 #include <iostream>
+#include <fmt/format.h>
 #include <cpaf_libs/torrent/torrent.h>
 
 using namespace std;
@@ -17,13 +18,12 @@ file::file(libtorrent::file_index_t file_index, libtorrent::torrent_handle handl
 
 }
 
-size_t file::read(void* buffer, std::size_t bytes_to_read) const
+size_t file::read(void* buffer, std::size_t bytes_to_read, std::chrono::milliseconds timeout)
 {
     size_t bytes_stil_to_copy = bytes_to_read;
-    const auto data_pieces = get_pieces_data(offsett_, bytes_to_read);
+    const auto data_pieces = get_pieces_data(offsett_, bytes_to_read, timeout); // Will block current thread until data ready or timeout reached
     auto* byte_buf = static_cast<std::byte*>(buffer);
 
-    auto start = data_pieces.piece_begin_start_offset;
     for (const auto& data_piece : data_pieces.pieces) {
         if (!data_piece.buffer) {
             std::cerr << "ERROR file::read() data_piece.buffer is NULL\n";
@@ -33,17 +33,24 @@ size_t file::read(void* buffer, std::size_t bytes_to_read) const
             std::cerr << "ERROR file::read() data_piece is invalid!\n";
             return 0;
         }
-        const size_t bytes_to_copy = std::min(static_cast<size_t>(data_piece.size), bytes_stil_to_copy);
-        std::memcpy(byte_buf, &data_piece.buffer[start], bytes_to_copy);
+        const size_t bytes_to_copy = std::min(static_cast<size_t>(data_piece.bytes_left()), bytes_stil_to_copy);
+        std::memcpy(byte_buf, data_piece.buffer_begin(), bytes_to_copy);
         byte_buf += bytes_to_copy;  // Move destination buffer pointer
-        start = 0; // Any following pieces for this data will have start at '0'
         bytes_stil_to_copy -= bytes_to_copy;
         if (bytes_stil_to_copy == 0) {
             break;
         }
     }
 
-    return bytes_to_read - bytes_stil_to_copy;
+    if (streaming_mode_active()) {
+        const auto read_ahead_range = get_pieces_read_ahead_range(data_pieces.last_piece_index());
+        fmt::println("FIXMENM: Read [{}] : Request read ahead: {}", (int)data_pieces.last_piece_index(), read_ahead_range.dbg_string());
+        parent_torrent_ptr_->request_pieces(read_ahead_range, 0);
+    }
+
+    const auto bytes_read = bytes_to_read - bytes_stil_to_copy;
+    offsett_ += bytes_read;
+    return bytes_read;
 }
 
 // from stdio.h
@@ -66,17 +73,33 @@ int file::seek(int64_t offset, int whence)
     break;
 
     }
-    return 0 <= offsett_ && offsett_ < filesize;
+    const bool is_valid_offset = (0 <= offsett_) && (offsett_ < filesize);
+    return is_valid_offset ? 0 : -1;
+}
+
+void file::request_pieces_from_offset()
+{
+    const bool is_valid_offset = (0 <= offsett_) && (offsett_ < size());
+    if (is_valid_offset && streaming_mode_active()) {
+        const auto read_ahead_range = get_pieces_read_ahead_range(offsett_);
+        fmt::println("FIXMENM: Seek: Request read ahead: {}", read_ahead_range.dbg_string());
+        parent_torrent_ptr_->request_pieces(read_ahead_range, 0);
+    }
+}
+
+/** Is file is ready for streaming?
+ *  Test if given the current file offset and read_ahead_size_ are the pieces then ready in the cache, so we can start streaming this file.
+ *  @note This function only makes sense if the file is in streaming mode!
+*/
+bool file::are_streaming_pieces_in_cache() const
+{
+    const auto read_ahead_range = get_pieces_read_ahead_range(offsett_);
+    return parent_torrent_ptr_->are_pieces_in_cache(read_ahead_range);
 }
 
 std::int64_t file::size() const
 {
     return files_storage().file_size(file_index_);
-}
-
-int64_t file::offset() const
-{
-    return files_storage().file_offset(file_index_);
 }
 
 std::string file::name() const
@@ -104,16 +127,10 @@ const libtorrent::file_storage& file::files_storage() const
     return handle_.torrent_file()->files();
 }
 
-cache_piece_data_t file::get_file_data(int64_t offset) const
+/// Will block current thread until data ready or timeout reached
+cache_pieces_t file::get_pieces_data(int64_t offset, size_t size, std::chrono::milliseconds timeout) const
 {
-
-    return parent_torrent_ptr_->get_piece_data(file_index_, offset);
-
-}
-
-cache_pieces_t file::get_pieces_data(int64_t offset, size_t size) const
-{
-    return parent_torrent_ptr_->get_pieces_data(file_index_, offset, size);
+    return parent_torrent_ptr_->get_pieces_data(file_index_, offset, size, timeout);
 }
 
 pieces_range_t file::get_pieces_range(int64_t offset, size_t size) const
@@ -124,6 +141,16 @@ pieces_range_t file::get_pieces_range(int64_t offset, size_t size) const
 pieces_range_t file::get_pieces_read_ahead_range(libtorrent::piece_index_t from_piece, size_t read_ahead_size) const
 {
     return parent_torrent_ptr_->get_pieces_read_ahead_range(file_index_, from_piece, read_ahead_size);
+}
+
+pieces_range_t file::get_pieces_read_ahead_range(libtorrent::piece_index_t from_piece) const
+{
+    return parent_torrent_ptr_->get_pieces_read_ahead_range(file_index_, from_piece, read_ahead_size());
+}
+
+pieces_range_t file::get_pieces_read_ahead_range(int64_t offset) const
+{
+    return parent_torrent_ptr_->get_pieces_read_ahead_range(file_index_, offset, read_ahead_size());
 }
 
 

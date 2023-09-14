@@ -5,6 +5,11 @@
 using namespace std;
 using namespace std::filesystem;
 
+using namespace std::chrono;
+using namespace std::chrono_literals;
+
+constexpr int dbg_print_pieces_lower_than = 5;
+
 namespace cpaf::torrent {
 
 streaming_cache::streaming_cache(libtorrent::torrent_handle handle) :
@@ -75,34 +80,33 @@ bool streaming_cache::are_pieces_in_cache(const pieces_range_t& range) const
 {
     scoped_lock lock(cache_mutex_);
     for (auto piece = range.piece_begin; piece != range.piece_end; ++piece) {
-        if (!cache_map_.contains(piece)) {
+        if (!is_piece_in_cache_impl(piece)) {
             return false;
         }
     }
     return true;
 }
 
-cache_piece_data_t streaming_cache::get_piece_data(libtorrent::piece_index_t piece) const
+/// Will block current thread until data ready or timeout reached
+cache_pieces_t streaming_cache::get_pieces_data(const pieces_range_t& range, std::chrono::milliseconds timeout) const
 {
-    scoped_lock lock(cache_mutex_);
-    auto cpd = cache_map_[piece];
-    return cpd;
+    request_pieces(range, 0);   // Make sure we start a request for the data first!
+    const auto timeout_point = steady_clock::now() + timeout;
+    do {
+        const cache_pieces_t pieces_data = try_get_pieces_data_impl(range);
+        if (pieces_data.is_valid()) {
+            return pieces_data;
+        }
+        this_thread::sleep_for(50ms);
+    } while(timeout_point > steady_clock::now());
+
+    return cache_pieces_t();
 }
 
-cache_pieces_t streaming_cache::get_pieces_data(const pieces_range_t& range) const
+cache_pieces_t streaming_cache::try_get_pieces_data(const pieces_range_t& range) const
 {
-    scoped_lock lock(cache_mutex_);
-    cache_pieces_t pieces_data;
-    for (auto piece = range.piece_begin; piece != range.piece_end; ++piece) {
-//        if (piece == 0) {
-//            std::cerr << "FIXMENM breakpoint only\n";
-//        }
-        auto cpd = cache_map_[piece];
-        pieces_data.pieces.push_back(cpd);
-    }
-    pieces_data.piece_begin_start_offset    = range.piece_begin_start_offset;
-//    pieces_data.data_size                   = range.data_size;
-    return pieces_data;
+    request_pieces(range, 0);   // Make sure we start a request for the data first!
+    return try_get_pieces_data_impl(range);
 }
 
 void streaming_cache::set_piece_downloaded(libtorrent::piece_index_t piece)
@@ -120,7 +124,7 @@ std::vector<libtorrent::piece_index_t> streaming_cache::all_downloaded_indices()
 
 void streaming_cache::request_piece(libtorrent::piece_index_t piece, int32_t deadline_in_ms) const
 {
-    if (piece < 3000) {
+    if (piece < dbg_print_pieces_lower_than ) {
         std::cerr << "!!! request_piece !!!  index: " << piece << " is_piece_downloaded_impl: '" << is_piece_downloaded_impl(piece) << "'\n";
     }
     scoped_lock lock(cache_mutex_);
@@ -147,7 +151,7 @@ void streaming_cache::request_pieces(const pieces_range_t& range, int32_t deadli
 void streaming_cache::handle_piece_finished(const libtorrent::piece_finished_alert* pfa)
 {
     const auto piece = pfa->piece_index;
-    if (piece < 3000) {
+    if (piece < dbg_print_pieces_lower_than ) {
         std::cerr << "!!! handle_piece_finished !!!  index: " << piece << " is_requested: '" << is_piece_requested_impl(piece) << "'\n";
     }
 
@@ -163,7 +167,7 @@ void streaming_cache::handle_piece_finished(const libtorrent::piece_finished_ale
 void streaming_cache::handle_piece_read(const libtorrent::read_piece_alert* rpa)
 {
     const auto piece = rpa->piece;
-    if (piece < 3000) {
+    if (piece < dbg_print_pieces_lower_than ) {
         std::cerr << "!!! handle_piece_read !!! index: " << piece << "\n";
     }
     scoped_lock lock(cache_mutex_);
@@ -197,6 +201,26 @@ void streaming_cache::insert_piece_data_impl(const libtorrent::read_piece_alert*
 //    }
     cache_piece_data_t cpd(rpa);
     cache_map_[piece] = std::move(cpd);
+}
+
+cache_pieces_t streaming_cache::try_get_pieces_data_impl(const pieces_range_t& range) const
+{
+    scoped_lock lock(cache_mutex_);
+    cache_pieces_t pieces_data;
+    for (auto piece = range.piece_begin; piece != range.piece_end; ++piece) {
+        auto piece_data = cache_map_[piece];
+        if (!piece_data.is_valid()) {
+            return cache_pieces_t();    // Return invalid/empty range
+        }
+        pieces_data.pieces.push_back(piece_data);
+    }
+    if (!pieces_data.is_valid()) {
+        return pieces_data;
+    }
+
+    pieces_data.pieces[0].data_start_offset = range.piece_begin_data_start_offset();
+    pieces_data.data_size                   = range.data_size;
+    return pieces_data;
 }
 
 void streaming_cache::clear_current_streaming_range_impl()

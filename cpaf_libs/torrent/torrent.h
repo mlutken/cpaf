@@ -4,6 +4,7 @@
 #include <vector>
 #include <filesystem>
 #include <optional>
+#include <chrono>
 #include <libtorrent/torrent_handle.hpp>
 
 #include <cpaf_libs/torrent/file.h>
@@ -27,9 +28,9 @@ public:
     torrent&                            operator=                       (const torrent& other) = delete;
 
     file                                open                            (lt::file_index_t file_index);
+    file                                open_streaming                  (lt::file_index_t file_index, size_t read_ahead_size);
+    file                                open_largest_file_streaming     (size_t read_ahead_size);
 
-    std::size_t                         read                            (void* buffer, std::size_t size_in_bytes);
-    int                                 seek                            (int64_t offset, int whence);
     const std::string&                  uri                             () const                                    { return uri_; }
     const std::string&                  name                            () const                                    { return name_; }
     lt::torrent_status::state_t         state                           () const                                    { return handle_.status().state;   }
@@ -38,6 +39,7 @@ public:
     std::string                         largest_file_name               () const;
     lt::file_index_t                    largest_file_index              () const;
     std::filesystem::path               largest_file_local_file_path    () const;
+    lt::index_range<lt::file_index_t>   all_file_indices                () const;
     std::vector<std::string>            all_file_names                  () const;
     std::vector<std::string>            all_file_paths                  () const;
     int                                 number_of_files                 () const;
@@ -55,15 +57,17 @@ public:
     bool                                has_meta_data                   () const;
     bool                                is_fully_downloaded             () const;
     bool                                prepare_streaming               ();
+    void                                request_pieces                  (const pieces_range_t& range, int32_t deadline_in_ms = 0) const;
 
 
     lt::piece_index_t                   file_offset_to_piece_index      (lt::file_index_t file_index, std::int64_t offset) const;
     lt::peer_request                    file_offset_to_peer_request     (lt::file_index_t file_index, std::int64_t offset, size_t size) const;
-    cache_piece_data_t                  get_piece_data                  (lt::file_index_t file_index, std::int64_t offset) const;
-    cache_pieces_t                      get_pieces_data                 (lt::file_index_t file_index, int64_t offset, size_t size) const;
+    cache_pieces_t                      get_pieces_data                 (lt::file_index_t file_index, int64_t offset, size_t size, std::chrono::milliseconds timeout = std::chrono::minutes(2)) const;
 
     pieces_range_t                      get_pieces_range                (lt::file_index_t file_index, std::int64_t offset, size_t size) const;
     pieces_range_t                      get_pieces_read_ahead_range     (lt::file_index_t file_index, lt::piece_index_t from_piece, size_t read_ahead_size) const;
+    pieces_range_t                      get_pieces_read_ahead_range     (lt::file_index_t file_index, std::int64_t offset, size_t read_ahead_size) const;
+    bool                                are_pieces_in_cache             (const pieces_range_t& range) const;
 
     void                                handle_piece_finished           (const lt::piece_finished_alert* pfa);
     void                                handle_piece_read               (const lt::read_piece_alert* rpa);

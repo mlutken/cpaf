@@ -26,17 +26,16 @@ file torrent::open(libtorrent::file_index_t file_index)
     return file(file_index, handle_, this);
 }
 
-
-std::size_t torrent::read(void* /*buffer*/, std::size_t /*size_in_bytes*/)
+file torrent::open_streaming(libtorrent::file_index_t file_index, size_t read_ahead_size)
 {
-
-    return 0;   // No bytes read!
+    auto f = open(file_index);
+    f.read_ahead_size_set(read_ahead_size);
+    return f;
 }
 
-int torrent::seek(int64_t /*offset*/, int /*whence*/)
+file torrent::open_largest_file_streaming(size_t read_ahead_size)
 {
-
-    return 1; // Error
+    return open_streaming(largest_file_index(), read_ahead_size);
 }
 
 std::string torrent::largest_file_name() const
@@ -52,6 +51,16 @@ libtorrent::file_index_t torrent::largest_file_index() const
 std::filesystem::path torrent::largest_file_local_file_path() const
 {
     return cpaf::torrent::largest_file_local_file_path(handle_, parent_torrents_ptr_->base_torrents_path());
+}
+
+lt::index_range<libtorrent::file_index_t> torrent::all_file_indices() const
+{
+    auto torinfo_ptr = handle_.torrent_file();
+    if (!torinfo_ptr) {
+        return lt::index_range<libtorrent::file_index_t>();
+    }
+    const auto& storage = torinfo_ptr->files();
+    return storage.file_range();
 }
 
 std::vector<std::string> torrent::all_file_names() const
@@ -128,6 +137,11 @@ bool torrent::prepare_streaming()
     return true;
 }
 
+void torrent::request_pieces(const pieces_range_t& range, int32_t deadline_in_ms) const
+{
+    piece_data_cache_.request_pieces(range, deadline_in_ms);
+}
+
 libtorrent::piece_index_t torrent::file_offset_to_piece_index(libtorrent::file_index_t file_index, int64_t offset) const
 {
     lt::peer_request pr = files_storage().map_file(file_index, offset, 1);
@@ -139,17 +153,11 @@ libtorrent::peer_request torrent::file_offset_to_peer_request(libtorrent::file_i
     return files_storage().map_file(file_index, offset, size);
 }
 
-cache_piece_data_t torrent::get_piece_data(libtorrent::file_index_t file_index, int64_t offset) const
-{
-    constexpr int64_t size_not_used = 1;
-    libtorrent::peer_request  pr = file_offset_to_peer_request(file_index, offset, size_not_used);
-    return piece_data_cache_.get_piece_data(pr.piece);
-}
-
-cache_pieces_t torrent::get_pieces_data(libtorrent::file_index_t file_index, int64_t offset, size_t size) const
+/// Will block current thread until data ready or timeout reached
+cache_pieces_t torrent::get_pieces_data(libtorrent::file_index_t file_index, int64_t offset, size_t size, std::chrono::milliseconds timeout) const
 {
     const auto range = get_pieces_range(file_index, offset, size);
-    return piece_data_cache_.get_pieces_data(range);
+    return piece_data_cache_.get_pieces_data(range, timeout);
 }
 
 pieces_range_t torrent::get_pieces_range(libtorrent::file_index_t file_index, int64_t offset, size_t size) const
@@ -222,6 +230,17 @@ pieces_range_t torrent::get_pieces_read_ahead_range(libtorrent::file_index_t fil
     range.piece_end = range.piece_end + lt::piece_index_t(additional_pieces_to_get);
 
     return range;
+}
+
+pieces_range_t torrent::get_pieces_read_ahead_range(libtorrent::file_index_t file_index, int64_t offset, size_t read_ahead_size) const
+{
+    const auto piece = file_offset_to_piece_index(file_index, offset);
+    return get_pieces_range(file_index, piece, read_ahead_size);
+}
+
+bool torrent::are_pieces_in_cache(const pieces_range_t& range) const
+{
+    return piece_data_cache_.are_pieces_in_cache(range);
 }
 
 void torrent::handle_piece_finished(const libtorrent::piece_finished_alert* pfa)
