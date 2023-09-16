@@ -28,7 +28,9 @@ public:
     torrent&                            operator=                       (const torrent& other) = delete;
 
     file                                open                            (lt::file_index_t file_index);
+    file                                open                            (std::string_view file_path);
     file                                open_streaming                  (lt::file_index_t file_index, size_t read_ahead_size);
+    file                                open_streaming                  (std::string_view file_path, size_t read_ahead_size);
     file                                open_largest_file_streaming     (size_t read_ahead_size);
 
     const std::string&                  uri                             () const                                    { return uri_; }
@@ -43,6 +45,7 @@ public:
     std::vector<std::string>            all_file_names                  () const;
     std::vector<std::string>            all_file_paths                  () const;
     int                                 number_of_files                 () const;
+    lt::file_index_t                    file_path_to_index              (std::string_view file_path) const;
 
     lt::file_index_t                    file_index_at_offset            (std::int64_t offset) const;
     lt::file_index_t                    file_index_at_piece             (lt::piece_index_t piece) const;

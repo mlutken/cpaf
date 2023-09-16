@@ -29,6 +29,7 @@ public:
     void                                request_pieces_from_offset      ();
 
 
+    bool                                is_valid                        () const { return file_index_ >= 0; }
     bool                                are_streaming_pieces_in_cache   () const;
     bool                                streaming_mode_active           () const                        { return read_ahead_size_ > 0; }
     int64_t                             size                            () const;
@@ -50,7 +51,7 @@ public:
     private:
     const lt::file_storage&             files_storage                   () const;
 
-    lt::file_index_t                    file_index_;
+    lt::file_index_t                    file_index_         = -1;
     lt::torrent_handle                  handle_;
     torrent*                            parent_torrent_ptr_ = nullptr;
     int64_t                             offsett_ =0;

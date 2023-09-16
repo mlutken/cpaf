@@ -1,5 +1,6 @@
 #include "torrent.h"
 
+#include <algorithm>
 #include <iostream>
 #include <cpaf_libs/torrent/torrent_utils.h>
 #include <cpaf_libs/torrent/torrents.h>
@@ -26,11 +27,21 @@ file torrent::open(libtorrent::file_index_t file_index)
     return file(file_index, handle_, this);
 }
 
+file torrent::open(const string_view file_path)
+{
+    return open(file_path_to_index(file_path));
+}
+
 file torrent::open_streaming(libtorrent::file_index_t file_index, size_t read_ahead_size)
 {
     auto f = open(file_index);
     f.read_ahead_size_set(read_ahead_size);
     return f;
+}
+
+file torrent::open_streaming(std::string_view file_path, size_t read_ahead_size)
+{
+    return open_streaming(file_path_to_index(file_path), read_ahead_size);
 }
 
 file torrent::open_largest_file_streaming(size_t read_ahead_size)
@@ -78,6 +89,22 @@ int torrent::number_of_files() const
     const auto torinfo_ptr = handle_.torrent_file();
     if (!torinfo_ptr) { return -1; }
     return torinfo_ptr->num_files();
+}
+
+libtorrent::file_index_t torrent::file_path_to_index(std::string_view file_path) const
+{
+    const auto all_paths = all_file_paths();
+    const auto path_it = std::ranges::find(all_paths, file_path);
+    if (path_it != all_paths.end()) {
+        return path_it - all_paths.begin();
+    }
+
+    const auto all_names = all_file_names();
+    const auto name_it = std::ranges::find(all_names, file_path);
+    if (name_it != all_names.end()) {
+        return name_it - all_names.begin();
+    }
+    return libtorrent::file_index_t(-1);
 }
 
 libtorrent::file_index_t torrent::file_index_at_offset(int64_t offset) const

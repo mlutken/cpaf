@@ -18,7 +18,7 @@ file::file(libtorrent::file_index_t file_index, libtorrent::torrent_handle handl
 
 }
 
-size_t file::read(void* buffer, std::size_t bytes_to_read, std::chrono::milliseconds timeout)
+size_t file::read(void* buffer, const std::size_t bytes_to_read, const std::chrono::milliseconds timeout)
 {
     size_t bytes_stil_to_copy = bytes_to_read;
     const auto data_pieces = get_pieces_data(offsett_, bytes_to_read, timeout); // Will block current thread until data ready or timeout reached
@@ -48,8 +48,8 @@ size_t file::read(void* buffer, std::size_t bytes_to_read, std::chrono::millisec
         parent_torrent_ptr_->request_pieces(read_ahead_range, 0);
     }
 
-    const auto bytes_read = bytes_to_read - bytes_stil_to_copy;
-    offsett_ += bytes_read;
+    const size_t bytes_read = bytes_to_read - bytes_stil_to_copy;
+    offsett_ += static_cast<int64_t>(bytes_read);
     return bytes_read;
 }
 
