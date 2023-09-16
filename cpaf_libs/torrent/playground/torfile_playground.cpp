@@ -192,15 +192,15 @@ int main(int argc, char const* argv[])
     }
     cerr << std::endl << std::flush; cout << std::endl << std::flush;
 
-//    for (int i  = 0;; ++i) {
-//        const auto bytes_read = largest_file.read(text.data(), std::min(16'000ul, text.size()));
-//    //        fmt::println("Bytes read from largest file: {}, current offset: {}", bytes_read, largest_file.offset());
-//        cerr << "Bytes read from largest file: " << bytes_read << ",  current offset: " << largest_file.offset() << "\n";
-//        this_thread::sleep_for(20ms);
-//        if (my_torrent_ptr->is_fully_downloaded()) {
-//            break;
-//        }
-//    }
+    for (int i  = 0;; ++i) {
+        const auto bytes_read = largest_file.read(text.data(), std::min(16'000ul, text.size()));
+    //        fmt::println("Bytes read from largest file: {}, current offset: {}", bytes_read, largest_file.offset());
+        cerr << "Bytes read from largest file: " << bytes_read << ",  current offset: " << largest_file.offset() << "\n";
+        this_thread::sleep_for(20ms);
+        if (my_torrent_ptr->is_fully_downloaded()) {
+            break;
+        }
+    }
 
     my_torrents.stop();
     fmt::println ("Torrent: {} downloaded!", my_torrent_ptr->name());
