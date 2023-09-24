@@ -122,11 +122,11 @@ int main(int argc, char const* argv[])
 
 
     std::cerr << "Waiting for meta data for '" << my_torrent_ptr->name() << "' ... ";
-    while (!my_torrent_ptr->has_meta_data()) {
-        //// my_torrents.frame_update();
-//        std::cerr << "State: " << my_torrent_ptr->state() << "\n";
-        this_thread::sleep_for(0ms);
-    }
+    my_torrent_ptr->wait_for_meta_data();
+//    while (!my_torrent_ptr->has_meta_data()) {
+////        std::cerr << "State: " << my_torrent_ptr->state() << "\n";
+//        this_thread::sleep_for(0ms);
+//    }
     std::cerr << " done!\n";
     my_torrent_ptr->prepare_streaming();
 

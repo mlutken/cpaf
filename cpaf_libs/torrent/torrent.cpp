@@ -2,10 +2,13 @@
 
 #include <algorithm>
 #include <iostream>
+#include <chrono>
 #include <cpaf_libs/torrent/torrent_utils.h>
 #include <cpaf_libs/torrent/torrents.h>
 
 using namespace std;
+using namespace std::chrono;
+using namespace std::chrono_literals;
 
 
 namespace cpaf::torrent {
@@ -47,6 +50,19 @@ file torrent::open_streaming(std::string_view file_path, size_t read_ahead_size)
 file torrent::open_largest_file_streaming(size_t read_ahead_size)
 {
     return open_streaming(largest_file_index(), read_ahead_size);
+}
+
+bool torrent::wait_for_meta_data(std::chrono::milliseconds timeout)
+{
+    const auto timeout_point = steady_clock::now() + timeout;
+    do {
+        if (has_meta_data()) {
+            return true;
+        }
+        this_thread::sleep_for(10ms);
+    } while(timeout_point > steady_clock::now());
+
+    return false;
 }
 
 std::string torrent::largest_file_name() const

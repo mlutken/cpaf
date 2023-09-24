@@ -32,6 +32,7 @@ public:
     file                                open_streaming                  (lt::file_index_t file_index, size_t read_ahead_size);
     file                                open_streaming                  (std::string_view file_path, size_t read_ahead_size);
     file                                open_largest_file_streaming     (size_t read_ahead_size);
+    bool                                wait_for_meta_data              (std::chrono::milliseconds timeout = std::chrono::minutes(1));
 
     const std::string&                  uri                             () const                                    { return uri_; }
     const std::string&                  name                            () const                                    { return name_; }
