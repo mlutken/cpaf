@@ -7,6 +7,10 @@ extern "C"
 
 #include <memory>
 
+namespace cpaf::torrent {
+class torrents;
+}
+
 /**
  * @brief The custom_io_base class
  *
@@ -19,14 +23,20 @@ class custom_io_base
 {
 public:
     static std::unique_ptr<custom_io_base>  create              (const std::string& protocol_name);
-    static std::unique_ptr<custom_io_base>  create_and_open     (const std::string& name);
+//    static std::unique_ptr<custom_io_base>  create_and_open     (const std::string& name);
+
+    struct creator {
+        std::unique_ptr<custom_io_base>  create  (const std::string& protocol_name);
+
+        std::shared_ptr<cpaf::torrent::torrents>  all_torrents;
+    };
 
     custom_io_base() = default;
     virtual ~custom_io_base();
     size_t              buffer_size             () const noexcept { return do_buffer_size(); };
     bool                open                    (const std::string& resource_path);
     void                close                   () { do_close(); }
-    bool                is_open                 () { do_is_open(); }
+    bool                is_open                 () { return do_is_open(); }
     const std::string&  resource_path           () const { return resource_path_; }
     bool                init                    (AVFormatContext*  ff_format_context);
 //    AVIOContext*        ff_avio_context         () const { return ff_avio_context_; }

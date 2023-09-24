@@ -15,7 +15,7 @@ torrent::torrent(const std::string& uri_or_name, libtorrent::torrent_handle hand
     piece_data_cache_(handle),
     parent_torrents_ptr_(parent_torrents_ptr)
 {
-    if (string_is_uri(uri_or_name)) {
+    if (is_magnet_uri(uri_or_name)) {
         uri_ = uri_or_name;
     }
     name_ = torrent_name(uri_or_name);

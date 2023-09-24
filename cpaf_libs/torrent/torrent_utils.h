@@ -9,7 +9,7 @@
 
 namespace cpaf::torrent {
 
-bool                                string_is_uri                   (const std::string& uri_or_name);
+bool                                is_magnet_uri                   (const std::string& uri_or_name);
 std::string                         torrent_name                    (const std::string& uri_or_name);
 std::string                         largest_file_name               (const lt::torrent_handle& handle);
 //std::optional<lt::file_index_t>     largest_file_index              (const lt::torrent_handle& handle);

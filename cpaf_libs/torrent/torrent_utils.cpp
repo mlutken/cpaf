@@ -14,7 +14,7 @@ namespace ba = boost::algorithm;
 namespace cpaf::torrent {
 
 
-bool string_is_uri (const std::string& uri_or_name)
+bool is_magnet_uri (const std::string& uri_or_name)
 {
     return ba::istarts_with(uri_or_name, "magnet:?");
 }

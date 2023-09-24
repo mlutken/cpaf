@@ -8,6 +8,12 @@
 #include <cpaf_libs/video/media_stream_time.h>
 #include <cpaf_libs/video/audio_resampler.h>
 
+
+namespace cpaf::torrent {
+class torrents;
+}
+
+
 namespace cpaf::video {
 
 class player
@@ -82,6 +88,9 @@ public:
     audio_play_callback_t       audio_callback_get      ();
     bool                        video_frame_update      (av_frame& current_frame, render& video_render);
 
+    std::shared_ptr<torrent::torrents>   torrents_get   () const;
+    void                        torrents_set            (std::shared_ptr<torrent::torrents> tors) { torrents_ = tors; }
+
 
     // --------------------
     // --- Play control ---
@@ -132,6 +141,7 @@ private:
     pipeline_threads                                                    media_pipeline_threads_;
 
     std::string                                                         primary_resource_path_;
+    mutable std::shared_ptr<torrent::torrents>                          torrents_;
 };
 
 } //END namespace cpaf::video

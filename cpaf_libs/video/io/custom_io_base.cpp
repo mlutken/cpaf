@@ -13,6 +13,14 @@ std::unique_ptr<custom_io_base> custom_io_base::create(const std::string& protoc
     return ptr;
 }
 
+std::unique_ptr<custom_io_base>  custom_io_base::creator::create  (const std::string& protocol_name)
+{
+    std::unique_ptr<custom_io_base> ptr;
+    if      (protocol_name == "magnet") { ptr = std::make_unique<torrent_io>(); }
+    else if (protocol_name == "myfile") { ptr = std::make_unique<my_file_io>(); }
+    return ptr;
+}
+
 
 custom_io_base::~custom_io_base()
 {

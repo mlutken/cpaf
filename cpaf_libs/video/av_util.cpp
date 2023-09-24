@@ -7,6 +7,7 @@ extern "C"
 }
 
 #include <cpaf_libs/unicode/cpaf_u8string_utils.h>
+#include <cpaf_libs/torrent/torrent_utils.h>
 
 // FIND: ^(.+)\s*$
 // REPLACE: case \1: return "\1"; break;
@@ -79,6 +80,9 @@ surface_dimensions_t scale_surface_dimensions(const surface_dimensions_t& src_di
 
 string protocol_from_uri(const std::string& uri)
 {
+    if (torrent::is_magnet_uri(uri)) {
+        return "magnet";
+    }
     return cu::substring_between(uri, "", ":");
 }
 

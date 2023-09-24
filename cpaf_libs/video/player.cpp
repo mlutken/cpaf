@@ -1,5 +1,7 @@
 #include "player.h"
 
+#include <cpaf_libs/torrent/torrents.h>
+
 namespace cpaf::video {
 
 player::player()
@@ -219,6 +221,15 @@ player::audio_play_callback_t player::audio_callback_get()
 bool player::video_frame_update(av_frame& current_frame, render& video_render)
 {
     return media_pipeline_threads().video_frame_update(current_frame, video_render);
+}
+
+std::shared_ptr<torrent::torrents> player::torrents_get() const
+{
+    if (!torrents_) {
+        torrents_ = std::make_shared<torrent::torrents>();
+        torrents_->start();
+    }
+    return torrents_;
 }
 
 // --------------------

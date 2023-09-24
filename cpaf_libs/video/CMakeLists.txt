@@ -73,7 +73,14 @@ target_sources(${library_name}
 
 get_filename_component(PARENT_DIR ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
 get_filename_component(PARENT2_DIR ${PARENT_DIR} DIRECTORY)
-target_link_libraries(${library_name} "cpaf_audio;cpaf_unicode;cpaf_utils;cpaf_math;cpaf_time;luepp_concurrent;luepp_containers")
+target_link_libraries(${library_name} "cpaf_audio")
+target_link_libraries(${library_name} "cpaf_unicode;")
+target_link_libraries(${library_name} "cpaf_utils;cpaf_math;cpaf_time;luepp_concurrent;luepp_containers")
+target_link_libraries(${library_name} "cpaf_math;cpaf_time;luepp_concurrent;luepp_containers")
+target_link_libraries(${library_name} "cpaf_time;luepp_concurrent;luepp_containers")
+target_link_libraries(${library_name} "luepp_concurrent;luepp_containers")
+target_link_libraries(${library_name} "luepp_containers")
+target_link_libraries(${library_name} "cpaf_torrent")
 target_link_libraries(${library_name} ffmpeg::ffmpeg )
 
 set_target_properties(${library_name} PROPERTIES LINKER_LANGUAGE CXX)
