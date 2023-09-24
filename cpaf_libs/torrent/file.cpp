@@ -87,6 +87,11 @@ void file::request_pieces_from_offset()
     }
 }
 
+void file::close()
+{
+    std::cerr << "TODO TODO cpaf::torrent::file::close()\n";
+}
+
 /** Is file is ready for streaming?
  *  Test if given the current file offset and read_ahead_size_ are the pieces then ready in the cache, so we can start streaming this file.
  *  @note This function only makes sense if the file is in streaming mode!

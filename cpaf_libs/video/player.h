@@ -122,8 +122,8 @@ private:
     // ----------------------------
     // --- PRIVATE: Member vars ---
     // ----------------------------
-    media_stream_time                                                   cur_media_time_;
     play_stream                                                         primary_source_stream_;
+    av_samples_queue                                                    audio_samples_queue_;
     std::array<std::unique_ptr<play_stream>, stream_type_index_size()>  source_streams_                 = {nullptr, nullptr, nullptr, nullptr, nullptr};
     surface_dimensions_t                                                video_dst_dimensions_requested_ = {surface_dimension_auto,surface_dimension_auto};
     int32_t                                                             video_scaler_flags_             = SWS_BILINEAR;
@@ -136,12 +136,12 @@ private:
 
     mutable av_codec_context                                            video_codec_ctx_;
     mutable av_codec_context                                            audio_codec_ctx_;
-    av_samples_queue                                                    audio_samples_queue_;
     audio_resampler                                                     audio_resampler_;
     pipeline_threads                                                    media_pipeline_threads_;
 
     std::string                                                         primary_resource_path_;
     mutable std::shared_ptr<torrent::torrents>                          torrents_;
+    media_stream_time                                                   cur_media_time_;
 };
 
 } //END namespace cpaf::video

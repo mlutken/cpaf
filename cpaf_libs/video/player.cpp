@@ -5,7 +5,8 @@
 namespace cpaf::video {
 
 player::player()
-    : audio_samples_queue_(1000)
+    : primary_source_stream_([this]() {return torrents_get();}),
+      audio_samples_queue_(1000)
 {
     current_media_time_set(cur_media_time_);
 }
@@ -291,7 +292,7 @@ std::string player::queues_info() const
 bool player::open_stream(const std::string& resource_path, stream_type_t sti)
 {
     const auto index = to_size_t(sti);
-    source_streams_[index] = std::make_unique<play_stream>();
+    source_streams_[index] = std::make_unique<play_stream>([this]() {return torrents_get();});
     const auto open_ok = source_streams_[index]->open(resource_path);
 
     return open_ok;

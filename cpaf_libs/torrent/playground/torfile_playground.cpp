@@ -196,7 +196,7 @@ int main(int argc, char const* argv[])
         const auto bytes_read = largest_file.read(text.data(), std::min(16'000ul, text.size()));
     //        fmt::println("Bytes read from largest file: {}, current offset: {}", bytes_read, largest_file.offset());
         cerr << "Bytes read from largest file: " << bytes_read << ",  current offset: " << largest_file.offset() << "\n";
-        this_thread::sleep_for(20ms);
+        this_thread::sleep_for(2s);
         if (my_torrent_ptr->is_fully_downloaded()) {
             break;
         }

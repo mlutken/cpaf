@@ -10,15 +10,25 @@ extern "C"
 #include <string>
 #include <chrono>
 #include <atomic>
+#include <memory>
+#include <functional>
 
 #include <math/base/v2.hpp>
 #include <video/audio_types_convert.h>
+
+namespace cpaf::torrent {
+    class torrents;
+}
+
+
 
 namespace cpaf::video {
 using pipeline_index_t = std::uint64_t;
 using atomic_pipeline_index_t = std::atomic<pipeline_index_t>;
 using av_base_duration = std::chrono::duration<int64_t, std::ratio<1, AV_TIME_BASE>>;
 using surface_dimensions_t = cpaf::math::v2<int32_t>;
+using get_torrents_fn = std::function<std::shared_ptr<cpaf::torrent::torrents> ()>;
+
 constexpr int32_t surface_dimension_auto = -1;
 static constexpr size_t no_stream_index = std::numeric_limits<size_t>::max();
 

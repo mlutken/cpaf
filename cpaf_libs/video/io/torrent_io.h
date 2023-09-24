@@ -1,11 +1,21 @@
 #pragma once
 
+#include <memory>
 #include "custom_io_base.h"
+
+#include <cpaf_libs/torrent/file.h>
+
+namespace cpaf::torrent {
+class torrents;
+class torrent;
+}
+
+namespace cpaf::video {
 
 class torrent_io : public custom_io_base
 {
 public:
-    torrent_io() = default;
+    explicit torrent_io(std::shared_ptr<torrent::torrents> torrents_instance);
 
 private:
 
@@ -16,5 +26,10 @@ private:
     int             do_read_packet          (uint8_t* buf, int buf_size) override;
 //    int       do_write_packet         (uint8_t* buf, int buf_size) override;
     int64_t         do_seek                 (int64_t offset, int whence) override;
+
+    torrent::file                           tor_file_;
+    std::shared_ptr<torrent::torrents>      torrents_instance_;
+    std::shared_ptr<torrent::torrent>       torrent_;
 };
 
+} //END namespace cpaf::video

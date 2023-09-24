@@ -27,6 +27,7 @@ public:
     size_t                              read_ahead_size                 () const                        { return read_ahead_size_; }
     void                                read_ahead_size_set             (size_t read_ahead_size)        { read_ahead_size_ = read_ahead_size; }
     void                                request_pieces_from_offset      ();
+    void                                close                           ();
 
 
     bool                                is_valid                        () const { return file_index_ >= 0; }

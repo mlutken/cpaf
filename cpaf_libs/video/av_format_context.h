@@ -22,10 +22,10 @@ extern "C"
 #include <cpaf_libs/video/av_codec_parameters.h>
 #include <cpaf_libs/video/av_packet.h>
 
-class custom_io_base;
 
 namespace cpaf::video {
 
+class custom_io_base;
 
 
 /**
@@ -38,8 +38,8 @@ public:
     using get_packet_fun = std::function<av_packet()>;
 
     // --- Constructors etc. ---
-    av_format_context();
-    explicit av_format_context(const std::string& resource_path);
+    explicit av_format_context(get_torrents_fn get_torrents_function);
+////    explicit av_format_context(const std::string& resource_path);
 
     ~av_format_context();
     bool                    open                        (const std::string& resource_path);
@@ -139,6 +139,7 @@ private:
     const AVCodec*          ff_find_decoder             (size_t stream_index) const;
     AVRational              stream_time_base            (size_t stream_index) const { return ff_format_context_->streams[stream_index]->time_base; }
 
+    get_torrents_fn                                         get_torrents_function_;
     std::array<size_t, media_type_size()>                   selected_stream_per_media_type_;
     std::array<std::vector<size_t>, media_type_size()>      stream_indices_per_media_type_;
     std::array<packet_queue_t, media_type_size()>           packet_queue_per_media_type_;

@@ -10,6 +10,12 @@ namespace cpaf::video {
 // --- Constructors etc. ---
 // -------------------------
 
+play_stream::play_stream(get_torrents_fn get_torrents_function) :
+    format_context_(get_torrents_function)
+{
+
+}
+
 play_stream::~play_stream()
 {
     format_context_.close();

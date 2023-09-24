@@ -4,6 +4,7 @@
 #include <cpaf_libs/video/av_format_context.h>
 #include <cpaf_libs/video/pipeline_threads/pipeline_threads.h>
 #include <cpaf_libs/video/av_samples_queue.h>
+#include <cpaf_libs/video/av_util.h>
 
 namespace cpaf::video {
 
@@ -16,7 +17,7 @@ public:
     // -------------------------
     // --- Constructors etc. ---
     // -------------------------
-             play_stream() = default;
+             explicit play_stream(get_torrents_fn get_torrents_function);
              ~play_stream();
     bool                        open                    (const std::string& resource_path);
 

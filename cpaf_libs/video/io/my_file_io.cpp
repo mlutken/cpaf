@@ -6,6 +6,8 @@
 namespace cu = cpaf::unicode;
 using namespace std;
 
+namespace cpaf::video {
+
 #if 1
 bool my_file_io::do_open(const std::string& resource_path)
 {
@@ -141,3 +143,5 @@ int64_t my_file_io::do_seek(int64_t offset, int whence)
 //    return static_cast<int64_t>(stream_.tellg());
 }
 #endif
+
+} //END namespace cpaf::video

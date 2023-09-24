@@ -31,18 +31,19 @@ namespace cpaf::video {
 // -------------------------
 
 
-av_format_context::av_format_context()
+av_format_context::av_format_context(get_torrents_fn get_torrents_function) :
+    get_torrents_function_(get_torrents_function)
 {
     selected_stream_per_media_type_.fill(no_stream_index);
 }
 
-av_format_context::av_format_context(const std::string& resource_path)
-    : av_format_context()
-{
-    if (!open(resource_path)) {
-        throw std::ios_base::failure("Could not open resource '"s + resource_path + "'"s);
-    }
-}
+////av_format_context::av_format_context(const std::string& resource_path)
+////    : av_format_context()
+////{
+////    if (!open(resource_path)) {
+////        throw std::ios_base::failure("Could not open resource '"s + resource_path + "'"s);
+////    }
+////}
 
 av_format_context::~av_format_context()
 {
@@ -54,7 +55,7 @@ bool av_format_context::open(const std::string& resource_path)
     resource_path_ = resource_path;
 
     const string protocol_name = protocol_from_uri(resource_path);
-    custom_io_ptr_ = custom_io_base::create(protocol_name);
+    custom_io_ptr_ = custom_io_base::create(protocol_name, get_torrents_function_);
     if (custom_io_ptr_) {
         if (!custom_io_ptr_->open(resource_path)) {
             return false;

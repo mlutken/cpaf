@@ -6,10 +6,14 @@ extern "C"
 }
 
 #include <memory>
+#include <cpaf_libs/video/av_util.h>
 
 namespace cpaf::torrent {
 class torrents;
 }
+
+
+namespace cpaf::video {
 
 /**
  * @brief The custom_io_base class
@@ -22,14 +26,14 @@ class torrents;
 class custom_io_base
 {
 public:
-    static std::unique_ptr<custom_io_base>  create              (const std::string& protocol_name);
+    static std::unique_ptr<custom_io_base>  create              (const std::string& protocol_name, get_torrents_fn get_torrents_function);
 //    static std::unique_ptr<custom_io_base>  create_and_open     (const std::string& name);
 
-    struct creator {
-        std::unique_ptr<custom_io_base>  create  (const std::string& protocol_name);
+//    struct creator {
+//        std::unique_ptr<custom_io_base>  create  (const std::string& protocol_name);
 
-        std::shared_ptr<cpaf::torrent::torrents>  all_torrents;
-    };
+//        std::shared_ptr<cpaf::torrent::torrents>  all_torrents;
+//    };
 
     custom_io_base() = default;
     virtual ~custom_io_base();
@@ -62,3 +66,4 @@ private:
 
 };
 
+} //END namespace cpaf::video
