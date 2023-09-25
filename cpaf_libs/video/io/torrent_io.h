@@ -30,6 +30,10 @@ private:
     torrent::file                           tor_file_;
     std::shared_ptr<torrent::torrents>      torrents_instance_;
     std::shared_ptr<torrent::torrent>       torrent_;
+
+    std::string            debug_file_path_ = "/home/ml/temp/Rambo.First.Blood.1982.REMASTERED.1080p.BluRay.x265-RARBG/Rambo.First.Blood.1982.REMASTERED.1080p.BluRay.x265-RARBG.mp4";
+    FILE*                  debug_file_ = nullptr;
+
 };
 
 } //END namespace cpaf::video

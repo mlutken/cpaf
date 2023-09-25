@@ -14,9 +14,14 @@ torrent_io::torrent_io(std::shared_ptr<torrent::torrents> torrents_instance) :
 bool torrent_io::do_open(const std::string& resource_path)
 {
     torrent_ = torrents_instance_->add_torrent(resource_path);
+
     if (!torrent_) {
         return false;
     }
+    std::cerr << "Waiting for meta data for '" << torrent_->name() << "' ... ";
+    torrent_->wait_for_meta_data();
+    std::cerr << " done!\n";
+
     tor_file_ = torrent_->open_largest_file_streaming(torrents_instance_->default_read_ahead_size());
     if (!tor_file_.is_valid()) {
         return false;
