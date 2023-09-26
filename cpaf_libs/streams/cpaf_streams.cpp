@@ -221,6 +221,12 @@ std::string to_string(const std::filesystem::path& file_path, std::size_t reserv
 // --- Write file convenience functions ---
 // ----------------------------------------
 
+void to_file(const std::string& resource_path, std::span<char> str)
+{
+    auto os = create_ostream(resource_path);
+    os.os().write(str.data(), static_cast<std::streamsize>(str.size()));
+}
+
 void to_file(const std::string& resource_path, containers::string8 str)
 {
     auto os = create_ostream(resource_path);
@@ -233,11 +239,13 @@ void to_file(const std::string& resource_path, const char* sz_str, std::size_t s
     os.os().write(sz_str, static_cast<std::streamsize>(size));
 }
 
+
 void to_file(const std::string& resource_path, const char* sz_str)
 {
     auto os = create_ostream(resource_path);
     os.os() << sz_str;
 }
+
 
 void to_file(const std::string& resource_path, const std::string& str)
 {
@@ -260,6 +268,12 @@ void to_file(const std::string& resource_path, const std::vector<std::string>& l
             os.os() << "\n";
         }
     }
+}
+
+void to_file(const std::filesystem::path& file_path, std::span<char> str)
+{
+    auto os = create_ostream(file_path);
+    os.os().write(str.data(), static_cast<std::streamsize>(str.size()));
 }
 
 void to_file(const std::filesystem::path& file_path, containers::string8 str)
@@ -295,6 +309,11 @@ void to_file(const std::filesystem::path& file_path, const std::vector<std::stri
 // --------------------------------------------
 // --- Append to file convenience functions ---
 // --------------------------------------------
+void append_to(const std::string& resource_path, std::span<char> str)
+{
+    auto os = create_ostream(resource_path, std::ios_base::app);
+    os.os().write(str.data(), static_cast<std::streamsize>(str.size()));
+}
 
 void append_to(const std::string& resource_path, containers::string8 str)
 {
@@ -331,6 +350,11 @@ void append_to(const std::string& resource_path, const std::vector<std::string>&
     }
 }
 
+void append_to(const std::filesystem::path& file_path, std::span<char> str)
+{
+    append_to(file_path.string(), str);
+}
+
 void append_to(const std::filesystem::path& file_path, containers::string8 str)
 {
     append_to(file_path.string(), str);
@@ -355,6 +379,7 @@ void append_to(const std::filesystem::path& file_path, const std::vector<std::st
 {
     append_to(file_path.string(), lines, append_newline);
 }
+
 } //END namespace cpaf::streams
 
 

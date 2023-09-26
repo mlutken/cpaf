@@ -1,11 +1,11 @@
-#ifndef CPAF_STREAMS_H
-#define CPAF_STREAMS_H
+#pragma once
 
 #include <string>
 #include <istream>
 #include <fstream>
 #include <ostream>
 #include <memory>
+#include <span>
 #include <filesystem>
 #include <containers/cpaf_string8.h>
 #include <compression/cpaf_compression_functions.h>
@@ -170,6 +170,7 @@ inline void to_file(const std::string& resource_path, const containers::dynamic_
     os.os().write(reinterpret_cast<const char*>(dyn_array.data()), static_cast<std::streamsize>(dyn_array.size()));
 }
 
+void            to_file     (const std::string& resource_path, std::span<char> str);
 void            to_file     (const std::string& resource_path, cpaf::containers::string8 str);
 void            to_file     (const std::string& resource_path, const char* sz_str);
 void            to_file     (const std::string& resource_path, const char* sz_str, std::size_t size);
@@ -183,6 +184,7 @@ inline void to_file(const std::filesystem::path& file_path, const containers::dy
     to_file<T, EXTRA_CAPACITY>(file_path.string(), dyn_array);
 }
 
+void            to_file     (const std::filesystem::path& file_path, std::span<char> str);
 void            to_file     (const std::filesystem::path& file_path, cpaf::containers::string8 str);
 void            to_file     (const std::filesystem::path& file_path, const char* sz_str);
 void            to_file     (const std::filesystem::path& file_path, const char* sz_str, std::size_t size);
@@ -193,12 +195,14 @@ void            to_file     (const std::filesystem::path& file_path, const std::
 // --------------------------------------------
 // --- Append to file convenience functions ---
 // --------------------------------------------
+void            append_to   (const std::string& resource_path, std::span<char> str);
 void            append_to   (const std::string& resource_path, cpaf::containers::string8 str);
 void            append_to   (const std::string& resource_path, const char* sz_str);
 void            append_to   (const std::string& resource_path, const std::string& str);
 void            append_to   (const std::string& resource_path, const std::string_view& str);
 void            append_to   (const std::string& resource_path, const std::vector<std::string>& lines, bool append_newline = true);
 
+void            append_to   (const std::filesystem::path& file_path, std::span<char> str);
 void            append_to   (const std::filesystem::path& file_path, cpaf::containers::string8 str);
 void            append_to   (const std::filesystem::path& file_path, const char* sz_str);
 void            append_to   (const std::filesystem::path& file_path, const std::string& str);
@@ -207,8 +211,4 @@ void            append_to   (const std::filesystem::path& file_path, const std::
 
 
 } //END namespace cpaf::streams
-
-
-#endif //CPAF_STREAMS_H
-
 
