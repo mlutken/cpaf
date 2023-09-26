@@ -159,6 +159,19 @@ int torrent::num_pieces() const
     return torinfo_ptr->num_pieces();
 }
 
+
+libtorrent::piece_index_t torrent::piece_index_end() const
+{
+    const auto torinfo_ptr = handle_.torrent_file();
+    if (!torinfo_ptr) { return 0; }
+    return torinfo_ptr->last_piece();
+}
+
+void torrent::ensure_piece_range_valid(pieces_range_t& range) const
+{
+    if (range.piece_end > piece_index_end()) { range.piece_end =  piece_index_end(); }
+}
+
 bool torrent::has_meta_data() const
 {
     return cpaf::torrent::has_meta_data(handle_);
@@ -243,7 +256,7 @@ pieces_range_t torrent::get_pieces_range(libtorrent::file_index_t file_index, in
 
     // Increase range
     range.piece_end = range.piece_end + lt::piece_index_t(additional_pieces_to_get);
-
+    ensure_piece_range_valid(range);
     return range;
 }
 
@@ -271,14 +284,14 @@ pieces_range_t torrent::get_pieces_read_ahead_range(libtorrent::file_index_t fil
 
 
     range.piece_end = range.piece_end + lt::piece_index_t(additional_pieces_to_get);
-
+    ensure_piece_range_valid(range);
     return range;
 }
 
 pieces_range_t torrent::get_pieces_read_ahead_range(libtorrent::file_index_t file_index, int64_t offset, size_t read_ahead_size) const
 {
     const auto piece = file_offset_to_piece_index(file_index, offset);
-    return get_pieces_range(file_index, piece, read_ahead_size);
+    return get_pieces_read_ahead_range(file_index, piece, read_ahead_size);
 }
 
 bool torrent::are_pieces_in_cache(const pieces_range_t& range) const
