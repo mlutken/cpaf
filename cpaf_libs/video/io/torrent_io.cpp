@@ -15,8 +15,8 @@ namespace cpaf::video {
 torrent_io::torrent_io(std::shared_ptr<torrent::torrents> torrents_instance) :
     torrents_instance_(torrents_instance)
 {
-    ofstream(tor_data_path_, ios_base::trunc);
-    ofstream(file_data_path_, ios_base::trunc);
+//    ofstream(tor_data_path_, ios_base::trunc);
+//    ofstream(file_data_path_, ios_base::trunc);
 }
 
 
@@ -40,7 +40,7 @@ bool torrent_io::do_open(const std::string& resource_path)
     if (!tor_file_.is_valid()) {
         return false;
     }
-    debug_file_open(debug_file_path_);
+//    debug_file_open(debug_file_path_);
 
     return true;
 }
@@ -48,7 +48,7 @@ bool torrent_io::do_open(const std::string& resource_path)
 /// @note torrent::file::close() is not yet implemented!
 void torrent_io::do_close()
 {
-    debug_file_close();
+//    debug_file_close();
 
     if (!tor_file_.is_valid()) {
         tor_file_.close();
@@ -92,7 +92,7 @@ int torrent_io::do_read_packet(uint8_t* buf, int buf_size)
 
 int64_t torrent_io::do_seek(int64_t offset, int whence)
 {
-    const auto debug_file_new_pos = debug_file_seek(offset, whence);
+//    const auto debug_file_new_pos = debug_file_seek(offset, whence);
 
     if (!tor_file_.is_valid()) {
         return AVERROR(ENOENT); // ERROR
@@ -107,7 +107,8 @@ int64_t torrent_io::do_seek(int64_t offset, int whence)
             new_pos = tor_file_.offset();
         }
     }
-    std::cerr << "torrent_io::do_seek (" << offset << ", " << whence << ") debug_file: " << debug_file_new_pos << ",  tor_file: " << new_pos << "\n";
+//    std::cerr << "torrent_io::do_seek (" << offset << ", " << whence << ") debug_file: " << debug_file_new_pos << ",  tor_file: " << new_pos << "\n";
+    std::cerr << "torrent_io::do_seek (" << offset << ", " << whence << ") tor_file new pos: " << new_pos << "\n";
 
 
     return new_pos;
