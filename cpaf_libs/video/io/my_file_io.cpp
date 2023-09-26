@@ -56,14 +56,12 @@ int my_file_io::do_read_packet(uint8_t* buf, int buf_size)
 
 int64_t my_file_io::do_seek(int64_t offset, int whence)
 {
-    switch(whence) {
-    case AVSEEK_SIZE:
-    {
+    if ( (AVSEEK_SIZE & whence) == AVSEEK_SIZE){
         const auto new_pos = static_cast<int64_t>(std::filesystem::file_size(resource_file_path_));
         return new_pos;
     }
-        //        return static_cast<int64_t>(std::filesystem::file_size(resource_file_path_));
-        break;
+
+    switch(whence) {
     case SEEK_SET:
         fseek(file_, offset, whence);
         break;
