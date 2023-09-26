@@ -137,15 +137,16 @@ int main(int argc, char const* argv[])
 //        fmt::println ("[{} == {}] File in torrent: '{}'", (int)index, (int)my_torrent_ptr->file_path_to_index(file.name()), file.name());
     }
 
-    cout << "Largest file index       : '" << my_torrent_ptr->largest_file_index() << "'\n";
-    cout << "Largest file             : '" << my_torrent_ptr->largest_file_local_file_path() << "'\n";
-    cout << "Number of pieces         : " << my_torrent_ptr->num_pieces() << "\n";
-    cout << "Piece len                : " << my_torrent_ptr->piece_length() << "\n";
-    cout << "file_index_at_offset(2)  : " << my_torrent_ptr->file_index_at_offset(2) << "\n";
-    cout << "file_index_at_offset(30) : " << my_torrent_ptr->file_index_at_offset(30) << "\n";
-    cout << "file_index_at_offset(128): " << my_torrent_ptr->file_index_at_offset(128) << "\n";
-    cout << "file_index_at_offset(129): " << my_torrent_ptr->file_index_at_offset(129) << "\n";
-    cout << "file_index_at_offset(130): " << my_torrent_ptr->file_index_at_offset(130) << "\n";
+    cout << "Largest file index         : '" << my_torrent_ptr->largest_file_index() << "'\n";
+    cout << "Largest file               : '" << my_torrent_ptr->largest_file_local_file_path() << "'\n";
+    cout << "Number of pieces           : " << my_torrent_ptr->num_pieces() << "\n";
+    cout << "End piece                  : " << my_torrent_ptr->piece_index_end() << "\n";
+    cout << "Piece len                  : " << my_torrent_ptr->piece_length() << "\n";
+    cout << "file_index_at_offset(2)    : " << my_torrent_ptr->file_index_at_offset(2) << "\n";
+    cout << "file_index_at_offset(30)   : " << my_torrent_ptr->file_index_at_offset(30) << "\n";
+    cout << "file_index_at_offset(128)  : " << my_torrent_ptr->file_index_at_offset(128) << "\n";
+    cout << "file_index_at_offset(129)  : " << my_torrent_ptr->file_index_at_offset(129) << "\n";
+    cout << "file_index_at_offset(130)  : " << my_torrent_ptr->file_index_at_offset(130) << "\n";
     cerr << std::flush; cout << std::flush;
 
     dbg_read_from_file(my_torrent_ptr, 1);

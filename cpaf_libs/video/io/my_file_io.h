@@ -21,6 +21,7 @@ private:
     bool            do_open                 (const std::string& resource_path) override;
     void            do_close                () override;
     bool            do_is_open              () const override;
+    int64_t         do_size                 () const noexcept override;
     int             do_read_packet          (uint8_t* buf, int buf_size) override;
 //    int     do_write_packet         (uint8_t* buf, int buf_size) override;
     int64_t         do_seek                 (int64_t offset, int whence) override;

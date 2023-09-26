@@ -2,9 +2,12 @@
 
 #include <cpaf_libs/unicode/cpaf_u8string_utils.h>
 #include <filesystem>
+#include <thread>
 
 namespace cu = cpaf::unicode;
 using namespace std;
+using namespace std::chrono;
+using namespace std::chrono_literals;
 
 namespace cpaf::video {
 
@@ -27,6 +30,11 @@ void my_file_io::do_close()
 bool my_file_io::do_is_open() const
 {
     return file_ != nullptr;
+}
+
+int64_t my_file_io::do_size() const noexcept
+{
+    return static_cast<int64_t>(std::filesystem::file_size(resource_file_path_));
 }
 
 int my_file_io::do_read_packet(uint8_t* buf, int buf_size)

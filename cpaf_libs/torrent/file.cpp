@@ -74,7 +74,11 @@ int file::seek(int64_t offset, int whence)
 
     }
     const bool is_valid_offset = (0 <= offsett_) && (offsett_ < filesize);
-    return is_valid_offset ? 0 : -1;
+    if (is_valid_offset) {
+        request_pieces_from_offset();
+        return 0;
+    }
+    return -1;
 }
 
 void file::request_pieces_from_offset()
