@@ -44,7 +44,7 @@ size_t file::read(void* buffer, const std::size_t bytes_to_read, const std::chro
 
     if (streaming_mode_active()) {
         const auto read_ahead_range = get_pieces_read_ahead_range(data_pieces.last_piece_index());
-        fmt::println("FIXMENM: Read [{}] : Request read ahead: {}", (int)data_pieces.last_piece_index(), read_ahead_range.dbg_string());
+//        fmt::println("FIXMENM: Read [{}] : Request read ahead: {}", (int)data_pieces.last_piece_index(), read_ahead_range.dbg_string());
         parent_torrent_ptr_->request_pieces(read_ahead_range, 0);
     }
 
