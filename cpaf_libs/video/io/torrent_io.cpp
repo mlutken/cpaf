@@ -25,16 +25,16 @@ bool torrent_io::do_open(const std::string& resource_path)
     if (!torrent_) {
         return false;
     }
+
+    std::cerr << "!! Waiting for meta data for '" << torrent_->name() << "' ...\n";
     torrent_->wait_for_meta_data();
+    std::cerr << " !! Waiting for meta data done!\n";
 
-//    std::cerr << "!! Waiting for meta data for '" << torrent_->name() << "' ...\n";
-//    std::cerr << " !! Waiting for meta data done!\n";
-
-//    cerr << "Largest file index         : '" << torrent_->largest_file_index() << "'\n";
-//    cerr << "Largest file               : '" << torrent_->largest_file_local_file_path() << "'\n";
-//    cerr << "Number of pieces           : " << torrent_->num_pieces() << "\n";
-//    cerr << "End piece                  : " << torrent_->piece_index_end() << "\n";
-//    cerr << "Piece len                  : " << torrent_->piece_length() << "\n";
+    cerr << "Largest file index         : '" << torrent_->largest_file_index() << "'\n";
+    cerr << "Largest file               : '" << torrent_->largest_file_local_file_path() << "'\n";
+    cerr << "Number of pieces           : " << torrent_->num_pieces() << "\n";
+    cerr << "End piece                  : " << torrent_->piece_index_end() << "\n";
+    cerr << "Piece len                  : " << torrent_->piece_length() << "\n";
 
     tor_file_ = torrent_->open_largest_file_streaming(torrents_instance_->default_read_ahead_size());
     if (!tor_file_.is_valid()) {
