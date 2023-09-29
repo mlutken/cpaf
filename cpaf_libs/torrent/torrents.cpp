@@ -52,6 +52,9 @@ void torrents::start()
 void torrents::stop()
 {
     is_running_ = false;
+    background_process_thread_->request_stop();
+    background_process_thread_->join();
+    background_process_thread_.reset();
 }
 
 void torrents::frame_update()
