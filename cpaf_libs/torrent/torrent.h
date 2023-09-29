@@ -58,7 +58,7 @@ public:
     int                                 num_pieces                      () const;
     lt::piece_index_t                   piece_index_begin               () const    { return 0; }
     lt::piece_index_t                   piece_index_end                 () const;
-    bool                                piece_index_valid               (lt::piece_index_t piece) const    { return piece_index_begin() <= piece < piece_index_end(); }
+    bool                                piece_index_valid               (lt::piece_index_t piece) const    { return (piece_index_begin() <= piece) && (piece < piece_index_end()); }
     void                                ensure_piece_range_valid        (pieces_range_t& range) const;
 
     bool                                is_valid                        () const                                    { return parent_torrents_ptr_ != nullptr; }
