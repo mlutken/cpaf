@@ -25,6 +25,11 @@ torrents::torrents()
                            );
 }
 
+torrents::~torrents()
+{
+    stop();
+}
+
 void torrents::start()
 {
     if (!base_torrents_path_.empty()) {

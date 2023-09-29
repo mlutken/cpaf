@@ -26,6 +26,7 @@ class torrents
 {
 public:
     torrents();
+    ~torrents();
     const std::filesystem::path&    base_torrents_path          () const                                        { return base_torrents_path_;  }
     void                            base_torrents_path_set      (const std::filesystem::path& base_tor_path)    { base_torrents_path_ = base_tor_path;  }
     void                            settings_pack_set           (const lt::settings_pack& settings_pack)        { settings_pack_ = settings_pack;       }
