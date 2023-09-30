@@ -15,7 +15,7 @@
 
 namespace cpaf::gui {
 
-Application::Application(const std::string& title) {
+application::application(const std::string& title) {
 //  APP_PROFILE_FUNCTION();
 
   const unsigned int init_flags{SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER};
@@ -27,7 +27,7 @@ Application::Application(const std::string& title) {
   m_window = std::make_unique<window>(window::settings{title});
 }
 
-Application::~Application() {
+application::~application() {
 //  APP_PROFILE_FUNCTION();
 
   ImGui_ImplSDLRenderer_Shutdown();
@@ -37,7 +37,7 @@ Application::~Application() {
   SDL_Quit();
 }
 
-ExitStatus Application::run() {
+ExitStatus application::run() {
 //  APP_PROFILE_FUNCTION();
 
   if (m_exit_status == ExitStatus::FAILURE) {
@@ -60,14 +60,14 @@ ExitStatus Application::run() {
   io.IniFilename = imgui_ini_filename.c_str();
 
   // ImGUI font
-  const float font_scaling_factor{DPIHandler::get_scale()};
+  const float font_scaling_factor{dpi_handler::get_scale()};
   const float font_size{18.0F * font_scaling_factor};
-  const std::string font_path{Resources::font_path("Manrope.ttf").generic_string()};
+  const std::string font_path{resources::font_path("Manrope.ttf").generic_string()};
 
 //  io.Fonts->AddFontFromFileTTF("/home/ml/code/crawler/cpaf/cpaf_libs/gui/assets/fonts/Manrope.ttf", font_size);
   built_in_fonts::add_font(io, "manrope", font_size);
 
-  DPIHandler::set_global_font_scaling(&io);
+  dpi_handler::set_global_font_scaling(&io);
 
   // Setup Platform/Renderer backends
   ImGui_ImplSDL2_InitForSDLRenderer(m_window->get_native_window(), m_window->get_native_renderer());
@@ -149,11 +149,11 @@ ExitStatus Application::run() {
   return m_exit_status;
 }
 
-void Application::stop() {
+void application::stop() {
   m_running = false;
 }
 
-void Application::on_event(const SDL_WindowEvent& event) {
+void application::on_event(const SDL_WindowEvent& event) {
   switch (event.event) {
     case SDL_WINDOWEVENT_CLOSE:
       return on_close();
@@ -164,15 +164,15 @@ void Application::on_event(const SDL_WindowEvent& event) {
   }
 }
 
-void Application::on_minimize() {
+void application::on_minimize() {
   m_minimized = true;
 }
 
-void Application::on_shown() {
+void application::on_shown() {
   m_minimized = false;
 }
 
-void Application::on_close() {
+void application::on_close() {
   stop();
 }
 

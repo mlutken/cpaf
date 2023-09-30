@@ -12,7 +12,7 @@ struct WindowSize {
   int height;
 };
 
-class DPIHandler {
+class dpi_handler {
  public:
   [[nodiscard]] static float get_scale();
 

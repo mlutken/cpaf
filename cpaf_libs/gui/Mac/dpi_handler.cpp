@@ -7,7 +7,7 @@
 namespace cpaf::gui {
 
 
-float DPIHandler::get_scale() {
+float dpi_handler::get_scale() {
 //  APP_PROFILE_FUNCTION();
 
   constexpr int display_index{0};
@@ -21,20 +21,20 @@ float DPIHandler::get_scale() {
   return std::floor(dpi / default_dpi);
 }
 
-WindowSize DPIHandler::get_dpi_aware_window_size(const window::settings& settings) {
+WindowSize dpi_handler::get_dpi_aware_window_size(const window::settings& settings) {
 //  APP_PROFILE_FUNCTION();
 
   return {settings.width, settings.height};
 }
 
-void DPIHandler::set_render_scale(SDL_Renderer* renderer) {
+void dpi_handler::set_render_scale(SDL_Renderer* renderer) {
 //  APP_PROFILE_FUNCTION();
 
   auto scale{get_scale()};
   SDL_RenderSetScale(renderer, scale, scale);
 }
 
-void DPIHandler::set_global_font_scaling(ImGuiIO* io) {
+void dpi_handler::set_global_font_scaling(ImGuiIO* io) {
 //  APP_PROFILE_FUNCTION();
 
   io->FontGlobalScale = 1.0F / get_scale();

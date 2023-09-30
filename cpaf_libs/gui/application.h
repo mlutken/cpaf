@@ -12,15 +12,15 @@ namespace cpaf::gui {
 
 enum class ExitStatus : int { SUCCESS = 0, FAILURE = 1 };
 
-class Application {
+class application {
  public:
-  explicit Application(const std::string& title);
-  ~Application();
+    explicit application(const std::string& title);
+     ~application();
 
-  Application(const Application&) = delete;
-  Application(Application&&) = delete;
-  Application& operator=(Application other) = delete;
-  Application& operator=(Application&& other) = delete;
+    application(const application&) = delete;
+     application(application&&) = delete;
+    application& operator=(application other) = delete;
+     application& operator=(application&& other) = delete;
 
   ExitStatus run();
   void stop();

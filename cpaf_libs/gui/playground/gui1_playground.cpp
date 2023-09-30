@@ -21,7 +21,7 @@ int main(int /*argc*/, char* /*argv*/ [])
 
 
     std::cerr << "*** CPAF_AUDIO_SYS_EX1 ***\n";
-    Application app{"App"};
+    application app{"App"};
     app.run();
 
 	return 0;

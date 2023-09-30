@@ -12,7 +12,7 @@ window::window(const settings& settings) {
 
   const auto window_flags{
       static_cast<SDL_WindowFlags>(SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI)};
-  const WindowSize size{DPIHandler::get_dpi_aware_window_size(settings)};
+const WindowSize size{dpi_handler::get_dpi_aware_window_size(settings)};
 
   m_window = SDL_CreateWindow(settings.title.c_str(),
       SDL_WINDOWPOS_CENTERED,
@@ -32,7 +32,7 @@ window::window(const settings& settings) {
 
   SDL_RendererInfo info;
   SDL_GetRendererInfo(m_renderer, &info);
-  DPIHandler::set_render_scale(m_renderer);
+  dpi_handler::set_render_scale(m_renderer);
 
 //  APP_DEBUG("Current SDL_Renderer: {}", info.name);
 }
