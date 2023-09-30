@@ -129,15 +129,22 @@ public:
     T&			x()			{return m_d[X];}
     const T&	x() const	{return m_d[X];}
 
+    T&			width()			{return m_d[X];}
+    const T&	width() const	{return m_d[X];}
+
     /** Reference to y-coordinate.
         \return Reference to y-coordinate of vector. */
-    T&			y()			{return m_d[Y];}
-    const T&	y() const	{return m_d[Y];}
+    T&			y()             {return m_d[Y];}
+    const T&	y() const       {return m_d[Y];}
+    T&			height()		{return m_d[Y];}
+    const T&	height() const	{return m_d[Y];}
 
     /** Set x-coordinate. */
-    void		x(T x)		{m_d[X] = x;}
+    void		x(T x)          {m_d[X] = x;}
+    void		width(T x)		{m_d[X] = x;}
     /** Set y-coordinate. */
-    void		y(T y)		{m_d[Y] = y;}
+    void		y(T y)          {m_d[Y] = y;}
+    void		height(T y)     {m_d[Y] = y;}
 
 
     /** [] Operator, Acces individual elements of a v2 vector.
