@@ -1,12 +1,9 @@
 #include <iostream>
 #include <array>
-//#include <thread>
-//#include <SDL2/SDL.h>
 
 #include <cpaf_libs/gui/application.h>
+#include <cpaf_libs/gui/app.h>
 
-//#include <cpaf_libs/graphics/cpaf_graphics_surface.h>
-//#include <cpaf_libs/graphics/cpaf_graphics_system.h>
 
 using namespace std;
 //using namespace std::chrono_literals;
@@ -23,9 +20,7 @@ public:
 
 int main(int /*argc*/, char* /*argv*/ [])
 {
-
-
-    std::cerr << "*** CPAF GUI PLAYGROUND 1 ***\n";
+    std::cerr << "*** CPAF GUI PLAYGROUND 2 ***\n";
 //    myapp app{"App"};
     myapp app;
     app.run();
