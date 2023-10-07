@@ -7,29 +7,25 @@
 #include "assets/fonts/built_in_fonts.h"
 
 #include "dpi_handler.h"
-//#include "Core/Debug/Instrumentor.hpp"
 #include "resources.h"
-
-
-////#include "Settings/Project.hpp"
 
 namespace cpaf::gui {
 
-application::application(const std::string& title) {
-//  APP_PROFILE_FUNCTION();
+application::application()
+{
+    const unsigned int init_flags{SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER};
+    if (SDL_Init(init_flags) != 0) {
+        m_exit_status = exit_status_t::failure;
+    }
+}
 
-  const unsigned int init_flags{SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER};
-  if (SDL_Init(init_flags) != 0) {
-//    APP_ERROR("Error: %s\n", SDL_GetError());
-    m_exit_status = ExitStatus::FAILURE;
-  }
+application::application(const std::string_view name, const std::string_view window_title)
+    : application()
+{
 
-  m_window = std::make_unique<window>(window::settings{title});
 }
 
 application::~application() {
-//  APP_PROFILE_FUNCTION();
-
   ImGui_ImplSDLRenderer_Shutdown();
   ImGui_ImplSDL2_Shutdown();
   ImGui::DestroyContext();
@@ -37,12 +33,11 @@ application::~application() {
   SDL_Quit();
 }
 
-ExitStatus application::run() {
-//  APP_PROFILE_FUNCTION();
-
-  if (m_exit_status == ExitStatus::FAILURE) {
+exit_status_t application::run() {
+  if (m_exit_status == exit_status_t::failure) {
     return m_exit_status;
   }
+  m_window = std::make_unique<window>(window::settings{window_title_});
 
   // Setup Dear ImGui context
   IMGUI_CHECKVERSION();
@@ -52,8 +47,7 @@ ExitStatus application::run() {
   io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_DockingEnable |
                     ImGuiConfigFlags_ViewportsEnable;
 
-  const std::string user_config_path{SDL_GetPrefPath( company_name().c_str(), app_name().c_str())};
-//  APP_DEBUG("User config path: {}", user_config_path);
+  const std::string user_config_path{SDL_GetPrefPath( company_name().data(), app_name().data())};
 
   // Absolute imgui.ini path to preserve settings independent of app location.
   static const std::string imgui_ini_filename{user_config_path + "imgui.ini"};

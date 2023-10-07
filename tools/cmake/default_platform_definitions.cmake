@@ -21,7 +21,7 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     set_default (CPAF_SYSTEM_ID             ${CPAF_SYSTEM_ID_LINUX}         )
     set_default (CPAF_AUDIO_SYSTEM_ID       ${CPAF_SYSTEM_ID_SDL2}          )
     set_default (CPAF_GRAPHICS_SYSTEM_ID    ${CPAF_SYSTEM_ID_SDL2}          )
-    set_default (CPAF_GUI_SYSTEM_ID         ${CPAF_SYSTEM_ID_LINUX}         )
+    set_default (CPAF_GUI_SYSTEM_ID         ${CPAF_SYSTEM_ID_SDL2}          )
     set_default (CPAF_FILE_SYSTEM_ID        ${CPAF_SYSTEM_ID_LINUX}         )
 # TODO: Other platforms like windows and osx
 endif ()

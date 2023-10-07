@@ -625,8 +625,8 @@ inline v2<int_t>	v2<int_t>::operator/(int_t Val) const
     return v2<int_t>( x() / Val, y() / Val );
 }
 
-typedef v2<float>	v2f;
-typedef v2<int>     v2i;
+using v2f = v2<float>;
+using v2i32 = v2<std::int32_t>;
 
 
 _GMATH_END_NAMESPACE

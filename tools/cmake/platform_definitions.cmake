@@ -42,20 +42,20 @@ set (CPAF_SYSTEM_ID_QT                  32  )
 # ---------------------------------
 # --- Audio system id #defines  ---
 # ---------------------------------
-set (CPAF_AUDIO_SYSTEM_ID_LINUX         ${CPAF_SYSTEM_ID_LINUX}     )   # 1
+#set (CPAF_AUDIO_SYSTEM_ID_LINUX         ${CPAF_SYSTEM_ID_LINUX}     )   # 1
 
 # ------------------------------------
 # --- Graphics system id #defines  ---
 # ------------------------------------
-set (CPAF_GRAPHICS_SYSTEM_ID_LINUX      ${CPAF_SYSTEM_ID_LINUX}     )   # 1
+#set (CPAF_GRAPHICS_SYSTEM_ID_LINUX      ${CPAF_SYSTEM_ID_LINUX}     )   # 1
 
 # -------------------------------
 # --- GUI system id #defines  ---
 # -------------------------------
-set (CPAF_GUI_SYSTEM_ID         ${CPAF_SYSTEM_ID_LINUX}     )   # 1
+#set (CPAF_GUI_SYSTEM_ID         ${CPAF_SYSTEM_ID_LINUX}     )   # 1
 
 # --------------------------------
 # --- File system id #defines  ---
 # --------------------------------
-set (CPAF_FILE_SYSTEM_ID         ${CPAF_SYSTEM_ID_LINUX}     )   # 1
+#set (CPAF_FILE_SYSTEM_ID         ${CPAF_SYSTEM_ID_LINUX}     )   # 1
 

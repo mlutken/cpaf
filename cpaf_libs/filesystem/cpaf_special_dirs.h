@@ -1,6 +1,4 @@
-#ifndef _CPAF_SPECIAL_DIRS_H_
-#define _CPAF_SPECIAL_DIRS_H_
-
+#pragma once
 
 #include "cpaf_file_directory_functions.h"
 
@@ -113,8 +111,3 @@ public:
 
 
 }} // END namespace cpaf::filesystem
-
-
-#endif //_CPAF_SPECIAL_DIRS_H_
-
-

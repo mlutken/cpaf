@@ -13,7 +13,12 @@ using namespace std;
 using namespace cpaf;
 using namespace cpaf::gui;
 
-static constexpr std::array<unsigned char, 2> a3 = {'s', 'f'};
+
+class myapp : public cpaf::gui::application
+{
+public:
+    using application::application;
+};
 
 
 int main(int /*argc*/, char* /*argv*/ [])
@@ -21,7 +26,8 @@ int main(int /*argc*/, char* /*argv*/ [])
 
 
     std::cerr << "*** CPAF_AUDIO_SYS_EX1 ***\n";
-    application app{"App"};
+//    myapp app{"App"};
+    myapp app;
     app.run();
 
 	return 0;
