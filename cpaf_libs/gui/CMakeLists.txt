@@ -22,9 +22,25 @@ endif()
 
 target_sources(${library_name}
     PUBLIC
-    ${CMAKE_CURRENT_LIST_DIR}/base/app_base.h
-    ${CMAKE_CURRENT_LIST_DIR}/base/app__${CPAF_AUDIO_SYSTEM_NAME}.h
     ${CMAKE_CURRENT_LIST_DIR}/app.h
+    ${CMAKE_CURRENT_LIST_DIR}/base/app_base.h
+    ${CMAKE_CURRENT_LIST_DIR}/base/app__${CPAF_GUI_SYSTEM_NAME}.h
+
+    ${CMAKE_CURRENT_LIST_DIR}/keyboard.h
+    ${CMAKE_CURRENT_LIST_DIR}/base/keyboard_base.h
+    ${CMAKE_CURRENT_LIST_DIR}/base/keyboard__${CPAF_GUI_SYSTEM_NAME}.h
+
+    ${CMAKE_CURRENT_LIST_DIR}/mouse.h
+    ${CMAKE_CURRENT_LIST_DIR}/base/mouse_base.h
+    ${CMAKE_CURRENT_LIST_DIR}/base/mouse__${CPAF_GUI_SYSTEM_NAME}.h
+
+    ${CMAKE_CURRENT_LIST_DIR}/system_window.h
+    ${CMAKE_CURRENT_LIST_DIR}/base/system_window_base.h
+    ${CMAKE_CURRENT_LIST_DIR}/base/system_window__${CPAF_GUI_SYSTEM_NAME}.h
+
+    ${CMAKE_CURRENT_LIST_DIR}/event.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/events.cpp
+
     ${CMAKE_CURRENT_LIST_DIR}/application.h
     ${CMAKE_CURRENT_LIST_DIR}/dpi_handler.h
     ${CMAKE_CURRENT_LIST_DIR}/resources.h
@@ -35,9 +51,26 @@ target_sources(${library_name}
 
     PRIVATE
     ${CPAF_GUI_IMGUI_BACKEND_CPP_FILES}
-    ${CMAKE_CURRENT_LIST_DIR}/base/app_base.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/base/app__${CPAF_AUDIO_SYSTEM_NAME}.cpp
+
     ${CMAKE_CURRENT_LIST_DIR}/app.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/base/app_base.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/base/app__${CPAF_GUI_SYSTEM_NAME}.cpp
+
+    ${CMAKE_CURRENT_LIST_DIR}/keyboard.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/base/keyboard_base.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/base/keyboard__${CPAF_GUI_SYSTEM_NAME}.cpp
+
+    ${CMAKE_CURRENT_LIST_DIR}/mouse.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/base/mouse_base.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/base/mouse__${CPAF_GUI_SYSTEM_NAME}.cpp
+
+    ${CMAKE_CURRENT_LIST_DIR}/system_window.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/base/system_window_base.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/base/system_window__${CPAF_GUI_SYSTEM_NAME}.cpp
+
+    ${CMAKE_CURRENT_LIST_DIR}/event.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/events.cpp
+
     ${CMAKE_CURRENT_LIST_DIR}/application.cpp
     ${CMAKE_CURRENT_LIST_DIR}/${CMAKE_SYSTEM_NAME}/dpi_handler.cpp
     ${CMAKE_CURRENT_LIST_DIR}/${CMAKE_SYSTEM_NAME}/resources.cpp
