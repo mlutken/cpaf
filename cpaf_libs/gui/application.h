@@ -9,10 +9,10 @@
 
 #include <cpaf_libs/gui/window.h>
 #include <cpaf_libs/gui/utils.h>
+#include <cpaf_libs/gui/gui_types.h>
 
 namespace cpaf::gui {
 
-enum class exit_status_t : int { success = 0, failure = 1 };
 
 class application {
 public:

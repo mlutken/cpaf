@@ -1,8 +1,8 @@
 
 set (library_name cpaf_gui)
-add_library(${library_name} STATIC ""
-    utils.h utils.cpp)
+add_library(${library_name} STATIC "")
 
+find_package(fmt REQUIRED)
 find_package(imgui REQUIRED)
 
 set (IMGUI_BACKEND_DIR "${CMAKE_CURRENT_LIST_DIR}/imgui_backends/backends")
@@ -89,6 +89,7 @@ target_link_libraries(${library_name} cpaf_config )
 target_link_libraries(${library_name} cpaf_math )
 target_link_libraries(${library_name} ${CPAF_GUI_LINK_LIBS} )
 target_link_libraries(${library_name} imgui::imgui )
+target_link_libraries(${library_name} fmt::fmt)
 target_include_directories(${library_name} INTERFACE  ${PARENT2_DIR} ${PARENT_DIR})
 target_include_directories(${library_name} PRIVATE ${CPAF_GUI_INCLUDE_DIRS})
 target_include_directories(${library_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/imgui_backends )

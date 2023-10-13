@@ -7,6 +7,7 @@
 #endif
 namespace cpaf::gui {
 
+
 class app : public app_platform {
 public:
     using app_platform::app_platform;	// "Import" constructors to scope

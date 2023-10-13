@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include <SDL2/SDL_audio.h>
 #include <config/cpaf_platform_definitions.h>
 #include <cpaf_libs/gui/base/system_window_base.h>
@@ -13,9 +14,13 @@ namespace cpaf::gui {
 
 class system_window_platform : public system_window_base {
 public:
+    explicit system_window_platform(const size_2d& size);
+    system_window_platform(const size_2d& size, std::string_view title);
 
 private:
     // --- Platform overrides ---
+    size_2d             do_get_size					() override;
+    std::string         do_get_title    			() override;
 
     // --- PRIVATE: Helpers  ---
 };
