@@ -37,7 +37,7 @@ exit_status_t application::run() {
   if (m_exit_status == exit_status_t::failure) {
     return m_exit_status;
   }
-//  m_window = std::make_unique<window>(window::settings{window_title_});
+  m_window = std::make_unique<window>(window::settings{window_title_});
 
   // Setup Dear ImGui context
   IMGUI_CHECKVERSION();
