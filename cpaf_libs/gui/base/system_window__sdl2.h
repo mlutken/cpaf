@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include <SDL2/SDL_audio.h>
+#include <SDL2/SDL.h>
 #include <config/cpaf_platform_definitions.h>
 #include <cpaf_libs/gui/base/system_window_base.h>
 

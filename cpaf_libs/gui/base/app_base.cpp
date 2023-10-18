@@ -5,6 +5,12 @@
 
 namespace cpaf::gui {
 
+exit_status_t app_base::run()
+{
+    do_run();
+    return exit_status_;
+}
+
 
 
 

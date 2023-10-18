@@ -17,10 +17,6 @@ namespace cpaf::gui {
 app_platform::app_platform()
 {
     fmt::println("app_platform::CONSTRUCTOR");
-    const unsigned int init_flags{SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER | SDL_INIT_EVENTS};
-    if (SDL_Init(init_flags) != 0) {
-        exit_status_ = exit_status_t::failure;
-    }
 
 //    main_window_ = create_system_window({300, 200}, "Hello GUI");
 }
@@ -50,13 +46,39 @@ app_platform::~app_platform()
 void app_platform::do_run()
 {
     fmt::println("app_platform::do_run");
-    main_window_ = create_system_window({300, 200}, "Hejsa");
-    fmt::println("main_window: {}", (void*)main_window_.get());
+    initialize();
+//    main_window_ = create_system_window({300, 200}, "Hejsa");
+    //    fmt::println("main_window: {}", (void*)main_window_.get());
+}
+
+void app_platform::do_pre_frame_update()
+{
+
+}
+
+void app_platform::do_frame_update()
+{
+
+}
+
+void app_platform::do_post_frame_update()
+{
+
 }
 
 std::unique_ptr<system_window_base> app_platform::do_create_system_window(size_2d size, std::string_view title) const
 {
     return std::make_unique<system_window_platform>(size, title);
+}
+
+void app_platform::initialize()
+{
+    fmt::println("app_platform::initialize()");
+    const unsigned int init_flags{SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER | SDL_INIT_EVENTS};
+    if (SDL_Init(init_flags) != 0) {
+        exit_status_ = exit_status_t::failure;
+    }
+
 }
 
 

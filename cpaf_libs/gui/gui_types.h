@@ -12,6 +12,7 @@ namespace cpaf::gui {
 */
 
 using size_2d = cpaf::math::v2<std::int32_t>;
+using pos_2d = cpaf::math::v2<std::int32_t>;
 
 
 enum class exit_status_t : int { success = 0, failure = 1 };

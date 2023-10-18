@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include <SDL2/SDL_audio.h>
+#include <SDL2/SDL.h>
 #include <config/cpaf_platform_definitions.h>
 #include <cpaf_libs/gui/base/app_base.h>
 
@@ -19,10 +19,19 @@ public:
 
 private:
     // --- Platform overrides ---
-    void                do_run						() override;
+    void                    do_run						() override;
+    void                    do_pre_frame_update         () override;
+    void                    do_frame_update             () override;
+    void                    do_post_frame_update		() override;
+
     std::unique_ptr<system_window_base>  do_create_system_window   (size_2d size, std::string_view title) const override;
 
     // --- PRIVATE: Helpers  ---
+    void        initialize();
+
+    // --- PRIVATE: Members ---
+    SDL_Window*         main_window_    {nullptr};
+    SDL_Renderer*       main_renderer_  {nullptr};
 
 };
 

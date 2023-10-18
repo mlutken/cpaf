@@ -12,6 +12,11 @@ class app : public app_platform {
 public:
     using app_platform::app_platform;	// "Import" constructors to scope
 
+    app(const app&) = delete;
+    app(app&&) = delete;
+    app& operator=(const app& other) = delete;
+    app& operator=(app&& other) = delete;
+
 };
 
 

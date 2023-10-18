@@ -1,6 +1,9 @@
 
 set (library_name cpaf_gui)
-add_library(${library_name} STATIC "")
+add_library(${library_name} STATIC ""
+    gui-overview.qmodel
+    events/keyboard_events.h events/keyboard_events.cpp
+    events/mouse_events.h events/mouse_events.cpp)
 
 find_package(fmt REQUIRED)
 find_package(imgui REQUIRED)
@@ -38,8 +41,14 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/base/system_window_base.h
     ${CMAKE_CURRENT_LIST_DIR}/base/system_window__${CPAF_GUI_SYSTEM_NAME}.h
 
-    ${CMAKE_CURRENT_LIST_DIR}/event.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/events.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/events/event.h
+    ${CMAKE_CURRENT_LIST_DIR}/events/events.h
+    ${CMAKE_CURRENT_LIST_DIR}/events/display_events.h
+    ${CMAKE_CURRENT_LIST_DIR}/events/joystick_events.h
+    ${CMAKE_CURRENT_LIST_DIR}/events/keyboard_events.h
+    ${CMAKE_CURRENT_LIST_DIR}/events/mouse_events.h
+    ${CMAKE_CURRENT_LIST_DIR}/events/sensor_events.h
+    ${CMAKE_CURRENT_LIST_DIR}/events/touch_events.h
 
     ${CMAKE_CURRENT_LIST_DIR}/application.h
     ${CMAKE_CURRENT_LIST_DIR}/dpi_handler.h
@@ -68,8 +77,14 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/base/system_window_base.cpp
     ${CMAKE_CURRENT_LIST_DIR}/base/system_window__${CPAF_GUI_SYSTEM_NAME}.cpp
 
-    ${CMAKE_CURRENT_LIST_DIR}/event.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/events.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/events/event.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/events/events.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/events/display_events.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/events/joystick_events.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/events/keyboard_events.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/events/mouse_events.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/events/sensor_events.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/events/touch_events.cpp
 
     ${CMAKE_CURRENT_LIST_DIR}/application.cpp
     ${CMAKE_CURRENT_LIST_DIR}/${CMAKE_SYSTEM_NAME}/dpi_handler.cpp
