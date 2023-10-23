@@ -1,10 +1,7 @@
-#ifndef CPAF_STL_UTILS_H
-#define CPAF_STL_UTILS_H
+#pragma once
 
 #include <vector>
 #include <algorithm>
-#include <nlohmann/json.hpp>
-#include <cpaf_libs/utils/cpaf_json_utils.h>
 
 namespace cpaf
 {
@@ -87,26 +84,7 @@ namespace cpaf
 //        else                            return default_val;
 //    }
 
-    inline std::string map_find ( const nlohmann::json& container,
-                                  const std::string& default_val,
-                                  const std::string& key )
-    {
-        const auto it = container.find ( key );
-        if ( it != container.end() )    return it->get<std::string>();
-        else                            return default_val;
-    }
-
-    inline float map_find ( const nlohmann::json& container,
-                            float default_val,
-                            const std::string& key )
-    {
-        return json_value_float(container, key, default_val);
-    }
-
 
 
 } //end namespace cpaf
-
-
-#endif //CPAF_STL_UTILS_H
 

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <array>
+#include <fmt/format.h>
 
 #include <cpaf_libs/gui/application.h>
 #include <cpaf_libs/gui/app.h>
@@ -28,9 +29,9 @@ public:
 
 int main(int /*argc*/, char* /*argv*/ [])
 {
-
-
-    std::cerr << "*** CPAF GUI PLAYGROUND 1 ***\n";
+    fmt::println("*** CPAF GUI PLAYGROUND 1 ***");
+    fmt::println("sizeof(events::event) : {}", sizeof(events::event));
+;
 //    myapp app{"App"};
     myapp app;
     app.run();

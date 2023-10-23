@@ -99,5 +99,22 @@ std::map<KEY, VALUE> json_to_std_map(const nlohmann::json& jo)
     return json_to_map<std::map<KEY, VALUE>>(jo);
 }
 
+
+inline std::string map_find ( const nlohmann::json& container,
+                            const std::string& default_val,
+                            const std::string& key )
+{
+    const auto it = container.find ( key );
+    if ( it != container.end() )    return it->get<std::string>();
+    else                            return default_val;
+}
+
+inline float map_find ( const nlohmann::json& container,
+                      float default_val,
+                      const std::string& key )
+{
+    return json_value_float(container, key, default_val);
+}
+
 } // END namespace cpaf
 
