@@ -9,6 +9,7 @@ namespace cpaf::gui::events {
 */
 struct sensor : public base
 {
+    std::string name() const override { return "sensor"; }
     /** @brief Sensor type
      *
     */
@@ -24,8 +25,10 @@ struct sensor : public base
 
         COUNT               //!< Keep last -- the total number of sensor types
     };
+    static std::string to_name (sensor::type t);
 
-    sensor::type type   = sensor::type::acceleration;   //!< Type of the sensor
+
+    sensor::type tp     = sensor::type::acceleration;   //!< Type of the sensor
     float        x      = 0;                            //!< Current value of the sensor on X axis
     float        y      = 0;                            //!< Current value of the sensor on Y axis
     float        z      = 0;                            //!< Current value of the sensor on Z axis

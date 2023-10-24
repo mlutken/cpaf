@@ -12,6 +12,7 @@ namespace cpaf::gui::events {
 
 struct joystick : public base
 {
+    std::string name() const override { return "joystick"; }
     enum class type {
         unknown,        //!< Unknown type
         axis,           //!< User moved an axis of the joystick
@@ -27,22 +28,23 @@ struct joystick : public base
     /// @brief Axes supported by joysticks (inpired from SFML)
     /// @todo NOT used currently
     ////////////////////////////////////////////////////////////
-    enum class axis : std::int8_t
-    {
-        unknown,        //!<
-        x,              //!< The X axis
-        y,              //!< The Y axis
-        z,              //!< The Z axis
-        r,              //!< The R axis
-        u,              //!< The U axis
-        v,              //!< The V axis
-        povx,           //!< The X axis of the point-of-view hat
-        povy,           //!< The Y axis of the point-of-view hat
+    // enum class axis : std::int8_t
+    // {
+    //     unknown,        //!<
+    //     x,              //!< The X axis
+    //     y,              //!< The Y axis
+    //     z,              //!< The Z axis
+    //     r,              //!< The R axis
+    //     u,              //!< The U axis
+    //     v,              //!< The V axis
+    //     povx,           //!< The X axis of the point-of-view hat
+    //     povy,           //!< The Y axis of the point-of-view hat
 
-        COUNT           //!< Keep last -- the total number of joystick axes
-    };
+    //     COUNT           //!< Keep last -- the total number of joystick axes
+    // };
 
     enum class hat_pos {
+        unknown,
         centered,           //!<
         up,                 //!<
         right_up,           //!<
@@ -61,6 +63,9 @@ struct joystick : public base
         COUNT
     };
 
+    static std::string to_name (joystick::type t);
+    static std::string to_name (joystick::hat_pos pos);
+    static std::string to_name (joystick::button_action action);
 
     type                        tp              = type::axis;           //!< Joystick event type
     std::uint32_t               id              = 0;                    //!< The instance id of the joystick that reported the event
@@ -68,8 +73,8 @@ struct joystick : public base
     std::int16_t                axis_value      = 0;                    //!< The current position of the axis (range: -32768 to 32767)
     std::int16_t                ball_xrel       = 0;                    //!< The relative joyball motion in the X direction (range: -32768 to 32767)
     std::int16_t                ball_yrel       = 0;                    //!< The relative joyball motion in the Y direction (range: -32768 to 32767)
-    joystick::hat_pos           hat_pos         = hat_pos::centered;    //!< Hat position
-    joystick::button_action     button_action   = button_action::down;  //!< Button pressed or released
+    joystick::hat_pos           hpos            = hat_pos::centered;    //!< Hat position
+    joystick::button_action     btn_action      = button_action::down;  //!< Button pressed or released
 };
 
 

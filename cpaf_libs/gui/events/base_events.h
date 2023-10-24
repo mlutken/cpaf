@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <chrono>
+#include <string>
 
 namespace cpaf::gui::events {
 
@@ -22,7 +23,11 @@ enum class is_handled {
 */
 struct base
 {
+    ~base() = default;
+    virtual std::string name() const { return "base"; }
+
     time_point      timestamp;
+
 };
 
 
@@ -30,6 +35,7 @@ struct base
 */
 struct none : public base
 {
+    std::string name() const override { return "none"; }
 };
 
 // /* Application events */
@@ -65,6 +71,8 @@ struct none : public base
 */
 struct application : public base {
 public:
+    std::string name() const override { return "application"; }
+
     enum class type {
         unknown,                    //!<
         user_quit,                  //!< User-requested quit
@@ -84,6 +92,7 @@ public:
 */
 struct window : public base {
 public:
+    std::string name() const override { return "window"; }
     enum class type {
         unknown,                    //!<
         shown,                      //!<
@@ -111,6 +120,7 @@ public:
 */
 struct display : public base
 {
+    std::string name() const override { return "display"; }
     enum class orientation : std::uint8_t
     {
         horizontal,     //!< Horizontal display orientation

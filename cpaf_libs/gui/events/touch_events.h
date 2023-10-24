@@ -10,6 +10,8 @@ namespace cpaf::gui::events {
 */
 struct touch : public base
 {
+    std::string name() const override { return ""; }
+
     enum class type {
         unknown,    //!< Unknown type
         down,       //!< user has touched input device
@@ -18,6 +20,8 @@ struct touch : public base
 
         COUNT
     };
+
+    static std::string to_name (type t);
 
     float                   x           = 0;    //!< The x position of the touch event, normalized (0...1), relative to the top of the owner window
     float                   y           = 0;    //!< The Y position of the touch event, normalized (0...1), relative to the top of the owner window
