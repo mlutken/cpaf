@@ -48,5 +48,4 @@ std::string joystick::to_name(joystick::button_action action)
     return "unknown";
 }
 
-
 } //END namespace cpaf::gui::events
