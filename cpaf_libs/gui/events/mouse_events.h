@@ -33,8 +33,8 @@ struct mouse : public base
     {
         unknown,    //!< Unknown button
         left,       //!< The left mouse button
-        right,      //!< The right mouse button
         middle,     //!< The middle (wheel) mouse button
+        right,      //!< The right mouse button
         xbutton1,   //!< The first extra mouse button
         xbutton2,   //!< The second extra mouse button
 
@@ -53,9 +53,16 @@ struct mouse : public base
         COUNT       //!< Keep last -- the total number of mouse wheels
     };
 
+    enum class wheel_direction
+    {
+        normal,     //!< The scroll direction is normal
+        flipped     //!< The scroll direction is flipped natural
+    };
+
     static std::string  to_name     (mouse::type t);
     static std::string  to_name     (mouse::button b);
     static std::string  to_name     (mouse::wheel w);
+    static std::string  to_name     (mouse::wheel_direction dir);
 
     std::string         name        () const override { return "mouse"; }
     std::string         to_string   (to_str_mode mode = to_str_mode::normal) const override;

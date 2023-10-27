@@ -46,6 +46,11 @@ std::string mouse::to_name(wheel w)
         break;
     }
     return "unknown";
+}½
+
+std::string mouse::to_name(wheel_direction dir)
+{
+
 }
 
 std::string mouse::to_string(to_str_mode /*mode*/) const

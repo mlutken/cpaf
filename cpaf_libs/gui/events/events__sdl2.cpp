@@ -23,9 +23,11 @@ event events_sdl::convert_event(const SDL_Event& sdl_event) const
 
     switch( sdl_event.type ) {
     case SDL_WINDOWEVENT:
-        return convert_from_window(sdl_event.window);
-    default: ;
-
+        return convert_from_window(sdl_event.window); break;
+    case SDL_MOUSEMOTION:
+        return convert_from_mouse_motion(sdl_event.motion); break;
+    default:
+        break;
     }
 
     return create_none();
@@ -47,6 +49,37 @@ event events_sdl::convert_from_window(const SDL_WindowEvent& sdl_window_event) c
     ev.tp = events_sdl::to_window_type(static_cast<SDL_WindowEventID>(sdl_window_event.event));
     ev.width = sdl_window_event.data1;
     ev.height = sdl_window_event.data2;
+    return event{ev};
+}
+
+event events_sdl::convert_from_mouse_motion(const SDL_MouseMotionEvent& sdl_mouse_event) const
+{
+    events::mouse ev;
+    ev.tp = mouse::type::move;
+    ev.x = sdl_mouse_event.x;
+    ev.y = sdl_mouse_event.y;
+    ev.xrel = sdl_mouse_event.xrel;
+    ev.yrel = sdl_mouse_event.yrel;
+    return event{ev};
+}
+
+event events_sdl::convert_from_mouse_button(const SDL_MouseButtonEvent& sdl_mouse_event) const
+{
+    events::mouse ev;
+    ev.tp = sdl_mouse_event.state == SDL_PRESSED ? mouse::type::button_down : mouse::type::button_up;
+    ev.x = sdl_mouse_event.x;
+    ev.y = sdl_mouse_event.y;
+    ev.btn = to_mouse_button(sdl_mouse_event.button);
+    return event{ev};
+}
+
+event events_sdl::convert_from_mouse_wheel(const SDL_MouseWheelEvent& sdl_mouse_event) const
+{
+    events::mouse ev;
+    ev.tp = mouse::type::wheel;
+    ev.x = sdl_mouse_event.x;
+    ev.y = sdl_mouse_event.y;
+    ev.btn = to_mouse_button(sdl_mouse_event.button);
     return event{ev};
 }
 
@@ -124,6 +157,28 @@ window::type events_sdl::to_window_type(SDL_WindowEventID sdl_window_event_id)
 
     return cpaf::map_get(look_up, sdl_window_event_id, window::type::unknown);
 }
+
+// ------------------------------------------------------
+// --- STATIC Mouse: Event type conversion functions  ---
+// ------------------------------------------------------
+
+/**
+ *  @note We use a map to ensure any future changes to the SDL enum does not invalidate this conversion
+*/
+mouse::button events_sdl::to_mouse_button(uint8_t sdl_button)
+{
+    static const std::unordered_map<uint8_t, mouse::button> look_up = {
+        {SDL_BUTTON_LEFT,   mouse::button::left},
+        {SDL_BUTTON_MIDDLE, mouse::button::middle},
+        {SDL_BUTTON_RIGHT,  mouse::button::right},
+        {SDL_BUTTON_X1,     mouse::button::xbutton1},
+        {SDL_BUTTON_X2,     mouse::button::xbutton2},
+    };
+
+    return cpaf::map_get(look_up, sdl_button, mouse::button::unknown);
+}
+
+
 
 
 
