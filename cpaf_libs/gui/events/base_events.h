@@ -8,15 +8,25 @@ namespace cpaf::gui::events {
 using time_point = std::chrono::steady_clock::time_point;
 
 enum class pointer_type {
+    unknown,         //!< Pointer is a real mouse (as opposed to a touch event generating mouse events)
     mouse,           //!< Pointer is a real mouse (as opposed to a touch event generating mouse events)
     touch,           //!< Pointer a touch event
     COUNT
 };
 
+
 enum class is_handled {
-    no,             //!< Event was not handled
+    no,            //!< Event was not handled
     yes            //!< Event was handled
 };
+
+enum class to_str_mode {
+    normal,            //!< Normal to_string formatting
+    verbose            //!< Verbose to_string formatting
+};
+
+std::string to_name     (pointer_type t);
+std::string to_name     (is_handled handled);
 
 
 /** @brief Base event
@@ -25,6 +35,7 @@ struct base
 {
     ~base() = default;
     virtual std::string name() const { return "base"; }
+    virtual std::string to_string(to_str_mode /*mode*/ = to_str_mode::normal) const { return name(); }
 
     time_point      timestamp;
 
@@ -37,34 +48,6 @@ struct none : public base
 {
     std::string name() const override { return "none"; }
 };
-
-// /* Application events */
-// SDL_QUIT           = 0x100, /**< User-requested quit */
-
-//     /* These application events have special meaning on iOS, see README-ios.md for details */
-//     SDL_APP_TERMINATING,        /**< The application is being terminated by the OS
-//                                      Called on iOS in applicationWillTerminate()
-//                                      Called on Android in onDestroy()
-//                                 */
-//     SDL_APP_LOWMEMORY,          /**< The application is low on memory, free memory if possible.
-//                                      Called on iOS in applicationDidReceiveMemoryWarning()
-//                                      Called on Android in onLowMemory()
-//                                 */
-//     SDL_APP_WILLENTERBACKGROUND, /**< The application is about to enter the background
-//                                      Called on iOS in applicationWillResignActive()
-//                                      Called on Android in onPause()
-//                                 */
-//     SDL_APP_DIDENTERBACKGROUND, /**< The application did enter the background and may not get CPU for some time
-//                                      Called on iOS in applicationDidEnterBackground()
-//                                      Called on Android in onPause()
-//                                 */
-//     SDL_APP_WILLENTERFOREGROUND, /**< The application is about to enter the foreground
-//                                      Called on iOS in applicationWillEnterForeground()
-//                                      Called on Android in onResume()
-//                                 */
-//     SDL_APP_DIDENTERFOREGROUND, /**< The application is now interactive
-//                                      Called on iOS in applicationDidBecomeActive()
-//                                      Called on Android in onResume()
 
 
 /** @brief Application events
@@ -84,6 +67,9 @@ public:
         did_enter_foreground,       //!< The application is now interactive. iOS in applicationDidBecomeActive(), Android in onResume()
         COUNT
     };
+
+    static std::string  to_name     (application::type t);
+    std::string         to_string   (to_str_mode mode = to_str_mode::normal) const override;
 
     application::type   tp      = application::type::unknown;   //!< Window event type
 };
@@ -111,6 +97,9 @@ public:
         COUNT
     };
 
+    static std::string  to_name     (window::type t);
+    std::string         to_string   (to_str_mode mode = to_str_mode::normal) const override;
+
     window::type        tp      = window::type::unknown;    //!< Window event type
     std::int32_t        width   = 0;                        //!< New width, in pixels
     std::int32_t        height  = 0;                        //!< New height, in pixels
@@ -123,13 +112,17 @@ struct display : public base
     std::string name() const override { return "display"; }
     enum class orientation : std::uint8_t
     {
+        unknown,        //!< Horizontal display orientation
         horizontal,     //!< Horizontal display orientation
         vertical        //!< Vertical display orientation
     };
 
+    static std::string  to_name     (orientation orient);
+    std::string         to_string   (to_str_mode mode = to_str_mode::normal) const override;
+
     std::int32_t            width       = 0;                                    //!< New width, in pixels
     std::int32_t            height      = 0;                                    //!< New height, in pixels
-    display::orientation    orientation = display::orientation::horizontal;     //!< New main window orientation
+    display::orientation    orien       = display::orientation::horizontal;     //!< New main window orientation
 };
 
 

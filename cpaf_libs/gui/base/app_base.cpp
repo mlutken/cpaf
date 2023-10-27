@@ -24,7 +24,8 @@ exit_status_t app_base::run()
 // Default implementations
 events::is_handled app_base::event_handler(const events::event& evt)
 {
-    fmt::println("FIXMENM app_base::event_handler() "); std::cout << std::flush;
+    fmt::println("FIXMENM app_base::event_handler(): {} ", evt.to_string(events::to_str_mode::normal));
+    std::cout << std::flush;
 
     using namespace events;
     if (auto app = evt.as<application>()) {

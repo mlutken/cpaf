@@ -12,7 +12,6 @@ namespace cpaf::gui::events {
 
 struct joystick : public base
 {
-    std::string name() const override { return "joystick"; }
     enum class type {
         unknown,        //!< Unknown type
         axis,           //!< User moved an axis of the joystick
@@ -67,7 +66,10 @@ struct joystick : public base
     static std::string to_name (joystick::hat_pos pos);
     static std::string to_name (joystick::button_action action);
 
-    type                        tp              = type::axis;           //!< Joystick event type
+    std::string         name        () const override { return "joystick"; }
+    std::string         to_string   (to_str_mode mode = to_str_mode::normal) const override;
+
+    type                        tp              = type::unknown;        //!< Joystick event type
     std::uint32_t               id              = 0;                    //!< The instance id of the joystick that reported the event
     std::uint8_t                type_index      = 0;                    //!< Index of the axis, ball or hat that moved or button activated
     std::int16_t                axis_value      = 0;                    //!< The current position of the axis (range: -32768 to 32767)

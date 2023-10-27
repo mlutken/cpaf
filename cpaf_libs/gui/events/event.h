@@ -46,15 +46,19 @@ struct event {
     }
 
     template <class EVENT_CLASS_NAME>
-    bool    is () const { return as<EVENT_CLASS_NAME>() != nullptr; }
-
-    bool    is_none     () const { return as<events::none>() != nullptr; }
+    constexpr bool                      is () const { return as<EVENT_CLASS_NAME>() != nullptr; }
 
     template <class EVENT_CLASS_NAME>
-    const EVENT_CLASS_NAME* as() const { return std::get_if<EVENT_CLASS_NAME>(&instance);}
+    constexpr const EVENT_CLASS_NAME*   as() const { return std::get_if<EVENT_CLASS_NAME>(&instance);}
 
     template <class EVENT_CLASS_NAME>
-    EVENT_CLASS_NAME*       as()       { return std::get_if<EVENT_CLASS_NAME>(&instance);}
+    constexpr EVENT_CLASS_NAME*         as()       { return std::get_if<EVENT_CLASS_NAME>(&instance);}
+
+    constexpr bool                      is_none     () const { return as<events::none>() != nullptr; }
+
+    std::string                         name        () const;
+    std::string                         to_string   (to_str_mode mode = to_str_mode::normal) const;
+
 
     // -------------------
     // --- Member data ---

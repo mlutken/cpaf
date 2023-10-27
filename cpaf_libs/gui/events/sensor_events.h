@@ -9,7 +9,6 @@ namespace cpaf::gui::events {
 */
 struct sensor : public base
 {
-    std::string name() const override { return "sensor"; }
     /** @brief Sensor type
      *
     */
@@ -22,16 +21,18 @@ struct sensor : public base
         gravity,            //!< Measures the direction and intensity of gravity, independent of device acceleration (m/s^2)
         acceleration,       //!< Measures the direction and intensity of device acceleration, independent of the gravity (m/s^2)
         orientation,        //!< Measures the absolute 3D orientation (degrees)
-
         COUNT               //!< Keep last -- the total number of sensor types
     };
-    static std::string to_name (sensor::type t);
+
+    static std::string  to_name     (sensor::type t);
+    std::string         name        () const override { return "sensor"; }
+    std::string         to_string   (to_str_mode mode = to_str_mode::normal) const override;
 
 
-    sensor::type tp     = sensor::type::acceleration;   //!< Type of the sensor
-    float        x      = 0;                            //!< Current value of the sensor on X axis
-    float        y      = 0;                            //!< Current value of the sensor on Y axis
-    float        z      = 0;                            //!< Current value of the sensor on Z axis
+    sensor::type tp     = sensor::type::unknown;    //!< Type of the sensor
+    float        x      = 0;                        //!< Current value of the sensor on X axis
+    float        y      = 0;                        //!< Current value of the sensor on Y axis
+    float        z      = 0;                        //!< Current value of the sensor on Z axis
 };
 
 

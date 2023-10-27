@@ -1,4 +1,5 @@
 #include "keyboard_events.h"
+#include <fmt/format.h>
 
 namespace cpaf::gui::events {
 
@@ -281,6 +282,23 @@ std::string events::keyboard::to_name(scan_code sc)
         break;
     }
     return "unknown";
+}
+
+std::string keyboard::to_string(to_str_mode /*mode*/) const
+{
+    auto s = name() + "|" + keyboard::to_name(tp);
+    switch (tp) {
+    case keyboard::type::pressed:
+    case keyboard::type::released:
+    case keyboard::type::character:
+        s += fmt::format(" [key: {} scan code: {}]", to_name(k), to_name(sc));
+        break;
+    case keyboard::type::text:
+        s += fmt::format(" [text: {}]", text);
+    default:
+        break;
+    }
+    return s;
 }
 
 } //END namespace cpaf::gui::events

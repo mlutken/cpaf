@@ -1,4 +1,5 @@
 #include "mouse_events.h"
+#include <fmt/format.h>
 
 namespace cpaf::gui::events {
 
@@ -45,6 +46,26 @@ std::string mouse::to_name(wheel w)
         break;
     }
     return "unknown";
+}
+
+std::string mouse::to_string(to_str_mode /*mode*/) const
+{
+    auto s = name() + "|" + mouse::to_name(tp);
+    switch (tp) {
+    case mouse::type::button_down:
+    case mouse::type::button_up:
+    case mouse::type::clicked:
+    case mouse::type::double_clicked:
+        s += " [btn: " + to_name(btn) + "]";
+        break;
+    case mouse::type::wheel:
+        s += fmt::format(" [wheel: {} = {}]", to_name(wh), delta_wheel);
+    default:
+        break;
+    }
+
+    s += fmt::format(" pos: ({}, {})", x, y);
+    return s;
 }
 
 } //END namespace cpaf::gui::events

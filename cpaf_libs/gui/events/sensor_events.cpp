@@ -1,4 +1,5 @@
 #include "sensor_events.h"
+#include <fmt/format.h>
 
 namespace cpaf::gui::events {
 
@@ -17,6 +18,13 @@ std::string events::sensor::to_name(sensor::type t)
     }
     return "unknown";
 
+}
+
+std::string sensor::to_string(to_str_mode /*mode*/) const
+{
+    auto s = name() + "|" + sensor::to_name(tp);
+    s += fmt::format(" x, y, z: ({}, {}, {}) ", x, y, z);
+    return s;
 }
 
 } //END namespace cpaf::gui::events

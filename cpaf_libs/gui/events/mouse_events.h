@@ -12,7 +12,6 @@ namespace cpaf::gui::events {
 */
 struct mouse : public base
 {
-    std::string name() const override { return "mouse"; }
 
     enum class type {
         unknown,                //!< Unknown type
@@ -54,10 +53,12 @@ struct mouse : public base
         COUNT       //!< Keep last -- the total number of mouse wheels
     };
 
-    static std::string to_name (mouse::type t);
-    static std::string to_name (mouse::button b);
-    static std::string to_name (mouse::wheel w);
+    static std::string  to_name     (mouse::type t);
+    static std::string  to_name     (mouse::button b);
+    static std::string  to_name     (mouse::wheel w);
 
+    std::string         name        () const override { return "mouse"; }
+    std::string         to_string   (to_str_mode mode = to_str_mode::normal) const override;
 
     mouse::type             tp          = mouse::type::move;        //!< Mouse event type
     std::int32_t            x           = 0;                        //!< X position of the mouse pointer, relative to the left of the owner window

@@ -1,4 +1,5 @@
 #include "joystick_events.h"
+#include <fmt/format.h>
 
 namespace cpaf::gui::events {
 
@@ -46,6 +47,29 @@ std::string joystick::to_name(joystick::button_action action)
         break;
     }
     return "unknown";
+}
+
+std::string joystick::to_string(to_str_mode /*mode*/) const
+{
+    auto s = name() + "|" + joystick::to_name(tp);
+    switch (tp) {
+    case joystick::type::axis:
+        s += fmt::format(" [ index: {} value {}]", type_index, axis_value);
+        break;
+    case joystick::type::ball:
+        s += fmt::format(" [ index: {} relative x, y: ({}, {})]", type_index, ball_xrel, ball_yrel);
+        break;
+    case joystick::type::hat:
+        s += fmt::format(" [ pos: {}", to_name(hpos));
+        break;
+    case joystick::type::button:
+        s += fmt::format(" [ action: {}", to_name(btn_action));
+        break;
+    default:
+        break;
+    }
+
+    return s;
 }
 
 } //END namespace cpaf::gui::events

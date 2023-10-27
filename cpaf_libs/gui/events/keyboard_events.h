@@ -8,7 +8,7 @@ namespace cpaf::gui::events {
 
 
 struct keyboard : public base {
-    std::string name() const override { return "keyboard"; }
+
     enum class type {
         unknown,                //!< Unknown type
         pressed,                //!< A key was pressed
@@ -293,9 +293,12 @@ struct keyboard : public base {
         COUNT //!< Keep last -- the total number of scancodes
     };
 
-    static std::string to_name (keyboard::type t);
-    static std::string to_name (keyboard::key k);
-    static std::string to_name (keyboard::scan_code sc);
+    static std::string  to_name (keyboard::type t);
+    static std::string  to_name (keyboard::key k);
+    static std::string  to_name (keyboard::scan_code sc);
+
+    std::string         name        () const override { return "keyboard"; }
+    std::string         to_string   (to_str_mode mode = to_str_mode::normal) const override;
 
     keyboard::type          tp          = keyboard::type::pressed;      //!< Keyboard event type
     keyboard::key           k           = keyboard::key::unknown;       //!< Key
