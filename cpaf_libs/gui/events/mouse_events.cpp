@@ -36,40 +36,44 @@ std::string mouse::to_name(button b)
 }
 
 
-std::string mouse::to_name(wheel w)
+std::string mouse::to_name(wheel_direction w)
 {
     switch (w) {
-    case mouse::wheel::vertical     : return "vertical";    break;
-    case mouse::wheel::horizontal   : return "horizontal";  break;
+    case mouse::wheel_direction::vertical     : return "vertical";    break;
+    case mouse::wheel_direction::horizontal   : return "horizontal";  break;
 
     default:
         break;
     }
     return "unknown";
-}½
+}
 
-std::string mouse::to_name(wheel_direction dir)
+std::string mouse::to_name(scroll_direction dir)
 {
-
+    if (dir == scroll_direction::flipped) { return "flipped"; }
+    return "normal";
 }
 
 std::string mouse::to_string(to_str_mode /*mode*/) const
 {
     auto s = name() + "|" + mouse::to_name(tp);
     switch (tp) {
+    case mouse::type::move:
+        s += fmt::format(" pos: ({}, {})", x, y);
+        break;
     case mouse::type::button_down:
     case mouse::type::button_up:
     case mouse::type::clicked:
     case mouse::type::double_clicked:
+        s += fmt::format(" pos: ({}, {})", x, y);
         s += " [btn: " + to_name(btn) + "]";
         break;
     case mouse::type::wheel:
-        s += fmt::format(" [wheel: {} = {}]", to_name(wh), delta_wheel);
+        s += fmt::format(" [ dir: {}:{}  relative y: {}  x: {}]", to_name(wheel_dir), to_name(scroll_dir), yrel, xrel);
     default:
         break;
     }
 
-    s += fmt::format(" pos: ({}, {})", x, y);
     return s;
 }
 

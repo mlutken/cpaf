@@ -26,6 +26,11 @@ event events_sdl::convert_event(const SDL_Event& sdl_event) const
         return convert_from_window(sdl_event.window); break;
     case SDL_MOUSEMOTION:
         return convert_from_mouse_motion(sdl_event.motion); break;
+    case SDL_MOUSEBUTTONDOWN:
+    case SDL_MOUSEBUTTONUP:
+        return convert_from_mouse_button(sdl_event.button); break;
+    case SDL_MOUSEWHEEL:
+        return convert_from_mouse_wheel(sdl_event.wheel); break;
     default:
         break;
     }
@@ -77,9 +82,9 @@ event events_sdl::convert_from_mouse_wheel(const SDL_MouseWheelEvent& sdl_mouse_
 {
     events::mouse ev;
     ev.tp = mouse::type::wheel;
-    ev.x = sdl_mouse_event.x;
-    ev.y = sdl_mouse_event.y;
-    ev.btn = to_mouse_button(sdl_mouse_event.button);
+    ev.xrel = sdl_mouse_event.x;
+    ev.yrel = sdl_mouse_event.y;
+    ev.scroll_dir = sdl_mouse_event.direction == SDL_MOUSEWHEEL_FLIPPED ? mouse::scroll_direction::flipped : mouse::scroll_direction::normal;
     return event{ev};
 }
 
