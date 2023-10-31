@@ -30,6 +30,8 @@ private:
     event                   convert_from_mouse_wheel    (const SDL_MouseWheelEvent& sdl_mouse_event) const;
     event                   convert_from_touch          (const SDL_TouchFingerEvent& sdl_touch_event) const;
     event                   convert_from_keyboard       (const SDL_KeyboardEvent& sdl_keyboard_event) const;
+    event                   convert_from_text_input     (const SDL_TextInputEvent& sdl_text_input_event) const;
+    event                   convert_from_text_editing   (const SDL_TextEditingEvent& sdl_text_editing_event) const;
     event                   convert_from_display        (const SDL_DisplayEvent& sdl_display_event) const;
 
 
@@ -54,6 +56,13 @@ private:
     // --- STATIC mouse: Event type conversion functions  ---
     // ------------------------------------------------------
     static mouse::button                            to_mouse_button     (uint8_t sdl_button);
+
+
+    // --------------------------------------------------------
+    // --- STATIC keyboard: Event type conversion functions ---
+    // ---------------------------------------------------------
+    static keyboard::key        to_key          (SDL_Keycode sdl_key);
+    static keyboard::scan_code  to_scan_code    (SDL_Scancode sdl_sc);
 
     // events::none,
     //     events::window,

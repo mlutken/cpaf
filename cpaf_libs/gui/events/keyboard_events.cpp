@@ -6,10 +6,11 @@ namespace cpaf::gui::events {
 std::string events::keyboard::to_name(type t)
 {
     switch (t) {
-    case keyboard::type::pressed    : return "pressed";     break;
-    case keyboard::type::released   : return "released";    break;
-    case keyboard::type::character  : return "character";   break;
-    case keyboard::type::text       : return "text";        break;
+    case keyboard::type::pressed        : return "pressed";     break;
+    case keyboard::type::released       : return "released";    break;
+    case keyboard::type::character      : return "character";   break;
+    case keyboard::type::text_input     : return "text_input";  break;
+    case keyboard::type::text_editing   : return "text_editing";  break;
 
     default:
         break;
@@ -20,6 +21,7 @@ std::string events::keyboard::to_name(type t)
 std::string events::keyboard::to_name(key k)
 {
     switch (k) {
+    case keyboard::key::unknown     : return "unknown";           break;
     case keyboard::key::a           : return "a";           break;
     case keyboard::key::b           : return "b";           break;
     case keyboard::key::c           : return "c";           break;
@@ -68,14 +70,34 @@ std::string events::keyboard::to_name(key k)
     case keyboard::key::menu        : return "menu";        break;
     case keyboard::key::lbracket    : return "lbracket";	break;
     case keyboard::key::rbracket    : return "rbracket";	break;
+    case keyboard::key::at          : return "at";          break;
+    case keyboard::key::underscore  : return "underscore";	break;
+    case keyboard::key::hash        : return "hash";        break;
+    case keyboard::key::percent     : return "percent";     break;
+    case keyboard::key::dollar      : return "dollar";      break;
+    case keyboard::key::ampersand   : return "ampersand";	break;
+    case keyboard::key::quote       : return "quote";       break;
+    case keyboard::key::backquote   : return "backquote";	break;
+    case keyboard::key::lparen      : return "lparen";      break;
+    case keyboard::key::rparen      : return "rparen";      break;
+    case keyboard::key::asterisk    : return "asterisk";	break;
+    case keyboard::key::plus        : return "plus";        break;
+    case keyboard::key::minus       : return "minus";       break;
+    case keyboard::key::capslock    : return "capslock";	break;
+    case keyboard::key::printscreen : return "printscreen";	break;
+    case keyboard::key::scrolllock  : return "scrolllock";	break;
+    case keyboard::key::colon       : return "colon";       break;
     case keyboard::key::semicolon   : return "semicolon";	break;
+    case keyboard::key::less        : return "less";        break;
+    case keyboard::key::greater     : return "greater";     break;
+    case keyboard::key::question    : return "question";    break;
     case keyboard::key::comma       : return "comma";       break;
     case keyboard::key::period      : return "period";      break;
     case keyboard::key::apostrophe  : return "apostrophe";  break;
     case keyboard::key::slash       : return "slash";       break;
     case keyboard::key::backslash   : return "backslash";	break;
     case keyboard::key::grave       : return "grave";       break;
-    case keyboard::key::equal       : return "equal";       break;
+    case keyboard::key::equals      : return "equals";      break;
     case keyboard::key::hyphen      : return "hyphen";      break;
     case keyboard::key::space       : return "space";       break;
     case keyboard::key::enter       : return "enter";       break;
@@ -87,10 +109,14 @@ std::string events::keyboard::to_name(key k)
     case keyboard::key::home        : return "home";        break;
     case keyboard::key::insert      : return "insert";      break;
     case keyboard::key::del         : return "del";         break;
-    case keyboard::key::ddd         : return "ddd";         break;
-    case keyboard::key::subtract    : return "subtract";	break;
-    case keyboard::key::multiply    : return "multiply";	break;
-    case keyboard::key::divide      : return "divide";      break;
+    case keyboard::key::numpad_plus : return "numpad_plus"; break;
+    case keyboard::key::numpad_minus: return "numpad_minus";break;
+    case keyboard::key::numpad_multiply : return "numpad_multiply";	break;
+    case keyboard::key::numpad_divide: return "numpad_divide";      break;
+    case keyboard::key::numpad_enter: return "numpad_enter";      break;
+    case keyboard::key::numpad_period:return "numpad_period";      break;
+    case keyboard::key::numpad_comma: return "numpad_comma";      break;
+    case keyboard::key::numpad_equals: return "numpad_equals";      break;
     case keyboard::key::left        : return "left";        break;
     case keyboard::key::right       : return "right";       break;
     case keyboard::key::up          : return "up";          break;
@@ -120,10 +146,18 @@ std::string events::keyboard::to_name(key k)
     case keyboard::key::f13         : return "f13";         break;
     case keyboard::key::f14         : return "f14";         break;
     case keyboard::key::f15         : return "f15";         break;
+    case keyboard::key::f16         : return "f16";         break;
+    case keyboard::key::f17         : return "f17";         break;
+    case keyboard::key::f18         : return "f18";         break;
+    case keyboard::key::f19         : return "f19";         break;
+    case keyboard::key::f20         : return "f20";         break;
+    case keyboard::key::f21         : return "f21";         break;
+    case keyboard::key::f22         : return "f22";         break;
+    case keyboard::key::f23         : return "f23";         break;
+    case keyboard::key::f24         : return "f24";         break;
     case keyboard::key::pause       : return "pause";       break;
 
-    default:
-        break;
+    case keyboard::key::COUNT       : return "unknown";     break;
     }
     return "unknown";
 }
@@ -131,6 +165,7 @@ std::string events::keyboard::to_name(key k)
 std::string events::keyboard::to_name(scan_code sc)
 {
     switch (sc) {
+    case keyboard::scan_code::unknown	        : return "unknown";             break;
     case keyboard::scan_code::a	                : return "a";	                break;
     case keyboard::scan_code::b	                : return "b";	                break;
     case keyboard::scan_code::c	                : return "c";	                break;
@@ -173,7 +208,7 @@ std::string events::keyboard::to_name(scan_code sc)
     case keyboard::scan_code::tab               : return "tab";                 break;
     case keyboard::scan_code::space             : return "space";               break;
     case keyboard::scan_code::hyphen            : return "hyphen";              break;
-    case keyboard::scan_code::equal             : return "equal";               break;
+    case keyboard::scan_code::equals            : return "equals";              break;
     case keyboard::scan_code::lbracket          : return "lbracket";            break;
     case keyboard::scan_code::rbracket          : return "rbracket";            break;
     case keyboard::scan_code::backslash         : return "backslash";           break;
@@ -221,14 +256,14 @@ std::string events::keyboard::to_name(scan_code sc)
     case keyboard::scan_code::left              : return "left";                break;
     case keyboard::scan_code::down              : return "down";                break;
     case keyboard::scan_code::up                : return "up";                  break;
-    case keyboard::scan_code::numlock           : return "numlock";             break;
+    case keyboard::scan_code::numlockclear      : return "numlockclear";        break;
     case keyboard::scan_code::numpaddivide      : return "numpaddivide";        break;
     case keyboard::scan_code::numpadmultiply    : return "numpadmultiply";      break;
     case keyboard::scan_code::numpadminus       : return "numpadminus";         break;
     case keyboard::scan_code::numpadplus        : return "numpadplus";          break;
     case keyboard::scan_code::numpadequal       : return "numpadequal";         break;
     case keyboard::scan_code::numpadenter       : return "numpadenter";         break;
-    case keyboard::scan_code::numpaddecimal     : return "numpaddecimal";       break;
+    case keyboard::scan_code::numpaddecimaldel  : return "numpaddecimaldel";    break;
     case keyboard::scan_code::numpad1           : return "numpad1";             break;
     case keyboard::scan_code::numpad2           : return "numpad2";             break;
     case keyboard::scan_code::numpad3           : return "numpad3";             break;
@@ -256,8 +291,8 @@ std::string events::keyboard::to_name(scan_code sc)
     case keyboard::scan_code::volumedown        : return "volumedown";          break;
     case keyboard::scan_code::mediaplaypause    : return "mediaplaypause";      break;
     case keyboard::scan_code::mediastop         : return "mediastop";           break;
-    case keyboard::scan_code::medianexttrack    : return "medianexttrack";      break;
-    case keyboard::scan_code::mediaprevioustrack: return "mediaprevioustrack";	break;
+    case keyboard::scan_code::medianext         : return "medianext";           break;
+    case keyboard::scan_code::mediaprevious     : return "mediaprevious";       break;
     case keyboard::scan_code::lcontrol          : return "lcontrol";            break;
     case keyboard::scan_code::lshift            : return "lshift";              break;
     case keyboard::scan_code::lalt              : return "lalt";                break;
@@ -277,9 +312,7 @@ std::string events::keyboard::to_name(scan_code sc)
     case keyboard::scan_code::launchapplication2: return "launchapplication2";	break;
     case keyboard::scan_code::launchmail        : return "launchmail";          break;
     case keyboard::scan_code::launchmediaselect	: return "launchmediaselect";	break;
-
-    default:
-        break;
+    case keyboard::scan_code::COUNT             : return "unknown";     break;
     }
     return "unknown";
 }
@@ -293,7 +326,7 @@ std::string keyboard::to_string(to_str_mode /*mode*/) const
     case keyboard::type::character:
         s += fmt::format(" [key: {} scan code: {}]", to_name(k), to_name(sc));
         break;
-    case keyboard::type::text:
+    case keyboard::type::text_input:
         s += fmt::format(" [text: {}]", text);
     default:
         break;

@@ -6,7 +6,10 @@
 
 namespace cpaf::gui::events {
 
-
+/**
+ *
+ *  @see https://wiki.libsdl.org/SDL2/Tutorials-TextInput
+ *  */
 struct keyboard : public base {
 
     enum class type {
@@ -14,14 +17,15 @@ struct keyboard : public base {
         pressed,                //!< A key was pressed
         released,               //!< A key was released
         character,              //!< A character was entered (data in u8char / u32char)
-        text,                   //!< A string of text was entered (data in text / u32char)
+        text_input,             //!< A string of text was entered (data in text / u32char)
+        text_editing,           //!< A string of text was edited (data in text / u32char)
         COUNT
     };
 
     enum class key: std::int32_t
     {
         unknown = -1, //!< Unhandled key
-        a       = 0,  //!< The A key
+        a,            //!< The A key
         b,            //!< The B key
         c,            //!< The C key
         d,            //!< The D key
@@ -69,14 +73,34 @@ struct keyboard : public base {
         menu,         //!< The Menu key
         lbracket,     //!< The [ key
         rbracket,     //!< The ] key
+        at,
+        underscore,
+        hash,
+        percent,
+        dollar,
+        ampersand,
+        quote,
+        backquote,
+        lparen,
+        rparen,
+        asterisk,
+        plus,
+        minus,
+        capslock,
+        printscreen,
+        scrolllock,
+        colon,        //!< The : key
         semicolon,    //!< The ; key
+        less,         //!< The < key
+        greater,      //!< The > key
+        question,     //!< The : key
         comma,        //!< The , key
         period,       //!< The . key
         apostrophe,   //!< The ' key
         slash,        //!< The / key
         backslash,    //!< The \ key
         grave,        //!< The ` key
-        equal,        //!< The = key
+        equals,       //!< The = key
         hyphen,       //!< The - key (hyphen)
         space,        //!< The Space key
         enter,        //!< The Enter/Return keys
@@ -88,10 +112,14 @@ struct keyboard : public base {
         home,         //!< The Home key
         insert,       //!< The Insert key
         del,          //!< The Delete key
-        ddd,          //!< The + key
-        subtract,     //!< The - key (minus, usually from numpad)
-        multiply,     //!< The * key
-        divide,       //!< The / key
+        numpad_plus,  //!< The + key
+        numpad_minus, //!< The - key (minus, usually from numpad)
+        numpad_multiply,    //!< The * key
+        numpad_divide,//!< The / key
+        numpad_enter, //!< The np enter key
+        numpad_period, //!< The np . key
+        numpad_comma, //!< The np , key
+        numpad_equals, //!< The np equals key
         left,         //!< Left arrow
         right,        //!< Right arrow
         up,           //!< Up arrow
@@ -121,6 +149,15 @@ struct keyboard : public base {
         f13,          //!< The F13 key
         f14,          //!< The F14 key
         f15,          //!< The F15 key
+        f16,          //!< The F16 key
+        f17,          //!< The F17 key
+        f18,          //!< The F18 key
+        f19,          //!< The F19 key
+        f20,          //!< The F20 key
+        f21,          //!< The F21 key
+        f22,          //!< The F22 key
+        f23,          //!< The F23 key
+        f24,          //!< The F24 key
         pause,        //!< The Pause key
 
         COUNT, //!< Keep last -- the total number of keyboard keys
@@ -179,7 +216,7 @@ struct keyboard : public base {
         tab,          //!< Keyboard Tab key
         space,        //!< Keyboard Space key
         hyphen,       //!< Keyboard - and _ key
-        equal,        //!< Keyboard = and +
+        equals,       //!< Keyboard = and +
         lbracket,     //!< Keyboard [ and { key
         rbracket,     //!< Keyboard ] and } key
         // For US keyboards mapped to key 29 (Microsoft Keyboard Scan Code Specification)
@@ -230,14 +267,14 @@ struct keyboard : public base {
         left,           //!< Keyboard Left Arrow key
         down,           //!< Keyboard Down Arrow key
         up,             //!< Keyboard Up Arrow key
-        numlock,        //!< Keypad Num %Lock and Clear key
+        numlockclear,   //!< Keypad Num %Lock and Clear key
         numpaddivide,   //!< Keypad / key
         numpadmultiply, //!< Keypad * key
         numpadminus,    //!< Keypad - key
         numpadplus,     //!< Keypad + key
         numpadequal,    //!< keypad = key
         numpadenter,    //!< Keypad Enter/Return key
-        numpaddecimal,  //!< Keypad . and Delete key
+        numpaddecimaldel, //!< Keypad . and Delete key
         numpad1,        //!< Keypad 1 and End key
         numpad2,        //!< Keypad 2 and Down Arrow key
         numpad3,        //!< Keypad 3 and Page Down key
@@ -268,8 +305,8 @@ struct keyboard : public base {
         volumedown,         //!< Keyboard Volume Down key
         mediaplaypause,     //!< Keyboard Media Play Pause key
         mediastop,          //!< Keyboard Media Stop key
-        medianexttrack,     //!< Keyboard Media Next Track key
-        mediaprevioustrack, //!< Keyboard Media Previous Track key
+        medianext,          //!< Keyboard Media Next Track key
+        mediaprevious,      //!< Keyboard Media Previous Track key
         lcontrol,           //!< Keyboard Left Control key
         lshift,             //!< Keyboard Left Shift key
         lalt,               //!< Keyboard Left Alt key
