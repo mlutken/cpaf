@@ -31,6 +31,9 @@ event events_sdl::convert_event(const SDL_Event& sdl_event) const
         return convert_from_mouse_button(sdl_event.button); break;
     case SDL_MOUSEWHEEL:
         return convert_from_mouse_wheel(sdl_event.wheel); break;
+    case SDL_KEYDOWN:
+    case SDL_KEYUP:
+        return convert_from_keyboard(sdl_event.key); break;
     default:
         break;
     }
@@ -85,6 +88,19 @@ event events_sdl::convert_from_mouse_wheel(const SDL_MouseWheelEvent& sdl_mouse_
     ev.xrel = sdl_mouse_event.x;
     ev.yrel = sdl_mouse_event.y;
     ev.scroll_dir = sdl_mouse_event.direction == SDL_MOUSEWHEEL_FLIPPED ? mouse::scroll_direction::flipped : mouse::scroll_direction::normal;
+    return event{ev};
+}
+
+event events_sdl::convert_from_keyboard(const SDL_KeyboardEvent& sdl_keyboard_event) const
+{
+    events::keyboard ev;
+    if (sdl_keyboard_event.type == SDL_KEYDOWN)        { ev.tp = keyboard::type::pressed; }
+    else if (sdl_keyboard_event.type == SDL_KEYUP)     { ev.tp = keyboard::type::released; }
+
+    if (sdl_keyboard_event.state == SDL_PRESSED)       { ev.state = keyboard::type::pressed; }
+    else if (sdl_keyboard_event.state == SDL_RELEASED) { ev.state = keyboard::type::released; }
+
+    ev.repeat = sdl_keyboard_event.repeat;
     return event{ev};
 }
 

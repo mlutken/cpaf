@@ -300,12 +300,14 @@ struct keyboard : public base {
     std::string         name        () const override { return "keyboard"; }
     std::string         to_string   (to_str_mode mode = to_str_mode::normal) const override;
 
-    keyboard::type          tp          = keyboard::type::pressed;      //!< Keyboard event type
+    keyboard::type          tp          = keyboard::type::unknown;      //!< Keyboard event type
+    keyboard::type          state       = keyboard::type::unknown;      //!< The previous pressed/released state: Only pressed/released. Only relevant with tp = pressed/released
     keyboard::key           k           = keyboard::key::unknown;       //!< Key
     keyboard::scan_code     sc          = keyboard::scan_code::unknown; //!< Scancode
     uint32_t                u8char      = 0;                            //!< UTF-8 character code
     // uint32_t                u32char; // TODO: Perhaps ....           //!< UTF-32 character code
     std::string             text          {};                           //!< Text thas was entered/edited
+    uint8_t                 repeat      = 0;                            //!<  Non-zero if this is a key repeat
     bool                    alt         = false;                        //!< Is the Alt key pressed?
     bool                    control     = false;                        //!< Is the Control key pressed?
     bool                    shift       = false;                        //!< Is the Shift key pressed?
