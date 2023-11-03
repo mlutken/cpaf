@@ -1,21 +1,35 @@
 #include "app_base.h"
 
 #include <sstream>
+#include <cpaf_libs/filesystem/cpaf_special_dirs.h>
 #include <cpaf_libs/gui/system_window.h>
 #include <cpaf_libs/gui/events/event.h>
+
+using namespace std;
 
 namespace cpaf::gui {
 
 exit_status_t app_base::run()
 {
-    do_start_run();
+    do_platform_start_run();
+    start_run();
     while (is_running_) {
         process_events();
-        do_pre_frame_update();
-        do_frame_update();
-        do_post_frame_update();
+        do_platform_pre_frame_update();
+        pre_frame_update();
+        do_platform_frame_update();
+        frame_update();
+        do_platform_post_frame_update();
+        post_frame_update();
     }
     return exit_status_;
+}
+
+std::filesystem::path app_base::config_path() const
+{
+    if (!config_path_.empty()) { return config_path_; }
+
+    return cpaf::filesystem::special_dirs::app_data_local() / ("."s + app_name_);
 }
 
 // -------------------------------------------------------------
@@ -24,8 +38,8 @@ exit_status_t app_base::run()
 // Default implementations
 events::is_handled app_base::event_handler(const events::event& evt)
 {
-    fmt::println("FIXMENM app_base::event_handler(): {} ", evt.to_string(events::to_str_mode::normal));
-    std::cout << std::flush;
+    // fmt::println("FIXMENM app_base::event_handler(): {} ", evt.to_string(events::to_str_mode::normal));
+    // std::cout << std::flush;
 
     using namespace events;
     if (auto app = evt.as<application>()) {
@@ -57,7 +71,7 @@ events::is_handled app_base::event_handler(const events::event& evt)
 void app_base::process_events()
 {
     while (true) {
-        events::event evt = do_get_event();
+        events::event evt = do_platform_get_event();
         if (evt.is<events::none>()) {
             break;
         }

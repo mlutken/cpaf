@@ -25,13 +25,14 @@ public:
     application& operator=(application other) = delete;
     application& operator=(application&& other) = delete;
 
-    void                    app_name      (const std::string_view name)      { app_name_    = name;     }
-    void                    company_name  (const std::string_view name)      { company_name_= name;     }
-    void                    window_title  (const std::string_view title)     { window_title_= title;    }
+    void                    app_name            (const std::string_view name)      { app_name_    = name;     }
+    void                    company_name        (const std::string_view name)      { company_name_= name;     }
+    void                    window_title        (const std::string_view title)     { window_title_= title;    }
 
-    const std::string_view  app_name      () const     { return app_name_;        }
-    const std::string_view  company_name  () const     { return company_name_;    }
-    const std::string_view  window_title  () const     { return window_title_;    }
+    const std::string_view  app_name            () const     { return app_name_;        }
+    const std::string_view  company_name        () const     { return company_name_;    }
+    const std::string_view  window_title        () const     { return window_title_;    }
+
 
     exit_status_t run();
     void stop();

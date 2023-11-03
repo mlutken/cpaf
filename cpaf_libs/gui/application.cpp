@@ -19,7 +19,7 @@ application::application()
     }
 }
 
-application::application(const std::string_view name, const std::string_view window_title)
+application::application(const std::string_view /*name*/, const std::string_view /*window_title*/)
     : application()
 {
 

@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include <atomic>
+#include <filesystem>
 #include <fmt/format.h>
 #include <cpaf_libs/gui/gui_types.h>
 #include <cpaf_libs/gui/system_window.h>
@@ -25,7 +26,7 @@ public:
 
     std::string                     dbg_characteristics         () const;
     exit_status_t                   run                         ();
-    size_2d                         main_window_size            () const  { return do_main_window_size(); }
+    size_2d                         main_window_size            () const  { return do_platform_main_window_size(); }
 
     std::unique_ptr<system_window_base>  create_system_window   (size_2d size, std::string_view title) const {
         fmt::println("FIXMENM create_system_window () ");
@@ -38,9 +39,12 @@ public:
     void                    window_title_set    (const std::string_view title)      { window_title_= title;    }
     // void                    initial_window_set  (size_2d size, display::window_state wnd_state);
 
-    const std::string_view  app_name            () const     { return app_name_;        }
-    const std::string_view  company_name        () const     { return company_name_;    }
-    const std::string_view  window_title        () const     { return window_title_;    }
+    const std::string_view      app_name            () const    { return app_name_;        }
+    const std::string_view      company_name        () const    { return company_name_;    }
+    const std::string_view      window_title        () const    { return window_title_;    }
+    std::filesystem::path       config_path         () const;
+    const std::string_view      default_font        () const    { return default_font_;    }
+    float                       base_font_size      () const    { return base_font_size_;  }
 
 protected:
     std::unique_ptr<system_window_base>     main_window_                    = nullptr;
@@ -51,20 +55,24 @@ protected:
 
     // --- PROTECTED: User virtual functions for derived classes ---
     virtual events::is_handled              event_handler				(const events::event& evt);
+    virtual void                            start_run                   () {};
+    virtual void                            pre_frame_update            () {};
+    virtual void                            frame_update                () {};
+    virtual void                            post_frame_update           () {};
 
 
     // --- PROTECTED: Helper functions for derived classes ---
 
 private:
 
-    virtual void                    do_start_run				() = 0;
-    virtual events::event           do_get_event                () const = 0;
-    virtual void                    do_process_events           () = 0;
-    virtual void                    do_pre_frame_update         () = 0;
-    virtual void                    do_frame_update             () = 0;
-    virtual void                    do_post_frame_update		() = 0;
+    virtual void                    do_platform_start_run           () = 0;
+    virtual events::event           do_platform_get_event           () const = 0;
+    virtual void                    do_platform_process_events      () = 0;
+    virtual void                    do_platform_pre_frame_update    () = 0;
+    virtual void                    do_platform_frame_update        () = 0;
+    virtual void                    do_platform_post_frame_update   () = 0;
 
-    virtual size_2d                 do_main_window_size         () const = 0;
+    virtual size_2d                 do_platform_main_window_size    () const = 0;
 
 
     virtual std::unique_ptr<system_window_base>  do_create_system_window        (size_2d size, std::string_view title) const = 0;
@@ -77,9 +85,12 @@ private:
     // ----------------------------------
     // --- PRIVATE: Memeber variables ---
     // ----------------------------------
-    std::string               app_name_         {"MyApp"};
-    std::string               company_name_     {""};
-    std::string               window_title_     {"Hello CPAF GUI"};
+    std::filesystem::path   config_path_      {};
+    std::string             app_name_         {"MyApp"};
+    std::string             company_name_     {""};
+    std::string             window_title_     {"Hello CPAF GUI"};
+    std::string             default_font_     {"manrope"};
+    float                   base_font_size_   {18};
 
 };
 

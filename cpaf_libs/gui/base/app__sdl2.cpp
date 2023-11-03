@@ -9,6 +9,7 @@
 
 #include <cpaf_libs/gui/system_window.h>
 #include <cpaf_libs/gui/base/system_window__sdl2.h>
+#include <cpaf_libs/gui/assets/fonts/built_in_fonts.h>
 
 using namespace std;
 
@@ -32,6 +33,9 @@ app_platform::~app_platform()
     if (main_window_) {
         SDL_DestroyWindow(main_window_);
     }
+    if (main_renderer_) {
+        SDL_DestroyRenderer(main_renderer_);
+    }
     SDL_Quit();
 }
 
@@ -48,18 +52,21 @@ app_platform::~app_platform()
 // --------------------------
 // --- Platform overrides ---
 // --------------------------
-void app_platform::do_start_run()
+void app_platform::do_platform_start_run()
 {
-    fmt::println("app_platform::do_run");
+    fmt::println("app_platform::do_platform_start_run()");
     initialize();
     is_running_ = true;
 }
 
-events::event app_platform::do_get_event() const
+events::event app_platform::do_platform_get_event() const
 {
     SDL_Event sdl_event{};
     if (SDL_PollEvent(&sdl_event) == 1) {
 
+        ImGui_ImplSDL2_ProcessEvent(&sdl_event);
+        // TODO: Only create and return events that ImGui does not handle!
+        //       io.WantCaptureMouse, io.WantCaptureKeyboard
 
         return events_converter_.convert_event(sdl_event);
     }
@@ -67,7 +74,7 @@ events::event app_platform::do_get_event() const
     return events::event::create_none();
 }
 
-void app_platform::do_process_events()
+void app_platform::do_platform_process_events()
 {
     SDL_Event event{};
     while (SDL_PollEvent(&event) == 1) {
@@ -87,23 +94,74 @@ void app_platform::do_process_events()
     }
 }
 
-void app_platform::do_pre_frame_update()
+void app_platform::do_platform_pre_frame_update()
 {
-
+    ImGui_ImplSDLRenderer_NewFrame();
+    ImGui_ImplSDL2_NewFrame();
+    ImGui::NewFrame();
 }
 
-void app_platform::do_frame_update()
+void app_platform::do_platform_frame_update()
 {
+    // fmt::println("app_platform::do_frame_update()");
 
+    // ImGui::DockSpaceOverViewport();
+
+    // if (ImGui::BeginMainMenuBar()) {
+    //     if (ImGui::BeginMenu("File")) {
+    //         if (ImGui::MenuItem("Exit", "Cmd+Q")) {
+    //             stop();
+    //         }
+    //         ImGui::EndMenu();
+    //     }
+    //     if (ImGui::BeginMenu("View")) {
+    //         ImGui::MenuItem("Some Panel", nullptr, &m_show_some_panel);
+    //         ImGui::MenuItem("Debug Panel", nullptr, &m_show_debug_panel);
+    //         ImGui::EndMenu();
+    //     }
+
+    //     ImGui::EndMainMenuBar();
+    // }
+
+    // // Whatever GUI to implement here ...
+
+    // // ImGui::SetCursorPos({0,0});
+    // if (m_show_some_panel) {
+    //     ImGui::Begin("Some panel", &m_show_some_panel);
+    //     ImGui::Text("Hello World dsf");
+    //     ImGui::End();
+    // }
+
+    // // Debug panel
+    // if (m_show_debug_panel) {
+    //     ImGui::Begin("Debug panel", &m_show_debug_panel);
+    //     ImGui::Text("User config path: %s", config_path().string().c_str());
+    //     ImGui::Separator();
+    //     // ImGui::Text("Font path: %s", font_path.c_str());
+    //     // ImGui::Text("Font size: %f", font_size);
+    //     // ImGui::Text("Global font scaling %f", io.FontGlobalScale);
+    //     // ImGui::Text("UI scaling factor: %f", font_scaling_factor);
+    //     ImGui::End();
+    // }
+
+    // ImGui::ShowDemoWindow();
 }
 
-void app_platform::do_post_frame_update()
-{
 
+
+void app_platform::do_platform_post_frame_update()
+{
+    ImGui::Render();
+    // ImGui::UpdatePlatformWindows();
+    // ImGui::RenderPlatformWindowsDefault();
+    SDL_SetRenderDrawColor(main_renderer_, 100, 100, 100, 255);
+    SDL_RenderClear(main_renderer_);
+    ImGui_ImplSDLRenderer_RenderDrawData(ImGui::GetDrawData());
+    SDL_RenderPresent(main_renderer_);
 }
 
 /// @todo implement me!!
-size_2d app_platform::do_main_window_size() const
+size_2d app_platform::do_platform_main_window_size() const
 {
     return size_2d{1,1};
 }
@@ -116,6 +174,9 @@ std::unique_ptr<system_window_base> app_platform::do_create_system_window(size_2
 void app_platform::initialize()
 {
     fmt::println("app_platform::initialize()");
+
+
+
     const uint32_t init_flags{SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER | SDL_INIT_EVENTS};
     if (SDL_Init(init_flags) != 0) {
         exit_status_ = exit_status_t::failure;
@@ -142,6 +203,11 @@ void app_platform::initialize()
                                 initial_window_size_.height(),
                                 window_flags);
 
+
+    auto renderer_flags{
+                        static_cast<SDL_RendererFlags>(SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED)};
+    main_renderer_ = SDL_CreateRenderer(main_window_, -1, renderer_flags);
+
     // auto renderer_flags{
     //                     static_cast<SDL_RendererFlags>(SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED)};
     // m_renderer = SDL_CreateRenderer(m_window, -1, renderer_flags);
@@ -150,6 +216,19 @@ void app_platform::initialize()
     //     //    APP_ERROR("Error creating SDL_Renderer!");
     //     return;
     // }
+
+    // Setup Dear ImGui context
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io{ImGui::GetIO()};
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_DockingEnable |
+                      ImGuiConfigFlags_ViewportsEnable;
+
+    built_in_fonts::add_font(io, default_font(), base_font_size());
+
+    // Setup Platform/Renderer backends
+    ImGui_ImplSDL2_InitForSDLRenderer(main_window_, main_renderer_);
+    ImGui_ImplSDLRenderer_Init(main_renderer_);
 
 }
 

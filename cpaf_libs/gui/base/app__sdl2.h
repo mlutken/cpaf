@@ -13,6 +13,8 @@
 namespace cpaf::gui {
 
 
+// https://github.com/ocornut/imgui/wiki/Image-Loading-and-Displaying-Examples
+
 class app_platform : public app_base {
 public:
     app_platform();
@@ -20,13 +22,13 @@ public:
 
 private:
     // --- Platform overrides ---
-    void                    do_start_run				() override;
-    events::event           do_get_event                () const override;
-    void                    do_process_events           () override;
-    void                    do_pre_frame_update         () override;
-    void                    do_frame_update             () override;
-    void                    do_post_frame_update		() override;
-    size_2d                 do_main_window_size         () const override;
+    void                    do_platform_start_run				() override;
+    events::event           do_platform_get_event               () const override;
+    void                    do_platform_process_events          () override;
+    void                    do_platform_pre_frame_update        () override;
+    void                    do_platform_frame_update            () override;
+    void                    do_platform_post_frame_update       () override;
+    size_2d                 do_platform_main_window_size        () const override;
 
     std::unique_ptr<system_window_base>  do_create_system_window   (size_2d size, std::string_view title) const override;
 
@@ -37,6 +39,10 @@ private:
     events::events_sdl      events_converter_;
     SDL_Window*             main_window_    {nullptr};
     SDL_Renderer*           main_renderer_  {nullptr};
+
+
+    bool                      m_show_some_panel {true};
+    bool                      m_show_debug_panel{false};
 
 };
 
