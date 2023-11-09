@@ -1,4 +1,5 @@
 #include "base_events.h"
+#include <fmt/format.h>
 
 using namespace std;
 
@@ -73,7 +74,8 @@ std::string window::to_name(type t)
 
 string window::to_string(to_str_mode /*mode*/) const
 {
-    return name() + "|" + window::to_name(tp);
+    return fmt::format("{}|{} [size: ({}, {})]", name(), window::to_name(tp), width, height);
+    // return name() + "|" + window::to_name(tp);
 }
 
 std::string display::to_name(display::orientation orient)
@@ -90,7 +92,6 @@ std::string display::to_name(display::orientation orient)
 string display::to_string(to_str_mode /*mode*/) const
 {
     return name() + "|" + display::to_name(orien);
-
 }
 
 } //END namespace cpaf::gui::events

@@ -1,5 +1,4 @@
-#ifndef CPAF_VIDEO_RENDER_H
-#define CPAF_VIDEO_RENDER_H
+#pragma once
 
 #include <config/cpaf_platform_definitions.h>
 
@@ -16,5 +15,3 @@ public:
 };
 
 } //END namespace cpaf::video
-
-#endif // CPAF_VIDEO_RENDER_H

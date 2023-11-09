@@ -1,5 +1,4 @@
-#ifndef CPAF_VIDEO_RENDER_BASE_H
-#define CPAF_VIDEO_RENDER_BASE_H
+#pragma once
 
 #include <config/cpaf_platform_definitions.h>
 #include <cpaf_libs/video/av_util.h>
@@ -76,5 +75,3 @@ private:
 };
 
 } //END namespace cpaf::video
-
-#endif // CPAF_VIDEO_RENDER_BASE_H

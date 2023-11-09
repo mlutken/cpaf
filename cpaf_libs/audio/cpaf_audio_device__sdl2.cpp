@@ -40,7 +40,7 @@ device_platform::device_platform(const std::string& device_name, type_t type)
 
 device_platform::~device_platform()
 {
-    do_close();
+    device_platform::do_close();
 }
 
 // --------------------------

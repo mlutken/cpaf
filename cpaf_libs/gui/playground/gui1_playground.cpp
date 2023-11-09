@@ -20,7 +20,7 @@ public:
     using app::app;
 protected:
     void                            frame_update                () override;
-    events::is_handled              event_handler               (const events::event& evt);
+    events::is_handled              event_handler               (const events::event& evt) override;
 
 private:
     bool                      m_show_some_panel {true};

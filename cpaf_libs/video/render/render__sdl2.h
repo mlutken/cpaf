@@ -1,5 +1,4 @@
-#ifndef CPAF_VIDEO_RENDER_SDL_H
-#define CPAF_VIDEO_RENDER_SDL_H
+#pragma once
 
 #include <config/cpaf_platform_definitions.h>
 
@@ -69,4 +68,3 @@ private:
 
 } //END namespace cpaf::video
 
-#endif // CPAF_VIDEO_RENDER__SDL_H

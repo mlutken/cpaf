@@ -52,6 +52,8 @@ std::string system_platform::do_capture_device_name(int32_t device_index) const
 // ------------------------
 void system_platform::populate_device_lists()
 {
+    play_device_names_.clear();
+    capture_device_names_.clear();
 	const int32_t COUNT_PLAY = play_devices_count();
 	for (int32_t n = 0; n < COUNT_PLAY; ++n) {
 		play_device_names_.push_back(play_device_name(n));

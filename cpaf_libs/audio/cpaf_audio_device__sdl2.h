@@ -18,7 +18,7 @@ public:
     explicit device_platform(type_t type);
     explicit device_platform(const std::string&	device_name);
     device_platform(const std::string& device_name, type_t type);
-    virtual ~device_platform() override;
+     ~device_platform() override;
 
 
 private:
@@ -38,7 +38,7 @@ private:
                                                  int32_t channels_count, int32_t samples_count) override;
 
     bool                do_open						() override;
-    void                do_close					() override;
+    void                do_close					() override final;
     void                do_play						() override;
     void                do_pause					() override;
 
