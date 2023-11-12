@@ -11,7 +11,7 @@ using namespace std::chrono_literals;
 using namespace std::chrono;
 
 
-namespace cpaf::video {
+namespace cpaf::gui::video {
 
 video_render_thread::video_render_thread(const std::atomic_bool& threads_running, const std::atomic_bool& threads_paused)
     : threads_running_(threads_running)
@@ -30,14 +30,14 @@ void video_render_thread::terminate()
 
 }
 
-bool video_render_thread::video_frame_update (av_frame& current_frame, cpaf::gui::video::render& video_render)
+bool video_render_thread::video_frame_update (cpaf::video::av_frame& current_frame, cpaf::gui::video::render& video_render)
 {
     bool ret_val = video_frame_do_render(current_frame, video_render);
     debug_video_frame_update(current_frame, video_render);
     return ret_val;
 }
 
-bool video_render_thread::video_frame_do_render(av_frame& current_frame, cpaf::gui::video::render& video_render)
+bool video_render_thread::video_frame_do_render(cpaf::video::av_frame& current_frame, cpaf::gui::video::render& video_render)
 {
     if (video_queue_flush_in_progress_) {
         return false;
@@ -72,7 +72,7 @@ bool video_render_thread::video_frame_do_render(av_frame& current_frame, cpaf::g
     return false;
 }
 
-void video_render_thread::debug_video_frame_update(av_frame& current_frame, gui::video::render& /*video_render*/)
+void video_render_thread::debug_video_frame_update(cpaf::video::av_frame& current_frame, gui::video::render& /*video_render*/)
 {
     if (
        (true && video_frame_update_dbg_counter_ % 2000 == 0)
@@ -99,24 +99,24 @@ void video_render_thread::debug_video_frame_update(av_frame& current_frame, gui:
     ++video_frame_update_dbg_counter_;
 }
 
-av_packet video_render_thread::video_packet_queue_front()
+cpaf::video::av_packet video_render_thread::video_packet_queue_front()
 {
-    return format_context().packet_queue_front(media_type::video);
+    return format_context().packet_queue_front(cpaf::video::media_type::video);
 }
 
 void video_render_thread::video_packet_queue_pop()
 {
-    format_context().packet_queue_pop(media_type::video);
+    format_context().packet_queue_pop(cpaf::video::media_type::video);
 }
 
-const packet_queue_t& video_render_thread::video_packet_queue() const
+const cpaf::video::packet_queue_t& video_render_thread::video_packet_queue() const
 {
-    return format_context().packet_queue(media_type::video);
+    return format_context().packet_queue(cpaf::video::media_type::video);
 }
 
-const packet_queue_t& video_render_thread::video_packet_queue_const() const
+const cpaf::video::packet_queue_t& video_render_thread::video_packet_queue_const() const
 {
-    return format_context().packet_queue(media_type::video);
+    return format_context().packet_queue(cpaf::video::media_type::video);
 }
 
-} // namespace cpaf::video
+} // namespace cpaf::gui::video

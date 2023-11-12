@@ -2,7 +2,7 @@
 #include <cpaf_libs/video/av_format_context.h>
 #include <cpaf_libs/video/pipeline_threads/pipeline_threads.h>
 
-namespace cpaf::video {
+namespace cpaf::gui::video {
 
 packet_reader_thread::packet_reader_thread(const std::atomic_bool& threads_running, const std::atomic_bool& threads_paused)
     : threads_running_(threads_running)
@@ -16,7 +16,7 @@ void packet_reader_thread::start()
     read_packets_thread_->detach();
 }
 
-pipeline_index_t packet_reader_thread::seek_position(const std::chrono::microseconds& stream_pos, seek_dir dir)
+cpaf::video::pipeline_index_t packet_reader_thread::seek_position(const std::chrono::microseconds& stream_pos, cpaf::video::seek_dir dir)
 {
     flush_to_index_requested_index_ = format_context().pipeline_index() + 1;
     seek_position_requested_ = stream_pos;
@@ -25,12 +25,12 @@ pipeline_index_t packet_reader_thread::seek_position(const std::chrono::microsec
     return flush_to_index_requested_index_;
 }
 
-pipeline_index_t packet_reader_thread::seek_position(const std::chrono::microseconds& stream_pos)
+cpaf::video::pipeline_index_t packet_reader_thread::seek_position(const std::chrono::microseconds& stream_pos)
 {
     flush_to_index_requested_index_ = format_context().pipeline_index() + 1;
     seek_position_requested_ = stream_pos;
     seek_requested_ = true;
-    seek_direction_ = seek_dir::forward;
+    seek_direction_ = cpaf::video::seek_dir::forward;
     return flush_to_index_requested_index_;
 }
 
@@ -38,7 +38,7 @@ void packet_reader_thread::read_packets_thread_fn()
 {
     const auto mt = format_context().primary_media_type();
     while(threads_running()) {
-        format_context().pipeline_control_set(pipeline_control_t::normal_flow);
+        format_context().pipeline_control_set(cpaf::video::pipeline_control_t::normal_flow);
         if (!threads_paused()) {
             check_seek_position();
             format_context().read_packets_to_queues(mt, primary_queue_fill_level_);
@@ -86,4 +86,4 @@ void packet_reader_thread::signal_flush_done()
 }
 
 
-} // namespace cpaf::video
+} // namespace cpaf::gui::video

@@ -8,19 +8,19 @@
 
 using namespace std;
 
-namespace cpaf::video {
+namespace cpaf::gui::video {
 
 void audio_render_thread::start()
 {
 
 }
 
-bool audio_render_thread::flush_to_index(const pipeline_index_t& pipeline_index)
+bool audio_render_thread::flush_to_index(const cpaf::video::pipeline_index_t& pipeline_index)
 {
     return flush_queue_.push(pipeline_index);
 }
 
-bool audio_render_thread::state_matches(pipeline_state_t desired_state, const pipeline_index_t& desired_index) const
+bool audio_render_thread::state_matches(cpaf::video::pipeline_state_t desired_state, const cpaf::video::pipeline_index_t& desired_index) const
 {
     return desired_state == pipeline_state_ && desired_index == current_pipeline_index_;
 }
@@ -36,10 +36,10 @@ void audio_render_thread::audio_callback_function(uint8_t* stream, int32_t lengt
 {
 //    switch_state();
     switch (pipeline_state_) {
-    case pipeline_state_t::normal_flow:
+    case cpaf::video::pipeline_state_t::normal_flow:
         state__normal_flow(stream, length);
         break;
-    case pipeline_state_t::flush_in_progress:
+    case cpaf::video::pipeline_state_t::flush_in_progress:
         state__flush_in_progress(stream, length);
         break;
     default:
@@ -50,9 +50,9 @@ void audio_render_thread::audio_callback_function(uint8_t* stream, int32_t lengt
     debug_audio_callback(stream, length);
 }
 
-pipeline_index_t audio_render_thread::get_flush_to_index()
+cpaf::video::pipeline_index_t audio_render_thread::get_flush_to_index()
 {
-    pipeline_index_t flush_index = 0;
+    cpaf::video::pipeline_index_t flush_index = 0;
     while (!flush_queue_.empty()) {
         flush_index = flush_queue_.front();
         flush_queue_.pop();
@@ -63,15 +63,15 @@ pipeline_index_t audio_render_thread::get_flush_to_index()
 void audio_render_thread::switch_state()
 {
     switch (pipeline_state_) {
-    case pipeline_state_t::normal_flow:
+    case cpaf::video::pipeline_state_t::normal_flow:
         flush_in_progress_index_ = get_flush_to_index();
         if (flush_in_progress_index_ != 0) {
-            pipeline_state_ = pipeline_state_t::flush_in_progress;
+            pipeline_state_ = cpaf::video::pipeline_state_t::flush_in_progress;
         }
         break;
-    case pipeline_state_t::flush_in_progress:
+    case cpaf::video::pipeline_state_t::flush_in_progress:
         if (flush_in_progress_index_ == 0) {
-            pipeline_state_ = pipeline_state_t::normal_flow;
+            pipeline_state_ = cpaf::video::pipeline_state_t::normal_flow;
         }
         break;
     default:
@@ -112,7 +112,7 @@ void audio_render_thread::state__normal_flow(uint8_t* stream, int32_t length)
     current_media_time().adjust_time(audio_samples_queue().front().presentation_time());
 
     // Check adjust time on audio samples queue pop()
-    auto queue_pop_callback = [this](const av_samples_buffer& /*samples_buf*/) {
+    auto queue_pop_callback = [this](const cpaf::video::av_samples_buffer& /*samples_buf*/) {
         current_pipeline_index_ = audio_samples_queue().front().pipeline_index();
         //            std::cerr << " Audio current time: " << audio_samples_queue().front().presentation_time_ms().count() << " ms\n";
 //        if (audio_samples_queue().front().pipeline_control() == pipeline_control_t::seek_pos) {
@@ -196,4 +196,4 @@ void audio_render_thread::debug_audio_callback(uint8_t* /*stream*/, int32_t /*le
     audio_callback_dbg_counter_++;
 }
 
-} // namespace cpaf::video
+} // namespace cpaf::gui::video

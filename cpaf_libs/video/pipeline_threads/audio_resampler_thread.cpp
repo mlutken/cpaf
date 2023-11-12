@@ -8,7 +8,7 @@
 
 using namespace std::chrono;
 
-namespace cpaf::video {
+namespace cpaf::gui::video {
 
 audio_resampler_thread::audio_resampler_thread(const std::atomic_bool& threads_running, const std::atomic_bool& threads_paused)
     : threads_running_(threads_running)
@@ -42,7 +42,7 @@ void audio_resampler_thread::resample_frame(bool& add_samples, const std::chrono
 {
     add_samples = false;
 
-    if (audio_samples_queue().full() || format_context().packet_queue_const(media_type::audio).empty()) {
+    if (audio_samples_queue().full() || format_context().packet_queue_const(cpaf::video::media_type::audio).empty()) {
         return;
     }
 
@@ -59,7 +59,7 @@ void audio_resampler_thread::resample_frame(bool& add_samples, const std::chrono
         add_samples = false;
     }
 
-    av_samples_buffer samples_buf = audio_sampler().audio_resampling(frame);
+    cpaf::video::av_samples_buffer samples_buf = audio_sampler().audio_resampling(frame);
 
     if (!audio_samples_queue().push(std::move(samples_buf))) {
         std::cerr << "ERROR: Exeeeded audio_samples_queue size\n";
@@ -68,4 +68,4 @@ void audio_resampler_thread::resample_frame(bool& add_samples, const std::chrono
 
 }
 
-} // namespace cpaf::video
+} // namespace cpaf::gui::video

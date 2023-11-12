@@ -13,7 +13,7 @@ extern "C"
 #include <cpaf_libs/video/av_samples_queue.h>
 
 using namespace std;
-namespace cpaf::video {
+namespace cpaf::gui::video {
 
 
 //pipeline_threads::pipeline_threads(atomic_bool& /*threads_running*/, atomic_bool& /*threads_paused*/)
@@ -31,7 +31,7 @@ pipeline_threads::~pipeline_threads()
     terminate();
 }
 
-void pipeline_threads::format_context_set(av_format_context* ctx)
+void pipeline_threads::format_context_set(cpaf::video::av_format_context* ctx)
 {
     audio_render_thread_.format_context_set(ctx);
     audio_resampler_thread_.format_context_set(ctx);
@@ -40,7 +40,7 @@ void pipeline_threads::format_context_set(av_format_context* ctx)
     format_context_ptr_ = ctx;
 }
 
-void pipeline_threads::format_context_set(av_format_context& ctx)
+void pipeline_threads::format_context_set(cpaf::video::av_format_context& ctx)
 {
     audio_render_thread_.format_context_set(ctx);
     audio_resampler_thread_.format_context_set(ctx);
@@ -49,43 +49,43 @@ void pipeline_threads::format_context_set(av_format_context& ctx)
     format_context_ptr_ = &ctx;
 }
 
-void pipeline_threads::video_codec_ctx_set(av_codec_context* ctx)
+void pipeline_threads::video_codec_ctx_set(cpaf::video::av_codec_context* ctx)
 {
     video_render_thread_.video_codec_ctx_set(ctx);
     video_codec_ctx_ptr_ = ctx;
 }
 
-void pipeline_threads::video_codec_ctx_set(av_codec_context& ctx)
+void pipeline_threads::video_codec_ctx_set(cpaf::video::av_codec_context& ctx)
 {
     video_render_thread_.video_codec_ctx_set(ctx);
     video_codec_ctx_ptr_ = &ctx;
 }
 
-void pipeline_threads::audio_codec_ctx_set(av_codec_context* ctx)
+void pipeline_threads::audio_codec_ctx_set(cpaf::video::av_codec_context* ctx)
 {
     audio_resampler_thread_.audio_codec_ctx_set(ctx);
     audio_codec_ctx_ptr_ = ctx;
 }
 
-void pipeline_threads::audio_codec_ctx_set(av_codec_context& ctx)
+void pipeline_threads::audio_codec_ctx_set(cpaf::video::av_codec_context& ctx)
 {
     audio_resampler_thread_.audio_codec_ctx_set(ctx);
     audio_codec_ctx_ptr_ = &ctx;
 }
 
-void pipeline_threads::audio_resampler_set(audio_resampler* resampler)
+void pipeline_threads::audio_resampler_set(cpaf::video::audio_resampler* resampler)
 {
     audio_resampler_thread_.audio_resampler_set(resampler);
     audio_resampler_ptr_ = resampler;
 }
 
-void pipeline_threads::audio_resampler_set(audio_resampler& resampler)
+void pipeline_threads::audio_resampler_set(cpaf::video::audio_resampler& resampler)
 {
     audio_resampler_thread_.audio_resampler_set(resampler);
     audio_resampler_ptr_ = &resampler;
 }
 
-void pipeline_threads::audio_samples_queue_set(av_samples_queue* queue)
+void pipeline_threads::audio_samples_queue_set(cpaf::video::av_samples_queue* queue)
 {
     audio_resampler_thread_.audio_samples_queue_set(queue);
     audio_render_thread_.audio_samples_queue_set(queue);
@@ -93,7 +93,7 @@ void pipeline_threads::audio_samples_queue_set(av_samples_queue* queue)
     audio_samples_queue_ptr_ = queue;
 }
 
-void pipeline_threads::audio_samples_queue_set(av_samples_queue& queue)
+void pipeline_threads::audio_samples_queue_set(cpaf::video::av_samples_queue& queue)
 {
     audio_resampler_thread_.audio_samples_queue_set(queue);
     audio_render_thread_.audio_samples_queue_set(queue);
@@ -101,7 +101,7 @@ void pipeline_threads::audio_samples_queue_set(av_samples_queue& queue)
     audio_samples_queue_ptr_ = &queue;
 }
 
-void pipeline_threads::current_media_time_set(media_stream_time* mts)
+void pipeline_threads::current_media_time_set(cpaf::video::media_stream_time* mts)
 {
     audio_resampler_thread_.current_media_time_set(mts);
     audio_render_thread_.current_media_time_set(mts);
@@ -109,7 +109,7 @@ void pipeline_threads::current_media_time_set(media_stream_time* mts)
     current_media_time_ptr_ = mts;
 }
 
-void pipeline_threads::current_media_time_set(media_stream_time& mts)
+void pipeline_threads::current_media_time_set(cpaf::video::media_stream_time& mts)
 {
     audio_resampler_thread_.current_media_time_set(mts);
     audio_render_thread_.current_media_time_set(mts);
@@ -136,7 +136,7 @@ void pipeline_threads::terminate()
     threads_running_ = false;
 }
 
-void pipeline_threads::seek_position(const std::chrono::microseconds& stream_pos, seek_dir dir)
+void pipeline_threads::seek_position(const std::chrono::microseconds& stream_pos, cpaf::video::seek_dir dir)
 {
     packet_reader_thread_.seek_position(stream_pos, dir);
 }
@@ -152,7 +152,7 @@ void pipeline_threads::seek_relative(const std::chrono::microseconds& delta_time
     if (new_pos <= 0ms) {
         new_pos = 0ms;
     }
-    const seek_dir dir = delta_time.count() < 0 ? seek_dir::backward : seek_dir::forward;
+    const auto dir = delta_time.count() < 0 ? cpaf::video::seek_dir::backward : cpaf::video::seek_dir::forward;
     seek_position(new_pos, dir);
 }
 
@@ -186,9 +186,9 @@ void pipeline_threads::signal_flush_done()
     audio_resampler_thread_.samples_queue_flush_done();
 }
 
-bool pipeline_threads::video_frame_update(av_frame& current_frame, gui::video::render& video_render)
+bool pipeline_threads::video_frame_update(cpaf::video::av_frame& current_frame, gui::video::render& video_render)
 {
     return video_render_thread_.video_frame_update(current_frame, video_render);
 }
 
-} //END namespace cpaf::video
+} //END namespace cpaf::gui::video

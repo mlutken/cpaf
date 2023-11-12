@@ -131,7 +131,7 @@ private:
     void                            current_media_time_set  (media_stream_time* mts);
     void                            current_media_time_set  (media_stream_time& mts);
     void                            update_scaling_context  () const;
-    cpaf::video::pipeline_threads&  media_pipeline_threads  () { return media_pipeline_threads_; }
+    pipeline_threads&               media_pipeline_threads  () { return media_pipeline_threads_; }
 
     // ----------------------------
     // --- PRIVATE: Member vars ---
@@ -152,7 +152,7 @@ private:
     mutable cpaf::video::av_codec_context                               video_codec_ctx_;
     mutable cpaf::video::av_codec_context                               audio_codec_ctx_;
     cpaf::video::audio_resampler                                        audio_resampler_;
-    cpaf::video::pipeline_threads                                       media_pipeline_threads_;
+    pipeline_threads                                                    media_pipeline_threads_;
 
     std::string                                                         primary_resource_path_;
     mutable std::shared_ptr<torrent::torrents>                          torrents_;
