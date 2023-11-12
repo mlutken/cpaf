@@ -1,6 +1,6 @@
 #include "packet_reader_thread.h"
 #include <cpaf_libs/video/av_format_context.h>
-#include <cpaf_libs/video/pipeline_threads/pipeline_threads.h>
+#include <cpaf_libs/gui/video/pipeline_threads/pipeline_threads.h>
 
 namespace cpaf::gui::video {
 

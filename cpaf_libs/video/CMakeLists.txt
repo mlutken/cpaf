@@ -21,22 +21,10 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/ff_audio_format_t.h
     ${CMAKE_CURRENT_LIST_DIR}/media_stream_time.h
     ${CMAKE_CURRENT_LIST_DIR}/play_stream.h
-    ${CMAKE_CURRENT_LIST_DIR}/player.h
 
     ${CMAKE_CURRENT_LIST_DIR}/io/custom_io_base.h
     ${CMAKE_CURRENT_LIST_DIR}/io/torrent_io.h
     ${CMAKE_CURRENT_LIST_DIR}/io/my_file_io.h
-
-    ${CMAKE_CURRENT_LIST_DIR}/pipeline_threads/pipeline_threads_types.h
-    ${CMAKE_CURRENT_LIST_DIR}/pipeline_threads/pipeline_threads.h
-    ${CMAKE_CURRENT_LIST_DIR}/pipeline_threads/audio_render_thread.h
-    ${CMAKE_CURRENT_LIST_DIR}/pipeline_threads/audio_resampler_thread.h
-    ${CMAKE_CURRENT_LIST_DIR}/pipeline_threads/packet_reader_thread.h
-    ${CMAKE_CURRENT_LIST_DIR}/pipeline_threads/video_render_thread.h
-
-    ${CMAKE_CURRENT_LIST_DIR}/render/render.h
-    ${CMAKE_CURRENT_LIST_DIR}/render/render_base.h
-    ${CMAKE_CURRENT_LIST_DIR}/render/render__sdl2.h
 
     PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/audio_resampler.cpp
@@ -54,21 +42,11 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/ff_audio_format_t.cpp
     ${CMAKE_CURRENT_LIST_DIR}/media_stream_time.cpp
     ${CMAKE_CURRENT_LIST_DIR}/play_stream.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/player.cpp
 
     ${CMAKE_CURRENT_LIST_DIR}/io/custom_io_base.cpp
     ${CMAKE_CURRENT_LIST_DIR}/io/torrent_io.cpp
     ${CMAKE_CURRENT_LIST_DIR}/io/my_file_io.cpp
 
-    ${CMAKE_CURRENT_LIST_DIR}/pipeline_threads/pipeline_threads.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/pipeline_threads/audio_render_thread.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/pipeline_threads/audio_resampler_thread.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/pipeline_threads/packet_reader_thread.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/pipeline_threads/video_render_thread.cpp
-
-    ${CMAKE_CURRENT_LIST_DIR}/render/render.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/render/render_base.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/render/render__sdl2.cpp
 )
 
 get_filename_component(PARENT_DIR ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)

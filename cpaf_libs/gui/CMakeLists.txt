@@ -55,6 +55,17 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/events/touch_events.h
     ${CMAKE_CURRENT_LIST_DIR}/events/events__${CPAF_GUI_SYSTEM_NAME}.h
 
+    ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/pipeline_threads_types.h
+    ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/pipeline_threads.h
+    ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/audio_render_thread.h
+    ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/audio_resampler_thread.h
+    ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/packet_reader_thread.h
+    ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/video_render_thread.h
+    ${CMAKE_CURRENT_LIST_DIR}/video/render/render.h
+    ${CMAKE_CURRENT_LIST_DIR}/video/render/render_base.h
+    ${CMAKE_CURRENT_LIST_DIR}/video/render/render__sdl2.h
+    ${CMAKE_CURRENT_LIST_DIR}/video/player.h
+
     ${CMAKE_CURRENT_LIST_DIR}/application.h
     ${CMAKE_CURRENT_LIST_DIR}/dpi_handler.h
     ${CMAKE_CURRENT_LIST_DIR}/resources.h
@@ -96,6 +107,16 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/events/touch_events.cpp
     ${CMAKE_CURRENT_LIST_DIR}/events/events__${CPAF_GUI_SYSTEM_NAME}.cpp
 
+    ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/pipeline_threads.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/audio_render_thread.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/audio_resampler_thread.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/packet_reader_thread.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/video_render_thread.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/video/render/render.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/video/render/render_base.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/video/render/render__sdl2.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/video/player.cpp
+
     ${CMAKE_CURRENT_LIST_DIR}/application.cpp
     ${CMAKE_CURRENT_LIST_DIR}/${CMAKE_SYSTEM_NAME}/dpi_handler.cpp
     ${CMAKE_CURRENT_LIST_DIR}/${CMAKE_SYSTEM_NAME}/resources.cpp
@@ -104,6 +125,8 @@ target_sources(${library_name}
 
     ${CMAKE_CURRENT_LIST_DIR}/assets/fonts/built_in_fonts.cpp
     ${CMAKE_CURRENT_LIST_DIR}/assets/fonts/manrope_ttf.cpp
+
+
 )
 
 

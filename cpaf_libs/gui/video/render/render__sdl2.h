@@ -3,11 +3,11 @@
 #include <config/cpaf_platform_definitions.h>
 
 #if (CPAF_GRAPHICS_SYSTEM_ID != CPAF_SYSTEM_ID_SDL2)
-#error Only include cpaf_libs/video/render/render__sdl2.h when CPAF_GRAPHICS_SYSTEM_ID is CPAF_SYSTEM_ID_SDL2
+#error Only include cpaf_libs/gui/video/render/render__sdl2.h when CPAF_GRAPHICS_SYSTEM_ID is CPAF_SYSTEM_ID_SDL2
 #endif
 
 #include <SDL2/SDL.h>
-#include <cpaf_libs/video/render/render_base.h>
+#include <cpaf_libs/gui/video/render/render_base.h>
 
 namespace cpaf::gui::video {
 

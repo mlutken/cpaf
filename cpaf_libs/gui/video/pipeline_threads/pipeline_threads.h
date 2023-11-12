@@ -1,10 +1,6 @@
 #pragma once
 
 
-extern "C"
-{
-}
-
 #include <string>
 #include <chrono>
 #include <thread>
@@ -12,10 +8,10 @@ extern "C"
 #include <memory>
 #include <cpaf_libs/audio/cpaf_audio_device_base.h>
 #include <cpaf_libs/video/av_samples_buffer.h>
-#include <cpaf_libs/video/pipeline_threads/audio_render_thread.h>
-#include <cpaf_libs/video/pipeline_threads/audio_resampler_thread.h>
-#include <cpaf_libs/video/pipeline_threads/packet_reader_thread.h>
-#include <cpaf_libs/video/pipeline_threads/video_render_thread.h>
+#include <cpaf_libs/gui/video/pipeline_threads/audio_render_thread.h>
+#include <cpaf_libs/gui/video/pipeline_threads/audio_resampler_thread.h>
+#include <cpaf_libs/gui/video/pipeline_threads/packet_reader_thread.h>
+#include <cpaf_libs/gui/video/pipeline_threads/video_render_thread.h>
 
 namespace cpaf::video {
 class av_format_context;
