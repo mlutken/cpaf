@@ -46,6 +46,9 @@ struct platform_texture_t {
 class render_platform : public render_base
 {
 public:
+
+    // static platform_render_t    create_video_render()
+
     render_platform();
 
 private:
