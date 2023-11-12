@@ -30,14 +30,14 @@ void video_render_thread::terminate()
 
 }
 
-bool video_render_thread::video_frame_update (av_frame& current_frame, render& video_render)
+bool video_render_thread::video_frame_update (av_frame& current_frame, cpaf::gui::video::render& video_render)
 {
     bool ret_val = video_frame_do_render(current_frame, video_render);
     debug_video_frame_update(current_frame, video_render);
     return ret_val;
 }
 
-bool video_render_thread::video_frame_do_render(av_frame& current_frame, render& video_render)
+bool video_render_thread::video_frame_do_render(av_frame& current_frame, cpaf::gui::video::render& video_render)
 {
     if (video_queue_flush_in_progress_) {
         return false;
@@ -72,7 +72,7 @@ bool video_render_thread::video_frame_do_render(av_frame& current_frame, render&
     return false;
 }
 
-void video_render_thread::debug_video_frame_update(av_frame& current_frame, render& /*video_render*/)
+void video_render_thread::debug_video_frame_update(av_frame& current_frame, gui::video::render& /*video_render*/)
 {
     if (
        (true && video_frame_update_dbg_counter_ % 2000 == 0)

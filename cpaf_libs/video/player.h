@@ -16,6 +16,8 @@ class torrents;
 
 namespace cpaf::gui::video {
 
+class render;
+
 using play_stream = cpaf::video::play_stream;
 using media_stream_time = cpaf::video::media_stream_time;
 using stream = cpaf::video::media_stream_time;
@@ -25,7 +27,6 @@ using av_codec_context = cpaf::video::av_codec_context;
 using ff_audio_format_t = cpaf::video::ff_audio_format_t;
 using av_frame = cpaf::video::av_frame;
 using av_samples_queue = cpaf::video::av_samples_queue;
-using seek_dir = cpaf::video::seek_dir;
 using seek_dir = cpaf::video::seek_dir;
 
 
@@ -99,7 +100,7 @@ public:
     // --- Interfacing to surrounding app/system ---
     // ---------------------------------------------
     audio_play_callback_t       audio_callback_get      ();
-    bool                        video_frame_update      (av_frame& current_frame, cpaf::video::render& video_render);
+    bool                        video_frame_update      (av_frame& current_frame, cpaf::gui::video::render& video_render);
 
     std::shared_ptr<torrent::torrents>   torrents_get   () const;
     void                        torrents_set            (std::shared_ptr<torrent::torrents> tors) { torrents_ = tors; }

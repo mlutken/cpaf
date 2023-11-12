@@ -6,7 +6,7 @@
 #include <cpaf_libs/video/render/render__sdl2.h>
 #endif
 
-namespace cpaf::video {
+namespace cpaf::gui::video {
 
 class render : public render_platform
 {
@@ -14,4 +14,4 @@ public:
     render();
 };
 
-} //END namespace cpaf::video
+} //END namespace cpaf::gui::video

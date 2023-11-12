@@ -222,7 +222,7 @@ player::audio_play_callback_t player::audio_callback_get()
     return media_pipeline_threads().audio_callback_get();
 }
 
-bool player::video_frame_update(av_frame& current_frame, cpaf::video::render& video_render)
+bool player::video_frame_update(av_frame& current_frame, cpaf::gui::video::render& video_render)
 {
     return media_pipeline_threads().video_frame_update(current_frame, video_render);
 }

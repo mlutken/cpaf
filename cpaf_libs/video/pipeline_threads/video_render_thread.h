@@ -8,12 +8,16 @@
 #include <cpaf_libs/video/av_samples_buffer.h>
 #include <video/av_frame.h>
 
+namespace cpaf::gui::video {
+class render;
+
+};
+
 namespace cpaf::video {
 class av_format_context;
 class av_codec_context;
 class media_stream_time;
 class av_samples_queue;
-class render;
 
 class video_render_thread
 {
@@ -31,15 +35,15 @@ public:
 
     void                        start                   ();
     void                        terminate               ();
-    bool                        video_frame_update      (av_frame& current_frame, render& video_render);
+    bool                        video_frame_update      (av_frame& current_frame, cpaf::gui::video::render& video_render);
     void                        video_queue_flush_start ()                          { video_queue_flush_in_progress_ = true; }
     void                        video_queue_flush_done  ()                          { video_queue_flush_in_progress_ = false; video_queue_flushed_ = true; }
 
     const atomic_pipeline_index_t&      current_pipeline_index  () const { return current_pipeline_index_; }
 
 private:
-    bool                        video_frame_do_render   (av_frame& current_frame, render& video_render);
-    void                        debug_video_frame_update(av_frame& current_frame, render& video_render);
+    bool                        video_frame_do_render   (av_frame& current_frame, cpaf::gui::video::render& video_render);
+    void                        debug_video_frame_update(av_frame& current_frame, cpaf::gui::video::render& video_render);
 
     av_format_context&          format_context          () { return *format_context_ptr_; }
     const av_format_context&    format_context          () const { return *format_context_ptr_; }

@@ -60,7 +60,7 @@ public:
     void                    flush_queues            ();
     void                    signal_flush_start      ();
     void                    signal_flush_done       ();
-    bool                    video_frame_update      (av_frame& current_frame, render& video_render);
+    bool                    video_frame_update      (av_frame& current_frame, cpaf::gui::video::render& video_render);
 
 private:
     av_format_context&      format_context          () { return *format_context_ptr_; }

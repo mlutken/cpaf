@@ -1,10 +1,10 @@
 #include "render.h"
 
-namespace cpaf::video {
+namespace cpaf::gui::video {
 
 render::render()
 {
 
 }
 
-} //END namespace cpaf::video
+} //END namespace cpaf::gui::video

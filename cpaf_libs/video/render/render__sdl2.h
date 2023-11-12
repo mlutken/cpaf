@@ -9,7 +9,7 @@
 #include <SDL2/SDL.h>
 #include <cpaf_libs/video/render/render_base.h>
 
-namespace cpaf::video {
+namespace cpaf::gui::video {
 
 struct platform_render_t {
     platform_render_t() = default;
@@ -52,7 +52,7 @@ public:
     render_platform();
 
 private:
-    void sdl_prepare_video_frame    (const av_frame& frame, av_frame& frame_display);
+    void sdl_prepare_video_frame    (const cpaf::video::av_frame& frame, cpaf::video::av_frame& frame_display);
     void sdl_render_current_video_frame_texture     ();
 
 
@@ -62,12 +62,12 @@ private:
     platform_render_t&          do_platform_render          () override { return platform_render_; }
     platform_surface_t&         do_platform_surface         () override { return platform_surface_; }
     platform_texture_t&         do_platform_video_texture   () override { return platform_video_texture_; }
-    bool                        do_render_video_frame       (const av_frame& frame) override;
+    bool                        do_render_video_frame       (const cpaf::video::av_frame& frame) override;
 
     platform_render_t           platform_render_;
     platform_surface_t          platform_surface_;
     platform_texture_t          platform_video_texture_;
 };
 
-} //END namespace cpaf::video
+} //END namespace cpaf::gui::video
 

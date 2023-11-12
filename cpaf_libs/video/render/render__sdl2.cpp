@@ -2,7 +2,7 @@
 
 #include <cpaf_libs/video/av_codec_context.h>
 
-namespace cpaf::video {
+namespace cpaf::gui::video {
 
 render_platform::render_platform()
     : render_base()
@@ -11,8 +11,8 @@ render_platform::render_platform()
 }
 
 
-void render_platform::sdl_prepare_video_frame(const av_frame& frame,
-                         av_frame& frame_display
+void render_platform::sdl_prepare_video_frame(const cpaf::video::av_frame& frame,
+                         cpaf::video::av_frame& frame_display
                          )
 {
     video_codec_ctx().scale_video_frame(frame_display, frame);
@@ -60,11 +60,11 @@ void render_platform::do_platform_video_texture_set(const platform_texture_t& pl
     platform_video_texture_ = platform_texture;
 }
 
-bool render_platform::do_render_video_frame(const av_frame& frame)
+bool render_platform::do_render_video_frame(const cpaf::video::av_frame& frame)
 {
     sdl_prepare_video_frame(frame, frame_display());
     sdl_render_current_video_frame_texture();
     return true;
 }
 
-} //END namespace cpaf::video
+} //END namespace cpaf::gui::video
