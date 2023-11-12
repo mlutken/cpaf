@@ -29,20 +29,23 @@ private:
     void                    do_platform_frame_update            () override;
     void                    do_platform_post_frame_update       () override;
     size_2d                 do_platform_main_window_size        () const override;
+    system_window&          do_main_window                      () override;
 
-    std::unique_ptr<system_window_base>  do_create_system_window   (size_2d size, std::string_view title) const override;
+    std::unique_ptr<system_window>  do_create_system_window   (size_2d size, std::string_view title) const override;
 
     // --- PRIVATE: Helpers  ---
     void        initialize();
 
     // --- PRIVATE: Members ---
-    events::events_sdl      events_converter_;
-    SDL_Window*             main_window_    {nullptr};
-    SDL_Renderer*           main_renderer_  {nullptr};
+    events::events_sdl              events_converter_;
+    std::unique_ptr<system_window>  main_window_ptr_    {nullptr};
+
+    SDL_Window*                     main_window_        {nullptr};
+    SDL_Renderer*                   main_renderer_      {nullptr};
 
 
-    bool                      m_show_some_panel {true};
-    bool                      m_show_debug_panel{false};
+    bool                            m_show_some_panel   {true};
+    bool                            m_show_debug_panel  {false};
 
 };
 

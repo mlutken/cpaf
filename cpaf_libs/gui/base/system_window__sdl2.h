@@ -12,17 +12,28 @@
 namespace cpaf::gui {
 
 
+
 class system_window_platform : public system_window_base {
 public:
-    explicit system_window_platform(const size_2d& size);
-    system_window_platform(const size_2d& size, std::string_view title);
 
+protected:
+    friend class app_platform;
+    system_window_platform(const size_2d& size, std::string_view title);
 private:
+
+
     // --- Platform overrides ---
-    size_2d             do_get_size					() override;
-    std::string         do_get_title    			() override;
+    size_2d             do_get_size					() const override;
+    std::string         do_get_title    			() const override;
+    void*               do_get_native_window    	() override;
+    void*               do_get_native_renderer    	() override;
 
     // --- PRIVATE: Helpers  ---
+
+    // --- PRIVATE: Members  ---
+    SDL_Window*             main_window_    {nullptr};
+    SDL_Renderer*           main_renderer_  {nullptr};
+
 };
 
 

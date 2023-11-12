@@ -26,7 +26,8 @@ public:
 
     std::string                     dbg_characteristics         () const;
     exit_status_t                   run                         ();
-    size_2d                         main_window_size            () const  { return do_platform_main_window_size(); }
+    size_2d                         main_window_size            () const    { return do_platform_main_window_size(); }
+    system_window&                  main_window                 ()          { return do_main_window(); }
 
     std::unique_ptr<system_window_base>  create_system_window   (size_2d size, std::string_view title) const {
         fmt::println("FIXMENM create_system_window () ");
@@ -73,9 +74,10 @@ private:
     virtual void                    do_platform_post_frame_update   () = 0;
 
     virtual size_2d                 do_platform_main_window_size    () const = 0;
+    virtual system_window&          do_main_window                  () = 0;
 
 
-    virtual std::unique_ptr<system_window_base>  do_create_system_window        (size_2d size, std::string_view title) const = 0;
+    virtual std::unique_ptr<system_window>  do_create_system_window        (size_2d size, std::string_view title) const = 0;
 
     // ---------------------------------
     // --- PRIVATE: Helper functions ---

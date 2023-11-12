@@ -13,6 +13,7 @@ namespace cpaf::gui {
 class system_platform : public system_base {
 public:
 
+    ~system_platform();
 
 private:
 	// --- Platform overrides ---

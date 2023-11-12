@@ -18,27 +18,42 @@ namespace cpaf::gui {
 // --------------------------
 // --- Platform overrides ---
 // --------------------------
-system_window_platform::system_window_platform(const size_2d& size)
-    : system_window_base(size)
-{
-    fmt::println("system_window_platform::CONSTRUCTOR {}, {}", size.width(), size.height() );
-
-}
 
 system_window_platform::system_window_platform(const size_2d& size, std::string_view title)
-    : system_window_base(size, title)
 {
     fmt::println("system_window_platform::CONSTRUCTOR ({}) {}, {}", title, size.width(), size.height() );
+    const uint32_t window_flags{SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI};
+
+    main_window_ = SDL_CreateWindow(title.data(),
+                                    SDL_WINDOWPOS_CENTERED,
+                                    SDL_WINDOWPOS_CENTERED,
+                                    size.width(),
+                                    size.height(),
+                                    window_flags);
+
+
+    auto renderer_flags{static_cast<SDL_RendererFlags>(SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED)};
+    main_renderer_ = SDL_CreateRenderer(main_window_, -1, renderer_flags);
 }
 
-size_2d system_window_platform::do_get_size()
+size_2d system_window_platform::do_get_size() const
 {
     return {0,0};
 }
 
-std::string system_window_platform::do_get_title()
+std::string system_window_platform::do_get_title() const
 {
     return "Title FIXMENM TODO";
+}
+
+void* system_window_platform::do_get_native_window()
+{
+    return main_window_;
+}
+
+void* system_window_platform::do_get_native_renderer()
+{
+    return main_renderer_;
 }
 
 

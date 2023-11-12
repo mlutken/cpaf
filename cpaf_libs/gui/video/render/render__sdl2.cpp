@@ -1,8 +1,18 @@
 #include "render__sdl2.h"
+#include "render.h"
 
 #include <cpaf_libs/video/av_codec_context.h>
 
 namespace cpaf::gui::video {
+
+std::unique_ptr<render> render_platform::create_video_render(
+    const cpaf::gui::system_window& win,
+    const cpaf::video::surface_dimensions_t& dimensions)
+{
+    auto video_renderer = std::make_unique<render>();
+
+    return video_renderer;
+}
 
 render_platform::render_platform()
     : render_base()

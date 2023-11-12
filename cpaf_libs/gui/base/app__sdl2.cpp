@@ -30,13 +30,13 @@ app_platform::~app_platform()
 
     // SDL_DestroyTexture(video_frame_render_texture);
     // SDL_DestroyRenderer(sdl_renderer);
-    if (main_window_) {
-        SDL_DestroyWindow(main_window_);
-    }
-    if (main_renderer_) {
-        SDL_DestroyRenderer(main_renderer_);
-    }
-    SDL_Quit();
+    // if (main_window_) {
+    //     SDL_DestroyWindow(main_window_);
+    // }
+    // if (main_renderer_) {
+    //     SDL_DestroyRenderer(main_renderer_);
+    // }
+    // SDL_Quit();
 }
 
 
@@ -103,47 +103,6 @@ void app_platform::do_platform_pre_frame_update()
 
 void app_platform::do_platform_frame_update()
 {
-    // fmt::println("app_platform::do_frame_update()");
-
-    // ImGui::DockSpaceOverViewport();
-
-    // if (ImGui::BeginMainMenuBar()) {
-    //     if (ImGui::BeginMenu("File")) {
-    //         if (ImGui::MenuItem("Exit", "Cmd+Q")) {
-    //             stop();
-    //         }
-    //         ImGui::EndMenu();
-    //     }
-    //     if (ImGui::BeginMenu("View")) {
-    //         ImGui::MenuItem("Some Panel", nullptr, &m_show_some_panel);
-    //         ImGui::MenuItem("Debug Panel", nullptr, &m_show_debug_panel);
-    //         ImGui::EndMenu();
-    //     }
-
-    //     ImGui::EndMainMenuBar();
-    // }
-
-    // // Whatever GUI to implement here ...
-
-    // // ImGui::SetCursorPos({0,0});
-    // if (m_show_some_panel) {
-    //     ImGui::Begin("Some panel", &m_show_some_panel);
-    //     ImGui::Text("Hello World dsf");
-    //     ImGui::End();
-    // }
-
-    // // Debug panel
-    // if (m_show_debug_panel) {
-    //     ImGui::Begin("Debug panel", &m_show_debug_panel);
-    //     ImGui::Text("User config path: %s", config_path().string().c_str());
-    //     ImGui::Separator();
-    //     // ImGui::Text("Font path: %s", font_path.c_str());
-    //     // ImGui::Text("Font size: %f", font_size);
-    //     // ImGui::Text("Global font scaling %f", io.FontGlobalScale);
-    //     // ImGui::Text("UI scaling factor: %f", font_scaling_factor);
-    //     ImGui::End();
-    // }
-
     // ImGui::ShowDemoWindow();
 }
 
@@ -154,10 +113,10 @@ void app_platform::do_platform_post_frame_update()
     ImGui::Render();
     // ImGui::UpdatePlatformWindows();
     // ImGui::RenderPlatformWindowsDefault();
-    SDL_SetRenderDrawColor(main_renderer_, 100, 100, 100, 255);
-    SDL_RenderClear(main_renderer_);
+    SDL_SetRenderDrawColor(main_window().native_renderer<SDL_Renderer>(), 100, 100, 100, 255);
+    SDL_RenderClear(main_window().native_renderer<SDL_Renderer>());
     ImGui_ImplSDLRenderer_RenderDrawData(ImGui::GetDrawData());
-    SDL_RenderPresent(main_renderer_);
+    SDL_RenderPresent(main_window().native_renderer<SDL_Renderer>());
 }
 
 /// @todo implement me!!
@@ -166,9 +125,14 @@ size_2d app_platform::do_platform_main_window_size() const
     return size_2d{1,1};
 }
 
-std::unique_ptr<system_window_base> app_platform::do_create_system_window(size_2d size, std::string_view title) const
+system_window& app_platform::do_main_window()
 {
-    return std::make_unique<system_window_platform>(size, title);
+    return *main_window_ptr_;
+}
+
+std::unique_ptr<system_window> app_platform::do_create_system_window(size_2d size, std::string_view title) const
+{
+    return std::unique_ptr<system_window>(new system_window(size, title));
 }
 
 void app_platform::initialize()
@@ -176,13 +140,7 @@ void app_platform::initialize()
     fmt::println("app_platform::initialize()");
 
 
-
-    const uint32_t init_flags{SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER | SDL_INIT_EVENTS};
-    if (SDL_Init(init_flags) != 0) {
-        exit_status_ = exit_status_t::failure;
-    }
-
-    const uint32_t window_flags{SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI};
+    // const uint32_t window_flags{SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI};
 
     // sdl_window = SDL_CreateWindow("Video playground 1", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, window_dimensions.x(), window_dimensions.y(), SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI);
 
@@ -195,18 +153,20 @@ void app_platform::initialize()
     //     window_dimensions.y()
     //     );
 
-    //SDL_WINDOWPOS_UNDEFINED,
-    main_window_ = SDL_CreateWindow(window_title().data(),
-                                SDL_WINDOWPOS_CENTERED,
-                                SDL_WINDOWPOS_CENTERED,
-                                initial_window_size_.width(),
-                                initial_window_size_.height(),
-                                window_flags);
+    main_window_ptr_ = do_create_system_window(initial_window_size_, window_title());
+
+    // //SDL_WINDOWPOS_UNDEFINED,
+    // main_window_ = SDL_CreateWindow(window_title().data(),
+    //                             SDL_WINDOWPOS_CENTERED,
+    //                             SDL_WINDOWPOS_CENTERED,
+    //                             initial_window_size_.width(),
+    //                             initial_window_size_.height(),
+    //                             window_flags);
 
 
-    auto renderer_flags{
-                        static_cast<SDL_RendererFlags>(SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED)};
-    main_renderer_ = SDL_CreateRenderer(main_window_, -1, renderer_flags);
+    // auto renderer_flags{
+    //                     static_cast<SDL_RendererFlags>(SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED)};
+    // main_renderer_ = SDL_CreateRenderer(main_window_, -1, renderer_flags);
 
     // auto renderer_flags{
     //                     static_cast<SDL_RendererFlags>(SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED)};
@@ -227,8 +187,8 @@ void app_platform::initialize()
     built_in_fonts::add_font(io, default_font(), base_font_size());
 
     // Setup Platform/Renderer backends
-    ImGui_ImplSDL2_InitForSDLRenderer(main_window_, main_renderer_);
-    ImGui_ImplSDLRenderer_Init(main_renderer_);
+    ImGui_ImplSDL2_InitForSDLRenderer(main_window().native_window<SDL_Window>(), main_window().native_renderer<SDL_Renderer>());
+    ImGui_ImplSDLRenderer_Init(main_window().native_renderer<SDL_Renderer>());
 
 }
 

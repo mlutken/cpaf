@@ -1,5 +1,6 @@
 #include "system__sdl2.h"
 
+#include <fmt/format.h>
 #include <SDL2/SDL.h>
 
 
@@ -10,6 +11,12 @@ namespace cpaf::gui {
 // --------------------------
 // --- Platform overrides ---
 // --------------------------
+
+system_platform::~system_platform()
+{
+    fmt::println("system_platform::DESTRUCTOR");
+    SDL_Quit();
+}
 
 int32_t system_platform::do_init()
 {

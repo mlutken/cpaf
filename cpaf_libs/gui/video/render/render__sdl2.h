@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <config/cpaf_platform_definitions.h>
 
 #if (CPAF_GRAPHICS_SYSTEM_ID != CPAF_SYSTEM_ID_SDL2)
@@ -9,7 +10,13 @@
 #include <SDL2/SDL.h>
 #include <cpaf_libs/gui/video/render/render_base.h>
 
+namespace cpaf::gui {
+class system_window;
+}
+
 namespace cpaf::gui::video {
+
+class render;
 
 struct platform_render_t {
     platform_render_t() = default;
@@ -46,8 +53,7 @@ struct platform_texture_t {
 class render_platform : public render_base
 {
 public:
-
-    // static platform_render_t    create_video_render()
+    static std::unique_ptr<render>   create_video_render(const cpaf::gui::system_window& win, const cpaf::video::surface_dimensions_t& dimensions);
 
     render_platform();
 

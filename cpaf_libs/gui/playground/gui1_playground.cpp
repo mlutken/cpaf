@@ -5,6 +5,7 @@
 #include <imgui.h>
 
 #include <cpaf_libs/gui/application.h>
+#include <cpaf_libs/gui/system.h>
 #include <cpaf_libs/gui/app.h>
 
 
@@ -30,6 +31,7 @@ private:
 
 int main(int /*argc*/, char* /*argv*/ [])
 {
+    cpaf::gui::system::instance().init();
     fmt::println("*** CPAF GUI PLAYGROUND 1 ***");
     fmt::println("sizeof(events::event) : {}", sizeof(events::event));
 ;
