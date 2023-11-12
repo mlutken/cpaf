@@ -14,7 +14,20 @@ class torrents;
 }
 
 
-namespace cpaf::video {
+namespace cpaf::gui::video {
+
+using play_stream = cpaf::video::play_stream;
+using media_stream_time = cpaf::video::media_stream_time;
+using stream = cpaf::video::media_stream_time;
+using stream_type_t = cpaf::video::stream_type_t;
+using surface_dimensions_t = cpaf::video::surface_dimensions_t;
+using av_codec_context = cpaf::video::av_codec_context;
+using ff_audio_format_t = cpaf::video::ff_audio_format_t;
+using av_frame = cpaf::video::av_frame;
+using av_samples_queue = cpaf::video::av_samples_queue;
+using seek_dir = cpaf::video::seek_dir;
+using seek_dir = cpaf::video::seek_dir;
+
 
 class player
 {
@@ -55,7 +68,7 @@ public:
     // ---------------------------
     // --- Video setup/control ---
     // ---------------------------
-    void                        video_dimensions_set    (int32_t width, int32_t height = surface_dimension_auto);
+    void                        video_dimensions_set    (int32_t width, int32_t height = cpaf::video::surface_dimension_auto);
     void                        video_dimensions_set    (const surface_dimensions_t& dimensions);
     void                        video_scaler_flags_set  (int32_t flags);
     void                        video_scaler_align_set  (int32_t align);
@@ -86,7 +99,7 @@ public:
     // --- Interfacing to surrounding app/system ---
     // ---------------------------------------------
     audio_play_callback_t       audio_callback_get      ();
-    bool                        video_frame_update      (av_frame& current_frame, render& video_render);
+    bool                        video_frame_update      (av_frame& current_frame, cpaf::video::render& video_render);
 
     std::shared_ptr<torrent::torrents>   torrents_get   () const;
     void                        torrents_set            (std::shared_ptr<torrent::torrents> tors) { torrents_ = tors; }
@@ -112,37 +125,38 @@ private:
     // ---------------------------------
     // --- PRIVATE: Helper functions ---
     // ---------------------------------
-    bool                        open_stream             (const std::string& resource_path, stream_type_t sti);
-    bool                        open_primary_stream     (const std::string& resource_path);
-    void                        current_media_time_set  (media_stream_time* mts);
-    void                        current_media_time_set  (media_stream_time& mts);
-    void                        update_scaling_context  () const;
-    pipeline_threads&           media_pipeline_threads  () { return media_pipeline_threads_; }
+    bool                            open_stream             (const std::string& resource_path, stream_type_t sti);
+    bool                            open_primary_stream     (const std::string& resource_path);
+    void                            current_media_time_set  (media_stream_time* mts);
+    void                            current_media_time_set  (media_stream_time& mts);
+    void                            update_scaling_context  () const;
+    cpaf::video::pipeline_threads&  media_pipeline_threads  () { return media_pipeline_threads_; }
 
     // ----------------------------
     // --- PRIVATE: Member vars ---
     // ----------------------------
+    using source_streams_array_t = std::array<std::unique_ptr<play_stream>, cpaf::video::stream_type_index_size()>;
     play_stream                                                         primary_source_stream_;
     av_samples_queue                                                    audio_samples_queue_;
-    std::array<std::unique_ptr<play_stream>, stream_type_index_size()>  source_streams_                 = {nullptr, nullptr, nullptr, nullptr, nullptr};
-    surface_dimensions_t                                                video_dst_dimensions_requested_ = {surface_dimension_auto,surface_dimension_auto};
+    source_streams_array_t                                              source_streams_                 = {nullptr, nullptr, nullptr, nullptr, nullptr};
+    surface_dimensions_t                                                video_dst_dimensions_requested_ = {cpaf::video::surface_dimension_auto,cpaf::video::surface_dimension_auto};
     int32_t                                                             video_scaler_flags_             = SWS_BILINEAR;
     int32_t                                                             video_scaler_align_             = 32;
     AVPixelFormat                                                       ff_dst_pixel_format_            = AV_PIX_FMT_YUV420P;
     std::atomic_bool                                                    threads_running_                = true;
     std::atomic_bool                                                    threads_paused_                 = false;
-    size_t                                                              video_stream_index_             = no_stream_index;
-    size_t                                                              audio_stream_index_             = no_stream_index;
+    size_t                                                              video_stream_index_             = cpaf::video::no_stream_index;
+    size_t                                                              audio_stream_index_             = cpaf::video::no_stream_index;
 
-    mutable av_codec_context                                            video_codec_ctx_;
-    mutable av_codec_context                                            audio_codec_ctx_;
-    audio_resampler                                                     audio_resampler_;
-    pipeline_threads                                                    media_pipeline_threads_;
+    mutable cpaf::video::av_codec_context                               video_codec_ctx_;
+    mutable cpaf::video::av_codec_context                               audio_codec_ctx_;
+    cpaf::video::audio_resampler                                        audio_resampler_;
+    cpaf::video::pipeline_threads                                       media_pipeline_threads_;
 
     std::string                                                         primary_resource_path_;
     mutable std::shared_ptr<torrent::torrents>                          torrents_;
     media_stream_time                                                   cur_media_time_;
 };
 
-} //END namespace cpaf::video
+} //END namespace cpaf::gui::video
 

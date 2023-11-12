@@ -2,7 +2,10 @@
 
 #include <cpaf_libs/torrent/torrents.h>
 
-namespace cpaf::video {
+
+using namespace cpaf::video;
+
+namespace cpaf::gui::video {
 
 player::player()
     : primary_source_stream_([this]() {return torrents_get();}),
@@ -219,7 +222,7 @@ player::audio_play_callback_t player::audio_callback_get()
     return media_pipeline_threads().audio_callback_get();
 }
 
-bool player::video_frame_update(av_frame& current_frame, render& video_render)
+bool player::video_frame_update(av_frame& current_frame, cpaf::video::render& video_render)
 {
     return media_pipeline_threads().video_frame_update(current_frame, video_render);
 }
@@ -323,5 +326,5 @@ void player::update_scaling_context() const
 }
 
 
-} //END namespace cpaf::video
+} //END namespace cpaf::gui::video
 
