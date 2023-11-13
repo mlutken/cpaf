@@ -28,51 +28,35 @@ struct platform_render_t {
     SDL_Renderer* render_ = nullptr;
 };
 
-struct platform_surface_t {
-    platform_surface_t() = default;
-    platform_surface_t(const platform_surface_t& other) = default;
-    platform_surface_t(SDL_Surface* surface) : surface_(surface) {}
-
-    platform_surface_t& operator=(SDL_Surface* surface) { surface_ = surface; return *this; }
-    platform_surface_t& operator=(const platform_surface_t& other) = default;
-    SDL_Surface* surface_ = nullptr;
-};
-
-struct platform_texture_t {
-    platform_texture_t() = default;
-    platform_texture_t(const platform_texture_t& other) = default;
-    platform_texture_t(SDL_Texture* texture) : texture_(texture) {}
-
-    platform_texture_t& operator=(SDL_Texture* texture) { texture_ = texture; return *this; }
-    platform_texture_t& operator=(const platform_texture_t& other) = default;
-    SDL_Texture* texture_ = nullptr;
-};
-
-//
 
 class render_platform : public render_base
 {
 public:
-    static std::unique_ptr<render>   create_video_render(const cpaf::gui::system_window& win, const cpaf::video::surface_dimensions_t& dimensions);
+    static std::unique_ptr<render>   create_video_render(system_window& win, const cpaf::video::surface_dimensions_t& dimensions);
 
+    ~render_platform();
     render_platform();
 
+protected:
+
+
 private:
-    void sdl_prepare_video_frame    (const cpaf::video::av_frame& frame, cpaf::video::av_frame& frame_display);
-    void sdl_render_current_video_frame_texture     ();
+    void prepare_native_video_frame    (const cpaf::video::av_frame& frame, cpaf::video::av_frame& frame_display);
+    void render_current_native_video_frame_texture     ();
+    void ensure_valid_render_texture   (const cpaf::video::surface_dimensions_t& dimensions);
 
 
+    void                        do_init                     (system_window& win, const cpaf::video::surface_dimensions_t& dimensions ) override;
+    void                        do_init                     (const platform_render_t& platform_render, const cpaf::video::surface_dimensions_t& dimensions ) override;
     void                        do_platform_render_set      (const platform_render_t& platform_render) override;
-    void                        do_platform_surface_set     (const platform_surface_t& platform_surface) override;
-    void                        do_platform_video_texture_set     (const platform_texture_t& platform_texture) override;
     platform_render_t&          do_platform_render          () override { return platform_render_; }
-    platform_surface_t&         do_platform_surface         () override { return platform_surface_; }
-    platform_texture_t&         do_platform_video_texture   () override { return platform_video_texture_; }
+    void                        do_render_dimensions_set    (const cpaf::video::surface_dimensions_t& dimensions ) override;
     bool                        do_render_video_frame       (const cpaf::video::av_frame& frame) override;
 
-    platform_render_t           platform_render_;
-    platform_surface_t          platform_surface_;
-    platform_texture_t          platform_video_texture_;
+    platform_render_t                   platform_render_;
+
+    // SDL_Renderer*                       sdl_renderer_               {nullptr};
+    SDL_Texture*                        sdl_frame_render_texture_   {nullptr};
 };
 
 } //END namespace cpaf::gui::video

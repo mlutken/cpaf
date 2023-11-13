@@ -20,11 +20,14 @@ void render_base::video_codec_ctx_set(cpaf::video::av_codec_context& ctx)
     create_frame_display();
 }
 
-void render_base::init(const platform_render_t& platform_render, const platform_texture_t& platform_texture, const cpaf::video::surface_dimensions_t& dimensions)
+void render_base::init(system_window& win, const cpaf::video::surface_dimensions_t& dimensions)
 {
-    render_dimensions_ = dimensions;
-    do_platform_render_set(platform_render);
-    do_platform_video_texture_set(platform_texture);
+    do_init(win, dimensions);
+}
+
+void render_base::init(const platform_render_t& platform_render, const cpaf::video::surface_dimensions_t& dimensions)
+{
+    do_init(platform_render, dimensions);
 }
 
 void render_base::create_frame_display()

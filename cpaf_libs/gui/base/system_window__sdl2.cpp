@@ -32,7 +32,7 @@ system_window_platform::system_window_platform(const size_2d& size, std::string_
                                     window_flags);
 
 
-    auto renderer_flags{static_cast<SDL_RendererFlags>(SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED)};
+    auto renderer_flags{static_cast<SDL_RendererFlags>(SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_TARGETTEXTURE)};
     main_renderer_ = SDL_CreateRenderer(main_window_, -1, renderer_flags);
 }
 
