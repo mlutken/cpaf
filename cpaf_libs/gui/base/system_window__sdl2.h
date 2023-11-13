@@ -15,6 +15,7 @@ namespace cpaf::gui {
 
 class system_window_platform : public system_window_base {
 public:
+    ~system_window_platform();
 
 protected:
     friend class app_platform;
@@ -31,8 +32,8 @@ private:
     // --- PRIVATE: Helpers  ---
 
     // --- PRIVATE: Members  ---
-    SDL_Window*             main_window_    {nullptr};
-    SDL_Renderer*           main_renderer_  {nullptr};
+    SDL_Window*             sdl_window_    {nullptr};
+    SDL_Renderer*           sdl_window_renderer_  {nullptr};
 
 };
 

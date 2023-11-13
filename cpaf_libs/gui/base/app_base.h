@@ -28,6 +28,7 @@ public:
     exit_status_t                   run                         ();
     size_2d                         main_window_size            () const    { return do_platform_main_window_size(); }
     system_window&                  main_window                 ()          { return do_main_window(); }
+    std::shared_ptr<system_window>  main_window_shared          () const    { return do_main_window_shared(); }
 
     std::unique_ptr<system_window_base>  create_system_window   (size_2d size, std::string_view title) const {
         fmt::println("FIXMENM create_system_window () ");
@@ -66,15 +67,16 @@ protected:
 
 private:
 
-    virtual void                    do_platform_start_run           () = 0;
-    virtual events::event           do_platform_get_event           () const = 0;
-    virtual void                    do_platform_process_events      () = 0;
-    virtual void                    do_platform_pre_frame_update    () = 0;
-    virtual void                    do_platform_frame_update        () = 0;
-    virtual void                    do_platform_post_frame_update   () = 0;
+    virtual void                            do_platform_start_run           () = 0;
+    virtual events::event                   do_platform_get_event           () const = 0;
+    virtual void                            do_platform_process_events      () = 0;
+    virtual void                            do_platform_pre_frame_update    () = 0;
+    virtual void                            do_platform_frame_update        () = 0;
+    virtual void                            do_platform_post_frame_update   () = 0;
 
-    virtual size_2d                 do_platform_main_window_size    () const = 0;
-    virtual system_window&          do_main_window                  () = 0;
+    virtual size_2d                         do_platform_main_window_size    () const = 0;
+    virtual system_window&                  do_main_window                  () = 0;
+    virtual std::shared_ptr<system_window>  do_main_window_shared           () const = 0;
 
 
     virtual std::unique_ptr<system_window>  do_create_system_window        (size_2d size, std::string_view title) const = 0;

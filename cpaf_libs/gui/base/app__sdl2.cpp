@@ -130,6 +130,11 @@ system_window& app_platform::do_main_window()
     return *main_window_ptr_;
 }
 
+std::shared_ptr<system_window> app_platform::do_main_window_shared() const
+{
+    return main_window_ptr_;
+}
+
 std::unique_ptr<system_window> app_platform::do_create_system_window(size_2d size, std::string_view title) const
 {
     return std::unique_ptr<system_window>(new system_window(size, title));

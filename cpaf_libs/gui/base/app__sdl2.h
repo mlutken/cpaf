@@ -22,14 +22,15 @@ public:
 
 private:
     // --- Platform overrides ---
-    void                    do_platform_start_run				() override;
-    events::event           do_platform_get_event               () const override;
-    void                    do_platform_process_events          () override;
-    void                    do_platform_pre_frame_update        () override;
-    void                    do_platform_frame_update            () override;
-    void                    do_platform_post_frame_update       () override;
-    size_2d                 do_platform_main_window_size        () const override;
-    system_window&          do_main_window                      () override;
+    void                            do_platform_start_run				() override;
+    events::event                   do_platform_get_event               () const override;
+    void                            do_platform_process_events          () override;
+    void                            do_platform_pre_frame_update        () override;
+    void                            do_platform_frame_update            () override;
+    void                            do_platform_post_frame_update       () override;
+    size_2d                         do_platform_main_window_size        () const override;
+    system_window&                  do_main_window                      () override;
+    std::shared_ptr<system_window>  do_main_window_shared               () const override;
 
     std::unique_ptr<system_window>  do_create_system_window   (size_2d size, std::string_view title) const override;
 
@@ -38,7 +39,7 @@ private:
 
     // --- PRIVATE: Members ---
     events::events_sdl              events_converter_;
-    std::unique_ptr<system_window>  main_window_ptr_    {nullptr};
+    std::shared_ptr<system_window>  main_window_ptr_    {nullptr};
 
     SDL_Window*                     main_window_        {nullptr};
     SDL_Renderer*                   main_renderer_      {nullptr};

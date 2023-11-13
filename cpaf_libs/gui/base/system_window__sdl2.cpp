@@ -19,21 +19,33 @@ namespace cpaf::gui {
 // --- Platform overrides ---
 // --------------------------
 
+system_window_platform::~system_window_platform()
+{
+    fmt::println("system_window_platform::DESTRUCTOR ({})", do_get_title());
+    if (sdl_window_renderer_) {
+        SDL_DestroyRenderer(sdl_window_renderer_);
+    }
+    if(sdl_window_) {
+        SDL_DestroyWindow(sdl_window_);
+    }
+}
+
 system_window_platform::system_window_platform(const size_2d& size, std::string_view title)
 {
     fmt::println("system_window_platform::CONSTRUCTOR ({}) {}, {}", title, size.width(), size.height() );
     const uint32_t window_flags{SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI};
 
-    main_window_ = SDL_CreateWindow(title.data(),
-                                    SDL_WINDOWPOS_CENTERED,
-                                    SDL_WINDOWPOS_CENTERED,
-                                    size.width(),
-                                    size.height(),
-                                    window_flags);
-
+    sdl_window_ = SDL_CreateWindow(
+       title.data(),
+       SDL_WINDOWPOS_CENTERED,
+       SDL_WINDOWPOS_CENTERED,
+       size.width(),
+       size.height(),
+       window_flags
+    );
 
     auto renderer_flags{static_cast<SDL_RendererFlags>(SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_TARGETTEXTURE)};
-    main_renderer_ = SDL_CreateRenderer(main_window_, -1, renderer_flags);
+    sdl_window_renderer_ = SDL_CreateRenderer(sdl_window_, -1, renderer_flags);
 }
 
 size_2d system_window_platform::do_get_size() const
@@ -43,17 +55,17 @@ size_2d system_window_platform::do_get_size() const
 
 std::string system_window_platform::do_get_title() const
 {
-    return "Title FIXMENM TODO";
+    return "Get Title FIXMENM TODO";
 }
 
 void* system_window_platform::do_get_native_window()
 {
-    return main_window_;
+    return sdl_window_;
 }
 
 void* system_window_platform::do_get_native_renderer()
 {
-    return main_renderer_;
+    return sdl_window_renderer_;
 }
 
 
