@@ -15,11 +15,11 @@ exit_status_t app_base::run()
     start_run();
     while (is_running_) {
         process_events();
-        do_platform_pre_frame_update();
+        do_platform_pre_frame_update();  // FIXMENM
         pre_frame_update();
         do_platform_frame_update();
         frame_update();
-        do_platform_post_frame_update();
+        do_platform_post_frame_update(); // FIXMENM
         post_frame_update();
     }
     return exit_status_;
