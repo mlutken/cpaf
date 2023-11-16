@@ -2,6 +2,7 @@
 #include <unordered_map>
 #include <fmt/format.h>
 
+#include <cpaf_libs/gui/system_render.h>
 
 namespace cpaf::gui {
 
@@ -44,7 +45,12 @@ system_window_platform::system_window_platform(const size_2d& size, std::string_
        window_flags
     );
 
+
+
     auto renderer_flags{static_cast<SDL_RendererFlags>(SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_TARGETTEXTURE)};
+
+    // render_ = std::shared_ptr<system_render>(new system_render(sdl_window_));
+
     sdl_window_renderer_ = SDL_CreateRenderer(sdl_window_, -1, renderer_flags);
 }
 
@@ -66,6 +72,16 @@ void* system_window_platform::do_get_native_window()
 void* system_window_platform::do_get_native_renderer()
 {
     return sdl_window_renderer_;
+}
+
+system_render& system_window_platform::do_renderer()
+{
+    return *render_;
+}
+
+std::shared_ptr<system_render> system_window_platform::do_renderer_shared() const
+{
+    return render_;
 }
 
 

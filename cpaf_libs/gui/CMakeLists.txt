@@ -39,11 +39,16 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/base/mouse__${CPAF_GUI_SYSTEM_NAME}.h
 
     ${CMAKE_CURRENT_LIST_DIR}/system.h
-    ${CMAKE_CURRENT_LIST_DIR}/system_window.h
     ${CMAKE_CURRENT_LIST_DIR}/base/system_base.h
-    ${CMAKE_CURRENT_LIST_DIR}/base/system_window_base.h
     ${CMAKE_CURRENT_LIST_DIR}/base/system__${CPAF_GUI_SYSTEM_NAME}.h
+
+    ${CMAKE_CURRENT_LIST_DIR}/system_window.h
+    ${CMAKE_CURRENT_LIST_DIR}/base/system_window_base.h
     ${CMAKE_CURRENT_LIST_DIR}/base/system_window__${CPAF_GUI_SYSTEM_NAME}.h
+
+    ${CMAKE_CURRENT_LIST_DIR}/system_render.h
+    ${CMAKE_CURRENT_LIST_DIR}/base/system_render_base.h
+    ${CMAKE_CURRENT_LIST_DIR}/base/system_render__${CPAF_GUI_SYSTEM_NAME}.h
 
 
     ${CMAKE_CURRENT_LIST_DIR}/events/base_events.h
@@ -90,12 +95,16 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/base/mouse__${CPAF_GUI_SYSTEM_NAME}.cpp
 
     ${CMAKE_CURRENT_LIST_DIR}/system.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/system_window.cpp
     ${CMAKE_CURRENT_LIST_DIR}/base/system_base.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/base/system_window_base.cpp
     ${CMAKE_CURRENT_LIST_DIR}/base/system__${CPAF_GUI_SYSTEM_NAME}.cpp
+
+    ${CMAKE_CURRENT_LIST_DIR}/system_window.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/base/system_window_base.cpp
     ${CMAKE_CURRENT_LIST_DIR}/base/system_window__${CPAF_GUI_SYSTEM_NAME}.cpp
 
+    ${CMAKE_CURRENT_LIST_DIR}/system_render.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/base/system_render_base.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/base/system_render__${CPAF_GUI_SYSTEM_NAME}.cpp
 
     ${CMAKE_CURRENT_LIST_DIR}/events/event.cpp
     ${CMAKE_CURRENT_LIST_DIR}/events/base_events.cpp

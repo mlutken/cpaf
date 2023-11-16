@@ -24,16 +24,19 @@ private:
 
 
     // --- Platform overrides ---
-    size_2d             do_get_size					() const override;
-    std::string         do_get_title    			() const override;
-    void*               do_get_native_window    	() override;
-    void*               do_get_native_renderer    	() override;
+    size_2d                         do_get_size					() const override;
+    std::string                     do_get_title    			() const override;
+    void*                           do_get_native_window    	() override;
+    void*                           do_get_native_renderer    	() override;
+    system_render&                  do_renderer                 () override;
+    std::shared_ptr<system_render>  do_renderer_shared          () const override;
 
     // --- PRIVATE: Helpers  ---
 
     // --- PRIVATE: Members  ---
-    SDL_Window*             sdl_window_    {nullptr};
-    SDL_Renderer*           sdl_window_renderer_  {nullptr};
+    SDL_Window*                     sdl_window_             {nullptr};
+    std::shared_ptr<system_render>  render_                 {nullptr};
+    SDL_Renderer*                   sdl_window_renderer_    {nullptr};
 
 };
 
