@@ -37,18 +37,13 @@ public:
                                                              const cpaf::video::surface_dimensions_t& dimensions );
     void                        init                        (std::shared_ptr<cpaf::gui::system_render> sys_renderer,
                                                              const cpaf::video::surface_dimensions_t& dimensions );
-    // void                        init                        (const platform_render_t& platform_render,
-    //                                                          const cpaf::video::surface_dimensions_t& dimensions );
-
     void                        ff_pixel_format_set         (AVPixelFormat pf)              { ff_pixel_format_ = pf;        }
     AVPixelFormat               ff_pixel_format             () const                        { return ff_pixel_format_;      }
 
     const cpaf::video::surface_dimensions_t& render_dimensions           () const                        { return render_dimensions_;      }
 
-    void                        platform_render_set         (const platform_render_t& platform_render)  { do_platform_render_set(platform_render); }
     bool                        render_video_frame          (const cpaf::video::av_frame& frame)        { return do_render_video_frame(frame);  }
 
-    platform_render_t&          platform_render             () { return do_platform_render();   }
     void                        render_dimensions_set       (const cpaf::video::surface_dimensions_t& dimensions ) { return do_render_dimensions_set(dimensions);  }
 
 protected:
@@ -69,9 +64,6 @@ private:
 
     virtual void                do_init                         (system_window& win, const cpaf::video::surface_dimensions_t& dimensions ) = 0;
     virtual void                do_init                         (std::shared_ptr<cpaf::gui::system_render> sys_renderer, const cpaf::video::surface_dimensions_t& dimensions ) = 0;
-    virtual void                do_init                         (const platform_render_t& platform_render, const cpaf::video::surface_dimensions_t& dimensions ) = 0;
-    virtual void                do_platform_render_set          (const platform_render_t& platform_render) = 0;
-    virtual platform_render_t&  do_platform_render              () = 0;
     virtual void                do_render_dimensions_set        (const cpaf::video::surface_dimensions_t& dimensions ) = 0;
     virtual bool                do_render_video_frame           (const cpaf::video::av_frame& frame) = 0;
 

@@ -85,31 +85,19 @@ void render_platform::ensure_valid_render_texture(const cpaf::video::surface_dim
 }
 
 SDL_Renderer* render_platform::get_sdl_renderer() {
-    return renderer_ ? renderer_->native_renderer<SDL_Renderer>() : platform_render_.render_;
+    return system_renderer_->native_renderer<SDL_Renderer>();
 }
 
 void render_platform::do_init(system_window& win, const cpaf::video::surface_dimensions_t& dimensions)
 {
-    // platform_render_ = platform_render_t{ win.native_renderer<SDL_Renderer>()};
-    renderer_ = win.renderer_shared();
+    system_renderer_ = win.renderer_shared();
     ensure_valid_render_texture(dimensions);
 }
 
 void render_platform::do_init(std::shared_ptr<system_render> sys_renderer, const cpaf::video::surface_dimensions_t& dimensions)
 {
-    renderer_ = sys_renderer;
+    system_renderer_ = sys_renderer;
     ensure_valid_render_texture(dimensions);
-}
-
-void render_platform::do_init(const platform_render_t& platform_render, const cpaf::video::surface_dimensions_t& dimensions)
-{
-    platform_render_ = platform_render;
-    ensure_valid_render_texture(dimensions);
-}
-
-void render_platform::do_platform_render_set(const platform_render_t& platform_render)
-{
-    platform_render_ = platform_render;
 }
 
 void render_platform::do_render_dimensions_set(const cpaf::video::surface_dimensions_t& dimensions)

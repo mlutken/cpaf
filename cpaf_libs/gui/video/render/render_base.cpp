@@ -30,11 +30,6 @@ void render_base::init(std::shared_ptr<cpaf::gui::system_render> sys_renderer, c
     do_init(sys_renderer, dimensions);
 }
 
-// void render_base::init(const platform_render_t& platform_render, const cpaf::video::surface_dimensions_t& dimensions)
-// {
-//     do_init(platform_render, dimensions);
-// }
-
 void render_base::create_frame_display()
 {
     frame_display_ = video_codec_ctx().create_scaling_dst_frame();
