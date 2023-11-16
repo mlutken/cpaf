@@ -36,7 +36,7 @@ private:
     // --- PRIVATE: Members  ---
     SDL_Window*                     sdl_window_             {nullptr};
     std::shared_ptr<system_render>  render_                 {nullptr};
-    SDL_Renderer*                   sdl_window_renderer_    {nullptr};
+    // SDL_Renderer*                   sdl_window_renderer_    {nullptr};
 
 };
 

@@ -1,9 +1,15 @@
 #pragma once
 
+#include <memory>
 #include <config/cpaf_platform_definitions.h>
 #include <cpaf_libs/video/av_util.h>
 #include <cpaf_libs/video/av_frame.h>
 
+
+namespace cpaf::gui {
+class system_window;
+class system_render;
+}
 
 namespace cpaf::video {
 class av_format_context;
@@ -12,10 +18,6 @@ class media_stream_time;
 struct platform_render_t;
 struct platform_surface_t;
 };
-
-namespace cpaf::gui {
-class system_window;
-}
 
 namespace cpaf::gui::video {
 struct platform_render_t;
@@ -33,8 +35,10 @@ public:
     void                        video_codec_ctx_set         (cpaf::video::av_codec_context& ctx);
     void                        init                        (system_window& win,
                                                              const cpaf::video::surface_dimensions_t& dimensions );
-    void                        init                        (const platform_render_t& platform_render,
+    void                        init                        (std::shared_ptr<cpaf::gui::system_render> sys_renderer,
                                                              const cpaf::video::surface_dimensions_t& dimensions );
+    // void                        init                        (const platform_render_t& platform_render,
+    //                                                          const cpaf::video::surface_dimensions_t& dimensions );
 
     void                        ff_pixel_format_set         (AVPixelFormat pf)              { ff_pixel_format_ = pf;        }
     AVPixelFormat               ff_pixel_format             () const                        { return ff_pixel_format_;      }
@@ -64,6 +68,7 @@ private:
     void                        create_frame_display            ();
 
     virtual void                do_init                         (system_window& win, const cpaf::video::surface_dimensions_t& dimensions ) = 0;
+    virtual void                do_init                         (std::shared_ptr<cpaf::gui::system_render> sys_renderer, const cpaf::video::surface_dimensions_t& dimensions ) = 0;
     virtual void                do_init                         (const platform_render_t& platform_render, const cpaf::video::surface_dimensions_t& dimensions ) = 0;
     virtual void                do_platform_render_set          (const platform_render_t& platform_render) = 0;
     virtual platform_render_t&  do_platform_render              () = 0;

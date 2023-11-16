@@ -12,6 +12,7 @@ class render : public render_platform
 {
 public:
     render();
+
 };
 
 } //END namespace cpaf::gui::video

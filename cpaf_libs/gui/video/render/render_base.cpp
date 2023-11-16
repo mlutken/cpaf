@@ -25,10 +25,15 @@ void render_base::init(system_window& win, const cpaf::video::surface_dimensions
     do_init(win, dimensions);
 }
 
-void render_base::init(const platform_render_t& platform_render, const cpaf::video::surface_dimensions_t& dimensions)
+void render_base::init(std::shared_ptr<cpaf::gui::system_render> sys_renderer, const cpaf::video::surface_dimensions_t& dimensions)
 {
-    do_init(platform_render, dimensions);
+    do_init(sys_renderer, dimensions);
 }
+
+// void render_base::init(const platform_render_t& platform_render, const cpaf::video::surface_dimensions_t& dimensions)
+// {
+//     do_init(platform_render, dimensions);
+// }
 
 void render_base::create_frame_display()
 {

@@ -23,9 +23,9 @@ namespace cpaf::gui {
 system_window_platform::~system_window_platform()
 {
     fmt::println("system_window_platform::DESTRUCTOR ({})", do_get_title());
-    if (sdl_window_renderer_) {
-        SDL_DestroyRenderer(sdl_window_renderer_);
-    }
+    // if (sdl_window_renderer_) {
+    //     SDL_DestroyRenderer(sdl_window_renderer_);
+    // }
     if(sdl_window_) {
         SDL_DestroyWindow(sdl_window_);
     }
@@ -47,11 +47,11 @@ system_window_platform::system_window_platform(const size_2d& size, std::string_
 
 
 
-    auto renderer_flags{static_cast<SDL_RendererFlags>(SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_TARGETTEXTURE)};
 
-    // render_ = std::shared_ptr<system_render>(new system_render(sdl_window_));
+    render_ = std::shared_ptr<system_render>(new system_render(sdl_window_));
 
-    sdl_window_renderer_ = SDL_CreateRenderer(sdl_window_, -1, renderer_flags);
+    // auto renderer_flags{static_cast<SDL_RendererFlags>(SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_TARGETTEXTURE)};
+    // sdl_window_renderer_ = SDL_CreateRenderer(sdl_window_, -1, renderer_flags);
 }
 
 size_2d system_window_platform::do_get_size() const
@@ -71,7 +71,8 @@ void* system_window_platform::do_get_native_window()
 
 void* system_window_platform::do_get_native_renderer()
 {
-    return sdl_window_renderer_;
+    return render_->get_native_renderer();
+    // return sdl_window_renderer_;
 }
 
 system_render& system_window_platform::do_renderer()

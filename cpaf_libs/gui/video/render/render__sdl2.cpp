@@ -2,6 +2,7 @@
 #include "render.h"
 
 #include <cpaf_libs/gui/system_window.h>
+#include <cpaf_libs/gui/system_render.h>
 #include <cpaf_libs/video/av_codec_context.h>
 
 namespace cpaf::gui::video {
@@ -58,11 +59,11 @@ void render_platform::prepare_native_video_frame(
 
 void render_platform::render_current_native_video_frame_texture()
 {
-    // SDL_RenderClear(platform_render_.render_); // TODO: Perhaps not clear at this point but leave up to application!
-    SDL_RenderCopy(platform_render_.render_, sdl_frame_render_texture_, NULL, NULL);
+    // SDL_RenderClear(get_sdl_renderer()); // TODO: Perhaps not clear at this point but leave up to application!
+    SDL_RenderCopy(get_sdl_renderer(), sdl_frame_render_texture_, NULL, NULL);
 //    SDL_Rect dest_rect = sdl2::texture_destination_rect(image_bitmap_texture, 30, 30);
 //    SDL_RenderCopy(sdl_renderer, image_bitmap_texture, NULL, &dest_rect);
-    // SDL_RenderPresent(platform_render_.render_);
+    // SDL_RenderPresent(get_sdl_renderer());
 }
 
 void render_platform::ensure_valid_render_texture(const cpaf::video::surface_dimensions_t& dimensions)
@@ -74,7 +75,7 @@ void render_platform::ensure_valid_render_texture(const cpaf::video::surface_dim
         render_dimensions_ = dimensions;
 
         sdl_frame_render_texture_ = SDL_CreateTexture(
-            platform_render_.render_,
+            get_sdl_renderer(),
             SDL_PIXELFORMAT_YV12,
             SDL_TEXTUREACCESS_STREAMING,
             dimensions.x(),
@@ -83,9 +84,20 @@ void render_platform::ensure_valid_render_texture(const cpaf::video::surface_dim
     }
 }
 
+SDL_Renderer* render_platform::get_sdl_renderer() {
+    return renderer_ ? renderer_->native_renderer<SDL_Renderer>() : platform_render_.render_;
+}
+
 void render_platform::do_init(system_window& win, const cpaf::video::surface_dimensions_t& dimensions)
 {
-    platform_render_ = platform_render_t{ win.native_renderer<SDL_Renderer>()};
+    // platform_render_ = platform_render_t{ win.native_renderer<SDL_Renderer>()};
+    renderer_ = win.renderer_shared();
+    ensure_valid_render_texture(dimensions);
+}
+
+void render_platform::do_init(std::shared_ptr<system_render> sys_renderer, const cpaf::video::surface_dimensions_t& dimensions)
+{
+    renderer_ = sys_renderer;
     ensure_valid_render_texture(dimensions);
 }
 

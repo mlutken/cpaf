@@ -13,7 +13,6 @@ public:
 
     template <typename NATIVE_RENDER>
     NATIVE_RENDER*      native_renderer     ()      { return static_cast<NATIVE_RENDER*>(get_native_renderer()); }
-
 };
 
 
