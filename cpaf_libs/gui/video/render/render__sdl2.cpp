@@ -62,7 +62,7 @@ void render_platform::render_current_native_video_frame_texture()
     SDL_RenderCopy(platform_render_.render_, sdl_frame_render_texture_, NULL, NULL);
 //    SDL_Rect dest_rect = sdl2::texture_destination_rect(image_bitmap_texture, 30, 30);
 //    SDL_RenderCopy(sdl_renderer, image_bitmap_texture, NULL, &dest_rect);
-    SDL_RenderPresent(platform_render_.render_);
+    // SDL_RenderPresent(platform_render_.render_);
 }
 
 void render_platform::ensure_valid_render_texture(const cpaf::video::surface_dimensions_t& dimensions)
