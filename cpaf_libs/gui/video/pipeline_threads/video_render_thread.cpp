@@ -48,7 +48,6 @@ bool video_render_thread::video_frame_do_render(cpaf::video::av_frame& current_f
         auto time_dist_to_cur_frame = current_frame.presentation_time() - cur_video_time;
 
         if (video_queue_flushed_) {
-            std::cerr << "******* FIXMENM video_queue_flushed_ ************\n";
             video_queue_flushed_ = false;
             current_frame = video_codec_ctx().read_frame();
             time_dist_to_cur_frame = current_frame.presentation_time() - cur_video_time;
@@ -67,7 +66,9 @@ bool video_render_thread::video_frame_do_render(cpaf::video::av_frame& current_f
             current_frame = video_codec_ctx().read_frame();
             return true;
         }
-
+    }
+    else {
+        video_render.render_video_frame(current_frame);
     }
     return false;
 }
