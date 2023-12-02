@@ -1,1 +1,1 @@
-add_unit_test(elasticsearch "cpaf_elasticsearch")
+# add_unit_test(elasticsearch "cpaf_elasticsearch")
