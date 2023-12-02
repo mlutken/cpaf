@@ -2,6 +2,7 @@
 
 #include <string>
 #include <array>
+#include <cstdint>
 
 namespace cpaf {
 namespace crypto {

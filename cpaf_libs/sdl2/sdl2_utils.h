@@ -3,7 +3,7 @@
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 #endif
-
+#include <cstdint>
 #include <SDL2/SDL.h>
 #include <math/base/v2.hpp>
 
