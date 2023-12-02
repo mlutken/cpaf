@@ -45,13 +45,7 @@ system_window_platform::system_window_platform(const size_2d& size, std::string_
        window_flags
     );
 
-
-
-
     render_ = std::shared_ptr<system_render>(new system_render(sdl_window_));
-
-    // auto renderer_flags{static_cast<SDL_RendererFlags>(SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_TARGETTEXTURE)};
-    // sdl_window_renderer_ = SDL_CreateRenderer(sdl_window_, -1, renderer_flags);
 }
 
 size_2d system_window_platform::do_get_size() const

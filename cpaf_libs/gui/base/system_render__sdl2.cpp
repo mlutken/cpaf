@@ -19,7 +19,7 @@ system_render_platform::~system_render_platform()
 
 system_render_platform::system_render_platform(SDL_Window* sdl_window)
 {
-    auto renderer_flags{static_cast<SDL_RendererFlags>(SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_TARGETTEXTURE)};
+    auto renderer_flags{static_cast<SDL_RendererFlags>(SDL_RENDERER_ACCELERATED)};
     sdl_renderer_ = SDL_CreateRenderer(sdl_window, -1, renderer_flags);
 }
 

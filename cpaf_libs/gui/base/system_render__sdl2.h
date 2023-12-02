@@ -15,7 +15,7 @@ namespace cpaf::gui {
 
 class system_render_platform : public system_render_base {
 public:
-    system_render_platform(void* sdl_renderer) : sdl_renderer_(reinterpret_cast<SDL_Renderer*>(sdl_renderer)) {}
+    explicit system_render_platform(void* sdl_renderer) : sdl_renderer_(reinterpret_cast<SDL_Renderer*>(sdl_renderer)) {}
     ~system_render_platform();
 
 protected:
