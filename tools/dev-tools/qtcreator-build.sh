@@ -44,7 +44,7 @@ make -j6
 # ------------------------------------------------------------
 # --- Set up for debian package creation WITH dependencies ---
 # ------------------------------------------------------------
-echo 'set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS "ON")' >> /tmp/qtcreator/qtcreator_build/CPackConfig.cmake
+#echo 'set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS "ON")' >> /tmp/qtcreator/qtcreator_build/CPackConfig.cmake
 cpack -G DEB
 
 
