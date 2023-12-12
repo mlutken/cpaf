@@ -33,6 +33,7 @@ void video_render_thread::terminate()
 bool video_render_thread::video_frame_update (cpaf::video::av_frame& current_frame, cpaf::gui::video::render& video_render)
 {
     bool ret_val = video_frame_do_render(current_frame, video_render);
+
     debug_video_frame_update(current_frame, video_render);
     return ret_val;
 }
@@ -43,6 +44,7 @@ bool video_render_thread::video_frame_do_render(cpaf::video::av_frame& current_f
         return false;
     }
 
+    bool new_frame_was_read = false;
     if (!current_media_time().time_is_paused()) {
         const auto cur_video_time = current_media_time().video_time_pos();
         auto time_dist_to_cur_frame = current_frame.presentation_time() - cur_video_time;
@@ -55,7 +57,7 @@ bool video_render_thread::video_frame_do_render(cpaf::video::av_frame& current_f
 
 
         if (time_dist_to_cur_frame > 1s ) {
-            std::cerr << "******* FIXMENM long time to current video frame " << duration_cast<seconds>(time_dist_to_cur_frame).count() << "s\n";
+            std::cerr << "******* ERROR long time to current video frame " << duration_cast<seconds>(time_dist_to_cur_frame).count() << "s\n";
             current_frame = video_codec_ctx().read_frame();
             time_dist_to_cur_frame = current_frame.presentation_time() - cur_video_time;
         }
@@ -64,13 +66,19 @@ bool video_render_thread::video_frame_do_render(cpaf::video::av_frame& current_f
             current_pipeline_index_ = current_frame.pipeline_index();
             video_render.render_video_frame(current_frame);
             current_frame = video_codec_ctx().read_frame();
-            return true;
+            new_frame_was_read = true;
         }
     }
     else {
         video_render.render_video_frame(current_frame);
     }
-    return false;
+    video_render.render_subtitle(current_subtitle());
+    return new_frame_was_read;
+}
+
+std::string_view video_render_thread::current_subtitle() const
+{
+    return "FIXMENM Hello from subtitle render thread";
 }
 
 void video_render_thread::debug_video_frame_update(cpaf::video::av_frame& current_frame, gui::video::render& /*video_render*/)

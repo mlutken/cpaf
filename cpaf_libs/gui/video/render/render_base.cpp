@@ -8,6 +8,11 @@ render_base::render_base()
 
 }
 
+void render_base::render_geometry_set(render_geometry_t render_geom)
+{
+    render_geometry_ = render_geom;
+}
+
 void render_base::video_codec_ctx_set(cpaf::video::av_codec_context* ctx)
 {
     video_codec_ctx_ptr_ = ctx;
@@ -20,7 +25,7 @@ void render_base::video_codec_ctx_set(cpaf::video::av_codec_context& ctx)
     create_frame_display();
 }
 
-void render_base::init(system_window& win, const cpaf::video::surface_dimensions_t& dimensions)
+void render_base::init(const system_window& win, const cpaf::video::surface_dimensions_t& dimensions)
 {
     do_init(win, dimensions);
 }
@@ -28,6 +33,16 @@ void render_base::init(system_window& win, const cpaf::video::surface_dimensions
 void render_base::init(std::shared_ptr<cpaf::gui::system_render> sys_renderer, const cpaf::video::surface_dimensions_t& dimensions)
 {
     do_init(sys_renderer, dimensions);
+}
+
+pos_2df render_base::subtitle_pos() const
+{
+
+    pos_2df pos = subtitle_relative_pos_ * render_dimensions();
+//    const auto render_size = do_get_size();
+//    std::cerr << pos << "\n";
+    pos = {300, 400};
+    return {300, 400};
 }
 
 void render_base::create_frame_display()

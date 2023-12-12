@@ -4,6 +4,7 @@
 #include <config/cpaf_platform_definitions.h>
 #include <cpaf_libs/video/av_util.h>
 #include <cpaf_libs/video/av_frame.h>
+#include <cpaf_libs/gui/gui_types.h>
 
 
 namespace cpaf::gui {
@@ -23,26 +24,29 @@ namespace cpaf::gui::video {
 struct platform_render_t;
 struct platform_texture_t;
 
+enum class subtitle_pos_t { buttom, top };
 
 class render_base
 {
 public:
     virtual ~render_base() = default;
     render_base();
+    void                        render_geometry_set         (render_geometry_t render_geom);
     void                        format_context_set          (cpaf::video::av_format_context* ctx)        { format_context_ptr_ = ctx; }
     void                        format_context_set          (cpaf::video::av_format_context& ctx)        { format_context_ptr_ = &ctx; }
     void                        video_codec_ctx_set         (cpaf::video::av_codec_context* ctx);
     void                        video_codec_ctx_set         (cpaf::video::av_codec_context& ctx);
-    void                        init                        (system_window& win,
+    void                        init                        (const system_window& win,
                                                              const cpaf::video::surface_dimensions_t& dimensions );
     void                        init                        (std::shared_ptr<cpaf::gui::system_render> sys_renderer,
                                                              const cpaf::video::surface_dimensions_t& dimensions );
     void                        ff_pixel_format_set         (AVPixelFormat pf)              { ff_pixel_format_ = pf;        }
     AVPixelFormat               ff_pixel_format             () const                        { return ff_pixel_format_;      }
 
-    const cpaf::video::surface_dimensions_t& render_dimensions           () const                        { return render_dimensions_;      }
+    const cpaf::video::surface_dimensions_t& render_dimensions           () const                   { return render_dimensions_;      }
 
-    bool                        render_video_frame          (const cpaf::video::av_frame& frame)        { return do_render_video_frame(frame);  }
+    bool                        render_video_frame          (const cpaf::video::av_frame& frame)    { return do_render_video_frame(frame);  }
+    void                        render_subtitle             (std::string_view str)                  { do_render_subtitle(str);  }
 
     void                        render_dimensions_set       (const cpaf::video::surface_dimensions_t& dimensions ) { return do_render_dimensions_set(dimensions);  }
 
@@ -53,19 +57,25 @@ protected:
     cpaf::video::av_frame&                  frame_display               () { return frame_display_; }
     cpaf::video::av_frame                   frame_display_;
     cpaf::video::surface_dimensions_t       render_dimensions_;
+    pos_2df                                 subtitle_pos                () const;
 
+
+    bool                                    m_show_subtitle         {true};
 private:
     cpaf::video::av_format_context*         format_context_ptr_     = nullptr;
     cpaf::video::av_codec_context*          video_codec_ctx_ptr_    = nullptr;
     cpaf::video::media_stream_time*         current_media_time_ptr_ = nullptr;
     AVPixelFormat                           ff_pixel_format_        = AV_PIX_FMT_YUV420P;
+    pos_2df                                 subtitle_relative_pos_  {0.5, 0.9};
+    render_geometry_t                       render_geometry_        {};
 
-    void                        create_frame_display            ();
+    void                        create_frame_display                ();
 
-    virtual void                do_init                         (system_window& win, const cpaf::video::surface_dimensions_t& dimensions ) = 0;
-    virtual void                do_init                         (std::shared_ptr<cpaf::gui::system_render> sys_renderer, const cpaf::video::surface_dimensions_t& dimensions ) = 0;
-    virtual void                do_render_dimensions_set        (const cpaf::video::surface_dimensions_t& dimensions ) = 0;
-    virtual bool                do_render_video_frame           (const cpaf::video::av_frame& frame) = 0;
+    virtual void                do_init                             (const system_window& win, const cpaf::video::surface_dimensions_t& dimensions ) = 0;
+    virtual void                do_init                             (std::shared_ptr<cpaf::gui::system_render> sys_renderer, const cpaf::video::surface_dimensions_t& dimensions ) = 0;
+    virtual void                do_render_dimensions_set            (const cpaf::video::surface_dimensions_t& dimensions ) = 0;
+    virtual bool                do_render_video_frame               (const cpaf::video::av_frame& frame) = 0;
+    virtual void                do_render_subtitle                  (std::string_view str) = 0;
 
 };
 

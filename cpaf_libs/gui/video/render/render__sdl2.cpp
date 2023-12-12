@@ -1,6 +1,7 @@
 #include "render__sdl2.h"
-#include "render.h"
 
+#include <imgui.h>
+#include "render.h"
 #include <cpaf_libs/gui/system_window.h>
 #include <cpaf_libs/gui/system_render.h>
 #include <cpaf_libs/video/av_codec_context.h>
@@ -8,7 +9,7 @@
 namespace cpaf::gui::video {
 
 std::unique_ptr<render> render_platform::create_video_render(
-    cpaf::gui::system_window& win,
+    const cpaf::gui::system_window& win,
     const cpaf::video::surface_dimensions_t& dimensions)
 {
     auto video_renderer = std::make_unique<render>();
@@ -88,7 +89,7 @@ SDL_Renderer* render_platform::get_sdl_renderer() {
     return system_renderer_->native_renderer<SDL_Renderer>();
 }
 
-void render_platform::do_init(system_window& win, const cpaf::video::surface_dimensions_t& dimensions)
+void render_platform::do_init(const system_window& win, const cpaf::video::surface_dimensions_t& dimensions)
 {
     system_renderer_ = win.renderer_shared();
     ensure_valid_render_texture(dimensions);
@@ -110,6 +111,25 @@ bool render_platform::do_render_video_frame(const cpaf::video::av_frame& frame)
     prepare_native_video_frame(frame, frame_display());
     render_current_native_video_frame_texture();
     return true;
+}
+
+void render_platform::do_render_subtitle(std::string_view str)
+{
+//    std::cerr << "FIXMENM render_subtitle: " << str << "\n";
+
+//    m_show_subtitle = !str.empty();
+
+    auto pos = subtitle_pos();
+//    ImGui::SetNextWindowPos({400, 500}, ImGuiCond_::ImGuiCond_Always, {0.5, 0.5} );
+    ImGui::SetNextWindowPos({pos.x(), pos.y()}, ImGuiCond_::ImGuiCond_Always, {0.5, 0.5} );
+    ImGui::SetNextWindowSize({400, 20}, ImGuiCond_::ImGuiCond_Always);
+
+    // ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize
+    ImGui::Begin("video_render_subtitle", &m_show_subtitle, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar);
+    // ImGui::Text("Hello World dsf");
+    ImGui::TextColored(ImVec4{0,255,255,1}, "%s", str.data());
+    ImGui::End();
+
 }
 
 } //END namespace cpaf::gui::video

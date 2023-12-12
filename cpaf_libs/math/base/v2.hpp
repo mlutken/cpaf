@@ -9,6 +9,7 @@
 // --- Include files ---
 #include <iostream>
 #include <string>
+#include <cstdint>
 
 #include "gmath.h"
 #include "stdmath.hpp"
@@ -93,7 +94,7 @@ public:
     }
 
     /** Assignment. Initializtion with general (v2<T1>) vector.
-        Also work as casting operator from general v3<>.*/
+        Also work as casting operator from general v2<>.*/
     template <typename T1>
     v2& operator=(v2<T1>&& v)
     {
@@ -250,10 +251,22 @@ public:
         return value_type(x() + v.x(), y() + v.y());
     }
 
-    /** '*' operator, Dot product of two vectors.
+    /** '*' operator, Product of two vectors.
+     *  @sa dot() Dot product
         \return Scalar (number) holding the result of the dot product. */
-    T				operator *(const_reference v		///< [in] Right hand side operand.
-                              ) const
+    template <typename T1>
+    value_type	operator *(v2<T1> v		///< [in] Right hand side operand.
+                ) const
+    {
+        const auto x1 = x()*static_cast<T>(v.x());
+        const auto y1 = y()*static_cast<T>(v.y());
+        return value_type(x1, y1);
+    }
+
+    /** Dot product of two vectors.
+        \return Scalar (number) holding the result of the dot product. */
+    T				dot(const_reference v		///< [in] Right hand side operand.
+                        ) const
     {
         return ( x()*v.x() + y()*v.y());
     }

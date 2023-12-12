@@ -41,6 +41,7 @@ public:
     void                        start                   ();
     void                        terminate               ();
     bool                        video_frame_update      (cpaf::video::av_frame& current_frame, cpaf::gui::video::render& video_render);
+//    bool                        subtitle_frame_update      (cpaf::video::av_frame& current_frame, cpaf::gui::video::render& video_render);
     void                        video_queue_flush_start ()                          { video_queue_flush_in_progress_ = true; }
     void                        video_queue_flush_done  ()                          { video_queue_flush_in_progress_ = false; video_queue_flushed_ = true; }
 
@@ -48,6 +49,7 @@ public:
 
 private:
     bool                        video_frame_do_render   (cpaf::video::av_frame& current_frame, cpaf::gui::video::render& video_render);
+    std::string_view            current_subtitle        () const;
     void                        debug_video_frame_update(cpaf::video::av_frame& current_frame, cpaf::gui::video::render& video_render);
 
     cpaf::video::av_format_context&          format_context          () { return *format_context_ptr_; }

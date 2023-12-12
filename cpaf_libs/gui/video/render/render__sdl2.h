@@ -21,7 +21,7 @@ class render;
 class render_platform : public render_base
 {
 public:
-    static std::unique_ptr<render>   create_video_render(system_window& win, const cpaf::video::surface_dimensions_t& dimensions);
+    static std::unique_ptr<render>   create_video_render(const system_window& win, const cpaf::video::surface_dimensions_t& dimensions);
 
     ~render_platform();
     render_platform();
@@ -37,10 +37,11 @@ private:
     SDL_Renderer*               get_sdl_renderer                ();
 
 
-    void                        do_init                     (system_window& win, const cpaf::video::surface_dimensions_t& dimensions ) override;
+    void                        do_init                     (const system_window& win, const cpaf::video::surface_dimensions_t& dimensions ) override;
     void                        do_init                     (std::shared_ptr<cpaf::gui::system_render> sys_renderer, const cpaf::video::surface_dimensions_t& dimensions ) override;
     void                        do_render_dimensions_set    (const cpaf::video::surface_dimensions_t& dimensions ) override;
     bool                        do_render_video_frame       (const cpaf::video::av_frame& frame) override;
+    void                        do_render_subtitle          (std::string_view str) override;
 
     std::shared_ptr<system_render>      system_renderer_;
     SDL_Texture*                        sdl_frame_render_texture_   {nullptr};

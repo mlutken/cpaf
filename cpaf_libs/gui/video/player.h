@@ -8,6 +8,10 @@
 #include <cpaf_libs/video/media_stream_time.h>
 #include <cpaf_libs/video/audio_resampler.h>
 
+namespace cpaf::gui {
+class system_window;
+}
+
 
 namespace cpaf::torrent {
 class torrents;
@@ -37,6 +41,7 @@ public:
 
     player();
     ~player();
+    void                        init_video              (const system_window& main_window);
     void                        start                   (const std::chrono::microseconds& start_time_pos = std::chrono::microseconds(0));
     void                        terminate               ();
     bool                        open                    (const std::string& resource_path);
@@ -101,6 +106,7 @@ public:
     // ---------------------------------------------
     audio_play_callback_t       audio_callback_get      ();
     bool                        video_frame_update      (av_frame& current_frame, cpaf::gui::video::render& video_render);
+    bool                        video_frame_update      (av_frame& current_frame);
 
     std::shared_ptr<torrent::torrents>   torrents_get   () const;
     void                        torrents_set            (std::shared_ptr<torrent::torrents> tors) { torrents_ = tors; }
@@ -157,6 +163,7 @@ private:
     std::string                                                         primary_resource_path_;
     mutable std::shared_ptr<torrent::torrents>                          torrents_;
     media_stream_time                                                   cur_media_time_;
+    std::unique_ptr<video::render>                                      video_render_;
 };
 
 } //END namespace cpaf::gui::video

@@ -50,7 +50,10 @@ system_window_platform::system_window_platform(const size_2d& size, std::string_
 
 size_2d system_window_platform::do_get_size() const
 {
-    return {0,0};
+    if (!sdl_window_) {return {-1,-1}; }
+    size_2d size;
+    SDL_GetWindowSize(sdl_window_, &size[0], &size[1]);
+    return size;
 }
 
 std::string system_window_platform::do_get_title() const
@@ -66,7 +69,6 @@ void* system_window_platform::do_get_native_window()
 void* system_window_platform::do_get_native_renderer()
 {
     return render_->get_native_renderer();
-    // return sdl_window_renderer_;
 }
 
 system_render& system_window_platform::do_renderer()

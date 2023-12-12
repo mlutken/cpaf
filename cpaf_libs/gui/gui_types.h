@@ -13,9 +13,23 @@ namespace cpaf::gui {
 
 using size_2d = cpaf::math::v2<std::int32_t>;
 using pos_2d = cpaf::math::v2<std::int32_t>;
+using pos_2df = cpaf::math::v2<float>;
 
+
+struct render_geometry_t
+{
+    render_geometry_t() = default;
+    explicit render_geometry_t(size_2d render_size) : size(render_size) {}
+    render_geometry_t(pos_2d  top_left_corner_pos, size_2d render_size)
+        : size(render_size), top_left(top_left_corner_pos) {}
+
+    size_2d size        {0,0};
+    pos_2d  top_left    {0,0};
+};
 
 enum class exit_status_t : int { success = 0, failure = 1 };
+
+
 
 
 //std::string to_string   (audio_format_t audio_format);

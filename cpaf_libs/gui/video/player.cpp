@@ -1,7 +1,8 @@
 #include "player.h"
 
 #include <cpaf_libs/torrent/torrents.h>
-
+#include <cpaf_libs/gui/system_window.h>
+#include <cpaf_libs/gui/video/render/render.h>
 
 using namespace cpaf::video;
 
@@ -16,7 +17,11 @@ player::player()
 
 player::~player()
 {
-    std::cerr << "FIXMENM player::DESTRUCTOR()\n";
+}
+
+void player::init_video(const system_window& main_window)
+{
+    video_render_ = render::create_video_render(main_window, video_dst_dimensions());
 }
 
 void player::start(const std::chrono::microseconds& start_time_pos)
@@ -119,8 +124,9 @@ void player::video_dimensions_set(int32_t width, int32_t height)
 
 void player::video_dimensions_set(const surface_dimensions_t& dimensions)
 {
-    video_dst_dimensions_requested_ = dimensions;
-    update_scaling_context();
+
+//    video_dst_dimensions_requested_ = dimensions; // TODO: This is currently not working as intended!
+//    update_scaling_context(); // TODO: This is currently not working as intended!
 }
 
 void player::video_scaler_flags_set(int32_t flags)
@@ -225,6 +231,11 @@ player::audio_play_callback_t player::audio_callback_get()
 bool player::video_frame_update(av_frame& current_frame, cpaf::gui::video::render& video_render)
 {
     return media_pipeline_threads().video_frame_update(current_frame, video_render);
+}
+
+bool player::video_frame_update(av_frame& current_frame)
+{
+    return video_frame_update(current_frame, *video_render_);
 }
 
 std::shared_ptr<torrent::torrents> player::torrents_get() const
