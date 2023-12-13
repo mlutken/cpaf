@@ -37,12 +37,7 @@ void render_base::init(std::shared_ptr<cpaf::gui::system_render> sys_renderer, c
 
 pos_2df render_base::subtitle_pos() const
 {
-
-    pos_2df pos = subtitle_relative_pos_ * render_dimensions();
-//    const auto render_size = do_get_size();
-//    std::cerr << pos << "\n";
-    pos = {300, 400};
-    return {300, 400};
+    return subtitle_relative_pos_ * render_geometry_.size;
 }
 
 void render_base::create_frame_display()
