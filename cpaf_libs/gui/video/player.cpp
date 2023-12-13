@@ -22,6 +22,8 @@ player::~player()
 void player::init_video(const system_window& main_window)
 {
     video_render_ = render::create_video_render(main_window, video_dst_dimensions());
+    video_render_->video_codec_ctx_set(video_codec_context());
+    video_render_->render_geometry_set(render_geometry_t(main_window.get_size()));
 }
 
 void player::start(const std::chrono::microseconds& start_time_pos)
@@ -124,7 +126,9 @@ void player::video_dimensions_set(int32_t width, int32_t height)
 
 void player::video_dimensions_set(const surface_dimensions_t& dimensions)
 {
-
+    if (video_render_) {
+        video_render_->render_geometry_set(render_geometry_t(dimensions));
+    }
 //    video_dst_dimensions_requested_ = dimensions; // TODO: This is currently not working as intended!
 //    update_scaling_context(); // TODO: This is currently not working as intended!
 }
