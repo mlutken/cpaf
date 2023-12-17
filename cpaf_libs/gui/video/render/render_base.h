@@ -54,8 +54,6 @@ public:
     bool                        render_video_frame          (const cpaf::video::av_frame& frame)    { return do_render_video_frame(frame);  }
     void                        render_subtitle             (const cpaf::video::subtitle_frame& subtitle);
 
-//    void                        render_subtitle             (std::string_view str)                  { do_render_subtitle(str);  }
-
     /// @todo Currently unused, See render_geometry_set()
     void                        render_dimensions_set       (const cpaf::video::surface_dimensions_t& dimensions ) { return do_render_dimensions_set(dimensions);  }
 
@@ -91,7 +89,6 @@ private:
     virtual void                do_init                             (std::shared_ptr<cpaf::gui::system_render> sys_renderer, const cpaf::video::surface_dimensions_t& dimensions ) = 0;
     virtual void                do_render_dimensions_set            (const cpaf::video::surface_dimensions_t& dimensions ) = 0;
     virtual bool                do_render_video_frame               (const cpaf::video::av_frame& frame) = 0;
-    virtual void                do_render_subtitle                  (std::string_view str) = 0;
     virtual void                on_subtitle_changed                 () = 0;
     virtual void                do_render_subtitle                  () = 0;
 

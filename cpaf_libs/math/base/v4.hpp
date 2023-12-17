@@ -113,6 +113,17 @@ public:
 	T&			w()			{return m_w;}
 	const T&	w() const	{return m_w;}
 
+
+    /** Set x-coordinate. */
+    void		x(T x)          {d[X] = x;}
+    /** Set y-coordinate. */
+    void		y(T y)          {d[Y] = y;}
+    /** Set z-coordinate. */
+    void		z(T z)          {d[Z] = z;}
+    /** Set w-coordinate. */
+    void		w(T w)          {d[W] = w;}
+
+
 	/** [] Operator, Acces individual elements of a vector.
 		\return Reference to indexed element (coordinate) of vector. */
 	T&					operator[](const index_type i)				///< [in] Index value. Should be in range 0..3 ~ X,Y,Z,W.
