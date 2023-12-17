@@ -4,7 +4,7 @@
 namespace cpaf::gui {
 
 
-std::span<const unsigned char> built_in_fonts::manrope()
+std::span<const unsigned char> imgui_fonts::manrope()
 {
     static constexpr size_t manrope_ttf_len = 96412;
 

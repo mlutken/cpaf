@@ -78,7 +78,7 @@ bool video_render_thread::video_frame_do_render(cpaf::video::av_frame& current_f
 
 std::string_view video_render_thread::current_subtitle() const
 {
-    return "FIXMENM Hello from subtitle render thread";
+    return "FIXMENM Morning Amy! How are you doing, girls?";
 }
 
 void video_render_thread::debug_video_frame_update(cpaf::video::av_frame& current_frame, gui::video::render& /*video_render*/)

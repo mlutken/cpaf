@@ -26,6 +26,10 @@ endif()
 
 target_sources(${library_name}
     PUBLIC
+
+    ${CMAKE_CURRENT_LIST_DIR}/color.h
+    ${CMAKE_CURRENT_LIST_DIR}/gui_types.h
+
     ${CMAKE_CURRENT_LIST_DIR}/app.h
     ${CMAKE_CURRENT_LIST_DIR}/base/app_base.h
     ${CMAKE_CURRENT_LIST_DIR}/base/app__${CPAF_GUI_SYSTEM_NAME}.h
@@ -81,6 +85,9 @@ target_sources(${library_name}
 
     PRIVATE
     ${CPAF_GUI_IMGUI_BACKEND_CPP_FILES}
+
+    ${CMAKE_CURRENT_LIST_DIR}/color.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/gui_types.cpp
 
     ${CMAKE_CURRENT_LIST_DIR}/app.cpp
     ${CMAKE_CURRENT_LIST_DIR}/base/app_base.cpp

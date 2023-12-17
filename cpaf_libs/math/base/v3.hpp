@@ -10,10 +10,11 @@
 // --- Include files ---
 #include <iostream>
 #include <string>
+#include <cstdint>
 
 #include "gmath.h"
 #include "stdmath.hpp"
-//#include "../_gmath_internal_utils.hpp"
+#include "_gmath_internal_utils.hpp"
 
 _GMATH_BEGIN_NAMESPACE
 
@@ -577,8 +578,10 @@ inline std::istream&		operator >>(std::istream& is,		///< [in]  Input stream to 
 	return is;
 }
 
-typedef v3<float>	v3f;
-typedef v3<int>     v3i;
+using v3f = v3<float>;
+using v3d = v3<double>;
+using v3i32 = v3<std::int32_t>;
+using v3i64 = v3<std::int64_t>;
 
 
 _GMATH_END_NAMESPACE

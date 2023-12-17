@@ -11,10 +11,9 @@
 #include <iostream>
 #include <math.h>
 
-#include "../gmath.h"
-#include "../utils.hpp"
-#include "../stdmath.hpp"
-//#include "../_gmath_internal_utils.hpp"
+#include "gmath.h"
+#include "stdmath.hpp"
+#include "_gmath_internal_utils.hpp"
 
 #include "m33.hpp"
 #include "v4.hpp"

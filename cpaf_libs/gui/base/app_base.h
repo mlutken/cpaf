@@ -94,7 +94,7 @@ private:
     std::string             company_name_     {""};
     std::string             window_title_     {"Hello CPAF GUI"};
     std::string             default_font_     {"manrope"};
-    float                   base_font_size_   {18};
+    float                   base_font_size_   {28};
 
 };
 

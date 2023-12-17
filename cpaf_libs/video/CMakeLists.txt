@@ -21,6 +21,7 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/ff_audio_format_t.h
     ${CMAKE_CURRENT_LIST_DIR}/media_stream_time.h
     ${CMAKE_CURRENT_LIST_DIR}/play_stream.h
+    ${CMAKE_CURRENT_LIST_DIR}/subtitle_frame.h
 
     ${CMAKE_CURRENT_LIST_DIR}/io/custom_io_base.h
     ${CMAKE_CURRENT_LIST_DIR}/io/torrent_io.h
@@ -42,6 +43,7 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/ff_audio_format_t.cpp
     ${CMAKE_CURRENT_LIST_DIR}/media_stream_time.cpp
     ${CMAKE_CURRENT_LIST_DIR}/play_stream.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/subtitle_frame.cpp
 
     ${CMAKE_CURRENT_LIST_DIR}/io/custom_io_base.cpp
     ${CMAKE_CURRENT_LIST_DIR}/io/torrent_io.cpp

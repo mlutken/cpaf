@@ -10,10 +10,12 @@
 // --- Include files ---
 #include <iostream>
 #include <string>
+#include <cstdint>
 
-#include "../gmath.h"
-#include "../stdmath.hpp"
-#include "../_gmath_internal_utils.hpp"
+#include "gmath.h"
+#include "stdmath.hpp"
+#include "_gmath_internal_utils.hpp"
+
 
 _GMATH_BEGIN_NAMESPACE
 
@@ -30,7 +32,7 @@ to ease the compiler's possibilities to do "return value optimization". */
 template <typename T>
 class v4
 {
-friend class m44;
+    friend class m44<T>;
 
 public:	
 	// ----------------
@@ -237,13 +239,13 @@ public:
 		return value_type( x()*fVal, y()*fVal, z()*fVal, w()*fVal );
 	}
 
-	/** Calculates the cross product of two vectors returning the result as a 
-		value (v4). */
-	value_type	cross(const_reference v			///< [in] Right hand side operand.
-					 ) const
-	{
-		STATIC_CHECK(0, v4_cross_NOT_IMPLEMENTED_YET);
-	}
+//	/** Calculates the cross product of two vectors returning the result as a
+//		value (v4). */
+//	value_type	cross(const_reference v			///< [in] Right hand side operand.
+//					 ) const
+//	{
+//		static_assert(false, "v4::cross() NOT_IMPLEMENTED_YET");
+//	}
 	
 
 	// -----------------------------
@@ -562,10 +564,10 @@ inline std::istream&		operator >>(std::istream& is,		///< [in]  Input stream to 
 	return is;
 }
 
-typedef v4<float>	v4f;
-
-typedef v4<float>	v4f;
-typedef v4<int>     v4i;
+using v4f = v4<float>;
+using v4d = v4<double>;
+using v4i32 = v4<std::int32_t>;
+using v4i64 = v4<std::int64_t>;
 
 _GMATH_END_NAMESPACE
 

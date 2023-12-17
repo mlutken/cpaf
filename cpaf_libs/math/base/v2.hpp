@@ -639,7 +639,9 @@ inline v2<int_t>	v2<int_t>::operator/(int_t Val) const
 }
 
 using v2f = v2<float>;
+using v2d = v2<double>;
 using v2i32 = v2<std::int32_t>;
+using v2i64 = v2<std::int64_t>;
 
 
 _GMATH_END_NAMESPACE

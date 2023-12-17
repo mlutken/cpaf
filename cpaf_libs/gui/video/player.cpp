@@ -24,6 +24,7 @@ void player::init_video(const system_window& main_window)
     video_render_ = render::create_video_render(main_window, video_dst_dimensions());
     video_render_->video_codec_ctx_set(video_codec_context());
     video_render_->render_geometry_set(render_geometry_t(main_window.get_size()));
+////    video_render_->render_geometry_set(render_geometry_t({100,100}, main_window.get_size())); // TEST ONLY!
 }
 
 void player::start(const std::chrono::microseconds& start_time_pos)

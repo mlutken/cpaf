@@ -4,7 +4,9 @@
 #include <config/cpaf_platform_definitions.h>
 #include <cpaf_libs/video/av_util.h>
 #include <cpaf_libs/video/av_frame.h>
+#include <cpaf_libs/video/subtitle_frame.h>
 #include <cpaf_libs/gui/gui_types.h>
+#include <cpaf_libs/gui/color.h>
 
 
 namespace cpaf::gui {
@@ -31,11 +33,15 @@ class render_base
 public:
     virtual ~render_base() = default;
     render_base();
+    render_geometry_t           render_geometry             () const { return render_geometry_; }
     void                        render_geometry_set         (render_geometry_t render_geom);
     void                        format_context_set          (cpaf::video::av_format_context* ctx)        { format_context_ptr_ = ctx; }
     void                        format_context_set          (cpaf::video::av_format_context& ctx)        { format_context_ptr_ = &ctx; }
     void                        video_codec_ctx_set         (cpaf::video::av_codec_context* ctx);
     void                        video_codec_ctx_set         (cpaf::video::av_codec_context& ctx);
+    void                        subtitle_color_set          (const color& text_color, const color& bg_color);
+    void                        subtitle_font_set           (std::string font_name, uint16_t font_size);
+
     void                        init                        (const system_window& win,
                                                              const cpaf::video::surface_dimensions_t& dimensions );
     void                        init                        (std::shared_ptr<cpaf::gui::system_render> sys_renderer,
@@ -46,6 +52,8 @@ public:
     const cpaf::video::surface_dimensions_t& render_dimensions           () const                   { return render_dimensions_;      }
 
     bool                        render_video_frame          (const cpaf::video::av_frame& frame)    { return do_render_video_frame(frame);  }
+    void                        render_subtitle             (const cpaf::video::subtitle_frame& subtitle);
+
     void                        render_subtitle             (std::string_view str)                  { do_render_subtitle(str);  }
 
     /// @todo Currently unused, See render_geometry_set()
@@ -60,8 +68,13 @@ protected:
     cpaf::video::surface_dimensions_t       render_dimensions_;
     pos_2df                                 subtitle_pos                () const;
 
-
     bool                                    m_show_subtitle         {true};
+    cpaf::video::subtitle_frame             current_subtitle_frame_ {};
+    color                                   subtitle_text_color_    {1,1,1,1};
+    color                                   subtitle_bg_color_      {0,0,0,1};
+    std::string                             font_name_              {"manrope"};
+    uint16_t                                font_size_              {22};
+
 private:
     cpaf::video::av_format_context*         format_context_ptr_     = nullptr;
     cpaf::video::av_codec_context*          video_codec_ctx_ptr_    = nullptr;
@@ -77,6 +90,8 @@ private:
     virtual void                do_render_dimensions_set            (const cpaf::video::surface_dimensions_t& dimensions ) = 0;
     virtual bool                do_render_video_frame               (const cpaf::video::av_frame& frame) = 0;
     virtual void                do_render_subtitle                  (std::string_view str) = 0;
+    virtual void                on_subtitle_changed                 () = 0;
+    virtual void                do_render_subtitle                  () = 0;
 
 };
 
