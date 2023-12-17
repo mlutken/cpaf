@@ -4,11 +4,13 @@
 #include <video/av_format_context.h>
 #include <video/av_codec_context.h>
 #include <video/media_stream_time.h>
+#include <cpaf_libs/video/subtitle_frame.h>
 #include <cpaf_libs/video/av_samples_queue.h>
 #include <cpaf_libs/gui/video/render/render.h>
 
 using namespace std::chrono_literals;
 using namespace std::chrono;
+using namespace cpaf::video;
 
 
 namespace cpaf::gui::video {
@@ -76,9 +78,12 @@ bool video_render_thread::video_frame_do_render(cpaf::video::av_frame& current_f
     return new_frame_was_read;
 }
 
-std::string_view video_render_thread::current_subtitle() const
+cpaf::video::subtitle_frame video_render_thread::current_subtitle() const
 {
-    return "FIXMENM Morning Amy! How are you doing, girls?";
+    // FIXMENM
+    subtitle_frame sf("My name is John Rambo. We served", "on the same team together in Nam.");
+//    subtitle_frame sf("My name is John Rambo. We served");
+    return sf;
 }
 
 void video_render_thread::debug_video_frame_update(cpaf::video::av_frame& current_frame, gui::video::render& /*video_render*/)

@@ -6,6 +6,8 @@
 #include <cpaf_libs/video/av_codec_context.h>
 #include <cpaf_libs/gui/assets/fonts/built_in_fonts.h>
 
+using namespace std;
+
 namespace cpaf::gui::video {
 
 std::unique_ptr<render> render_platform::create_video_render(
@@ -92,7 +94,7 @@ void render_platform::render_subtitle_line(pos_2df pos, std::string_view str)
     ImGui::SetNextWindowPos({pos.x(), pos.y()}, ImGuiCond_::ImGuiCond_Always, {0.5, 0.5} );
     ImGui::SetNextWindowSize({400, 20}, ImGuiCond_::ImGuiCond_Always);
 
-    ImGui::Begin("video_render_subtitle", &m_show_subtitle, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar);
+    ImGui::Begin("video_render_subtitle", &show_subtitles_, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar);
     ImGui::PushStyleColor(ImGuiCol_Text, subtitle_color_);
 //    ImGui::TextColored(ImVec4{255,255,255,1}, "%s", str.data());
     ImGui::Text("%s", str.data());
@@ -127,9 +129,43 @@ ImVec2 render_platform::subtitle_line_geometry(ImFont* font, std::string_view li
     return size;
 }
 
+void render_platform::calc_subtitle_geometry()
+{
+    if (!current_subtitle_frame_.should_show()) {
+        return;
+    }
+    font_size_ = 48; // FIXMENM
+    ImFont* font = imgui_fonts::get(font_name_, font_size_);
+    if (!font) { return; }
+
+    const float line_dist = font_size_*subtitle_line_dist_;
+    const float x_pos = render_geometry().size.width() / 2;
+    const float lowest_y = subtitle_relative_ypos_* render_geometry().size.height();
+    const float max_width = render_geometry().size.width();
+    const size_t lines_count = current_subtitle_frame_.lines_count();
+    const size_t max_line_index = lines_count -1;
+    for (size_t sub_index = 0; sub_index < lines_count; ++sub_index) {
+        const std::string& line = current_subtitle_frame_.lines[sub_index];
+        auto& geom = subtitle_render_geometries_[sub_index];
+        geom.top_left.y(lowest_y - (max_line_index - sub_index)*(font_size_+line_dist));
+        geom.top_left.x(x_pos);
+
+        auto render_size = font->CalcTextSizeA(font->FontSize, max_width, 0, line.data(), line.data() + line.size());
+        render_size.x = render_size.x + 3*(render_size.x/line.size());
+//        render_size.y = render_size.y*1.1;
+        geom.size = {render_size.x, render_size.y};
+
+        fmt::println("FIXMENM sub_index[{}]: {}, height {}", sub_index, geom.top_left.y(), geom.size.height());
+    }
+//    subtitle_relative_ypos_
+}
+
 SDL_Rect render_platform::to_sdl_rect(render_geometry_t geom)
 {
-    return SDL_Rect{geom.top_left.x(), geom.top_left.y(), geom.size.width(), geom.size.height()};
+    return SDL_Rect{static_cast<int>(geom.top_left.x()),
+                    static_cast<int>(geom.top_left.y()),
+                    static_cast<int>(geom.size.width()),
+                    static_cast<int>(geom.size.height())};
 }
 
 SDL_Renderer* render_platform::get_sdl_renderer() {
@@ -162,7 +198,7 @@ bool render_platform::do_render_video_frame(const cpaf::video::av_frame& frame)
 
 void render_platform::do_render_subtitle(std::string_view str)
 {
-    m_show_subtitle = !str.empty();
+    show_subtitles_ = !str.empty();
 
 //    render_subtitle_line(subtitle_pos(), str);
 //    return;
@@ -183,7 +219,7 @@ void render_platform::do_render_subtitle(std::string_view str)
 
     ImGui::PushStyleColor(ImGuiCol_Border, {0,0.5,0,1});
     ImGui::PushStyleColor(ImGuiCol_WindowBg, {0,0,0,0});
-    ImGui::Begin("video_render_subtitle", &m_show_subtitle, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar);
+    ImGui::Begin("video_render_subtitle", &show_subtitles_, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar);
 //    ImGui::Begin("video_render_subtitle", &m_show_subtitle, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings|ImGuiWindowFlags_NoInputs);
 
     ImGui::PushFont(font);
@@ -204,11 +240,56 @@ void render_platform::do_render_subtitle(std::string_view str)
 
 void render_platform::on_subtitle_changed()
 {
-
+    calc_subtitle_geometry();
 }
 
 void render_platform::do_render_subtitle()
 {
+    if ( !(current_subtitle_frame_.should_show() && show_subtitles_) ) {
+        return;
+    }
+    ImFont* font = imgui_fonts::get(font_name_, font_size_);
+    if (!font) { return; }
+
+
+    for (auto sub_index = current_subtitle_frame_.lines_count(); sub_index > 0; ) {
+        --sub_index;
+        const string window_name = "video_render_subtitle"s + std::to_string(sub_index);
+        const std::string& line = current_subtitle_frame_.lines[sub_index];
+        auto& geom = subtitle_render_geometries_[sub_index];
+//        fmt::println("FIXMENM RENDER sub_index[{}]: {}", sub_index, geom.top_left.y());
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(4, 4));
+        ImGui::SetNextWindowPos({geom.top_left.x(), geom.top_left.y()}, ImGuiCond_::ImGuiCond_Always, {0.5, 0.5} );
+        ImGui::SetNextWindowSize({geom.size.width(), geom.size.height()}, ImGuiCond_::ImGuiCond_Always);
+        //// ImGui::SetNextWindowContentSize({geom.size.width(), geom.size.height()});
+
+        ImGui::PushStyleColor(ImGuiCol_Border, reinterpret_cast<const ImVec4&>(subtitle_bg_color_));
+        ImGui::PushStyleColor(ImGuiCol_WindowBg, reinterpret_cast<const ImVec4&>(subtitle_bg_color_));
+//        ImGui::Begin("video_render_subtitle", &show_subtitles_, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar);
+        ImGui::Begin(window_name.c_str(), &show_subtitles_, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings|ImGuiWindowFlags_NoInputs);
+
+        ImGui::PushFont(font);
+        ImGui::PushStyleColor(ImGuiCol_Text, reinterpret_cast<const ImVec4&>(subtitle_text_color_));
+        ImGui::SetCursorPosY(0);
+        //    fmt::println("FIXMENM CursorPosY: {}", ImGui::GetCursorPosY());
+
+        //    std::cerr << "FIXMENM CursorPosY: " <<  ImGui::GetCursorPosY() << "\n";
+        //    ImGui::Text("%s", str.data());
+        ImGui::TextUnformatted(line.c_str());
+        ImGui::PopFont();
+        ImGui::PopStyleColor();
+        ImGui::End();
+        ImGui::PopStyleColor();
+        ImGui::PopStyleColor();
+        ImGui::PopStyleVar();
+    }
+
+
+
+    //    ImGui::Begin("video_render_subtitle", &m_show_subtitle, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar);
+    //    ImGui::TextColored(subtitle_color_, "%s", str.data());
+    //    ImGui::End();
+
 
 }
 

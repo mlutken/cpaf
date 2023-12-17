@@ -13,6 +13,7 @@ class av_format_context;
 class av_codec_context;
 class media_stream_time;
 class av_samples_queue;
+class subtitle_frame;
 };
 
 
@@ -49,7 +50,7 @@ public:
 
 private:
     bool                        video_frame_do_render   (cpaf::video::av_frame& current_frame, cpaf::gui::video::render& video_render);
-    std::string_view            current_subtitle        () const;
+    cpaf::video::subtitle_frame current_subtitle() const;
     void                        debug_video_frame_update(cpaf::video::av_frame& current_frame, cpaf::gui::video::render& video_render);
 
     cpaf::video::av_format_context&          format_context          () { return *format_context_ptr_; }

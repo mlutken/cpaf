@@ -54,7 +54,7 @@ public:
     bool                        render_video_frame          (const cpaf::video::av_frame& frame)    { return do_render_video_frame(frame);  }
     void                        render_subtitle             (const cpaf::video::subtitle_frame& subtitle);
 
-    void                        render_subtitle             (std::string_view str)                  { do_render_subtitle(str);  }
+//    void                        render_subtitle             (std::string_view str)                  { do_render_subtitle(str);  }
 
     /// @todo Currently unused, See render_geometry_set()
     void                        render_dimensions_set       (const cpaf::video::surface_dimensions_t& dimensions ) { return do_render_dimensions_set(dimensions);  }
@@ -68,12 +68,14 @@ protected:
     cpaf::video::surface_dimensions_t       render_dimensions_;
     pos_2df                                 subtitle_pos                () const;
 
-    bool                                    m_show_subtitle         {true};
+    bool                                    show_subtitles_         {true};
     cpaf::video::subtitle_frame             current_subtitle_frame_ {};
     color                                   subtitle_text_color_    {1,1,1,1};
     color                                   subtitle_bg_color_      {0,0,0,1};
     std::string                             font_name_              {"manrope"};
-    uint16_t                                font_size_              {22};
+    uint16_t                                font_size_              {28};
+    float                                   subtitle_line_dist_     {0.25};
+    float                                   subtitle_relative_ypos_ {0.92};
 
 private:
     cpaf::video::av_format_context*         format_context_ptr_     = nullptr;

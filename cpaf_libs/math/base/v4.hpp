@@ -45,6 +45,11 @@ public:
 	typedef const value_type*	const_pointer;
 	typedef unsigned_int_t		index_type;
 
+    struct raw_vec_t
+    {
+        T	x_, y_, z_, w_;
+    };
+
 	// ----------------------------
 	// --- Const Static Members ---
 	// ----------------------------
@@ -461,6 +466,8 @@ public:
 				( Abs(w() - v.w()) <= epsilon );
 	}
 
+    operator const  raw_vec_t&   () const   { return d; }
+    operator        raw_vec_t&   ()         { return d; }
 
 	// -----------------------
 	// --- Debug Functions ---

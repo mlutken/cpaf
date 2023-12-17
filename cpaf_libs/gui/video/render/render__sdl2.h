@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <array>
 #include <config/cpaf_platform_definitions.h>
 
 #if (CPAF_GRAPHICS_SYSTEM_ID != CPAF_SYSTEM_ID_SDL2)
@@ -31,11 +32,13 @@ protected:
 
 
 private:
+    using subtitle_render_geometries_t = std::array<render_geometry_t, cpaf::video::subtitle_frame::max_lines>;
     void    prepare_native_video_frame      (const cpaf::video::av_frame& frame, cpaf::video::av_frame& frame_display);
     void    render_current_native_video_frame_texture     ();
     void    ensure_valid_render_texture     (const cpaf::video::surface_dimensions_t& dimensions);
     void    render_subtitle_line            (pos_2df pos, std::string_view str);
     ImVec2  subtitle_line_geometry          (ImFont* font, std::string_view line) const;
+    void    calc_subtitle_geometry          ();
 
     static SDL_Rect             to_sdl_rect                 (render_geometry_t geom);
 
@@ -52,6 +55,7 @@ private:
 
     std::shared_ptr<system_render>      system_renderer_;
     SDL_Texture*                        sdl_frame_render_texture_   {nullptr};
+    subtitle_render_geometries_t        subtitle_render_geometries_;
 
     ImVec4                              subtitle_color_{1,1,1,1};
 };

@@ -124,6 +124,8 @@ public:
     // -----------------------
     // --- Access elements ---
     // -----------------------
+    T*			data()          {return m_d[0];}
+    const T*	data() const	{return m_d[0];}
 
     /** Reference to x-coordinate.
         \return Reference to x-coordinate of vector. */
