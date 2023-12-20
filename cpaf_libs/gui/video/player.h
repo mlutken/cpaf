@@ -101,6 +101,12 @@ public:
     size_t                      audio_stream_index		() const;
     const av_samples_queue&     audio_samples_queue     () const { return audio_samples_queue_; }
 
+    // -------------------------------
+    // --- Subtitles setup/control ---
+    // -------------------------------
+    size_t                      subtitle_stream_index	() const;
+    av_codec_context&           subtitle_codec_context  () const;
+
     // ---------------------------------------------
     // --- Interfacing to surrounding app/system ---
     // ---------------------------------------------
@@ -154,9 +160,11 @@ private:
     std::atomic_bool                                                    threads_paused_                 = false;
     size_t                                                              video_stream_index_             = cpaf::video::no_stream_index;
     size_t                                                              audio_stream_index_             = cpaf::video::no_stream_index;
+    size_t                                                              subtitle_stream_index_          = cpaf::video::no_stream_index;
 
     mutable cpaf::video::av_codec_context                               video_codec_ctx_;
     mutable cpaf::video::av_codec_context                               audio_codec_ctx_;
+    mutable cpaf::video::av_codec_context                               subtitle_codec_ctx_;
     cpaf::video::audio_resampler                                        audio_resampler_;
     pipeline_threads                                                    media_pipeline_threads_;
 

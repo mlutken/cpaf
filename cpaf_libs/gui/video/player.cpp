@@ -41,6 +41,7 @@ void player::start(const std::chrono::microseconds& start_time_pos)
     audio_resampler_.init();
     video_codec_context().get_packet_function_set(video_fmt_ctx.get_packet_function(media_type::video));
     audio_codec_context().get_packet_function_set(video_fmt_ctx.get_packet_function(media_type::audio));
+    subtitle_codec_context().get_packet_function_set(video_fmt_ctx.get_packet_function(media_type::subtitle));
 
     media_pipeline_threads().audio_codec_ctx_set(audio_codec_context());
     media_pipeline_threads().audio_resampler_set(audio_resampler_);
@@ -222,6 +223,26 @@ av_codec_context& player::audio_codec_context() const
 size_t player::audio_stream_index() const
 {
     return audio_stream_index_ != no_stream_index ? audio_stream_index_ : source_stream(stream_type_t::audio)->first_audio_index();
+}
+
+size_t player::subtitle_stream_index() const
+{
+    return subtitle_stream_index_ != no_stream_index ? subtitle_stream_index_ : source_stream(stream_type_t::subtitle)->first_subtitle_index();
+}
+
+// -------------------------------
+// --- Subtitles setup/control ---
+// -------------------------------
+
+av_codec_context& player::subtitle_codec_context() const
+{
+    if (!subtitle_codec_ctx_.is_valid()) {
+        auto* subtitle_stream = source_stream(stream_type_t::subtitle);
+        if (subtitle_stream){
+            subtitle_codec_ctx_ = subtitle_stream->codec_context(subtitle_stream_index());
+        }
+    }
+    return subtitle_codec_ctx_;
 }
 
 // ---------------------------------------------

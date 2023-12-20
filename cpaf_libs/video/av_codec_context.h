@@ -49,7 +49,7 @@ public:
                      const AVRational& stream_time_base);
     ~av_codec_context();
 
-    size_t                  stream_index        () const { return stream_index_; }
+    size_t                  stream_index                () const { return stream_index_; }
 
     void                    swap						(av_codec_context& src) noexcept;
 
