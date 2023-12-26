@@ -4,7 +4,7 @@
 #include <backends/imgui_impl_sdl.h>
 #include <backends/imgui_impl_sdlrenderer.h>
 
-#include "assets/fonts/built_in_fonts.h"
+#include "assets/fonts/imgui_fonts.h"
 
 #include "dpi_handler.h"
 #include "resources.h"

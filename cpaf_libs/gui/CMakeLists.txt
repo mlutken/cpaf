@@ -2,9 +2,11 @@
 set (library_name cpaf_gui)
 add_library(${library_name} STATIC ""
     gui-overview.qmodel
-    events/keyboard_events.h events/keyboard_events.cpp
-    events/mouse_events.h events/mouse_events.cpp
-    events/base_events.cpp)
+    events/keyboard_events.h
+    events/keyboard_events.cpp
+    events/mouse_events.h
+    events/mouse_events.cpp
+)
 
 find_package(fmt REQUIRED)
 find_package(imgui REQUIRED)
@@ -64,6 +66,8 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/events/touch_events.h
     ${CMAKE_CURRENT_LIST_DIR}/events/events__${CPAF_GUI_SYSTEM_NAME}.h
 
+    ${CMAKE_CURRENT_LIST_DIR}/fonts/font_size.h
+
     ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/pipeline_threads_types.h
     ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/pipeline_threads.h
     ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/audio_render_thread.h
@@ -81,7 +85,7 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/utils.h
     ${CMAKE_CURRENT_LIST_DIR}/window.h
 
-    ${CMAKE_CURRENT_LIST_DIR}/assets/fonts/built_in_fonts.h
+    ${CMAKE_CURRENT_LIST_DIR}/assets/fonts/imgui_fonts.h
 
     PRIVATE
     ${CPAF_GUI_IMGUI_BACKEND_CPP_FILES}
@@ -123,6 +127,8 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/events/touch_events.cpp
     ${CMAKE_CURRENT_LIST_DIR}/events/events__${CPAF_GUI_SYSTEM_NAME}.cpp
 
+    ${CMAKE_CURRENT_LIST_DIR}/fonts/font_size.cpp
+
     ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/pipeline_threads.cpp
     ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/audio_render_thread.cpp
     ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/audio_resampler_thread.cpp
@@ -139,7 +145,7 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/utils.cpp
     ${CMAKE_CURRENT_LIST_DIR}/window.cpp
 
-    ${CMAKE_CURRENT_LIST_DIR}/assets/fonts/built_in_fonts.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/assets/fonts/imgui_fonts.cpp
     ${CMAKE_CURRENT_LIST_DIR}/assets/fonts/manrope_ttf.cpp
 
 

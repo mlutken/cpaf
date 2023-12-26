@@ -41,6 +41,7 @@ private:
     void            render_current_native_video_frame_texture   ();
     void            ensure_valid_render_texture                 (const cpaf::video::surface_dimensions_t& dimensions);
     void            calc_subtitle_geometry                      ();
+    void            calc_controls_geometry                      ();
 
 
     SDL_Renderer*  get_sdl_renderer            ();
@@ -50,12 +51,14 @@ private:
                                                 const cpaf::video::surface_dimensions_t& dimensions ) override;
     void           do_render_dimensions_set    (const cpaf::video::surface_dimensions_t& dimensions ) override;
     bool           do_render_video_frame       (const cpaf::video::av_frame& frame) override;
-    void           on_subtitle_changed         () override;
+    void           on_render_geometry_changed         () override;
     void           do_render_subtitle          () override;
+    void           do_render_controls          () override;
 
     std::shared_ptr<system_render>      system_renderer_;
     SDL_Texture*                        sdl_frame_render_texture_   {nullptr};
     subtitle_render_geometries_t        subtitle_render_geometries_;
+    render_geometry_t                   controls_render_geometry_;
 };
 
 } //END namespace cpaf::gui::video

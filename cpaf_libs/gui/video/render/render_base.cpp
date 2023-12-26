@@ -11,7 +11,7 @@ render_base::render_base()
 void render_base::render_geometry_set(render_geometry_t render_geom)
 {
     render_geometry_ = render_geom;
-    on_subtitle_changed();
+    on_render_geometry_changed();
 }
 
 void render_base::video_codec_ctx_set(cpaf::video::av_codec_context* ctx)
@@ -28,15 +28,15 @@ void render_base::video_codec_ctx_set(cpaf::video::av_codec_context& ctx)
 
 void render_base::subtitle_color_set(const color& text_color, const color& bg_color)
 {
-    subtitle_text_color_ = text_color;
-    subtitle_bg_color_ = bg_color;
+    subtitles_text_color_ = text_color;
+    subtitles_bg_color_ = bg_color;
 }
 
 void render_base::subtitle_font_set(std::string font_name, uint16_t font_size)
 {
-    font_name_ = std::move(font_name);
-    font_size_ = font_size;
-    on_subtitle_changed();
+    subtitles_font_name_ = std::move(font_name);
+    subtitles_font_size_ = font_size;
+    on_render_geometry_changed();
 }
 
 void render_base::init(const system_window& win, const cpaf::video::surface_dimensions_t& dimensions)
@@ -55,7 +55,7 @@ void render_base::render_subtitle(const cpaf::video::subtitle_frame& subtitle)
         subtitle.presentation_time != current_subtitle_frame_.presentation_time ||
         subtitle.should_show() != current_subtitle_frame_.should_show() ) {
         current_subtitle_frame_ = subtitle;
-        on_subtitle_changed();
+        on_render_geometry_changed();
     }
     do_render_subtitle();
 }

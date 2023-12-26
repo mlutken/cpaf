@@ -15,6 +15,7 @@ endmacro()
 # IMPORTANT: Must match the definitions set in [cpaf/]include/config/cpaf_platform_definitions.h
 #            The reason for the redundancy is to make it easier for users that do not want
 #            to compile this using cmake!
+#            TODO: Perhaps we should just require CMake. Depends (perhaps) on if we want to support Godot for example
 
 # ----------------------------------
 # --- Platform type id #defines  ---
@@ -22,8 +23,11 @@ endmacro()
 
 set (CPAF_PLATFORM_TYPE_ID_DESKTOP      1   )
 set (CPAF_PLATFORM_TYPE_ID_EMBEDDED     2   )
-set (CPAF_PLATFORM_TYPE_ID_WEB          3   )
+set (CPAF_PLATFORM_TYPE_ID_DESKTOP_WEB  3   )
 set (CPAF_PLATFORM_TYPE_ID_MOBILE       4   )
+set (CPAF_PLATFORM_TYPE_ID_TABLET       5   )
+set (CPAF_PLATFORM_TYPE_ID_TABLET_WEB   6   )
+set (CPAF_PLATFORM_TYPE_ID_MOBILE_WEB   7   )
 
 # ---------------------------------------------
 # --- System/abstraction layer id #defines  ---

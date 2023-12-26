@@ -53,6 +53,7 @@ public:
 
     bool                        render_video_frame          (const cpaf::video::av_frame& frame)    { return do_render_video_frame(frame);  }
     void                        render_subtitle             (const cpaf::video::subtitle_frame& subtitle);
+    void                        render_controls             ()                                 { do_render_controls();  }
 
     /// @todo Currently unused, See render_geometry_set()
     void                        render_dimensions_set       (const cpaf::video::surface_dimensions_t& dimensions ) { return do_render_dimensions_set(dimensions);  }
@@ -66,15 +67,23 @@ protected:
     cpaf::video::surface_dimensions_t       render_dimensions_;
     pos_2df                                 subtitle_pos                () const;
 
+    std::string                             subtitles_font_name_    {"manrope"};
+    color                                   subtitles_text_color_   {1,1,1,1};
+    color                                   subtitles_bg_color_     {0,0,0,1};
+    uint16_t                                subtitles_font_size_    {28};
+    float                                   subtitles_relative_ypos_{0.92};
+    float                                   subtitles_line_dist_    {0.25};
     bool                                    show_subtitles_         {true};
-    cpaf::video::subtitle_frame             current_subtitle_frame_ {};
-    color                                   subtitle_text_color_    {1,1,1,1};
-    color                                   subtitle_bg_color_      {0,0,0,1};
-    std::string                             font_name_              {"manrope"};
-    uint16_t                                font_size_              {28};
-    float                                   subtitle_line_dist_     {0.25};
-    float                                   subtitle_relative_ypos_ {0.92};
 
+    std::string                             controls_font_name_     {"manrope"};
+    color                                   controls_text_color_    {1,1,1,1};
+    color                                   controls_bg_color_      {0,0,0,1};
+    uint16_t                                controls_font_size_     {96};
+    float                                   controls_relative_ypos_ {0.9};
+    float                                   controls_btns_rel_size_ {0.1};
+    bool                                    show_controls_          {true};
+
+    cpaf::video::subtitle_frame             current_subtitle_frame_ {};
 private:
     cpaf::video::av_format_context*         format_context_ptr_     = nullptr;
     cpaf::video::av_codec_context*          video_codec_ctx_ptr_    = nullptr;
@@ -89,8 +98,9 @@ private:
     virtual void                do_init                             (std::shared_ptr<cpaf::gui::system_render> sys_renderer, const cpaf::video::surface_dimensions_t& dimensions ) = 0;
     virtual void                do_render_dimensions_set            (const cpaf::video::surface_dimensions_t& dimensions ) = 0;
     virtual bool                do_render_video_frame               (const cpaf::video::av_frame& frame) = 0;
-    virtual void                on_subtitle_changed                 () = 0;
+    virtual void                on_render_geometry_changed                 () = 0;
     virtual void                do_render_subtitle                  () = 0;
+    virtual void                do_render_controls                  () = 0;
 
 };
 

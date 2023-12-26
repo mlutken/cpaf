@@ -2,14 +2,17 @@
 #define CPAF_PLATFORM_DEFINITIONS_H
 
 
-// IMPORTANT: Must match the definitions set in [cpaf/]cul/nestle/tools/cmake/platform_definitions.cmake
+// IMPORTANT: Must match the definitions set in [cpaf/]tools/cmake/platform_definitions.cmake
 //            The reason for the redundancy is to make it easier for users that do not want
 //            to compile this using cmake!
 
-#define CPAF_PLATFORM_TYPE_ID_DESKTOP	1
-#define CPAF_PLATFORM_TYPE_ID_EMBEDDED  2
-#define CPAF_PLATFORM_TYPE_ID_WEB       3
-#define CPAF_PLATFORM_TYPE_ID_MOBILE    4
+#define CPAF_PLATFORM_TYPE_ID_DESKTOP       1
+#define CPAF_PLATFORM_TYPE_ID_EMBEDDED      2
+#define CPAF_PLATFORM_TYPE_ID_DESKTOP_WEB   3
+#define CPAF_PLATFORM_TYPE_ID_MOBILE        4
+#define CPAF_PLATFORM_TYPE_ID_TABLET        5
+#define CPAF_PLATFORM_TYPE_ID_TABLET_WEB    6
+#define CPAF_PLATFORM_TYPE_ID_MOBILE_WEB    7
 
 
 #define CPAF_SYSTEM_ID_LINUX			1

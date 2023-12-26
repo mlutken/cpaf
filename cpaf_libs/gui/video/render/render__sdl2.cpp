@@ -4,7 +4,7 @@
 #include <cpaf_libs/gui/system_window.h>
 #include <cpaf_libs/gui/system_render.h>
 #include <cpaf_libs/video/av_codec_context.h>
-#include <cpaf_libs/gui/assets/fonts/built_in_fonts.h>
+#include <cpaf_libs/gui/assets/fonts/imgui_fonts.h>
 
 using namespace std;
 
@@ -91,19 +91,19 @@ void render_platform::calc_subtitle_geometry()
     }
 ///    font_size_ = 28; // FIXMENM
 ///    subtitle_bg_color_.w() = 0; // FIXMENM
-    const ImFont* font = imgui_fonts::get(font_name_, font_size_);
+    const ImFont* font = imgui_fonts::get(subtitles_font_name_, subtitles_font_size_);
     if (!font) { return; }
 
-    const float line_dist = font_size_*subtitle_line_dist_;
+    const float line_dist = subtitles_line_dist_;
     const float x_pos = render_geometry().size.width() / 2;
-    const float lowest_y = subtitle_relative_ypos_* render_geometry().size.height();
+    const float lowest_y = subtitles_relative_ypos_* render_geometry().size.height();
     const float max_width = render_geometry().size.width();
     const size_t lines_count = current_subtitle_frame_.lines_count();
     const size_t max_line_index = lines_count -1;
     for (size_t sub_index = 0; sub_index < lines_count; ++sub_index) {
         const std::string& line = current_subtitle_frame_.lines[sub_index];
         auto& geom = subtitle_render_geometries_[sub_index];
-        geom.top_left.y(lowest_y - (max_line_index - sub_index)*(font_size_+line_dist));
+        geom.top_left.y(lowest_y - (max_line_index - sub_index)*(subtitles_font_size_+line_dist));
         geom.top_left.x(x_pos);
 
         auto render_size = font->CalcTextSizeA(font->FontSize, max_width, 0, line.data(), line.data() + line.size());
@@ -111,6 +111,14 @@ void render_platform::calc_subtitle_geometry()
         ///        render_size.y = render_size.y*1.1;
         geom.size = {render_size.x, render_size.y};
     }
+}
+
+void render_platform::calc_controls_geometry()
+{
+    const float x_pos = render_geometry().size.width() / 2;
+    const float y_pos = controls_relative_ypos_* render_geometry().size.height();
+    controls_render_geometry_.size = render_geometry().size*0.9;
+    controls_render_geometry_.top_left = {x_pos, y_pos};
 }
 
 SDL_Rect render_platform::to_sdl_rect(render_geometry_t geom)
@@ -149,9 +157,10 @@ bool render_platform::do_render_video_frame(const cpaf::video::av_frame& frame)
     return true;
 }
 
-void render_platform::on_subtitle_changed()
+void render_platform::on_render_geometry_changed()
 {
     calc_subtitle_geometry();
+    calc_controls_geometry();
 }
 
 void render_platform::do_render_subtitle()
@@ -159,14 +168,14 @@ void render_platform::do_render_subtitle()
     if ( !(current_subtitle_frame_.should_show() && show_subtitles_) ) {
         return;
     }
-    ImFont* font = imgui_fonts::get(font_name_, font_size_);
+    ImFont* font = imgui_fonts::get(subtitles_font_name_, subtitles_font_size_);
     if (!font) { return; }
 
 
-    ImGui::PushStyleColor(ImGuiCol_Border, reinterpret_cast<const ImVec4&>(subtitle_bg_color_));
-    ImGui::PushStyleColor(ImGuiCol_WindowBg, reinterpret_cast<const ImVec4&>(subtitle_bg_color_));
+    ImGui::PushStyleColor(ImGuiCol_Border, reinterpret_cast<const ImVec4&>(subtitles_bg_color_));
+    ImGui::PushStyleColor(ImGuiCol_WindowBg, reinterpret_cast<const ImVec4&>(subtitles_bg_color_));
     ImGui::PushFont(font);
-    ImGui::PushStyleColor(ImGuiCol_Text, reinterpret_cast<const ImVec4&>(subtitle_text_color_));
+    ImGui::PushStyleColor(ImGuiCol_Text, reinterpret_cast<const ImVec4&>(subtitles_text_color_));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(4, 4)); // Just something smaller than what we would realistictly use as font size!
 
     for (size_t sub_index = current_subtitle_frame_.lines_count(); sub_index > 0; ) {
@@ -189,6 +198,44 @@ void render_platform::do_render_subtitle()
     ImGui::PopFont();
     ImGui::PopStyleColor();
     ImGui::PopStyleColor();
+}
+
+void render_platform::do_render_controls()
+{
+    if ( !show_controls_ ) {
+        return;
+    }
+    ImFont* font = imgui_fonts::get(controls_font_name_, controls_font_size_);
+    if (!font) { return; }
+
+    static int counter = 0;
+
+    ImGui::PushStyleColor(ImGuiCol_Border, reinterpret_cast<const ImVec4&>(controls_bg_color_));
+    ImGui::PushStyleColor(ImGuiCol_WindowBg, reinterpret_cast<const ImVec4&>(controls_bg_color_));
+    ImGui::PushFont(font);
+    ImGui::PushStyleColor(ImGuiCol_Text, reinterpret_cast<const ImVec4&>(controls_text_color_));
+    // ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(4, 4)); // Just something smaller than what we would realistictly use as font size!
+
+
+   // float spacing = ImGui::GetStyle().ItemInnerSpacing.x;
+   const string window_name = "controls";
+   ImGui::Begin(window_name.c_str(), &show_controls_, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
+   ImGui::PushButtonRepeat(true);
+   if (ImGui::ArrowButton("##left", ImGuiDir_Left)) { counter--; }
+   // ImGui::SameLine(0.0f, spacing);
+   // if (ImGui::ArrowButton("##right", ImGuiDir_Right)) { counter++; }
+   ImGui::PopButtonRepeat();
+   // ImGui::SameLine();
+   // ImGui::Text("%d", counter);
+   ImGui::End();
+
+    // ImGui::PopStyleVar();
+    ImGui::PopStyleColor();
+    ImGui::PopFont();
+    ImGui::PopStyleColor();
+    ImGui::PopStyleColor();
+
+
 }
 
 } //END namespace cpaf::gui::video
