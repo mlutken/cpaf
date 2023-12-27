@@ -18,9 +18,9 @@ public:
     static constexpr float dpi_base = 72;
     static const float platform_scale_factor;
 
-    static uint32_t to_pixels_display       (float size_in_points, int32_t display_index);
-    static uint32_t to_pixels               (float size_in_points, const system_window& window);
-    static uint32_t to_pixels               (float size_in_points, float dpi);
+    static int32_t to_pixels_display       (float size_in_points, int32_t display_index);
+    static int32_t to_pixels               (float size_in_points, const system_window* window_ptr);
+    static int32_t to_pixels               (float size_in_points, float dpi);
 
     enum class mode_t {points, relative};
     static font_size create_for_display (float size_in_points, int32_t display_index);

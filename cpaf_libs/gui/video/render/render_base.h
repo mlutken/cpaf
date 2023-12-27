@@ -45,7 +45,7 @@ public:
 
     void                        init                        (const system_window& win,
                                                              const cpaf::video::surface_dimensions_t& dimensions );
-    void                        init                        (std::shared_ptr<cpaf::gui::system_render> sys_renderer,
+    void                        init_only_for_old_playground(std::shared_ptr<cpaf::gui::system_render> sys_renderer,
                                                              const cpaf::video::surface_dimensions_t& dimensions );
     void                        ff_pixel_format_set         (AVPixelFormat pf)              { ff_pixel_format_ = pf;        }
     AVPixelFormat               ff_pixel_format             () const                        { return ff_pixel_format_;      }
@@ -71,21 +71,22 @@ protected:
     std::string                             subtitles_font_name_    {"manrope"};
     color                                   subtitles_text_color_   {1,1,1,1};
     color                                   subtitles_bg_color_     {0,0,0,1};
-    uint16_t                                subtitles_font_size_points_    {50};
+    uint16_t                                subtitles_font_size_points_ {16};
     uint16_t                                subtitles_create_dist_  {3}; // Create a new subtitle if dist in pixels is greater then this
-    float                                   subtitles_relative_ypos_{0.92};
+    float                                   subtitles_relative_ypos_{0.95};
     float                                   subtitles_line_dist_    {0.25};
     bool                                    show_subtitles_         {true};
 
     std::string                             controls_font_name_     {"manrope"};
     color                                   controls_text_color_    {1,1,1,1};
     color                                   controls_bg_color_      {0,0,0,1};
-    uint16_t                                controls_font_size_     {96};
+    uint16_t                                controls_font_size_points_{72};
     float                                   controls_relative_ypos_ {0.9};
     float                                   controls_btns_rel_size_ {0.1};
     bool                                    show_controls_          {true};
 
     cpaf::video::subtitle_frame             current_subtitle_frame_ {};
+    const system_window*                    main_window_ptr_        = nullptr;
 private:
     cpaf::video::av_format_context*         format_context_ptr_     = nullptr;
     cpaf::video::av_codec_context*          video_codec_ctx_ptr_    = nullptr;

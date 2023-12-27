@@ -4,17 +4,18 @@
 
 namespace cpaf::gui {
 
-uint32_t font_size::to_pixels_display(float size_in_points, int32_t display_index)
+int32_t font_size::to_pixels_display(float size_in_points, int32_t display_index)
 {
     return to_pixels(size_in_points, system::instance().dpi(display_index));
 }
 
-uint32_t font_size::to_pixels(float size_in_points, const system_window& window)
+int32_t font_size::to_pixels(float size_in_points, const system_window* window_ptr)
 {
-    return to_pixels_display(size_in_points, window.display_index());
+    const int32_t display_index = window_ptr ? window_ptr->display_index() : 0;
+    return to_pixels_display(size_in_points, display_index);
 }
 
-uint32_t font_size::to_pixels(float size_in_points, float dpi)
+int32_t font_size::to_pixels(float size_in_points, float dpi)
 {
     return size_in_points*(dpi/dpi_base)*font_size::platform_scale_factor;
 }

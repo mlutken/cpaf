@@ -206,8 +206,8 @@ void app_platform::initialize()
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_DockingEnable |
                       ImGuiConfigFlags_ViewportsEnable;
 
-//    imgui_fonts::instance().add(default_font(), {8,11,14,18,22,28,36,48,96});
-//    imgui_fonts::instance().set_default(default_font(), 18);
+////    imgui_fonts::instance().add(default_font(), {8,11,14,18,22,28,36,48,96});
+////    imgui_fonts::instance().set_default(default_font(), 18);
 
     // Setup Platform/Renderer backends
     ImGui_ImplSDL2_InitForSDLRenderer(main_window().native_window<SDL_Window>(), main_window().native_renderer<SDL_Renderer>());

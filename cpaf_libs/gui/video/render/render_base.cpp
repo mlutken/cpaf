@@ -41,10 +41,11 @@ void render_base::subtitle_font_set(std::string font_name, uint16_t font_size_po
 
 void render_base::init(const system_window& win, const cpaf::video::surface_dimensions_t& dimensions)
 {
+    main_window_ptr_ = &win;
     do_init(win, dimensions);
 }
 
-void render_base::init(std::shared_ptr<cpaf::gui::system_render> sys_renderer, const cpaf::video::surface_dimensions_t& dimensions)
+void render_base::init_only_for_old_playground(std::shared_ptr<cpaf::gui::system_render> sys_renderer, const cpaf::video::surface_dimensions_t& dimensions)
 {
     do_init(sys_renderer, dimensions);
 }

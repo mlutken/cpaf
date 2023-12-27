@@ -124,16 +124,23 @@ ImFont* imgui_fonts::find_create_closest(const string& font_name, int32_t size_p
         return it_size->second;
     }
 
+    ImFont* closest_size_font_ptr = nullptr;
+    int32_t closest_distance = size_pixels;
     // Look for a close enough match (create new only if more than create_dist_pixels away)
     for (const auto& [size, font_ptr] : size_map) {
         const int32_t dist_in_pixels = std::abs(static_cast<int32_t>(size) - static_cast<int32_t>(size_pixels));
         if ( dist_in_pixels <= create_dist_pixels) {
             return font_ptr;
         }
+        if (dist_in_pixels < closest_distance) {
+            closest_distance = dist_in_pixels;
+            closest_size_font_ptr = font_ptr;
+        }
     }
 
     // Create new as we are too far from
-    return add(font_name, static_cast<uint32_t>(size_pixels));
+    add(font_name, static_cast<uint32_t>(size_pixels));
+    return closest_size_font_ptr;
 }
 
 
