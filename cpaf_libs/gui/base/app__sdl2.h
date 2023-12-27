@@ -31,6 +31,8 @@ private:
     size_2d                         do_platform_main_window_size        () const override;
     system_window&                  do_main_window                      () override;
     std::shared_ptr<system_window>  do_main_window_shared               () const override;
+    void                            do_add_fonts                        (const std::string& font_name, const std::vector<uint32_t>& sizes_in_points) override;
+    void                            do_set_default_font                 (const std::string& font_name, uint32_t size_points) override;
 
     std::unique_ptr<system_window>  do_create_system_window   (size_2d size, std::string_view title) const override;
 
@@ -43,7 +45,6 @@ private:
 
     SDL_Window*                     main_window_        {nullptr};
     SDL_Renderer*                   main_renderer_      {nullptr};
-
 
     bool                            m_show_some_panel   {true};
     bool                            m_show_debug_panel  {false};

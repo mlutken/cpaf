@@ -25,6 +25,18 @@ int32_t system_platform::do_init()
     return retval;
 }
 
+int32_t system_platform::do_display_count() const
+{
+    return SDL_GetNumVideoDisplays();
+}
+
+float system_platform::do_dpi(int32_t display_index) const
+{
+    float dpi = 0;
+    SDL_GetDisplayDPI(display_index, nullptr, &dpi, nullptr);
+    return dpi;
+}
+
 
 // ------------------------
 // --- PRIVATE: Helpers ---

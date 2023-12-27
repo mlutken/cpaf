@@ -18,6 +18,7 @@ public:
     std::string                     dbg_characteristics         () const;
     size_2d                         get_size                    () const { return do_get_size(); }
     std::string                     get_title                   () const { return do_get_title(); }
+    int32_t                         display_index               () const { return do_display_index(); }
 
     system_render&                  renderer                    ()       { return do_renderer(); }
     std::shared_ptr<system_render>  renderer_shared             () const { return do_renderer_shared(); }
@@ -33,6 +34,7 @@ protected:
 private:
     virtual size_2d                         do_get_size                 () const = 0;
     virtual std::string                     do_get_title                () const = 0;
+    virtual int32_t                         do_display_index            () const = 0;
     virtual void*                           do_get_native_window        () = 0;
     virtual void*                           do_get_native_renderer      () = 0;
     virtual system_render&                  do_renderer                 () = 0;

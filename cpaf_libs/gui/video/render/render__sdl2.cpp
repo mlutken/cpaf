@@ -91,7 +91,10 @@ void render_platform::calc_subtitle_geometry()
     }
 ///    font_size_ = 28; // FIXMENM
 ///    subtitle_bg_color_.w() = 0; // FIXMENM
-    const ImFont* font = imgui_fonts::get(subtitles_font_name_, subtitles_font_size_);
+
+//    const int32_t font_size_pixels = font_size::to_pixels(subtitles_font_size_points_, ;
+    const int32_t font_size_pixels = subtitles_font_size_points_;
+    const ImFont* font = imgui_fonts::instance().get(subtitles_font_name_, font_size_pixels, subtitles_create_dist_);
     if (!font) { return; }
 
     const float line_dist = subtitles_line_dist_;
@@ -103,7 +106,7 @@ void render_platform::calc_subtitle_geometry()
     for (size_t sub_index = 0; sub_index < lines_count; ++sub_index) {
         const std::string& line = current_subtitle_frame_.lines[sub_index];
         auto& geom = subtitle_render_geometries_[sub_index];
-        geom.top_left.y(lowest_y - (max_line_index - sub_index)*(subtitles_font_size_+line_dist));
+        geom.top_left.y(lowest_y - (max_line_index - sub_index)*(subtitles_font_size_points_+line_dist));
         geom.top_left.x(x_pos);
 
         auto render_size = font->CalcTextSizeA(font->FontSize, max_width, 0, line.data(), line.data() + line.size());
@@ -168,7 +171,7 @@ void render_platform::do_render_subtitle()
     if ( !(current_subtitle_frame_.should_show() && show_subtitles_) ) {
         return;
     }
-    ImFont* font = imgui_fonts::get(subtitles_font_name_, subtitles_font_size_);
+    ImFont* font = imgui_fonts::instance().get(subtitles_font_name_, subtitles_font_size_points_, subtitles_create_dist_);
     if (!font) { return; }
 
 
@@ -205,7 +208,7 @@ void render_platform::do_render_controls()
     if ( !show_controls_ ) {
         return;
     }
-    ImFont* font = imgui_fonts::get(controls_font_name_, controls_font_size_);
+    ImFont* font = imgui_fonts::instance().get(controls_font_name_, controls_font_size_, subtitles_create_dist_);
     if (!font) { return; }
 
     static int counter = 0;

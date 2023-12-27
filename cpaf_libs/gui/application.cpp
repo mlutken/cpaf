@@ -59,7 +59,7 @@ exit_status_t application::run() {
   const std::string font_path{resources::font_path("Manrope.ttf").generic_string()};
 
 //  io.Fonts->AddFontFromFileTTF("/home/ml/code/crawler/cpaf/cpaf_libs/gui/assets/fonts/Manrope.ttf", font_size);
-  imgui_fonts::add("manrope", font_size);
+  imgui_fonts::instance().add("manrope", font_size);
 
   dpi_handler::set_global_font_scaling(&io);
 

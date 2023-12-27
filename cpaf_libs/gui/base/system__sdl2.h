@@ -18,6 +18,8 @@ public:
 private:
 	// --- Platform overrides ---
     int32_t			do_init						() override;
+    int32_t         do_display_count			() const override;
+    float			do_dpi						(int32_t display_index) const override;
 
     // --- PRIVATE: Helpers  ---
 };

@@ -9,6 +9,7 @@
 
 #include <cpaf_libs/gui/system_window.h>
 #include <cpaf_libs/gui/base/system_window__sdl2.h>
+#include <cpaf_libs/gui/fonts/font_size.h>
 #include <cpaf_libs/gui/assets/fonts/imgui_fonts.h>
 
 using namespace std;
@@ -111,6 +112,7 @@ void app_platform::do_platform_frame_update()
 void app_platform::do_platform_post_frame_update()
 {
     ImGui::Render();
+    /// imgui_fonts::instance().add_pending_requested_fonts(); // Hmm crashes for some reason
     // ImGui::UpdatePlatformWindows();
     // ImGui::RenderPlatformWindowsDefault();
     // SDL_SetRenderDrawColor(main_window().native_renderer<SDL_Renderer>(), 100, 100, 100, 255);
@@ -134,6 +136,20 @@ system_window& app_platform::do_main_window()
 std::shared_ptr<system_window> app_platform::do_main_window_shared() const
 {
     return main_window_ptr_;
+}
+
+void app_platform::do_add_fonts(const std::string& font_name, const std::vector<uint32_t>& sizes_in_points)
+{
+    for (auto size_points: sizes_in_points) {
+        const auto size_pixels = font_size::to_pixels_display(size_points, main_window().display_index());
+        imgui_fonts::instance().add(font_name, size_pixels);
+    }
+}
+
+void app_platform::do_set_default_font(const std::string& font_name, uint32_t size_points)
+{
+    const auto size_pixels = font_size::to_pixels_display(size_points, main_window().display_index());
+    imgui_fonts::instance().set_default(font_name, size_pixels);
 }
 
 std::unique_ptr<system_window> app_platform::do_create_system_window(size_2d size, std::string_view title) const
@@ -190,8 +206,8 @@ void app_platform::initialize()
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_DockingEnable |
                       ImGuiConfigFlags_ViewportsEnable;
 
-    imgui_fonts::add(default_font(), {8,11,14,18,22,28,36,48,96});
-    imgui_fonts::set_default(default_font(), 18);
+//    imgui_fonts::instance().add(default_font(), {8,11,14,18,22,28,36,48,96});
+//    imgui_fonts::instance().set_default(default_font(), 18);
 
     // Setup Platform/Renderer backends
     ImGui_ImplSDL2_InitForSDLRenderer(main_window().native_window<SDL_Window>(), main_window().native_renderer<SDL_Renderer>());

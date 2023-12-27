@@ -128,6 +128,7 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/events/events__${CPAF_GUI_SYSTEM_NAME}.cpp
 
     ${CMAKE_CURRENT_LIST_DIR}/fonts/font_size.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/fonts/font_size__${CPAF_PLATFORM_TYPE_NAME}.cpp
 
     ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/pipeline_threads.cpp
     ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/audio_render_thread.cpp

@@ -61,6 +61,11 @@ std::string system_window_platform::do_get_title() const
     return "Get Title FIXMENM TODO";
 }
 
+int32_t system_window_platform::do_display_index() const
+{
+    return SDL_GetWindowDisplayIndex(sdl_window_);
+}
+
 void* system_window_platform::do_get_native_window()
 {
     return sdl_window_;

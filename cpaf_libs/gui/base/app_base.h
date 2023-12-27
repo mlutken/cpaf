@@ -29,23 +29,25 @@ public:
     size_2d                         main_window_size            () const    { return do_platform_main_window_size(); }
     system_window&                  main_window                 ()          { return do_main_window(); }
     std::shared_ptr<system_window>  main_window_shared          () const    { return do_main_window_shared(); }
+    void                            add_fonts                   (const std::string& font_name, const std::vector<uint32_t>& sizes_in_points);
+    void                            set_default_font            (const std::string& font_name, uint32_t size_points);
 
     std::unique_ptr<system_window_base>  create_system_window   (size_2d size, std::string_view title) const {
         fmt::println("FIXMENM create_system_window () ");
         return do_create_system_window(size, title);
     };
 
-    void                    stop                ()                                  { is_running_ = false;     }
-    void                    app_name_set        (const std::string_view name)       { app_name_    = name;     }
-    void                    company_name_set    (const std::string_view name)       { company_name_= name;     }
-    void                    window_title_set    (const std::string_view title)      { window_title_= title;    }
+    void                        stop                ()                                  { is_running_ = false;     }
+    void                        app_name_set        (const std::string_view name)       { app_name_    = name;     }
+    void                        company_name_set    (const std::string_view name)       { company_name_= name;     }
+    void                        window_title_set    (const std::string_view title)      { window_title_= title;    }
     // void                    initial_window_set  (size_2d size, display::window_state wnd_state);
 
-    const std::string_view      app_name            () const    { return app_name_;        }
-    const std::string_view      company_name        () const    { return company_name_;    }
-    const std::string_view      window_title        () const    { return window_title_;    }
+    const std::string&          app_name            () const    { return app_name_;        }
+    const std::string&          company_name        () const    { return company_name_;    }
+    const std::string&          window_title        () const    { return window_title_;    }
     std::filesystem::path       config_path         () const;
-    const std::string_view      default_font        () const    { return default_font_;    }
+    const std::string&          default_font        () const    { return default_font_;    }
     float                       base_font_size      () const    { return base_font_size_;  }
 
 protected:
@@ -78,6 +80,8 @@ private:
     virtual system_window&                  do_main_window                  () = 0;
     virtual std::shared_ptr<system_window>  do_main_window_shared           () const = 0;
 
+    virtual void                            do_add_fonts                    (const std::string& font_name, const std::vector<uint32_t>& sizes_in_points) = 0;
+    virtual void                            do_set_default_font             (const std::string& font_name, uint32_t size_points) = 0;
 
     virtual std::unique_ptr<system_window>  do_create_system_window        (size_2d size, std::string_view title) const = 0;
 

@@ -7,6 +7,7 @@
 #include <cpaf_libs/video/subtitle_frame.h>
 #include <cpaf_libs/gui/gui_types.h>
 #include <cpaf_libs/gui/color.h>
+#include <cpaf_libs/gui/fonts/font_size.h>
 
 
 namespace cpaf::gui {
@@ -40,7 +41,7 @@ public:
     void                        video_codec_ctx_set         (cpaf::video::av_codec_context* ctx);
     void                        video_codec_ctx_set         (cpaf::video::av_codec_context& ctx);
     void                        subtitle_color_set          (const color& text_color, const color& bg_color);
-    void                        subtitle_font_set           (std::string font_name, uint16_t font_size);
+    void                        subtitle_font_set           (std::string font_name, uint16_t font_size_points);
 
     void                        init                        (const system_window& win,
                                                              const cpaf::video::surface_dimensions_t& dimensions );
@@ -70,7 +71,8 @@ protected:
     std::string                             subtitles_font_name_    {"manrope"};
     color                                   subtitles_text_color_   {1,1,1,1};
     color                                   subtitles_bg_color_     {0,0,0,1};
-    uint16_t                                subtitles_font_size_    {28};
+    uint16_t                                subtitles_font_size_points_    {50};
+    uint16_t                                subtitles_create_dist_  {3}; // Create a new subtitle if dist in pixels is greater then this
     float                                   subtitles_relative_ypos_{0.92};
     float                                   subtitles_line_dist_    {0.25};
     bool                                    show_subtitles_         {true};

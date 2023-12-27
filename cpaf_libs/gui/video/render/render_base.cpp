@@ -32,10 +32,10 @@ void render_base::subtitle_color_set(const color& text_color, const color& bg_co
     subtitles_bg_color_ = bg_color;
 }
 
-void render_base::subtitle_font_set(std::string font_name, uint16_t font_size)
+void render_base::subtitle_font_set(std::string font_name, uint16_t font_size_points)
 {
     subtitles_font_name_ = std::move(font_name);
-    subtitles_font_size_ = font_size;
+    subtitles_font_size_points_ = font_size_points;
     on_render_geometry_changed();
 }
 

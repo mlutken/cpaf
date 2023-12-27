@@ -25,6 +25,16 @@ exit_status_t app_base::run()
     return exit_status_;
 }
 
+void app_base::add_fonts(const std::string& font_name, const std::vector<uint32_t>& sizes_in_points)
+{
+    do_add_fonts(font_name, sizes_in_points);
+}
+
+void app_base::set_default_font(const std::string& font_name, uint32_t size_points)
+{
+    do_set_default_font(font_name, size_points);
+}
+
 std::filesystem::path app_base::config_path() const
 {
     if (!config_path_.empty()) { return config_path_; }
