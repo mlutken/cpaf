@@ -114,6 +114,7 @@ public:
     // ---------------------------------------------
     // --- Interfacing to surrounding app/system ---
     // ---------------------------------------------
+    const system_window*        main_window_ptr         () const { return main_window_ptr_; }
     audio_play_callback_t       audio_callback_get      ();
     void                        render                  ();
 
@@ -140,6 +141,8 @@ public:
     // --- UI ---
     // ----------
     void                        set_controls            (std::unique_ptr<video::controls> controls);
+    bool                        show_controls           () const                        { return show_controls_;    }
+    void                        show_controls_set       (bool show)                     { show_controls_ = show;    }
 
 
 
@@ -163,31 +166,34 @@ private:
     // --- PRIVATE: Member vars ---
     // ----------------------------
     using source_streams_array_t = std::array<std::unique_ptr<play_stream>, cpaf::video::stream_type_index_size()>;
-    play_stream                                                         primary_source_stream_;
-    av_samples_queue                                                    audio_samples_queue_;
-    source_streams_array_t                                              source_streams_                 = {nullptr, nullptr, nullptr, nullptr, nullptr};
-    surface_dimensions_t                                                video_dst_dimensions_requested_ = {cpaf::video::surface_dimension_auto,cpaf::video::surface_dimension_auto};
-    int32_t                                                             video_scaler_flags_             = SWS_BILINEAR;
-    int32_t                                                             video_scaler_align_             = 32;
-    AVPixelFormat                                                       ff_dst_pixel_format_            = AV_PIX_FMT_YUV420P;
-    std::atomic_bool                                                    threads_running_                = true;
-    std::atomic_bool                                                    threads_paused_                 = false;
-    size_t                                                              video_stream_index_             = cpaf::video::no_stream_index;
-    size_t                                                              audio_stream_index_             = cpaf::video::no_stream_index;
-    size_t                                                              subtitle_stream_index_          = cpaf::video::no_stream_index;
+    const system_window*                            main_window_ptr_                = nullptr;
+    play_stream                                     primary_source_stream_;
+    av_samples_queue                                audio_samples_queue_;
+    source_streams_array_t                          source_streams_                 = {nullptr, nullptr, nullptr, nullptr, nullptr};
+    surface_dimensions_t                            video_dst_dimensions_requested_ = {cpaf::video::surface_dimension_auto,cpaf::video::surface_dimension_auto};
+    int32_t                                         video_scaler_flags_             = SWS_BILINEAR;
+    int32_t                                         video_scaler_align_             = 32;
+    AVPixelFormat                                   ff_dst_pixel_format_            = AV_PIX_FMT_YUV420P;
+    std::atomic_bool                                threads_running_                = true;
+    std::atomic_bool                                threads_paused_                 = false;
+    size_t                                          video_stream_index_             = cpaf::video::no_stream_index;
+    size_t                                          audio_stream_index_             = cpaf::video::no_stream_index;
+    size_t                                          subtitle_stream_index_          = cpaf::video::no_stream_index;
 
-    cpaf::video::av_frame                                               next_video_frame_;
-    mutable cpaf::video::av_codec_context                               video_codec_ctx_;
-    mutable cpaf::video::av_codec_context                               audio_codec_ctx_;
-    mutable cpaf::video::av_codec_context                               subtitle_codec_ctx_;
-    cpaf::video::audio_resampler                                        audio_resampler_;
-    pipeline_threads                                                    media_pipeline_threads_;
+    cpaf::video::av_frame                           next_video_frame_;
+    mutable cpaf::video::av_codec_context           video_codec_ctx_;
+    mutable cpaf::video::av_codec_context           audio_codec_ctx_;
+    mutable cpaf::video::av_codec_context           subtitle_codec_ctx_;
+    cpaf::video::audio_resampler                    audio_resampler_;
+    pipeline_threads                                media_pipeline_threads_;
 
-    std::string                                                         primary_resource_path_;
-    mutable std::shared_ptr<torrent::torrents>                          torrents_;
-    media_stream_time                                                   cur_media_time_;
-    std::unique_ptr<video::render>                                      video_render_;
-    std::unique_ptr<video::controls>                                    video_controls_;
+    std::string                                     primary_resource_path_;
+    mutable std::shared_ptr<torrent::torrents>      torrents_;
+    media_stream_time                               cur_media_time_;
+    std::unique_ptr<video::render>                  video_render_;
+    std::unique_ptr<video::controls>                video_controls_;
+    bool                                            show_controls_                  = true;
+
 };
 
 } //END namespace cpaf::gui::video

@@ -58,8 +58,6 @@ public:
 
     bool                        show_subtitles              () const                        { return show_subtitles_;   }
     void                        show_subtitles_set          (bool show)                     { show_subtitles_ = show;   }
-    bool                        show_controls               () const                        { return show_controls_;    }
-    void                        show_controls_set           (bool show)                     { show_controls_ = show;    }
 
     /// @todo Currently unused, See render_geometry_set()
     void                        render_dimensions_set       (const cpaf::video::surface_dimensions_t& dimensions ) { return do_render_dimensions_set(dimensions);  }
@@ -88,7 +86,6 @@ protected:
     uint16_t                                controls_font_size_points_{72};
     float                                   controls_relative_ypos_ {0.9};
     float                                   controls_btns_rel_size_ {0.1};
-    bool                                    show_controls_          {true};
 
     cpaf::video::subtitle_frame             current_subtitle_frame_ {};
     const system_window*                    main_window_ptr_        = nullptr;

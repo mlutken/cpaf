@@ -12,6 +12,7 @@ void controls::render()
     if (!visible()) {
         return;
     }
+    do_render();
 
 }
 

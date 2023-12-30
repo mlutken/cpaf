@@ -22,6 +22,7 @@ struct imgui_fonts {
     bool        add                 (const std::string& font_name, const std::vector<int32_t>& size_pixels);
     void        set_default         (const std::string& font_name, int32_t size_pixels);
 
+    ImFont*     get                 (const std::string& font_name, int32_t size_pixels);
     ImFont*     get                 (const std::string& font_name, int32_t size_pixels, int32_t create_dist_pixels);
 
     ImFont*     find                (const std::string& font_name, int32_t size_pixels) const;

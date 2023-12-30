@@ -23,6 +23,7 @@ player::~player()
 
 void player::init(const system_window& main_window)
 {
+    main_window_ptr_ = &main_window;
     if (has_video_stream()) {
         init_video(main_window);
     }
@@ -280,6 +281,9 @@ void player::render()
 {
     if (has_video_stream()) {
         video_frame_update(next_video_frame_);
+    }
+    if (show_controls_ && video_controls_) {
+        video_controls_->render();
     }
     cur_media_time().release_after_reset();
 

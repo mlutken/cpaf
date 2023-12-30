@@ -1,4 +1,5 @@
 add_subdirectory(luepp)
+add_subdirectory(imguipp)
 if ( NOT (CMAKE_SYSTEM_NAME MATCHES "Emscripten") )
 
     # --- WebCC ---

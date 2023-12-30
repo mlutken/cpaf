@@ -70,6 +70,11 @@ void imgui_fonts::set_default(const string& font_name, int32_t size_pixels)
     ImGui::GetIO().FontDefault = imgui_fonts::find(font_name, size_pixels);
 }
 
+ImFont* imgui_fonts::get(const std::string& font_name, int32_t size_pixels)
+{
+    return find_create_closest(font_name, size_pixels, 0);
+}
+
 ImFont* imgui_fonts::get(const std::string& font_name, int32_t size_pixels, int32_t create_dist_pixels)
 {
     return find_create_closest(font_name, size_pixels, create_dist_pixels);

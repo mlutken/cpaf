@@ -1,6 +1,7 @@
 #pragma once
 #include <chrono>
 #include <memory>
+#include <cpaf_libs/gui/color.h>
 
 namespace cpaf::gui::video {
 
@@ -19,12 +20,19 @@ public:
 
 protected:
     player&         player_;
+    std::string     font_name_                  {"manrope"};
+    color           text_color_                 {1,1,1,1};
+    color           bg_color_                   {0,0,0,1};
+    uint16_t        fwd_back_font_size_points_  {38};
+    float           relative_ypos_              {0.9};
+    float           btns_rel_size_              {0.1};
+
 
 private:
 
     virtual void    do_render() = 0;
 
-    bool            visible_ = false;
+    bool            visible_ = true;
 
 
 };

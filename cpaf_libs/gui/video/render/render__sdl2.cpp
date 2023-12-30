@@ -206,7 +206,9 @@ void render_platform::do_render_subtitle()
 
 void render_platform::do_render_controls()
 {
-    if ( !show_controls_ ) {
+    return;
+    bool show_controls = true;
+    if ( !show_controls ) {
         return;
     }
     const int32_t font_size_pixels = font_size::to_pixels(controls_font_size_points_, main_window_ptr_);
@@ -224,7 +226,7 @@ void render_platform::do_render_controls()
 
    // float spacing = ImGui::GetStyle().ItemInnerSpacing.x;
    const string window_name = "controls";
-   ImGui::Begin(window_name.c_str(), &show_controls_, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
+   ImGui::Begin(window_name.c_str(), &show_controls, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
    ImGui::PushButtonRepeat(true);
    if (ImGui::ArrowButton("##left", ImGuiDir_Left)) { counter--; }
    // ImGui::SameLine(0.0f, spacing);
