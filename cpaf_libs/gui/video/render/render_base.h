@@ -56,6 +56,11 @@ public:
     void                        render_subtitle             (const cpaf::video::subtitle_frame& subtitle);
     void                        render_controls             ()                                 { do_render_controls();  }
 
+    bool                        show_subtitles              () const                        { return show_subtitles_;   }
+    void                        show_subtitles_set          (bool show)                     { show_subtitles_ = show;   }
+    bool                        show_controls               () const                        { return show_controls_;    }
+    void                        show_controls_set           (bool show)                     { show_controls_ = show;    }
+
     /// @todo Currently unused, See render_geometry_set()
     void                        render_dimensions_set       (const cpaf::video::surface_dimensions_t& dimensions ) { return do_render_dimensions_set(dimensions);  }
 

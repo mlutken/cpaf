@@ -86,7 +86,7 @@ void render_platform::ensure_valid_render_texture(const cpaf::video::surface_dim
 
 void render_platform::calc_subtitle_geometry()
 {
-    if (!current_subtitle_frame_.should_show()) {
+    if ( !(current_subtitle_frame_.should_show() && show_subtitles_) ) {
         return;
     }
 ///    font_size_ = 28; // FIXMENM

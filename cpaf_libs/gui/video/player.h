@@ -3,6 +3,7 @@
 #include <array>
 #include <memory>
 #include <cpaf_libs/audio/cpaf_audio_device_base.h>
+#include <cpaf_libs/gui/gui_types.h>
 #include <cpaf_libs/video/av_util.h>
 #include <cpaf_libs/video/play_stream.h>
 #include <cpaf_libs/video/media_stream_time.h>
@@ -21,6 +22,7 @@ class torrents;
 namespace cpaf::gui::video {
 
 class render;
+class controls;
 
 using play_stream = cpaf::video::play_stream;
 using media_stream_time = cpaf::video::media_stream_time;
@@ -41,6 +43,7 @@ public:
 
     player();
     ~player();
+    void                        init                    (const system_window& main_window);
     void                        init_video              (const system_window& main_window);
     void                        start                   (const std::chrono::microseconds& start_time_pos = std::chrono::microseconds(0));
     void                        terminate               ();
@@ -87,6 +90,7 @@ public:
     surface_dimensions_t        video_src_dimensions    () const;
     surface_dimensions_t        video_dst_dimensions    () const;
     size_t                      video_stream_index		() const;
+    render_geometry_t           render_geometry         () const;
 
     // ---------------------------
     // --- Audio setup/control ---
@@ -111,8 +115,11 @@ public:
     // --- Interfacing to surrounding app/system ---
     // ---------------------------------------------
     audio_play_callback_t       audio_callback_get      ();
-    bool                        video_frame_update      (av_frame& current_frame, cpaf::gui::video::render& video_render);
-    bool                        video_frame_update      (av_frame& current_frame);
+    void                        render                  ();
+
+    // TODO: Make thse two private
+    void                        video_frame_update      (av_frame& current_frame, cpaf::gui::video::render& video_render);
+    void                        video_frame_update      (av_frame& current_frame);
 
     std::shared_ptr<torrent::torrents>   torrents_get   () const;
     void                        torrents_set            (std::shared_ptr<torrent::torrents> tors) { torrents_ = tors; }
@@ -128,6 +135,13 @@ public:
     void                        resume_playback         ();
     void                        toggle_pause_playback   ();
     bool                        playback_paused         () const { return threads_paused_; }
+
+    // ----------
+    // --- UI ---
+    // ----------
+    void                        set_controls            (std::unique_ptr<video::controls> controls);
+
+
 
     // -----------------------
     // --- Debug functions ---
@@ -162,6 +176,7 @@ private:
     size_t                                                              audio_stream_index_             = cpaf::video::no_stream_index;
     size_t                                                              subtitle_stream_index_          = cpaf::video::no_stream_index;
 
+    cpaf::video::av_frame                                               next_video_frame_;
     mutable cpaf::video::av_codec_context                               video_codec_ctx_;
     mutable cpaf::video::av_codec_context                               audio_codec_ctx_;
     mutable cpaf::video::av_codec_context                               subtitle_codec_ctx_;
@@ -172,6 +187,7 @@ private:
     mutable std::shared_ptr<torrent::torrents>                          torrents_;
     media_stream_time                                                   cur_media_time_;
     std::unique_ptr<video::render>                                      video_render_;
+    std::unique_ptr<video::controls>                                    video_controls_;
 };
 
 } //END namespace cpaf::gui::video

@@ -32,12 +32,11 @@ void video_render_thread::terminate()
 
 }
 
-bool video_render_thread::video_frame_update (cpaf::video::av_frame& current_frame, cpaf::gui::video::render& video_render)
+void video_render_thread::video_frame_update(cpaf::video::av_frame& current_frame, cpaf::gui::video::render& video_render)
 {
-    bool ret_val = video_frame_do_render(current_frame, video_render);
+    [[maybe_unused]] bool new_frame_was_read = video_frame_do_render(current_frame, video_render);
 
     debug_video_frame_update(current_frame, video_render);
-    return ret_val;
 }
 
 bool video_render_thread::video_frame_do_render(cpaf::video::av_frame& current_frame, cpaf::gui::video::render& video_render)

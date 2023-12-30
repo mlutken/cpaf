@@ -186,9 +186,9 @@ void pipeline_threads::signal_flush_done()
     audio_resampler_thread_.samples_queue_flush_done();
 }
 
-bool pipeline_threads::video_frame_update(cpaf::video::av_frame& current_frame, gui::video::render& video_render)
+void pipeline_threads::video_frame_update(cpaf::video::av_frame& current_frame, gui::video::render& video_render)
 {
-    return video_render_thread_.video_frame_update(current_frame, video_render);
+    video_render_thread_.video_frame_update(current_frame, video_render);
 }
 
 } //END namespace cpaf::gui::video

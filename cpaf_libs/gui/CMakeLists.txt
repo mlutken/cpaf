@@ -78,6 +78,9 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/video/render/render_base.h
     ${CMAKE_CURRENT_LIST_DIR}/video/render/render__sdl2.h
     ${CMAKE_CURRENT_LIST_DIR}/video/player.h
+    ${CMAKE_CURRENT_LIST_DIR}/video/ui/controls.h
+    ${CMAKE_CURRENT_LIST_DIR}/video/ui/controls_default.h
+
 
     ${CMAKE_CURRENT_LIST_DIR}/application.h
     ${CMAKE_CURRENT_LIST_DIR}/dpi_handler.h
@@ -139,6 +142,8 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/video/render/render_base.cpp
     ${CMAKE_CURRENT_LIST_DIR}/video/render/render__sdl2.cpp
     ${CMAKE_CURRENT_LIST_DIR}/video/player.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/video/ui/controls.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/video/ui/controls_default.cpp
 
     ${CMAKE_CURRENT_LIST_DIR}/application.cpp
     ${CMAKE_CURRENT_LIST_DIR}/${CMAKE_SYSTEM_NAME}/dpi_handler.cpp

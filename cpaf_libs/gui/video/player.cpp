@@ -3,6 +3,7 @@
 #include <cpaf_libs/torrent/torrents.h>
 #include <cpaf_libs/gui/system_window.h>
 #include <cpaf_libs/gui/video/render/render.h>
+#include <cpaf_libs/gui/video/ui/controls_default.h>
 
 using namespace cpaf::video;
 
@@ -12,11 +13,19 @@ player::player()
     : primary_source_stream_([this]() {return torrents_get();}),
       audio_samples_queue_(1000)
 {
+    next_video_frame_ = av_frame::create_alloc();
     current_media_time_set(cur_media_time_);
 }
 
 player::~player()
 {
+}
+
+void player::init(const system_window& main_window)
+{
+    if (has_video_stream()) {
+        init_video(main_window);
+    }
 }
 
 void player::init_video(const system_window& main_window)
@@ -25,6 +34,10 @@ void player::init_video(const system_window& main_window)
     video_render_->video_codec_ctx_set(video_codec_context());
     video_render_->render_geometry_set(render_geometry_t(main_window.get_size()));
 ////    video_render_->render_geometry_set(render_geometry_t({100,100}, main_window.get_size())); // TEST ONLY!
+
+    if (!video_controls_) {
+        set_controls(std::make_unique<video::controls_default>(*this));
+    }
 }
 
 void player::start(const std::chrono::microseconds& start_time_pos)
@@ -190,6 +203,15 @@ size_t player::video_stream_index() const
     return video_stream_index_ != no_stream_index ? video_stream_index_ : source_stream(stream_type_t::video)->first_video_index();
 }
 
+render_geometry_t player::render_geometry() const
+{
+    if (video_render_) {
+        return video_render_->render_geometry();
+    }
+
+    return render_geometry_t();
+}
+
 // ---------------------------
 // --- Audio setup/control ---
 // ---------------------------
@@ -254,14 +276,23 @@ player::audio_play_callback_t player::audio_callback_get()
     return media_pipeline_threads().audio_callback_get();
 }
 
-bool player::video_frame_update(av_frame& current_frame, cpaf::gui::video::render& video_render)
+void player::render()
 {
-    return media_pipeline_threads().video_frame_update(current_frame, video_render);
+    if (has_video_stream()) {
+        video_frame_update(next_video_frame_);
+    }
+    cur_media_time().release_after_reset();
+
 }
 
-bool player::video_frame_update(av_frame& current_frame)
+void player::video_frame_update(av_frame& current_frame, cpaf::gui::video::render& video_render)
 {
-    return video_frame_update(current_frame, *video_render_);
+    media_pipeline_threads().video_frame_update(current_frame, video_render);
+}
+
+void player::video_frame_update(av_frame& current_frame)
+{
+    video_frame_update(current_frame, *video_render_);
 }
 
 std::shared_ptr<torrent::torrents> player::torrents_get() const
@@ -314,6 +345,11 @@ void player::toggle_pause_playback()
     else {
         pause_playback();
     }
+}
+
+void player::set_controls(std::unique_ptr<controls> controls)
+{
+    video_controls_ = std::move(controls);
 }
 
 // -----------------------

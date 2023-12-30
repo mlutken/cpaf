@@ -41,7 +41,7 @@ public:
 
     void                        start                   ();
     void                        terminate               ();
-    bool                        video_frame_update      (cpaf::video::av_frame& current_frame, cpaf::gui::video::render& video_render);
+    void                        video_frame_update      (cpaf::video::av_frame& current_frame, cpaf::gui::video::render& video_render);
 //    bool                        subtitle_frame_update      (cpaf::video::av_frame& current_frame, cpaf::gui::video::render& video_render);
     void                        video_queue_flush_start ()                          { video_queue_flush_in_progress_ = true; }
     void                        video_queue_flush_done  ()                          { video_queue_flush_in_progress_ = false; video_queue_flushed_ = true; }

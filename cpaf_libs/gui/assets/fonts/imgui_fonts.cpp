@@ -25,7 +25,7 @@ imgui_fonts& imgui_fonts::instance()
     return inst;
 }
 
-ImFont* imgui_fonts::add(const string& font_name, uint32_t size_pixels)
+ImFont* imgui_fonts::add(const string& font_name, int32_t size_pixels)
 {
     ImFont* font_ptr = find(font_name, size_pixels);
     if (font_ptr) {
@@ -56,7 +56,7 @@ ImFont* imgui_fonts::add(const string& font_name, uint32_t size_pixels)
     return font_ptr;
 }
 
-bool imgui_fonts::add(const string& font_name, const std::vector<uint32_t>& size_pixels)
+bool imgui_fonts::add(const string& font_name, const std::vector<int32_t>& size_pixels)
 {
     bool ok = false;
     for (const auto size: size_pixels) {
@@ -65,7 +65,7 @@ bool imgui_fonts::add(const string& font_name, const std::vector<uint32_t>& size
     return ok;
 }
 
-void imgui_fonts::set_default(const string& font_name, uint32_t size_pixels)
+void imgui_fonts::set_default(const string& font_name, int32_t size_pixels)
 {
     ImGui::GetIO().FontDefault = imgui_fonts::find(font_name, size_pixels);
 }
@@ -75,7 +75,7 @@ ImFont* imgui_fonts::get(const std::string& font_name, int32_t size_pixels, int3
     return find_create_closest(font_name, size_pixels, create_dist_pixels);
 }
 
-ImFont* imgui_fonts::find(const string& font_name, uint32_t size_pixels) const
+ImFont* imgui_fonts::find(const string& font_name, int32_t size_pixels) const
 {
     const auto it_name = all_fonts_.find(font_name);
     if (it_name == all_fonts_.end()) {
