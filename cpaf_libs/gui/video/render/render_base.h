@@ -54,10 +54,11 @@ public:
 
     bool                        render_video_frame          (const cpaf::video::av_frame& frame)    { return do_render_video_frame(frame);  }
     void                        render_subtitle             (const cpaf::video::subtitle_frame& subtitle);
-    void                        render_controls             ()                                 { do_render_controls();  }
 
     bool                        show_subtitles              () const                        { return show_subtitles_;   }
     void                        show_subtitles_set          (bool show)                     { show_subtitles_ = show;   }
+    bool                        subtitles_has_background    () const                        { return subtitles_has_background_;   }
+    void                        subtitles_has_background_set(bool has_bgr)                  { subtitles_has_background_ = has_bgr;   }
 
     /// @todo Currently unused, See render_geometry_set()
     void                        render_dimensions_set       (const cpaf::video::surface_dimensions_t& dimensions ) { return do_render_dimensions_set(dimensions);  }
@@ -71,31 +72,26 @@ protected:
     cpaf::video::surface_dimensions_t       render_dimensions_;
     pos_2df                                 subtitle_pos                () const;
 
-    std::string                             subtitles_font_name_    {"manrope"};
-    color                                   subtitles_text_color_   {1,1,1,1};
-    color                                   subtitles_bg_color_     {0,0,0,1};
+    std::string                             subtitles_font_name_        {"manrope"};
+    color                                   subtitles_text_color_       {1,1,1,1};
+    color                                   subtitles_bg_color_         {0,0,0,1};
     uint16_t                                subtitles_font_size_points_ {16};
-    uint16_t                                subtitles_create_dist_  {3}; // Create a new subtitle if dist in pixels is greater then this
-    float                                   subtitles_relative_ypos_{0.95};
-    float                                   subtitles_line_dist_    {0.25};
-    bool                                    show_subtitles_         {true};
+    uint16_t                                subtitles_create_dist_      {3}; // Create a new subtitle if dist in pixels is greater then this
+    float                                   subtitles_relative_ypos_    {0.95};
+    float                                   subtitles_line_dist_        {0.25};
+    bool                                    show_subtitles_             {true};
+    bool                                    subtitles_has_background_   {true};
 
-    std::string                             controls_font_name_     {"manrope"};
-    color                                   controls_text_color_    {1,1,1,1};
-    color                                   controls_bg_color_      {0,0,0,1};
-    uint16_t                                controls_font_size_points_{72};
-    float                                   controls_relative_ypos_ {0.9};
-    float                                   controls_btns_rel_size_ {0.1};
 
-    cpaf::video::subtitle_frame             current_subtitle_frame_ {};
-    const system_window*                    main_window_ptr_        = nullptr;
+    cpaf::video::subtitle_frame             current_subtitle_frame_     {};
+    const system_window*                    main_window_ptr_            = nullptr;
 private:
-    cpaf::video::av_format_context*         format_context_ptr_     = nullptr;
-    cpaf::video::av_codec_context*          video_codec_ctx_ptr_    = nullptr;
-    cpaf::video::media_stream_time*         current_media_time_ptr_ = nullptr;
-    AVPixelFormat                           ff_pixel_format_        = AV_PIX_FMT_YUV420P;
-    pos_2df                                 subtitle_relative_pos_  {0.5, 0.9};
-    render_geometry_t                       render_geometry_        {};
+    cpaf::video::av_format_context*         format_context_ptr_         = nullptr;
+    cpaf::video::av_codec_context*          video_codec_ctx_ptr_        = nullptr;
+    cpaf::video::media_stream_time*         current_media_time_ptr_     = nullptr;
+    AVPixelFormat                           ff_pixel_format_            = AV_PIX_FMT_YUV420P;
+    pos_2df                                 subtitle_relative_pos_      {0.5, 0.9};
+    render_geometry_t                       render_geometry_            {};
 
     void                        create_frame_display                ();
 
@@ -103,9 +99,8 @@ private:
     virtual void                do_init                             (std::shared_ptr<cpaf::gui::system_render> sys_renderer, const cpaf::video::surface_dimensions_t& dimensions ) = 0;
     virtual void                do_render_dimensions_set            (const cpaf::video::surface_dimensions_t& dimensions ) = 0;
     virtual bool                do_render_video_frame               (const cpaf::video::av_frame& frame) = 0;
-    virtual void                on_render_geometry_changed                 () = 0;
+    virtual void                on_render_geometry_changed          () = 0;
     virtual void                do_render_subtitle                  () = 0;
-    virtual void                do_render_controls                  () = 0;
 
 };
 

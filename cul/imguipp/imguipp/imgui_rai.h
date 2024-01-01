@@ -7,6 +7,18 @@ namespace ImGui
 {
 class Rai
 {
+public:
+    static Rai Create() { return Rai{}; }
+
+    Rai(Rai&& other) {
+        pushed_types_ = std::move(other.pushed_types_);
+    }
+
+    Rai& operator=(Rai&& other) {
+        pushed_types_ = std::move(other.pushed_types_);
+        return *this;
+    }
+
     Rai() { pushed_types_.reserve(8);   }
     ~Rai()
     {
@@ -15,15 +27,15 @@ class Rai
         }
     }
 
-    Rai&    Font                (ImFont* font)                          { ImGui::PushFont(font) ; return *this; }
-    Rai&    StyleColor          (ImGuiCol idx, ImU32 col)               { ImGui::PushStyleColor(idx, col) ; return *this; }
-    Rai&    StyleColor          (ImGuiCol idx, const ImVec4& col)       { ImGui::PushStyleColor(idx, col) ; return *this; }
-    Rai&    StyleVar            (ImGuiStyleVar idx, float val)          { ImGui::PushStyleVar(idx, val) ; return *this; }
-    Rai&    StyleVar            (ImGuiStyleVar idx, const ImVec2& val)  { ImGui::PushStyleVar(idx, val) ; return *this; }
-    Rai&    AllowKeyboardFocus  (bool allow_keyboard_focus)             { ImGui::PushAllowKeyboardFocus(allow_keyboard_focus) ; return *this; }
-    Rai&    ButtonRepeat        (bool repeat)                           { ImGui::PushButtonRepeat(repeat) ; return *this; }
-    Rai&    ItemWidth           (float item_width)                      { ImGui::PushItemWidth(item_width) ; return *this; }
-    Rai&    TextWrapPos         (float wrap_local_pos_x = 0.0f)         { ImGui::PushTextWrapPos(wrap_local_pos_x) ; return *this; }
+    Rai&    Font                (ImFont* font)                          { ImGui::PushFont(font); pushed_types_.push_back(Stacktype::Font); return *this; }
+    Rai&    StyleColor          (ImGuiCol idx, ImU32 col)               { ImGui::PushStyleColor(idx, col); pushed_types_.push_back(Stacktype::StyleColor); return *this; }
+    Rai&    StyleColor          (ImGuiCol idx, const ImVec4& col)       { ImGui::PushStyleColor(idx, col); pushed_types_.push_back(Stacktype::StyleColor); return *this; }
+    Rai&    StyleVar            (ImGuiStyleVar idx, float val)          { ImGui::PushStyleVar(idx, val); pushed_types_.push_back(Stacktype::StyleVar); return *this; }
+    Rai&    StyleVar            (ImGuiStyleVar idx, const ImVec2& val)  { ImGui::PushStyleVar(idx, val); pushed_types_.push_back(Stacktype::StyleVar); return *this; }
+    Rai&    AllowKeyboardFocus  (bool allow_keyboard_focus)             { ImGui::PushAllowKeyboardFocus(allow_keyboard_focus); pushed_types_.push_back(Stacktype::AllowKeyboardFocus); return *this; }
+    Rai&    ButtonRepeat        (bool repeat)                           { ImGui::PushButtonRepeat(repeat); pushed_types_.push_back(Stacktype::ButtonRepeat); return *this; }
+    Rai&    ItemWidth           (float item_width)                      { ImGui::PushItemWidth(item_width); pushed_types_.push_back(Stacktype::ItemWidth); return *this; }
+    Rai&    TextWrapPos         (float wrap_local_pos_x = 0.0f)         { ImGui::PushTextWrapPos(wrap_local_pos_x); pushed_types_.push_back(Stacktype::TextWrapPos); return *this; }
 
 private:
     enum class Stacktype {

@@ -53,7 +53,6 @@ private:
     bool           do_render_video_frame       (const cpaf::video::av_frame& frame) override;
     void           on_render_geometry_changed         () override;
     void           do_render_subtitle          () override;
-    void           do_render_controls          () override;
 
     std::shared_ptr<system_render>      system_renderer_;
     SDL_Texture*                        sdl_frame_render_texture_   {nullptr};

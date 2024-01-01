@@ -24,6 +24,8 @@ public:
     app_base& operator=(const app_base& other) = delete;
     app_base& operator=(app_base&& other) = delete;
 
+    void                            initial_window_size_set     (size_2d size) {initial_window_size_ = size; }
+
     std::string                     dbg_characteristics         () const;
     exit_status_t                   run                         ();
     size_2d                         main_window_size            () const    { return do_platform_main_window_size(); }

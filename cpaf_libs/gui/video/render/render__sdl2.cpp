@@ -1,6 +1,7 @@
 #include "render__sdl2.h"
 #include <fmt/format.h>
 #include "render.h"
+#include <imguipp/imgui_rai.h>
 #include <cpaf_libs/gui/system_window.h>
 #include <cpaf_libs/gui/system_render.h>
 #include <cpaf_libs/video/av_codec_context.h>
@@ -118,10 +119,10 @@ void render_platform::calc_subtitle_geometry()
 
 void render_platform::calc_controls_geometry()
 {
-    const float x_pos = render_geometry().size.width() / 2;
-    const float y_pos = controls_relative_ypos_* render_geometry().size.height();
-    controls_render_geometry_.size = render_geometry().size*0.9;
-    controls_render_geometry_.top_left = {x_pos, y_pos};
+//    const float x_pos = render_geometry().size.width() / 2;
+//    const float y_pos = controls_relative_ypos_* render_geometry().size.height();
+//    controls_render_geometry_.size = render_geometry().size*0.9;
+//    controls_render_geometry_.top_left = {x_pos, y_pos};
 }
 
 SDL_Rect render_platform::to_sdl_rect(render_geometry_t geom)
@@ -175,12 +176,19 @@ void render_platform::do_render_subtitle()
     ImFont* font = imgui_fonts::instance().get(subtitles_font_name_, font_size_pixels, subtitles_create_dist_);
     if (!font) { return; }
 
+    auto window_flags = ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings|ImGuiWindowFlags_NoInputs;
+    if (!subtitles_has_background()) {
+        window_flags |= ImGuiWindowFlags_NoBackground;
+    }
 
-    ImGui::PushStyleColor(ImGuiCol_Border, reinterpret_cast<const ImVec4&>(subtitles_bg_color_));
-    ImGui::PushStyleColor(ImGuiCol_WindowBg, reinterpret_cast<const ImVec4&>(subtitles_bg_color_));
-    ImGui::PushFont(font);
-    ImGui::PushStyleColor(ImGuiCol_Text, reinterpret_cast<const ImVec4&>(subtitles_text_color_));
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(4, 4)); // Just something smaller than what we would realistictly use as font size!
+    ImGui::Rai imrai;
+        imrai.Font(font)
+        .StyleColor(ImGuiCol_Border, reinterpret_cast<const ImVec4&>(subtitles_bg_color_))
+        .StyleColor(ImGuiCol_WindowBg, reinterpret_cast<const ImVec4&>(subtitles_bg_color_))
+        .StyleColor(ImGuiCol_Text, reinterpret_cast<const ImVec4&>(subtitles_text_color_))
+        .StyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(4, 4))
+        ;
+
 
     for (size_t sub_index = current_subtitle_frame_.lines_count(); sub_index > 0; ) {
         --sub_index;
@@ -190,59 +198,12 @@ void render_platform::do_render_subtitle()
 
         ImGui::SetNextWindowPos({geom.top_left.x(), geom.top_left.y()}, ImGuiCond_::ImGuiCond_Always, {0.5, 0.5} );
         ImGui::SetNextWindowSize({geom.size.width(), geom.size.height()}, ImGuiCond_::ImGuiCond_Always);
-        ImGui::Begin(window_name.c_str(), &show_subtitles_, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings|ImGuiWindowFlags_NoInputs);
+        ImGui::Begin(window_name.c_str(), &show_subtitles_, window_flags);
         ImGui::SetCursorPosY(0);
         ImGui::TextUnformatted(line.c_str());
         ImGui::End();
 
      }
-
-    ImGui::PopStyleVar();
-    ImGui::PopStyleColor();
-    ImGui::PopFont();
-    ImGui::PopStyleColor();
-    ImGui::PopStyleColor();
-}
-
-void render_platform::do_render_controls()
-{
-    return;
-    bool show_controls = true;
-    if ( !show_controls ) {
-        return;
-    }
-    const int32_t font_size_pixels = font_size::to_pixels(controls_font_size_points_, main_window_ptr_);
-    ImFont* font = imgui_fonts::instance().get(controls_font_name_, font_size_pixels, subtitles_create_dist_);
-    if (!font) { return; }
-
-    static int counter = 0;
-
-    ImGui::PushStyleColor(ImGuiCol_Border, reinterpret_cast<const ImVec4&>(controls_bg_color_));
-    ImGui::PushStyleColor(ImGuiCol_WindowBg, reinterpret_cast<const ImVec4&>(controls_bg_color_));
-    ImGui::PushFont(font);
-    ImGui::PushStyleColor(ImGuiCol_Text, reinterpret_cast<const ImVec4&>(controls_text_color_));
-    // ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(4, 4)); // Just something smaller than what we would realistictly use as font size!
-
-
-   // float spacing = ImGui::GetStyle().ItemInnerSpacing.x;
-   const string window_name = "controls";
-   ImGui::Begin(window_name.c_str(), &show_controls, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
-   ImGui::PushButtonRepeat(true);
-   if (ImGui::ArrowButton("##left", ImGuiDir_Left)) { counter--; }
-   // ImGui::SameLine(0.0f, spacing);
-   // if (ImGui::ArrowButton("##right", ImGuiDir_Right)) { counter++; }
-   ImGui::PopButtonRepeat();
-   // ImGui::SameLine();
-   // ImGui::Text("%d", counter);
-   ImGui::End();
-
-    // ImGui::PopStyleVar();
-    ImGui::PopStyleColor();
-    ImGui::PopFont();
-    ImGui::PopStyleColor();
-    ImGui::PopStyleColor();
-
-
 }
 
 } //END namespace cpaf::gui::video

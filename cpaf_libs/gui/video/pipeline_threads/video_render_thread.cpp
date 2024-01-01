@@ -74,7 +74,6 @@ bool video_render_thread::video_frame_do_render(cpaf::video::av_frame& current_f
         video_render.render_video_frame(current_frame);
     }
     video_render.render_subtitle(current_subtitle());
-    video_render.render_controls();
     return new_frame_was_read;
 }
 
