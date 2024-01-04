@@ -9,6 +9,9 @@
 
 namespace cpaf::video {
 
+/**
+typedef struct AVSubtitle {
+*/
 struct subtitle_frame
 {
     static constexpr size_t         max_lines               {3};
