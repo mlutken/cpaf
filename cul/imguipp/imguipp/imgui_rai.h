@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string_view>
 #include <vector>
 #include <imgui.h>
 
@@ -54,5 +55,6 @@ private:
 
 };
 
+inline void TextUnformatted(std::string_view text) { ImGui::TextUnformatted(text.data(), text.data() + text.size()); }
 }
 

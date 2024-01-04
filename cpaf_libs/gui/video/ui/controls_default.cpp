@@ -1,8 +1,12 @@
 #include "controls_default.h"
 
+#include <cpaf_libs/time/cpaf_time.h>
 #include <cpaf_libs/gui/fonts/font_size.h>
 #include <cpaf_libs/gui/assets/fonts/imgui_fonts.h>
 #include <cpaf_libs/gui/video/player.h>
+
+using namespace cpaf::time;
+
 namespace cpaf::gui::video {
 
 
@@ -97,21 +101,25 @@ void controls_default::do_render()
 
 
     {
+
+        const auto elapsed_time = format_h_m_s(player_.current_time());
+        const auto remaining_time = format_h_m_s(player_.remaining_time());
+
         ImGui::Rai imrai{};
         imrai.Font(font_time)
              .StyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(4, 4))
             ;
 
-        ImGui::SetNextWindowPos(elapsed_time_pos_, ImGuiCond_::ImGuiCond_Always, {0.5, 0.5} );
+        ImGui::SetNextWindowPos(elapsed_time_pos_, ImGuiCond_::ImGuiCond_Always, {0.35, 0.5} );
         //ImGui::SetNextWindowSize(video_slider_size_, ImGuiCond_::ImGuiCond_Always);
         ImGui::Begin("elapsed_time", &show_controls, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
-        ImGui::TextUnformatted("Elapsed");
+        ImGui::TextUnformatted(elapsed_time);
         ImGui::End();
 
-        ImGui::SetNextWindowPos(remaining_time_pos_, ImGuiCond_::ImGuiCond_Always, {0.5, 0.5} );
+        ImGui::SetNextWindowPos(remaining_time_pos_, ImGuiCond_::ImGuiCond_Always, {0.45, 0.5} );
         //ImGui::SetNextWindowSize(video_slider_size_, ImGuiCond_::ImGuiCond_Always);
         ImGui::Begin("remaining_time", &show_controls, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
-        ImGui::TextUnformatted("Remaining");
+        ImGui::TextUnformatted(remaining_time);
         ImGui::End();
     }
 
