@@ -13,11 +13,13 @@ private:
     void    calc_geometry   ();
     void    do_render       () override;
 
-    ImVec2      video_back_btn_pos_       {};
-    ImVec2      video_fwd_btn_pos_        {};
-    ImVec2      video_slider_pos_         {};
-    ImVec2      video_slider_size_        {};
-    float       video_slider_grab_width_  {20};
+    ImVec2      video_back_btn_pos_         {};
+    ImVec2      video_fwd_btn_pos_          {};
+    ImVec2      video_slider_pos_           {};
+    ImVec2      video_slider_size_          {};
+    ImVec2      elapsed_time_pos_           {};
+    ImVec2      remaining_time_pos_         {};
+    float       video_slider_grab_width_    {20};
 };
 
 } // namespace cpaf::gui::video

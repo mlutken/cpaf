@@ -12,6 +12,7 @@ void controls_default::calc_geometry()
     const auto render_geometry = player_.render_geometry();
     const int32_t fwd_back_font_size_pixels = font_size::to_pixels(fwd_back_font_size_points_, player_.main_window_ptr());
     const int32_t slider_font_size_pixels = font_size::to_pixels(slider_font_size_points_, player_.main_window_ptr());
+    const int32_t time_font_size_pixels = font_size::to_pixels(time_font_size_points_, player_.main_window_ptr());
 
 //    const ImFont* font = imgui_fonts::instance().get(font_name_, font_size_pixels, subtitles_create_dist_);
 
@@ -27,6 +28,12 @@ void controls_default::calc_geometry()
 
     video_slider_size_.x = render_geometry.size.width() - 0.8*fwd_back_font_size_pixels;
     video_slider_grab_width_ = fwd_back_font_size_pixels / 2;
+
+    elapsed_time_pos_.x = (render_geometry.size.width() - video_slider_size_.x);
+    elapsed_time_pos_.y = video_slider_pos_.y + slider_font_size_pixels + time_font_size_pixels;
+
+    remaining_time_pos_.x = video_fwd_btn_pos_.x;
+    remaining_time_pos_.y = elapsed_time_pos_.y;
 }
 
 void controls_default::do_render()
@@ -35,9 +42,12 @@ void controls_default::do_render()
 
     const int32_t fwd_back_font_size_pixels = font_size::to_pixels(fwd_back_font_size_points_, player_.main_window_ptr());
     const int32_t slider_font_size_pixels = font_size::to_pixels(slider_font_size_points_, player_.main_window_ptr());
+    const int32_t time_font_size_pixels = font_size::to_pixels(time_font_size_points_, player_.main_window_ptr());
     ImFont* font_fwd_back_btns = imgui_fonts::instance().get(font_name_, fwd_back_font_size_pixels);
     ImFont* font_slider = imgui_fonts::instance().get(font_name_, slider_font_size_pixels);
-    if (!font_fwd_back_btns) { return; }
+    ImFont* font_time = imgui_fonts::instance().get(font_name_, time_font_size_pixels);
+
+    ///if (!font_fwd_back_btns) { return; }
     bool show_controls = true;
 
     static int counter = 0;
@@ -79,12 +89,31 @@ void controls_default::do_render()
         ImGui::SetNextWindowPos(video_slider_pos_, ImGuiCond_::ImGuiCond_Always, {0.5, 0.5} );
         ImGui::SetNextWindowSize(video_slider_size_, ImGuiCond_::ImGuiCond_Always);
         ImGui::Begin("video_slider_win", &show_controls, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
-        ImGui::PushItemWidth(-1);
+        ImGui::PushItemWidth(-1);   // Force control to fill width with no label
         ImGui::SliderFloat("video_slider", &cur_video_pos, 0, 1, "");
         ImGui::PopItemWidth();
         ImGui::End();
     }
 
+
+    {
+        ImGui::Rai imrai{};
+        imrai.Font(font_time)
+             .StyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(4, 4))
+            ;
+
+        ImGui::SetNextWindowPos(elapsed_time_pos_, ImGuiCond_::ImGuiCond_Always, {0.5, 0.5} );
+        //ImGui::SetNextWindowSize(video_slider_size_, ImGuiCond_::ImGuiCond_Always);
+        ImGui::Begin("elapsed_time", &show_controls, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
+        ImGui::TextUnformatted("Elapsed");
+        ImGui::End();
+
+        ImGui::SetNextWindowPos(remaining_time_pos_, ImGuiCond_::ImGuiCond_Always, {0.5, 0.5} );
+        //ImGui::SetNextWindowSize(video_slider_size_, ImGuiCond_::ImGuiCond_Always);
+        ImGui::Begin("remaining_time", &show_controls, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
+        ImGui::TextUnformatted("Remaining");
+        ImGui::End();
+    }
 
 }
 
