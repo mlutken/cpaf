@@ -14,10 +14,52 @@ namespace cpaf::time {
 \author Martin Lutken
 */
 
+/**
+ * @brief Split a chrono::duration into durations
+ * @param dur Duration to split into durations
+ * @return tuple<Durations...> - A tuple of the durations to splint into
+ * @example
+ * auto dur = get_my_duration()...
+ * auto [h,m,s] = duration_split<hours, minutes, seconds>(dur);
+ * @endexample
+ * @see https://stackoverflow.com/questions/7230621/how-can-i-iterate-over-a-packed-variadic-template-argument-list
+ */
+template<class... Durations, class DurationIn>
+std::tuple<Durations...> duration_split( DurationIn dur ) {
+    std::tuple<Durations...> retval;
+    using discard=int[];
+    (void)discard{0,(void((
+                           (std::get<Durations>(retval) = std::chrono::duration_cast<Durations>(dur)),
+                           (dur -= std::chrono::duration_cast<DurationIn>(std::get<Durations>(retval)))
+                           )),0)...};
+    return retval;
+}
+
+// -------------------------------------
+// --- Duration formatting functions ---
+// -------------------------------------
+/** Format duration as "H:mm:ss" */
+template <class Rep, class Period>
+constexpr std::string
+format_h_m_s(std::chrono::duration<Rep, Period> dur) {
+    using namespace std::chrono;
+    auto [h,m,s] = duration_split<hours, minutes, seconds>(dur);
+    return std::format("{}:{:02}:{:02}", h.count(), m.count(), s.count());
+}
+
+/** Format duration as "H:mm:ss.xxx" */
+template <class Rep, class Period>
+constexpr std::string
+format_h_m_s_ms(std::chrono::duration<Rep, Period> dur) {
+    using namespace std::chrono;
+    auto [h,m,s, ms] = duration_split<hours, minutes, seconds, milliseconds>(dur);
+    return std::format("{}:{:02}:{:02}.{:03}", h.count(), m.count(), s.count(), ms.count());
+}
+
+
 
 template <class Rep, class Period>
-constexpr
-std::chrono::duration<Rep, Period>
+constexpr std::chrono::duration<Rep, Period>
 abs(std::chrono::duration<Rep, Period> d)
 {
     const Rep x = d.count();
