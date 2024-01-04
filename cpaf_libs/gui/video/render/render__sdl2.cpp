@@ -82,6 +82,7 @@ void render_platform::ensure_valid_render_texture(const cpaf::video::surface_dim
             dimensions.x(),
             dimensions.y()
         );
+        SDL_SetTextureBlendMode(sdl_frame_render_texture_, SDL_BLENDMODE_BLEND);
     }
 }
 
@@ -90,11 +91,8 @@ void render_platform::calc_subtitle_geometry()
     if ( !(current_subtitle_frame_.should_show() && show_subtitles_) ) {
         return;
     }
-///    font_size_ = 28; // FIXMENM
-///    subtitle_bg_color_.w() = 0; // FIXMENM
 
     const int32_t font_size_pixels = font_size::to_pixels(subtitles_font_size_points_, main_window_ptr_);
-//    const int32_t font_size_pixels = subtitles_font_size_points_;
     const ImFont* font = imgui_fonts::instance().get(subtitles_font_name_, font_size_pixels, subtitles_create_dist_);
     if (!font) { return; }
 
@@ -112,17 +110,8 @@ void render_platform::calc_subtitle_geometry()
 
         auto render_size = font->CalcTextSizeA(font->FontSize, max_width, 0, line.data(), line.data() + line.size());
         render_size.x = render_size.x + 3*(render_size.x/line.size());
-        ///        render_size.y = render_size.y*1.1;
         geom.size = {render_size.x, render_size.y};
     }
-}
-
-void render_platform::calc_controls_geometry()
-{
-//    const float x_pos = render_geometry().size.width() / 2;
-//    const float y_pos = controls_relative_ypos_* render_geometry().size.height();
-//    controls_render_geometry_.size = render_geometry().size*0.9;
-//    controls_render_geometry_.top_left = {x_pos, y_pos};
 }
 
 SDL_Rect render_platform::to_sdl_rect(render_geometry_t geom)
@@ -164,7 +153,6 @@ bool render_platform::do_render_video_frame(const cpaf::video::av_frame& frame)
 void render_platform::on_render_geometry_changed()
 {
     calc_subtitle_geometry();
-    calc_controls_geometry();
 }
 
 void render_platform::do_render_subtitle()

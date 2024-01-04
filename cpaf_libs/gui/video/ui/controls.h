@@ -19,15 +19,17 @@ public:
     void            show        (bool do_show) { visible_ = do_show; }
 
 protected:
-    player&         player_;
-    std::string     font_name_                  {"manrope"};
-    color           text_color_                 {1,1,1,1};
-    color           border_color_               {0,0,0,1};
-    color           bg_color_                   {0,0,0,1};
-    uint16_t        time_font_size_points_      {13};
-    uint16_t        slider_font_size_points_    {18};
-    uint16_t        fwd_back_font_size_points_  {38};
-    float           relative_ypos_              {0.5};
+    player&                 player_;
+    std::string             font_name_                  {"manrope"};
+    color                   text_color_                 {1,1,1,1};
+    color                   border_color_               {0,0,0,1};
+    color                   bg_color_                   {0,0,0,1};
+    uint16_t                time_font_size_points_      {13};
+    uint16_t                slider_font_size_points_    {18};
+    uint16_t                play_buttons_font_size_points_  {38};
+    float                   relative_ypos_              {0.5};
+
+    std::chrono::seconds    relative_skip_time_small_   {15};
 //    float           btns_rel_size_              {0.1};
 
 

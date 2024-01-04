@@ -13,6 +13,7 @@ private:
     void    calc_geometry   ();
     void    do_render       () override;
 
+    ImVec2      play_pause_btn_pos_         {};
     ImVec2      video_back_btn_pos_         {};
     ImVec2      video_fwd_btn_pos_          {};
     ImVec2      video_slider_pos_           {};
