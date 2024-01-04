@@ -38,6 +38,7 @@ public:
     size_t                      primary_index           () const { return format_context_.primary_index(); }
     media_type                  primary_media_type      () const { return format_context_.primary_media_type(); }
     const surface_dimensions_t& render_dimensions       () const { return render_dimensions_; }
+    std::chrono::microseconds   total_time              () const { return format_context_.total_time(); }
 
     // ---------------------
     // --- Context/codec ---

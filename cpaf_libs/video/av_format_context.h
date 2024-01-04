@@ -60,32 +60,32 @@ public:
     void                    set_default_primary_stream  ();
 
     // --- Info functions ---
-    const std::string&      resource_path			() const { return resource_path_; }
-    size_t                  streams_count			() const;
-    size_t                  streams_count			(media_type mt) const;
-    size_t                  video_streams_count		() const { return stream_indices_per_media_type_[to_size_t(media_type::video)].size(); }
-    size_t                  audio_streams_count		() const { return stream_indices_per_media_type_[to_size_t(media_type::audio)].size(); }
-    size_t                  subtitle_streams_count	() const { return stream_indices_per_media_type_[to_size_t(media_type::subtitle)].size(); }
-    size_t                  first_stream_index		(media_type mt) const;
-    size_t                  first_video_index		() const { return first_stream_index(media_type::video); }
-    size_t                  first_audio_index		() const { return first_stream_index(media_type::audio); }
-    size_t                  first_subtitle_index	() const { return first_stream_index(media_type::subtitle); }
-    AVCodecID				codec_id				(size_t stream_index) const;
-    media_type              stream_media_type       (size_t stream_index) const;
-    std::set<media_type>    set_of_each_media_type  (const std::set<media_type>& types_to_skip = {media_type::subtitle}) const;
+    const std::string&      resource_path               () const { return resource_path_; }
+    size_t                  streams_count               () const;
+    size_t                  streams_count               (media_type mt) const;
+    size_t                  video_streams_count         () const { return stream_indices_per_media_type_[to_size_t(media_type::video)].size(); }
+    size_t                  audio_streams_count         () const { return stream_indices_per_media_type_[to_size_t(media_type::audio)].size(); }
+    size_t                  subtitle_streams_count      () const { return stream_indices_per_media_type_[to_size_t(media_type::subtitle)].size(); }
+    size_t                  first_stream_index          (media_type mt) const;
+    size_t                  first_video_index           () const { return first_stream_index(media_type::video); }
+    size_t                  first_audio_index           () const { return first_stream_index(media_type::audio); }
+    size_t                  first_subtitle_index        () const { return first_stream_index(media_type::subtitle); }
+    AVCodecID				codec_id                    (size_t stream_index) const;
+    media_type              stream_media_type           (size_t stream_index) const;
+    std::set<media_type>    set_of_each_media_type      (const std::set<media_type>& types_to_skip = {media_type::subtitle}) const;
 
     // --- Seek Functions ---
-    bool                    seek_time_pos           (std::chrono::microseconds stream_pos);
-    bool                    seek_time_pos           (std::chrono::microseconds stream_pos, seek_dir dir);
-    bool                    seek_time_pos           (size_t stream_index, std::chrono::microseconds stream_pos, seek_dir dir);
-    bool                    seek_time_pos           (media_type mt, std::chrono::microseconds stream_pos, seek_dir dir);
+    bool                    seek_time_pos               (std::chrono::microseconds stream_pos);
+    bool                    seek_time_pos               (std::chrono::microseconds stream_pos, seek_dir dir);
+    bool                    seek_time_pos               (size_t stream_index, std::chrono::microseconds stream_pos, seek_dir dir);
+    bool                    seek_time_pos               (media_type mt, std::chrono::microseconds stream_pos, seek_dir dir);
 
 
 
     // --- Codec Functions ---
-    av_codec_parameters     codec_parameters        (size_t stream_index) const;
-    av_codec_context		codec_context			(size_t stream_index) const;
-    av_codec_context		codec_context			(media_type selected_media_type) const;
+    av_codec_parameters     codec_parameters            (size_t stream_index) const;
+    av_codec_context		codec_context               (size_t stream_index) const;
+    av_codec_context		codec_context               (media_type selected_media_type) const;
 
 //    av_codec                codec                   (size_t stream_index) const;
     // --- Packet Functions ---
@@ -122,6 +122,8 @@ public:
     std::chrono::milliseconds   presentation_time_ms    (const av_frame& frame) const;
     std::chrono::microseconds   best_effort_pts         (const av_frame& frame) const;
     std::chrono::milliseconds   best_effort_pts_ms      (const av_frame& frame) const;
+
+    std::chrono::microseconds   total_time              () const;
 
     // --- Debug functions ---
     void                        dump                    () const;

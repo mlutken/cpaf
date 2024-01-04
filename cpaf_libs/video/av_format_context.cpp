@@ -538,6 +538,13 @@ std::chrono::milliseconds av_format_context::best_effort_pts_ms(const av_frame& 
     return duration_cast<milliseconds>(best_effort_pts(frame));
 }
 
+std::chrono::microseconds av_format_context::total_time() const
+{
+    if (!ff_format_context_) { return std::chrono::microseconds(0); }
+    static_assert(AV_TIME_BASE == 1'000'000, "av_format_context::total_time() AV_TIME_BASE Is expected to be 1,000,000! Please add if co compensate!");
+    return std::chrono::microseconds(ff_format_context_->duration);
+}
+
 
 // -----------------------
 // --- Debug functions ---
