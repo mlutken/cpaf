@@ -2,6 +2,8 @@
 #include <cpaf_libs/video/av_format_context.h>
 #include <cpaf_libs/gui/video/pipeline_threads/pipeline_threads.h>
 
+using namespace std::chrono;
+
 namespace cpaf::gui::video {
 
 packet_reader_thread::packet_reader_thread(const std::atomic_bool& threads_running, const std::atomic_bool& threads_paused)
@@ -27,6 +29,10 @@ cpaf::video::pipeline_index_t packet_reader_thread::seek_position(const std::chr
 
 cpaf::video::pipeline_index_t packet_reader_thread::seek_position(const std::chrono::microseconds& stream_pos)
 {
+//    last_seek_start_time_ = steady_clock::now();
+    if (seek_requested_) {
+        return format_context().pipeline_index();
+    }
     flush_to_index_requested_index_ = format_context().pipeline_index() + 1;
     seek_position_requested_ = stream_pos;
     seek_requested_ = true;
@@ -50,8 +56,14 @@ void packet_reader_thread::read_packets_thread_fn()
 
 void packet_reader_thread::check_seek_position()
 {
+//    auto diff = steady_clock::now() - last_seek_start_time_;
+//    if ( diff < seek_throttle_time_) {
+//        std::cerr << "FIXMENM check_seek_position() THROTTLE " << duration_cast<milliseconds>(diff) << "\n";
+//        return;
+//    }
+
     if (seek_requested_) {
-        seek_requested_ = false;
+        const auto seek_start = steady_clock::now();
         std::cerr << "--------- packet_reader_thread::seek_requested_ ------\n";
 
         const auto mt = format_context().primary_media_type();
@@ -61,6 +73,10 @@ void packet_reader_thread::check_seek_position()
         flush_queues();
         format_context().read_packets_to_queues(mt, primary_queue_fill_level_);
         signal_flush_done();
+        const auto seek_end = steady_clock::now();
+        const auto seek_duration = seek_end - seek_start;
+        std::cerr << "FIXMENM packet_reader_thread seek complete: " << duration_cast<microseconds>(seek_duration) << "\n";
+        seek_requested_ = false;
     }
 }
 

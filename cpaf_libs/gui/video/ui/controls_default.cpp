@@ -116,7 +116,7 @@ void controls_default::do_render()
         ImGui::End();
 
         const auto diff_in_seconds = current_postion_seconds - save_current_postion_seconds;
-        std::cerr << "FIXMENM diff slider: " << diff_in_seconds << "\n";
+        //std::cerr << "FIXMENM diff slider: " << diff_in_seconds << "\n";
         if (std::abs(diff_in_seconds) > 5) {
             player_.seek_position(seconds(static_cast<uint32_t>(current_postion_seconds)));
         }

@@ -42,6 +42,8 @@ void video_render_thread::video_frame_update(cpaf::video::av_frame& current_fram
 bool video_render_thread::video_frame_do_render(cpaf::video::av_frame& current_frame, cpaf::gui::video::render& video_render)
 {
     if (video_queue_flush_in_progress_) {
+        video_render.render_video_frame(current_frame);
+        video_render.render_subtitle(current_subtitle());
         return false;
     }
 

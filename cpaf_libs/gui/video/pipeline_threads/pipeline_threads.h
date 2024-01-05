@@ -24,6 +24,7 @@ namespace cpaf::gui::video {
 
 class pipeline_threads
 {
+    friend class packet_reader_thread;
 public:
     using audio_play_callback_t  = cpaf::audio::device_base::play_callback_t;
 
@@ -56,12 +57,12 @@ public:
     void                    pause_playback          ();
     void                    resume_playback         ();
     bool                    playback_paused         () const { return threads_paused_; }
+    void                    video_frame_update      (cpaf::video::av_frame& current_frame, cpaf::gui::video::render& video_render);
+private:
     void                    flush_queues            ();
     void                    signal_flush_start      ();
     void                    signal_flush_done       ();
-    void                    video_frame_update      (cpaf::video::av_frame& current_frame, cpaf::gui::video::render& video_render);
 
-private:
     cpaf::video::av_format_context&      format_context          () { return *format_context_ptr_; }
     cpaf::video::av_codec_context&       audio_codec_ctx         () { return *audio_codec_ctx_ptr_; }
     cpaf::video::av_codec_context&       video_codec_ctx         () { return *video_codec_ctx_ptr_; }
