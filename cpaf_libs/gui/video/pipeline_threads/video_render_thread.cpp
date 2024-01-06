@@ -39,33 +39,57 @@ void video_render_thread::video_frame_update(cpaf::video::av_frame& current_fram
     debug_video_frame_update(current_frame, video_render);
 }
 
-bool video_render_thread::video_frame_do_render(cpaf::video::av_frame& current_frame, cpaf::gui::video::render& video_render)
+std::chrono::microseconds video_render_thread::time_to_current_frame(cpaf::video::av_frame& current_frame) const
 {
-    if (video_queue_flush_in_progress_) {
-        video_render.render_video_frame(current_frame);
-        video_render.render_subtitle(current_subtitle());
+    return current_frame.presentation_time() - current_media_time().video_time_pos();
+}
+
+bool video_render_thread::is_seek_currently_possible() const {
+    if (video_queue_flush_in_progress_ || video_queue_flushed_) {
         return false;
     }
+    return is_seek_currently_possible_;
+}
+
+/**
+@todo Do we in case on non valid frame want to call video_render.clear_screen() ?
+*/
+bool video_render_thread::video_frame_do_render(cpaf::video::av_frame& current_frame, cpaf::gui::video::render& video_render)
+{
 
     bool new_frame_was_read = false;
+    if (video_queue_flush_in_progress_) {
+        if (current_frame) {
+            video_render.render_video_frame(current_frame);
+        }
+        video_render.render_subtitle(current_subtitle());
+        return new_frame_was_read;
+    }
+
     if (!current_media_time().time_is_paused()) {
-        const auto cur_video_time = current_media_time().video_time_pos();
-        auto time_dist_to_cur_frame = current_frame.presentation_time() - cur_video_time;
+//    if (true) {
 
         if (video_queue_flushed_) {
             video_queue_flushed_ = false;
             current_frame = video_codec_ctx().read_frame();
-            time_dist_to_cur_frame = current_frame.presentation_time() - cur_video_time;
+            new_frame_was_read = true;
         }
-
-
-        if (time_dist_to_cur_frame > 1s ) {
-            std::cerr << "******* ERROR long time to current video frame " << duration_cast<seconds>(time_dist_to_cur_frame).count() << "s\n";
+        if (!current_frame) {
             current_frame = video_codec_ctx().read_frame();
-            time_dist_to_cur_frame = current_frame.presentation_time() - cur_video_time;
+            new_frame_was_read = true;
+            if (!current_frame) {
+                std::cerr << "!!! ERROR video render NO frame!\n";
+                video_render.clear_screen();
+                return new_frame_was_read;
+            }
         }
 
-        if (time_dist_to_cur_frame <= 1ms ) {
+        if (time_to_current_frame(current_frame) > 1s ) {
+           // std::cerr << "******* ERROR long time to current video frame " << duration_cast<seconds>(time_to_current_frame(current_frame)) << "\n";
+            current_frame = video_codec_ctx().read_frame();
+        }
+
+        if (time_to_current_frame(current_frame) <= 1ms ) {
             current_pipeline_index_ = current_frame.pipeline_index();
             video_render.render_video_frame(current_frame);
             current_frame = video_codec_ctx().read_frame();
@@ -77,6 +101,12 @@ bool video_render_thread::video_frame_do_render(cpaf::video::av_frame& current_f
     }
     video_render.render_subtitle(current_subtitle());
     return new_frame_was_read;
+}
+
+void video_render_thread::update_is_seek_possible(av_frame& current_frame)
+{
+    const auto abs_dist_to_cur_frame = cpaf::time::abs(time_to_current_frame(current_frame));
+    is_seek_currently_possible_ = abs_dist_to_cur_frame < 40ms;
 }
 
 cpaf::video::subtitle_frame video_render_thread::current_subtitle() const

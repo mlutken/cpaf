@@ -143,6 +143,12 @@ void render_platform::do_render_dimensions_set(const cpaf::video::surface_dimens
     ensure_valid_render_texture(dimensions);
 }
 
+void render_platform::do_clear_screen()
+{
+    auto dst_rect = to_sdl_rect(render_geometry());
+    SDL_RenderFillRect(get_sdl_renderer(), &dst_rect);
+}
+
 bool render_platform::do_render_video_frame(const cpaf::video::av_frame& frame)
 {
     prepare_native_video_frame(frame, frame_display());

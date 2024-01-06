@@ -52,6 +52,7 @@ public:
 
     const cpaf::video::surface_dimensions_t& render_dimensions           () const                   { return render_dimensions_;      }
 
+    void                        clear_screen                ()                              { do_clear_screen();  }
     bool                        render_video_frame          (const cpaf::video::av_frame& frame)    { return do_render_video_frame(frame);  }
     void                        render_subtitle             (const cpaf::video::subtitle_frame& subtitle);
 
@@ -98,6 +99,7 @@ private:
     virtual void                do_init                             (const system_window& win, const cpaf::video::surface_dimensions_t& dimensions ) = 0;
     virtual void                do_init                             (std::shared_ptr<cpaf::gui::system_render> sys_renderer, const cpaf::video::surface_dimensions_t& dimensions ) = 0;
     virtual void                do_render_dimensions_set            (const cpaf::video::surface_dimensions_t& dimensions ) = 0;
+    virtual void                do_clear_screen                     () = 0;
     virtual bool                do_render_video_frame               (const cpaf::video::av_frame& frame) = 0;
     virtual void                on_render_geometry_changed          () = 0;
     virtual void                do_render_subtitle                  () = 0;

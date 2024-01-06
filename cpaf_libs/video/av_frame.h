@@ -51,6 +51,7 @@ public:
 
     ~av_frame();
 
+    explicit  operator bool() const { return is_valid(); }
     void swap(av_frame& src) noexcept;
 //https://en.cppreference.com/w/cpp/container/priority_queue
 

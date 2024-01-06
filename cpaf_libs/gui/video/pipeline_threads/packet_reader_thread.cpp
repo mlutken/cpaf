@@ -63,8 +63,8 @@ void packet_reader_thread::check_seek_position()
 //    }
 
     if (seek_requested_) {
-        const auto seek_start = steady_clock::now();
-        std::cerr << "--------- packet_reader_thread::seek_requested_ ------\n";
+//        const auto seek_start = steady_clock::now();
+//        std::cerr << "--------- packet_reader_thread::seek_requested_ ------\n";
 
         const auto mt = format_context().primary_media_type();
         signal_flush_start();
@@ -73,9 +73,9 @@ void packet_reader_thread::check_seek_position()
         flush_queues();
         format_context().read_packets_to_queues(mt, primary_queue_fill_level_);
         signal_flush_done();
-        const auto seek_end = steady_clock::now();
-        const auto seek_duration = seek_end - seek_start;
-        std::cerr << "FIXMENM packet_reader_thread seek complete: " << duration_cast<microseconds>(seek_duration) << "\n";
+//        const auto seek_end = steady_clock::now();
+//        const auto seek_duration = seek_end - seek_start;
+//        std::cerr << "FIXMENM packet_reader_thread seek complete: " << duration_cast<microseconds>(seek_duration) << "\n";
         seek_requested_ = false;
     }
 }
