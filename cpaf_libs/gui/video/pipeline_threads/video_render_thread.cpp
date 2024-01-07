@@ -11,13 +11,18 @@
 using namespace std::chrono_literals;
 using namespace std::chrono;
 using namespace cpaf::video;
+using namespace cpaf;
 
 
 namespace cpaf::gui::video {
 
-video_render_thread::video_render_thread(const std::atomic_bool& threads_running, const std::atomic_bool& threads_paused)
+video_render_thread::video_render_thread(
+    const std::atomic_bool& threads_running,
+    const std::atomic_bool& threads_paused,
+    std::atomic<seek_state_t>& seek_state)
     : threads_running_(threads_running)
     , threads_paused_(threads_paused)
+    ,seek_state_(seek_state)
 {
 
 }
@@ -44,6 +49,11 @@ std::chrono::microseconds video_render_thread::time_to_current_frame(cpaf::video
     return current_frame.presentation_time() - current_media_time().video_time_pos();
 }
 
+std::chrono::microseconds video_render_thread::time_to_current_frame_abs(cpaf::video::av_frame& current_frame) const
+{
+    return cpaf::time::abs(time_to_current_frame(current_frame));
+}
+
 bool video_render_thread::is_seek_currently_possible() const {
     if (video_queue_flush_in_progress_ || video_queue_flushed_) {
         return false;
@@ -66,7 +76,7 @@ bool video_render_thread::video_frame_do_render(cpaf::video::av_frame& current_f
         return new_frame_was_read;
     }
 
-    // --- Test if we need to read a new fram due to flush/seek complete ---
+    // --- Test if we need to read a new frame due to flush/seek complete ---
     if (video_queue_flushed_) {
         video_queue_flushed_ = false;
         current_frame = video_codec_ctx().read_frame();

@@ -28,7 +28,9 @@ namespace cpaf::gui::video {
 class video_render_thread
 {
 public:
-    video_render_thread(const std::atomic_bool& threads_running, const std::atomic_bool& threads_paused);
+    video_render_thread(const std::atomic_bool& threads_running,
+                        const std::atomic_bool& threads_paused,
+                        std::atomic<cpaf::video::seek_state_t>& seek_state);
 
     void                        format_context_set          (cpaf::video::av_format_context* ctx)    { format_context_ptr_ = ctx; }
     void                        format_context_set          (cpaf::video::av_format_context& ctx)    { format_context_ptr_ = &ctx; }
@@ -46,6 +48,7 @@ public:
     void                        video_queue_flush_start     ()                          { video_queue_flush_in_progress_ = true; }
     void                        video_queue_flush_done      ()                          { video_queue_flush_in_progress_ = false; video_queue_flushed_ = true; }
     std::chrono::microseconds   time_to_current_frame       (cpaf::video::av_frame& current_frame) const;
+    std::chrono::microseconds   time_to_current_frame_abs   (cpaf::video::av_frame& current_frame) const;
     bool                        is_seek_currently_possible  () const;
 
     const cpaf::video::atomic_pipeline_index_t&      current_pipeline_index  () const { return current_pipeline_index_; }
@@ -71,8 +74,9 @@ private:
     const std::atomic_bool&                 threads_running         () const { return threads_running_; }
     const std::atomic_bool&                 threads_paused          () const { return threads_paused_; }
 
-    const std::atomic_bool&     threads_running_;
-    const std::atomic_bool&     threads_paused_;
+    const std::atomic_bool&                 threads_running_;
+    const std::atomic_bool&                 threads_paused_;
+    std::atomic<cpaf::video::seek_state_t>& seek_state_;
 
     cpaf::video::av_format_context*          format_context_ptr_             = nullptr;
     cpaf::video::av_codec_context*           video_codec_ctx_ptr_            = nullptr;
@@ -81,10 +85,10 @@ private:
     cpaf::video::pipeline_index_t            flush_in_progress_index_        = 0;
     cpaf::video::atomic_pipeline_index_t     current_pipeline_index_         = 0;
 
-    int                         video_frame_update_dbg_counter_ = 0;
-    std::atomic_bool            video_queue_flush_in_progress_  = false;
-    std::atomic_bool            video_queue_flushed_            = false;
-    bool                        is_seek_currently_possible_     = false;
+    int                                     video_frame_update_dbg_counter_ = 0;
+    std::atomic_bool                        video_queue_flush_in_progress_  = false;
+    std::atomic_bool                        video_queue_flushed_            = false;
+    bool                                    is_seek_currently_possible_     = false;
 };
 
 } // namespace cpaf::gui::video

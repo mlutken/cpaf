@@ -18,10 +18,10 @@ namespace cpaf::gui::video {
 
 //pipeline_threads::pipeline_threads(atomic_bool& /*threads_running*/, atomic_bool& /*threads_paused*/)
 pipeline_threads::pipeline_threads()
-    : packet_reader_thread_(threads_running_, threads_paused_)
+    : packet_reader_thread_(threads_running_, threads_paused_, seek_state_)
     , audio_resampler_thread_(threads_running_, threads_paused_)
     , audio_render_thread_()
-    , video_render_thread_(threads_running_, threads_paused_)
+    , video_render_thread_(threads_running_, threads_paused_, seek_state_)
 {
     packet_reader_thread_.pipeline_threads_set(this);
 }

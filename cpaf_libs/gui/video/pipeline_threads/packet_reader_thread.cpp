@@ -2,13 +2,19 @@
 #include <cpaf_libs/video/av_format_context.h>
 #include <cpaf_libs/gui/video/pipeline_threads/pipeline_threads.h>
 
+using namespace std;
+using namespace cpaf::video;
 using namespace std::chrono;
 
 namespace cpaf::gui::video {
 
-packet_reader_thread::packet_reader_thread(const std::atomic_bool& threads_running, const std::atomic_bool& threads_paused)
+packet_reader_thread::packet_reader_thread(
+    const std::atomic_bool& threads_running,
+    const std::atomic_bool& threads_paused,
+    std::atomic<seek_state_t>& seek_state)
     : threads_running_(threads_running)
     , threads_paused_(threads_paused)
+    , seek_state_(seek_state)
 {
 }
 
@@ -45,8 +51,8 @@ void packet_reader_thread::read_packets_thread_fn()
     const auto mt = format_context().primary_media_type();
     while(threads_running()) {
         format_context().pipeline_control_set(cpaf::video::pipeline_control_t::normal_flow);
-        if (!threads_paused()) {
-            check_seek_position();
+        check_seek_position();
+        if (!threads_paused_) {
             format_context().read_packets_to_queues(mt, primary_queue_fill_level_);
         }
         std::this_thread::sleep_for(read_packets_yield_time_);

@@ -7,6 +7,7 @@
 #include <atomic>
 #include <memory>
 #include <cpaf_libs/audio/cpaf_audio_device_base.h>
+#include <cpaf_libs/video/av_util.h>
 #include <cpaf_libs/video/av_samples_buffer.h>
 #include <cpaf_libs/gui/video/pipeline_threads/audio_render_thread.h>
 #include <cpaf_libs/gui/video/pipeline_threads/audio_resampler_thread.h>
@@ -35,33 +36,35 @@ public:
     ~pipeline_threads();
 //    pipeline_threads(std::atomic_bool& threads_running, std::atomic_bool& threads_paused);
 
-    void                    format_context_set      (cpaf::video::av_format_context* ctx);
-    void                    format_context_set      (cpaf::video::av_format_context& ctx);
-    void                    video_codec_ctx_set     (cpaf::video::av_codec_context* ctx);
-    void                    video_codec_ctx_set     (cpaf::video::av_codec_context& ctx);
-    void                    audio_codec_ctx_set     (cpaf::video::av_codec_context* ctx);
-    void                    audio_codec_ctx_set     (cpaf::video::av_codec_context& ctx);
-    void                    audio_resampler_set     (cpaf::video::audio_resampler* resampler);
-    void                    audio_resampler_set     (cpaf::video::audio_resampler& resampler);
-    void                    audio_samples_queue_set (cpaf::video::av_samples_queue* queue);
-    void                    audio_samples_queue_set (cpaf::video::av_samples_queue& queue);
-    void                    current_media_time_set  (cpaf::video::media_stream_time* mts);
-    void                    current_media_time_set  (cpaf::video::media_stream_time& mts);
-    audio_play_callback_t   audio_callback_get      ();
+    void                        format_context_set      (cpaf::video::av_format_context* ctx);
+    void                        format_context_set      (cpaf::video::av_format_context& ctx);
+    void                        video_codec_ctx_set     (cpaf::video::av_codec_context* ctx);
+    void                        video_codec_ctx_set     (cpaf::video::av_codec_context& ctx);
+    void                        audio_codec_ctx_set     (cpaf::video::av_codec_context* ctx);
+    void                        audio_codec_ctx_set     (cpaf::video::av_codec_context& ctx);
+    void                        audio_resampler_set     (cpaf::video::audio_resampler* resampler);
+    void                        audio_resampler_set     (cpaf::video::audio_resampler& resampler);
+    void                        audio_samples_queue_set (cpaf::video::av_samples_queue* queue);
+    void                        audio_samples_queue_set (cpaf::video::av_samples_queue& queue);
+    void                        current_media_time_set  (cpaf::video::media_stream_time* mts);
+    void                        current_media_time_set  (cpaf::video::media_stream_time& mts);
+    audio_play_callback_t       audio_callback_get      ();
 
-    void                    start                   ();
-    void                    terminate               ();
-    void                    seek_position           (const std::chrono::microseconds& stream_pos, cpaf::video::seek_dir dir);
-    void                    seek_position           (const std::chrono::microseconds& stream_pos);
-    void                    seek_relative           (const std::chrono::microseconds& delta_time);
-    void                    pause_playback          ();
-    void                    resume_playback         ();
-    bool                    playback_paused         () const { return threads_paused_; }
-    void                    video_frame_update      (cpaf::video::av_frame& current_frame, cpaf::gui::video::render& video_render);
+    void                        start                   ();
+    void                        terminate               ();
+    void                        seek_position           (const std::chrono::microseconds& stream_pos, cpaf::video::seek_dir dir);
+    void                        seek_position           (const std::chrono::microseconds& stream_pos);
+    void                        seek_relative           (const std::chrono::microseconds& delta_time);
+    cpaf::video::seek_state_t   seek_state              () const { return seek_state_;      }
+    void                        pause_playback          ();
+    void                        resume_playback         ();
+    bool                        playback_paused         () const { return threads_paused_; }
+
+    void                        video_frame_update      (cpaf::video::av_frame& current_frame, cpaf::gui::video::render& video_render);
 private:
-    void                    flush_queues            ();
-    void                    signal_flush_start      ();
-    void                    signal_flush_done       ();
+    void                        flush_queues            ();
+    void                        signal_flush_start      ();
+    void                        signal_flush_done       ();
 
     cpaf::video::av_format_context&      format_context          () { return *format_context_ptr_; }
     cpaf::video::av_codec_context&       audio_codec_ctx         () { return *audio_codec_ctx_ptr_; }
@@ -82,6 +85,7 @@ private:
     cpaf::video::media_stream_time*             current_media_time_ptr_         = nullptr;
     std::atomic_bool                            threads_running_                = true;
     std::atomic_bool                            threads_paused_                 = false;
+    std::atomic<cpaf::video::seek_state_t>      seek_state_                     = cpaf::video::seek_state_t::ready;
 
 };
 

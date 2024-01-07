@@ -27,19 +27,11 @@ void player::init(const system_window& main_window)
     if (has_video_stream()) {
         init_video(main_window);
     }
-}
-
-void player::init_video(const system_window& main_window)
-{
-    video_render_ = render::create_video_render(main_window, video_dst_dimensions());
-    video_render_->video_codec_ctx_set(video_codec_context());
-    video_render_->render_geometry_set(render_geometry_t(main_window.get_size()));
-////    video_render_->render_geometry_set(render_geometry_t({100,100}, main_window.get_size())); // TEST ONLY!
-
     if (!video_controls_) {
         set_controls(std::make_unique<video::controls_default>(*this));
     }
 }
+
 
 void player::start(const std::chrono::microseconds& start_time_pos)
 {
@@ -209,6 +201,10 @@ render_geometry_t player::render_geometry() const
     if (video_render_) {
         return video_render_->render_geometry();
     }
+    else if (main_window_ptr_) {
+        const auto size = main_window_ptr_->get_size();
+        return render_geometry_t(0, 0, size.width(), size.height());
+    }
 
     return render_geometry_t();
 }
@@ -368,6 +364,13 @@ std::string player::queues_info() const
 // ---------------------------------
 // --- PRIVATE: Helper functions ---
 // ---------------------------------
+void player::init_video(const system_window& main_window)
+{
+    video_render_ = render::create_video_render(main_window, video_dst_dimensions());
+    video_render_->video_codec_ctx_set(video_codec_context());
+    video_render_->render_geometry_set(render_geometry_t(main_window.get_size()));
+    ////    video_render_->render_geometry_set(render_geometry_t({100,100}, main_window.get_size())); // TEST ONLY!
+}
 
 bool player::open_stream(const std::string& resource_path, stream_type_t sti)
 {

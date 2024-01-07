@@ -44,7 +44,6 @@ public:
     player();
     ~player();
     void                        init                    (const system_window& main_window);
-    void                        init_video              (const system_window& main_window);
     void                        start                   (const std::chrono::microseconds& start_time_pos = std::chrono::microseconds(0));
     void                        terminate               ();
     bool                        open                    (const std::string& resource_path);
@@ -139,7 +138,8 @@ public:
     void                        pause_playback          ();
     void                        resume_playback         ();
     void                        toggle_pause_playback   ();
-    bool                        playback_paused         () const { return threads_paused_; }
+    bool                        playback_paused         () const { return threads_paused_;  }
+    cpaf::video::seek_state_t   seek_state              () const { return media_pipeline_threads_.seek_state();      }
 
     // ----------
     // --- UI ---
@@ -159,6 +159,7 @@ private:
     // ---------------------------------
     // --- PRIVATE: Helper functions ---
     // ---------------------------------
+    void                            init_video              (const system_window& main_window);
     bool                            open_stream             (const std::string& resource_path, stream_type_t sti);
     bool                            open_primary_stream     (const std::string& resource_path);
     void                            current_media_time_set  (media_stream_time* mts);

@@ -58,6 +58,14 @@ enum class seek_dir : int8_t {
     backward
 };
 
+enum class seek_state_t : int8_t {
+    ready,
+    requested,
+    flushing,
+    flush_done
+};
+
+
 enum class pipeline_control_t : int8_t {
     none,
     normal_flow,
