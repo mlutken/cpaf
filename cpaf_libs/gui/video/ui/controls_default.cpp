@@ -77,7 +77,7 @@ void controls_default::do_render()
         ImGui::Begin("video_back_btn", &show_controls, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
         ImGui::PushButtonRepeat(true);
         if (ImGui::Button("<<")) {
-            player_.seek_relative(--relative_skip_time_small_);
+            player_.seek_relative(-relative_skip_time_small_);
         }
         ImGui::PopButtonRepeat();
         ImGui::End();
