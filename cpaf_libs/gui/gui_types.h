@@ -30,6 +30,9 @@ struct render_geometry_t
     render_geometry_t(pos_2df  top_left_corner_pos, size_2df render_size)
         : size(render_size), top_left(top_left_corner_pos) {}
 
+    render_geometry_t(float top_left_x, float top_left_y, float render_width, float render_height)
+        : size(render_width, render_height), top_left(top_left_x, top_left_y) {}
+
     size_2df    size        {0,0};
     pos_2df     top_left    {0,0};
 };

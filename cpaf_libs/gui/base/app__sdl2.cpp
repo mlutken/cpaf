@@ -97,6 +97,9 @@ void app_platform::do_platform_process_events()
 
 void app_platform::do_platform_pre_frame_update()
 {
+    if (clear_window_before_frame_update_) {
+        SDL_RenderClear(main_window().native_renderer<SDL_Renderer>());
+    }
     ImGui_ImplSDLRenderer_NewFrame();
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
@@ -116,7 +119,7 @@ void app_platform::do_platform_post_frame_update()
     // ImGui::UpdatePlatformWindows();
     // ImGui::RenderPlatformWindowsDefault();
     // SDL_SetRenderDrawColor(main_window().native_renderer<SDL_Renderer>(), 100, 100, 100, 255);
-    // SDL_RenderClear(main_window().native_renderer<SDL_Renderer>());
+
     ImGui_ImplSDLRenderer_RenderDrawData(ImGui::GetDrawData());
     SDL_RenderPresent(main_window().native_renderer<SDL_Renderer>());
 }

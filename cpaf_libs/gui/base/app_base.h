@@ -33,7 +33,7 @@ public:
     std::shared_ptr<system_window>  main_window_shared          () const    { return do_main_window_shared(); }
     void                            add_fonts                   (const std::string& font_name, const std::vector<uint32_t>& sizes_in_points);
     void                            set_default_font            (const std::string& font_name, uint32_t size_points);
-
+    void                            clear_before_frame_update   (bool do_clear) { clear_window_before_frame_update_ = do_clear; }
     std::unique_ptr<system_window_base>  create_system_window   (size_2d size, std::string_view title) const {
         fmt::println("FIXMENM create_system_window () ");
         return do_create_system_window(size, title);
@@ -57,6 +57,7 @@ protected:
     size_2d                                 initial_window_size_            = {800, 600};
     std::atomic_bool                        is_running_                     = false;
     exit_status_t                           exit_status_                    = exit_status_t::success;
+    bool                                    clear_window_before_frame_update_= true;
     // display::window_state                   initial_window_state_           = display::window_state::normal;
 
     // --- PROTECTED: User virtual functions for derived classes ---
@@ -68,7 +69,6 @@ protected:
 
 
     // --- PROTECTED: Helper functions for derived classes ---
-
 private:
 
     virtual void                            do_platform_start_run           () = 0;
