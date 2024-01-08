@@ -50,6 +50,16 @@ void render_base::init_only_for_old_playground(std::shared_ptr<cpaf::gui::system
     do_init(sys_renderer, dimensions);
 }
 
+bool render_base::render_video_frame(const cpaf::video::av_frame& frame) {
+    if (!frame) {
+        std::cerr << "!!! ERROR video render NO frame!\n";
+        clear_screen();
+        return false;
+    }
+
+    return do_render_video_frame(frame);
+}
+
 void render_base::render_subtitle(const cpaf::video::subtitle_frame& subtitle)
 {
     if (subtitle.sequence_number != current_subtitle_frame_.sequence_number ||

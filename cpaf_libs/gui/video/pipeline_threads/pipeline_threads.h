@@ -56,6 +56,7 @@ public:
     void                        seek_position           (const std::chrono::microseconds& stream_pos);
     void                        seek_relative           (const std::chrono::microseconds& delta_time);
     cpaf::video::seek_state_t   seek_state              () const { return seek_state_;      }
+    std::chrono::microseconds   seek_position_requested () const { return packet_reader_thread_.seek_position_requested(); }
     void                        pause_playback          ();
     void                        resume_playback         ();
     bool                        playback_paused         () const { return threads_paused_; }
@@ -86,6 +87,7 @@ private:
     std::atomic_bool                            threads_running_                = true;
     std::atomic_bool                            threads_paused_                 = false;
     std::atomic<cpaf::video::seek_state_t>      seek_state_                     = cpaf::video::seek_state_t::ready;
+    std::chrono::steady_clock::time_point       seek_flush_done_time_point_;
 
 };
 

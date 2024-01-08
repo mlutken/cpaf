@@ -12,6 +12,7 @@ extern "C"
 #include <libavutil/imgutils.h>
 }
 
+#include <cpaf_libs/time/cpaf_time.h>
 #include <cpaf_libs/video/av_codec_context.h>
 
 using namespace std;
@@ -73,6 +74,11 @@ void av_frame::swap(av_frame& src) noexcept
     std::swap(create_number_, src.create_number_);
     std::swap(pipeline_control_, src.pipeline_control_);
     std::swap(pipeline_index_, src.pipeline_index_);
+}
+
+std::chrono::microseconds av_frame::distance_to_abs(std::chrono::microseconds media_time_point) const
+{
+    return cpaf::time::abs(distance_to(media_time_point));
 }
 
 // -----------------------------

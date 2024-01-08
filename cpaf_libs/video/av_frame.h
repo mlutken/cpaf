@@ -70,8 +70,10 @@ public:
     const pipeline_index_t& pipeline_index      () const { return pipeline_index_; }
     void                    pipeline_index_set  (pipeline_index_t index) { pipeline_index_ = index; }
 
-    const std::chrono::microseconds&   presentation_time       () const { return presentation_time_; }
-    std::chrono::milliseconds          presentation_time_ms    () const { return std::chrono::duration_cast<std::chrono::milliseconds>(presentation_time()); }
+    const std::chrono::microseconds&    presentation_time       () const { return presentation_time_; }
+    std::chrono::milliseconds           presentation_time_ms    () const { return std::chrono::duration_cast<std::chrono::milliseconds>(presentation_time()); }
+    std::chrono::microseconds           distance_to             (std::chrono::microseconds media_time_point) const { return media_time_point - presentation_time_; }
+    std::chrono::microseconds           distance_to_abs         (std::chrono::microseconds media_time_point) const;
 
     // --- Setters ---
     void            stream_index_set        (size_t stream_index) { stream_index_ = stream_index; }

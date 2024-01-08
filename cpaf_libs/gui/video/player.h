@@ -140,6 +140,7 @@ public:
     void                        toggle_pause_playback   ();
     bool                        playback_paused         () const { return threads_paused_;  }
     cpaf::video::seek_state_t   seek_state              () const { return media_pipeline_threads_.seek_state();      }
+    std::chrono::microseconds   seek_position_requested () const { return media_pipeline_threads_.seek_position_requested(); }
 
     // ----------
     // --- UI ---

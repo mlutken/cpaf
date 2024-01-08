@@ -62,7 +62,8 @@ enum class seek_state_t : int8_t {
     ready,
     requested,
     flushing,
-    flush_done
+    flush_done,
+    sync_to_frame
 };
 
 
@@ -142,6 +143,7 @@ inline constexpr std::chrono::microseconds illegal_timestamp()
 std::string to_string						(media_type mt);
 std::string to_string						(pipeline_control_t pc);
 std::string to_string						(pipeline_state_t ps);
+std::string to_string						(seek_state_t ss);
 
 surface_dimensions_t scale_surface_dimensions(const surface_dimensions_t& src_dimensions, const surface_dimensions_t& dst_dimensions);
 

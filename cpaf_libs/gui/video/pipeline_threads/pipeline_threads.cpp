@@ -2,10 +2,6 @@
 #include "pipeline_threads.h"
 #include <iostream>
 
-extern "C"
-{
-}
-
 #include <cpaf_libs/video/av_format_context.h>
 #include <cpaf_libs/video/av_frame.h>
 #include <cpaf_libs/video/audio_resampler.h>
@@ -13,6 +9,10 @@ extern "C"
 #include <cpaf_libs/video/av_samples_queue.h>
 
 using namespace std;
+using namespace cpaf::video;
+using namespace std::chrono;
+using namespace std::chrono_literals;
+
 namespace cpaf::gui::video {
 
 
@@ -168,7 +168,31 @@ void pipeline_threads::resume_playback()
 
 void pipeline_threads::video_frame_update(cpaf::video::av_frame& current_frame, gui::video::render& video_render)
 {
+//    cerr << "FIXMENM seek_state: " << to_string(seek_state_) << "\n";
+    if ( seek_state_ == seek_state_t::flush_done) {
+        seek_flush_done_time_point_ = steady_clock::now();
+        seek_state_ = seek_state_t::sync_to_frame;
+    }
+    else if (seek_state_ == seek_state_t::sync_to_frame) {
+        const auto dist = current_frame.distance_to(seek_position_requested());
+        cerr    << "FIXMENM seek_state: " << to_string(seek_state_)
+             << " dist: " << duration_cast<seconds>(dist)
+                << "\n";
+
+
+//        if (dist < 1s) {
+//            seek_state_ = seek_state_t::ready;
+//            cerr << "FIXMENM seek READY again!\n";
+//        }
+
+        if ( (steady_clock::now() - seek_flush_done_time_point_) > 100ms) {
+            seek_state_ = seek_state_t::ready;
+        }
+    }
+
     video_render_thread_.video_frame_update(current_frame, video_render);
+
+// HERE WE ARE
 }
 
 void pipeline_threads::flush_queues()

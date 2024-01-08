@@ -53,7 +53,7 @@ public:
     const cpaf::video::surface_dimensions_t& render_dimensions           () const                   { return render_dimensions_;      }
 
     void                        clear_screen                ()                              { do_clear_screen();  }
-    bool                        render_video_frame          (const cpaf::video::av_frame& frame)    { return do_render_video_frame(frame);  }
+    bool                        render_video_frame          (const cpaf::video::av_frame& frame);
     void                        render_subtitle             (const cpaf::video::subtitle_frame& subtitle);
 
     bool                        show_subtitles              () const                        { return show_subtitles_;   }

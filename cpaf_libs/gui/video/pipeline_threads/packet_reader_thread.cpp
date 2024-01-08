@@ -26,6 +26,13 @@ void packet_reader_thread::start()
 
 cpaf::video::pipeline_index_t packet_reader_thread::seek_position(const std::chrono::microseconds& stream_pos, cpaf::video::seek_dir dir)
 {
+    if (seek_requested_) {
+        return format_context().pipeline_index();
+    }
+
+    auto seek_state = seek_state_t::ready;
+    seek_state_.compare_exchange_strong(seek_state, seek_state_t::requested);
+
     flush_to_index_requested_index_ = format_context().pipeline_index() + 1;
     seek_position_requested_ = stream_pos;
     seek_requested_ = true;
@@ -39,9 +46,14 @@ cpaf::video::pipeline_index_t packet_reader_thread::seek_position(const std::chr
     if (seek_requested_) {
         return format_context().pipeline_index();
     }
+
+    auto seek_state = seek_state_t::ready;
+    seek_state_.compare_exchange_strong(seek_state, seek_state_t::requested);
+
     flush_to_index_requested_index_ = format_context().pipeline_index() + 1;
     seek_position_requested_ = stream_pos;
     seek_requested_ = true;
+
     seek_direction_ = cpaf::video::seek_dir::forward;
     return flush_to_index_requested_index_;
 }
@@ -67,6 +79,14 @@ void packet_reader_thread::check_seek_position()
 //        std::cerr << "FIXMENM check_seek_position() THROTTLE " << duration_cast<milliseconds>(diff) << "\n";
 //        return;
 //    }
+
+    auto seek_state = seek_state_t::requested;
+    if (seek_state_.compare_exchange_strong(seek_state, seek_state_t::flushing)) {
+        // TODO: Move the flushing to here
+
+        seek_state_ = seek_state_t::flush_done;
+    }
+
 
     if (seek_requested_) {
 //        const auto seek_start = steady_clock::now();

@@ -26,13 +26,15 @@ public:
     packet_reader_thread(const std::atomic_bool& threads_running,
                          const std::atomic_bool& threads_paused,
                          std::atomic<cpaf::video::seek_state_t>& seek_state);
-    void                    pipeline_threads_set    (pipeline_threads* ptr)     { pipeline_threads_ptr_ = ptr; }
-    void                    format_context_set      (cpaf::video::av_format_context* ctx)    { format_context_ptr_ = ctx; }
-    void                    format_context_set      (cpaf::video::av_format_context& ctx)    { format_context_ptr_ = &ctx; }
+    void                                pipeline_threads_set    (pipeline_threads* ptr)     { pipeline_threads_ptr_ = ptr; }
+    void                                format_context_set      (cpaf::video::av_format_context* ctx)    { format_context_ptr_ = ctx; }
+    void                                format_context_set      (cpaf::video::av_format_context& ctx)    { format_context_ptr_ = &ctx; }
 
-    void                    start                   ();
-    cpaf::video::pipeline_index_t        seek_position           (const std::chrono::microseconds& stream_pos, cpaf::video::seek_dir dir);
-    cpaf::video::pipeline_index_t        seek_position           (const std::chrono::microseconds& stream_pos);
+    void                                start                   ();
+    cpaf::video::pipeline_index_t       seek_position           (const std::chrono::microseconds& stream_pos, cpaf::video::seek_dir dir);
+    cpaf::video::pipeline_index_t       seek_position           (const std::chrono::microseconds& stream_pos);
+
+    std::chrono::microseconds           seek_position_requested () const { return seek_position_requested_; }
 
 private:
     using flush_queue_t = estl::srsw_fifo_s<cpaf::video::pipeline_index_t, 32>;
@@ -44,8 +46,8 @@ private:
     void                    signal_flush_done       ();
 
 
-    cpaf::video:: av_format_context&      format_context          () { return *format_context_ptr_; }
-    const std::atomic_bool& threads_running         () const { return threads_running_; }
+    cpaf::video:: av_format_context&        format_context          () { return *format_context_ptr_; }
+    const std::atomic_bool&                 threads_running         () const { return threads_running_; }
 //    const std::atomic_bool& threads_paused          () const { return threads_paused_; }
 
     const std::atomic_bool&                 threads_running_;
