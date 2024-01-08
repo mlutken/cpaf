@@ -1,11 +1,6 @@
 
 #include "media_stream_time.h"
 
-
-extern "C"
-{
-}
-
 #include <cpaf_libs/video/av_frame.h>
 
 using namespace std;
@@ -47,11 +42,6 @@ std::chrono::microseconds media_stream_time::video_time_pos() const
     return current_time_pos() + video_offset_;
 }
 
-//std::chrono::microseconds media_stream_time::test_current_time_pos() const
-//{
-//    const auto tp_now = std::chrono::high_resolution_clock::now();
-//    return std::chrono::duration_cast<std::chrono::microseconds>(tp_now - test_time_point_start_) + test_reset_offset_;
-//}
 
 void media_stream_time::pause_time()
 {
@@ -87,15 +77,9 @@ void media_stream_time::adjust_time(const std::chrono::microseconds& reset_offse
     start_time_was_reset_ = false;
 }
 
-//void media_stream_time::test_adjust_time(const std::chrono::microseconds& current_video_offset)
-//{
-//    test_reset_offset_ = current_video_offset;
-//    test_time_point_start_ = std::chrono::high_resolution_clock::now();
-//}
 
 void media_stream_time::dbg_print(const std::string& text) const
 {
-//    std::cerr << text << ": " << current_time_pos_ms().count() << " ms\n";
     std::cerr << "[" << text << "]"
               << ", Time: " << current_time_pos_ms().count() << " ms"
               << "\n";
