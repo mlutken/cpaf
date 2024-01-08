@@ -67,14 +67,12 @@ bool video_render_thread::is_seek_currently_possible() const {
 bool video_render_thread::video_frame_do_render(cpaf::video::av_frame& current_frame, cpaf::gui::video::render& video_render)
 {
     // --- Special case when we are flushing (seeking) ---
-//    if (video_queue_flush_in_progress_) {
     if (seek_state_ == seek_state_t::flushing) {
         video_render.render_video_frame(current_frame);
         video_render.render_subtitle(current_subtitle());
         return false;
     }
     else if ( seek_state_ == seek_state_t::flush_done) {
-//        seek_flush_done_time_point_ = steady_clock::now();
         seek_state_ = seek_state_t::sync_to_frame;
         current_frame = video_codec_ctx().read_frame();
         video_render.render_video_frame(current_frame);
