@@ -174,10 +174,10 @@ void pipeline_threads::video_frame_update(cpaf::video::av_frame& current_frame, 
         seek_state_ = seek_state_t::sync_to_frame;
     }
     else if (seek_state_ == seek_state_t::sync_to_frame) {
-        const auto dist = current_frame.distance_to(seek_position_requested());
-        cerr    << "FIXMENM seek_state: " << to_string(seek_state_)
-             << " dist: " << duration_cast<seconds>(dist)
-                << "\n";
+//        const auto dist = current_frame.distance_to(seek_position_requested());
+//        cerr    << "FIXMENM seek_state: " << to_string(seek_state_)
+//             << " dist: " << duration_cast<seconds>(dist)
+//                << "\n";
 
 
 //        if (dist < 1s) {
@@ -185,7 +185,7 @@ void pipeline_threads::video_frame_update(cpaf::video::av_frame& current_frame, 
 //            cerr << "FIXMENM seek READY again!\n";
 //        }
 
-        if ( (steady_clock::now() - seek_flush_done_time_point_) > 100ms) {
+        if ( (steady_clock::now() - seek_flush_done_time_point_) > 10ms) {
             seek_state_ = seek_state_t::ready;
         }
     }
