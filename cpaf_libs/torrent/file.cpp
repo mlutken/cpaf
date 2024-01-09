@@ -71,12 +71,18 @@ int file::seek(int64_t offset, int whence)
     case SEEK_END:
         offsett_ = filesize - abs(offset);
     break;
-
     }
+
     const bool is_valid_offset = (0 <= offsett_) && (offsett_ < filesize);
     if (is_valid_offset) {
         request_pieces_from_offset();
-        return 0;
+        if (use_blocking_seek_) {
+            auto pieces = get_pieces_data(offsett_, 1024*16, blocking_seek_timeout_);
+            return pieces.is_valid() ? 0 : -1;
+        }
+        else {
+            return 0;
+        }
     }
     return -1;
 }

@@ -93,9 +93,13 @@ void controls_default::do_render()
     }
 
     {
-        const float total_time_seconds = duration_cast<seconds>(player_.total_time()).count();
-        const float save_current_postion_seconds = duration_cast<seconds>(player_.current_time()).count();
+        const float total_time_seconds = player_.total_time().count() / 1'000'000;
+        const float save_current_postion_seconds = player_.current_time().count() / 1'000'000;
         float current_postion_seconds = save_current_postion_seconds;
+//        if (player_.playback_paused()) {
+//            current_postion_seconds = slider_last_user_pos_seconds_;
+//        }
+
         ImGui::Rai imrai{};
         imrai.Font(font_slider)
 //  Test/Debug only
@@ -111,7 +115,18 @@ void controls_default::do_render()
         ImGui::SetNextWindowSize(video_slider_size_, ImGuiCond_::ImGuiCond_Always);
         ImGui::Begin("video_slider_win", &show_controls, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
         ImGui::PushItemWidth(-1);   // Force control to fill width with no label
-        ImGui::SliderFloat("video_slider", &current_postion_seconds, 0, total_time_seconds, "");
+
+        if (ImGui::SliderFloat("video_slider", &current_postion_seconds, 0, total_time_seconds, ""))
+        {
+//            std::cerr << "Moving slider....\n";
+            slider_last_user_pos_seconds_ = current_postion_seconds;
+        }
+        else {
+//            if (std::abs(slider_last_user_pos_seconds_ - current_postion_seconds) > 5) {
+//                slider_last_user_pos_seconds_ = current_postion_seconds;
+//            }
+
+        }
         ImGui::PopItemWidth();
         ImGui::End();
 

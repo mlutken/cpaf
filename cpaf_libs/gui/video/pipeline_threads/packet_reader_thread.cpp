@@ -1,5 +1,6 @@
 #include "packet_reader_thread.h"
 #include <cpaf_libs/video/av_format_context.h>
+#include <cpaf_libs/video/media_stream_time.h>
 #include <cpaf_libs/gui/video/pipeline_threads/pipeline_threads.h>
 
 using namespace std;
@@ -24,30 +25,29 @@ void packet_reader_thread::start()
     read_packets_thread_->detach();
 }
 
-cpaf::video::pipeline_index_t packet_reader_thread::seek_position(const std::chrono::microseconds& stream_pos, cpaf::video::seek_dir dir)
+bool packet_reader_thread::seek_position(const std::chrono::microseconds& stream_pos, cpaf::video::seek_dir dir)
 {
     auto seek_state = seek_state_t::ready;
     if (seek_state_.compare_exchange_strong(seek_state, seek_state_t::requested)) {
-        flush_to_index_requested_index_ = format_context().pipeline_index() + 1;
+        seek_from_position_ = current_media_time().current_time_pos();
         seek_position_requested_ = stream_pos;
         seek_direction_ = dir;
-        return flush_to_index_requested_index_;
+        return true;
     }
-    return format_context().pipeline_index();
+    return false;
 }
 
-cpaf::video::pipeline_index_t packet_reader_thread::seek_position(const std::chrono::microseconds& stream_pos)
+bool packet_reader_thread::seek_position(const std::chrono::microseconds& stream_pos)
 {
-
     auto seek_state = seek_state_t::ready;
     if (seek_state_.compare_exchange_strong(seek_state, seek_state_t::requested)) {
-        flush_to_index_requested_index_ = format_context().pipeline_index() + 1;
-        seek_position_requested_ = stream_pos;
 
+        seek_from_position_ = current_media_time().current_time_pos();
+        seek_position_requested_ = stream_pos;
         seek_direction_ = cpaf::video::seek_dir::forward;
-        return flush_to_index_requested_index_;
+        return true;
     }
-    return format_context().pipeline_index();
+    return false;
 }
 
 void packet_reader_thread::read_packets_thread_fn()

@@ -4,11 +4,25 @@
 #include <cpaf_libs/video/media_stream_time.h>
 #include <cpaf_libs/video/av_format_context.h>
 #include <cpaf_libs/video/av_samples_queue.h>
+#include <cpaf_libs/gui/video/pipeline_threads/pipeline_threads.h>
 
 
 using namespace std;
+using namespace std::chrono_literals;
+using namespace std::chrono;
+using namespace cpaf::video;
+using namespace cpaf;
 
 namespace cpaf::gui::video {
+
+audio_render_thread::audio_render_thread(
+    pipeline_threads& pline_threads,
+    std::atomic<cpaf::video::seek_state_t>& seek_state)
+    : pipeline_threads_(pline_threads),
+    seek_state_(seek_state)
+{
+
+}
 
 void audio_render_thread::start()
 {
@@ -82,6 +96,29 @@ void audio_render_thread::switch_state()
 
 void audio_render_thread::state__normal_flow(uint8_t* stream, int32_t length)
 {
+
+    if (seek_state_ == seek_state_t::flushing) {
+        render_audio_silence(stream, length);
+        return;
+    }
+
+
+    auto expected_seek_state = seek_state_t::flush_done;
+    if (seek_state_.compare_exchange_strong(expected_seek_state, seek_state_t::ready)) {
+        {
+            const auto frame_time = audio_samples_queue().front().presentation_time();
+            const auto diff = pipeline_threads_.seek_position_requested() - frame_time;
+            cerr << "FIXMENM 1 flush_done: " << duration_cast<milliseconds> (diff) << "\n";
+        }
+        {
+            audio_samples_queue().pop();
+            const auto frame_time = audio_samples_queue().front().presentation_time();
+            const auto diff = pipeline_threads_.seek_position_requested() - frame_time;
+            cerr << "FIXMENM 2 flush_done: " << duration_cast<milliseconds> (diff) << "\n";
+        }
+        current_media_time().adjust_time(audio_samples_queue().front().presentation_time());
+    }
+
 
     if (current_media_time().time_is_paused()) {
         render_audio_silence(stream, length);

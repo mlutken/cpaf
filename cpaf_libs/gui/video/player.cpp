@@ -310,16 +310,19 @@ std::shared_ptr<torrent::torrents> player::torrents_get() const
 
 void player::seek_position(const std::chrono::microseconds& stream_pos, seek_dir dir)
 {
+    if (resume_from_pause_on_seek_) { resume_playback(); }
     media_pipeline_threads().seek_position(stream_pos, dir);
 }
 
 void player::seek_position(const std::chrono::microseconds& stream_pos)
 {
+    if (resume_from_pause_on_seek_) { resume_playback(); }
     media_pipeline_threads().seek_position(stream_pos);
 }
 
 void player::seek_relative(const std::chrono::microseconds& delta_time)
 {
+    if (resume_from_pause_on_seek_) { resume_playback(); }
     media_pipeline_threads().seek_relative(delta_time);
 }
 

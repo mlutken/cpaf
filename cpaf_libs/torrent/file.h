@@ -29,7 +29,8 @@ public:
     void                                request_pieces_from_offset      ();
     void                                close                           ();
 
-
+    void                                use_blocking_seek_set           (bool bs) { use_blocking_seek_ = bs; }
+    bool                                use_blocking_seek               () const { return use_blocking_seek_; }
     bool                                is_valid                        () const { return file_index_ >= 0; }
     bool                                are_streaming_pieces_in_cache   () const;
     bool                                streaming_mode_active           () const                        { return read_ahead_size_ > 0; }
@@ -49,7 +50,7 @@ public:
     pieces_range_t                      get_pieces_read_ahead_range     (lt::piece_index_t from_piece) const;
     pieces_range_t                      get_pieces_read_ahead_range     (int64_t offset) const;
 
-    private:
+private:
     const lt::file_storage&             files_storage                   () const;
 
     lt::file_index_t                    file_index_         = -1;
@@ -57,6 +58,9 @@ public:
     torrent*                            parent_torrent_ptr_ = nullptr;
     int64_t                             offsett_ =0;
     size_t                              read_ahead_size_    = 0;
+    std::chrono::milliseconds           blocking_seek_timeout_ = std::chrono::minutes(2);
+    bool                                use_blocking_seek_  = true;
+
 //    std::string                         name_;
 
 };

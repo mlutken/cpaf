@@ -39,6 +39,9 @@ public:
     bool                init                    (AVFormatContext*  ff_format_context);
 //    AVIOContext*        ff_avio_context         () const { return ff_avio_context_; }
 
+protected:
+//    bool                use_blocking_seek_      = true;
+
 private:
     uint8_t*            ff_avio_context_buffer_ = nullptr;
     AVIOContext*        ff_avio_context_        = nullptr;

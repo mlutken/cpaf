@@ -56,6 +56,7 @@ public:
     void                        seek_position           (const std::chrono::microseconds& stream_pos);
     void                        seek_relative           (const std::chrono::microseconds& delta_time);
     cpaf::video::seek_state_t   seek_state              () const { return seek_state_;      }
+    std::chrono::microseconds   seek_from_position      () const { return packet_reader_thread_.seek_from_position(); }
     std::chrono::microseconds   seek_position_requested () const { return packet_reader_thread_.seek_position_requested(); }
     void                        pause_playback          ();
     void                        resume_playback         ();
@@ -74,6 +75,7 @@ private:
     cpaf::video::av_samples_queue&       audio_samples_queue     () { return *audio_samples_queue_ptr_; }
     cpaf::video::media_stream_time&      current_media_time      () { return *current_media_time_ptr_; }
 
+    std::atomic<cpaf::video::seek_state_t>      seek_state_                     = cpaf::video::seek_state_t::ready;
     packet_reader_thread                        packet_reader_thread_;
     audio_resampler_thread                      audio_resampler_thread_;
     audio_render_thread                         audio_render_thread_;
@@ -86,7 +88,6 @@ private:
     cpaf::video::media_stream_time*             current_media_time_ptr_         = nullptr;
     std::atomic_bool                            threads_running_                = true;
     std::atomic_bool                            threads_paused_                 = false;
-    std::atomic<cpaf::video::seek_state_t>      seek_state_                     = cpaf::video::seek_state_t::ready;
     std::chrono::steady_clock::time_point       seek_flush_done_time_point_;
 
 };

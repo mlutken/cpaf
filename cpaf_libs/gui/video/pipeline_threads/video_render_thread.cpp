@@ -73,29 +73,25 @@ bool video_render_thread::video_frame_do_render(cpaf::video::av_frame& current_f
         return false;
     }
     else if ( seek_state_ == seek_state_t::flush_done) {
-        seek_state_ = seek_state_t::sync_to_frame;
         current_frame = video_codec_ctx().read_frame();
         video_render.render_video_frame(current_frame);
         video_render.render_subtitle(current_subtitle());
+//        seek_state_ = seek_state_t::ready;
+
         return true;
-    }
-    else if ( seek_state_ == seek_state_t::sync_to_frame) {
-        seek_state_ = seek_state_t::ready;
     }
 
     bool new_frame_was_read = false;
+    if (time_to_current_frame(current_frame) > 1s ) {
+        std::cerr << "******* ERROR long time to current video frame " << duration_cast<seconds>(time_to_current_frame(current_frame)) << "\n";
+        current_frame = video_codec_ctx().read_frame();
+        new_frame_was_read = true;
+    }
 
     video_render.render_video_frame(current_frame);
     video_render.render_subtitle(current_subtitle());
 
     if (!current_media_time().time_is_paused()) {
-        if (time_to_current_frame(current_frame) > 1s ) {
-            std::cerr << "******* ERROR long time to current video frame " << duration_cast<seconds>(time_to_current_frame(current_frame)) << "\n";
-            current_frame = video_codec_ctx().read_frame();
-//            video_render.render_video_frame(current_frame);
-//            video_render.render_subtitle(current_subtitle());
-            return true;
-        }
         if (time_to_current_frame(current_frame) <= 1ms ) {
             current_pipeline_index_ = current_frame.pipeline_index();
             current_frame = video_codec_ctx().read_frame();

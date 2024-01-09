@@ -124,9 +124,9 @@ std::vector<libtorrent::piece_index_t> streaming_cache::all_downloaded_indices()
 
 void streaming_cache::request_piece(libtorrent::piece_index_t piece, int32_t deadline_in_ms) const
 {
-    if (piece < dbg_print_pieces_lower_than ) {
-        std::cerr << "!!! request_piece !!!  index: " << piece << " is_piece_downloaded_impl: '" << is_piece_downloaded_impl(piece) << "'\n";
-    }
+//    if (piece < dbg_print_pieces_lower_than ) {
+//        std::cerr << "!!! request_piece !!!  index: " << piece << " is_piece_downloaded_impl: '" << is_piece_downloaded_impl(piece) << "'\n";
+//    }
     scoped_lock lock(cache_mutex_);
     if (is_piece_in_cache_impl(piece)) {
         return;
