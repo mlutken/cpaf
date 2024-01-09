@@ -174,30 +174,7 @@ void pipeline_threads::video_frame_update(cpaf::video::av_frame& current_frame, 
         cerr << "FIXMENM seek_state: " << to_string(seek_state_) << "\n";
     }
 
-//    if ( seek_state_ == seek_state_t::flush_done) {
-//        seek_flush_done_time_point_ = steady_clock::now();
-//        seek_state_ = seek_state_t::sync_to_frame;
-//    }
-//    else if (seek_state_ == seek_state_t::sync_to_frame) {
-//        const auto dist = current_frame.distance_to(seek_position_requested());
-//        cerr    << "FIXMENM seek_state: " << to_string(seek_state_)
-//             << " dist: " << duration_cast<seconds>(dist)
-//                << "\n";
-
-
-//        if (dist < 1s) {
-//            seek_state_ = seek_state_t::ready;
-//            cerr << "FIXMENM seek READY again!\n";
-//        }
-
-//        if ( (steady_clock::now() - seek_flush_done_time_point_) > 10ms) {
-//            seek_state_ = seek_state_t::ready;
-//        }
-//    }
-
     video_render_thread_.video_frame_update(current_frame, video_render);
-
-// HERE WE ARE
 }
 
 void pipeline_threads::flush_queues()
@@ -209,14 +186,12 @@ void pipeline_threads::flush_queues()
 void pipeline_threads::signal_flush_start()
 {
     video_render_thread_.video_queue_flush_start();
-    audio_render_thread_.audio_queue_flush_start();
     audio_resampler_thread_.samples_queue_flush_start();
 }
 
 void pipeline_threads::signal_flush_done()
 {
     video_render_thread_.video_queue_flush_done();
-    audio_render_thread_.audio_queue_flush_done();
     audio_resampler_thread_.samples_queue_flush_done();
 }
 

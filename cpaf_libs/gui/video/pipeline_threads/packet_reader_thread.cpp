@@ -6,6 +6,7 @@
 using namespace std;
 using namespace cpaf::video;
 using namespace std::chrono;
+using namespace std::chrono_literals;
 
 namespace cpaf::gui::video {
 
@@ -76,6 +77,8 @@ void packet_reader_thread::check_seek_position()
         format_context().read_packets_to_queues(mt, primary_queue_fill_level_);
         signal_flush_done();
         seek_state_ = seek_state_t::flush_done;
+        std::this_thread::sleep_for(5ms);
+        seek_state_ = seek_state_t::ready;
     }
 }
 

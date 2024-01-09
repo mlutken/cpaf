@@ -76,8 +76,6 @@ bool video_render_thread::video_frame_do_render(cpaf::video::av_frame& current_f
         current_frame = video_codec_ctx().read_frame();
         video_render.render_video_frame(current_frame);
         video_render.render_subtitle(current_subtitle());
-//        seek_state_ = seek_state_t::ready;
-
         return true;
     }
 
