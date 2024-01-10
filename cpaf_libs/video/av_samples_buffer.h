@@ -24,8 +24,6 @@ class av_format_context;
 class av_samples_buffer
 {
 public:
-
-    static av_samples_buffer create_flush_sample();
     // --- Constructors etc. ---
     av_samples_buffer() = default;
     av_samples_buffer (const av_samples_buffer&) = delete;
@@ -45,8 +43,6 @@ public:
                                                              AVSampleFormat sample_format, int align);
 
 
-    void                        is_flush_sample_set         ()              { is_flush_sample_ = true; }
-    bool                        is_flush_sample             () const		{ return is_flush_sample_; }
     bool                        valid                       () const		{ return resampled_data_ != nullptr && raw_buffer_start() != nullptr; }
     bool                        empty                       () const		{ return !valid() || size() == 0; }
     uint8_t**                   raw_buffer                  ()				{ return resampled_data_; }
@@ -90,7 +86,6 @@ private:
     int64_t						buffer_pos_				= 0;
     float                       bytes_per_microsecond_  = 0;
     int32_t                     bytes_per_sample_       = 0;
-    bool                        is_flush_sample_        = false;
 };
 
 

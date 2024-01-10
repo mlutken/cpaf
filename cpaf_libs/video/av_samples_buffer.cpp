@@ -19,12 +19,6 @@ namespace cpaf::video {
 std::array<char, 0xFFFF> null_audio_data = []() constexpr -> auto { auto a = std::array<char, 0xFFFF>(); a.fill(0u); return a;}();
 
 
-av_samples_buffer av_samples_buffer::create_flush_sample()
-{
-    av_samples_buffer buf;
-    buf.is_flush_sample_set();
-    return buf;
-}
 
 // -------------------------
 // --- Constructors etc. ---
@@ -35,15 +29,11 @@ av_samples_buffer av_samples_buffer::create_flush_sample()
 av_samples_buffer::~av_samples_buffer()
 
 {
-
     if (resampled_data_) {
-
         av_freep(&resampled_data_[0]);
-
     }
 
     av_freep(&resampled_data_);
-
 }
 
 
@@ -51,19 +41,12 @@ av_samples_buffer::~av_samples_buffer()
 void av_samples_buffer::swap(av_samples_buffer& src) noexcept
 
 {
-
     std::swap(presentation_time_, src.presentation_time_);
-
     std::swap(resampled_data_, src.resampled_data_);
-
     std::swap(buffer_size_, src.buffer_size_);
-
     std::swap(buffer_pos_, src.buffer_pos_);
-
     std::swap(bytes_per_microsecond_, src.bytes_per_microsecond_);
-
     std::swap(bytes_per_sample_, src.bytes_per_sample_);
-    std::swap(is_flush_sample_, src.is_flush_sample_);
 }
 
 
