@@ -275,6 +275,15 @@ player::audio_play_callback_t player::audio_callback_get()
 
 void player::render()
 {
+    // TODO: Move to some other place!
+    if (has_subtitle_stream()) {
+        auto frame = subtitle_codec_context().read_frame();
+        if (frame.is_valid()) {
+            std::cerr << "FIXMENM subtitle\n";
+        }
+    }
+
+
     if (has_video_stream()) {
         video_frame_update(next_video_frame_);
     }
