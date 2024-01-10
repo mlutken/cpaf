@@ -70,8 +70,8 @@ public:
     std::string                 audio_resource_path     () const { return audio_stream() ? audio_stream()->resource_path() : ""; }
     std::string                 subtitle_resource_path  () const { return subtitle_stream() ? subtitle_stream()->resource_path() : ""; }
 
-    media_stream_time&          cur_media_time          ()          { return cur_media_time_; }
-    const media_stream_time&    cur_media_time          () const    { return cur_media_time_; }
+    media_stream_time&          cur_media_time          ()       { return cur_media_time_; }
+    const media_stream_time&    cur_media_time          () const { return cur_media_time_; }
 
     std::chrono::microseconds   current_time            () const { return cur_media_time().current_time_pos(); }
     std::chrono::microseconds   total_time              () const { return primary_stream().total_time(); }

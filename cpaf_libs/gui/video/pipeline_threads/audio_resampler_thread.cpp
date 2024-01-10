@@ -46,7 +46,6 @@ void audio_resampler_thread::resample_frame(bool& add_samples, const std::chrono
         return;
     }
 
-
     const auto frame = audio_codec_ctx().read_frame();
     if(!frame.is_valid()) {
         return;
