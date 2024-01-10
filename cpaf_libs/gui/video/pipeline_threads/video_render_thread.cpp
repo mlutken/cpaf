@@ -129,7 +129,6 @@ void video_render_thread::debug_video_frame_update(cpaf::video::av_frame& curren
 
         std::cerr
                 << "XXX VIDEO [" << video_to_media_ms << "/" << video_to_audio_ms << " ms]"
-                << " pc: '" << to_string(current_frame.pipeline_control()) << "' "
                 << " current media time: " << current_media_time().current_time_pos_ms().count() << " ms"
                 << ", audio frm t: " << audio_samples_queue().front().presentation_time_ms().count() << " ms"
                 << ", video frm t: " << current_frame.presentation_time_ms().count() << " ms"

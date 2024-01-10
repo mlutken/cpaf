@@ -33,32 +33,6 @@ string to_string(media_type mt)
     return "";
 }
 
-string to_string(pipeline_control_t pc)
-{
-    switch (pc) {
-    case pipeline_control_t::none:              return "none"; break;
-    case pipeline_control_t::normal_flow:       return "normal_flow"; break;
-    case pipeline_control_t::first_after_flush: return "first_after_flush"; break;
-    case pipeline_control_t::seek_pos:          return "seek_pos"; break;
-    }
-    return "";
-}
-
-
-string to_string(pipeline_state_t ps)
-{
-    switch (ps) {
-    case pipeline_state_t::inactive:            return "inactive"; break;
-    case pipeline_state_t::paused:              return "paused"; break;
-    case pipeline_state_t::normal_flow:         return "normal_flow"; break;
-////    case pipeline_state_t::flush_requested:     return "flush_requested"; break;
-    case pipeline_state_t::flush_in_progress:   return "flush_in_progress"; break;
-    case pipeline_state_t::flush_done:          return "flush_done"; break;
-    case pipeline_state_t::seek_pos:            return "seek_pos"; break;
-    }
-    return "";
-}
-
 surface_dimensions_t scale_surface_dimensions(const surface_dimensions_t& src_dimensions, const surface_dimensions_t& dst_dimensions)
 {
     if (dst_dimensions.x() <= 0 && dst_dimensions.y() <= 0) {

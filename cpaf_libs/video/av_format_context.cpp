@@ -296,7 +296,6 @@ av_codec_context av_format_context::codec_context(media_type selected_media_type
 av_packet av_format_context::read_packet() const
 {
     av_packet packet = av_packet::alloc();
-    packet.pipeline_control_set(pipeline_control());
     int res = av_read_frame(ff_format_context_, packet.ff_packet_);
     if (res != 0) {
         packet.destroy(); // Ensures packet.valid() becomes false!

@@ -64,7 +64,6 @@ void av_packet::swap(av_packet& src) noexcept
     std::swap(create_number_, src.create_number_);
     std::swap(media_type_, src.media_type_);
     std::swap(presentation_time_, src.presentation_time_);
-    std::swap(pipeline_control_, src.pipeline_control_);
 }
 
 // -----------------------
@@ -84,7 +83,6 @@ std::string av_packet::dbg_string_short() const
 //       << std::hex
        << ", pts: " << presentation_time_ms().count() << " ms"
        << ", pts_stream_base: " << pts_stream_base()
-       << ", pipeline_control: '" << to_string(pipeline_control()) << "'"
        ;
     return ss.str();
 }

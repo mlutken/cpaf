@@ -55,7 +55,6 @@ void packet_reader_thread::read_packets_thread_fn()
 {
     const auto mt = format_context().primary_media_type();
     while(threads_running()) {
-        format_context().pipeline_control_set(cpaf::video::pipeline_control_t::normal_flow);
         check_seek_position();
         if (!threads_paused_) {
             format_context().read_packets_to_queues(mt, primary_queue_fill_level_);

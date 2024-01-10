@@ -63,7 +63,6 @@ void av_samples_buffer::swap(av_samples_buffer& src) noexcept
     std::swap(bytes_per_microsecond_, src.bytes_per_microsecond_);
 
     std::swap(bytes_per_sample_, src.bytes_per_sample_);
-    std::swap(pipeline_control_, src.pipeline_control_);
     std::swap(is_flush_sample_, src.is_flush_sample_);
 }
 

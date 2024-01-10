@@ -105,8 +105,6 @@ public:
     std::chrono::microseconds   packet_queue_pts        (media_type mt) const;
     std::chrono::milliseconds   packet_queue_pts_ms     (media_type mt) const;
     void                        flush_packet_queues     ();
-    pipeline_control_t          pipeline_control        () const { return pipeline_control_; }
-    void                        pipeline_control_set    (pipeline_control_t pc) { pipeline_control_ = pc; }
 
     // --- Time functions ---
     std::chrono::microseconds   time_from_stream_time   (size_t stream_index, int64_t stream_time_duration) const;
@@ -146,7 +144,6 @@ private:
     AVFormatContext*                                        ff_format_context_      = nullptr;
     size_t                                                  packet_queue_capacity_  = 200;
     size_t                                                  primary_stream_index_   = no_stream_index;
-    pipeline_control_t                                      pipeline_control_       = pipeline_control_t::none;
     std::mutex                                              packet_queues_mutex_;
     std::unique_ptr<custom_io_base>                         custom_io_ptr_;
 };

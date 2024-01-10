@@ -72,7 +72,6 @@ void av_frame::swap(av_frame& src) noexcept
     std::swap(stream_index_, src.stream_index_);
     std::swap(presentation_time_, src.presentation_time_);
     std::swap(create_number_, src.create_number_);
-    std::swap(pipeline_control_, src.pipeline_control_);
 }
 
 std::chrono::microseconds av_frame::distance_to_abs(std::chrono::microseconds media_time_point) const
@@ -170,7 +169,6 @@ std::string av_frame::dbg_string_short() const
        << " , pts_stream_base: " << pts_stream_base()
        << " ;  pts: "
        << presentation_time_ms().count() << " ms"
-       << ", pipeline_control: '" << to_string(pipeline_control()) << "'"
        ;
     return ss.str();
 

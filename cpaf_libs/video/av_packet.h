@@ -46,8 +46,6 @@ public:
     bool                    valid               () const    { return ff_packet_ != nullptr;    }
     media_type              media_type_get      () const    { return media_type_;    }
     size_t                  stream_index        () const    { return static_cast<size_t>(ff_packet_->stream_index);    }
-    pipeline_control_t      pipeline_control    () const    { return pipeline_control_; }
-    void                    pipeline_control_set(pipeline_control_t pc) { pipeline_control_ = pc; }
 
     // --- Info functions ---
     AVPacket*           ff_packet           () const { return ff_packet_; }
@@ -75,7 +73,6 @@ private:
     uint32_t                    create_number_      = 0;
     media_type                  media_type_         = media_type::unknown;
     std::chrono::microseconds   presentation_time_  = illegal_timestamp();
-    pipeline_control_t          pipeline_control_   = pipeline_control_t::none;
 };
 
 using packet_queue_t = estl::srsw_fifo<av_packet>;

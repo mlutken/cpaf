@@ -204,13 +204,7 @@ av_frame av_codec_context::read_frame() const
     }
 
     av_frame frame = av_frame::create_alloc();
-    frame.pipeline_control_set(packet.pipeline_control());
     while (packet.is_valid()) {
-
-        if (frame.pipeline_control() < packet.pipeline_control()) {
-            frame.pipeline_control_set(packet.pipeline_control());
-        }
-
         int ret = send_packet(packet);
 
         if (ret < 0) {

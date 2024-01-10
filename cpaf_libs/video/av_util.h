@@ -63,23 +63,6 @@ enum class seek_state_t : int8_t {
     flush_done
 };
 
-
-enum class pipeline_control_t : int8_t {
-    none,
-    normal_flow,
-    first_after_flush,
-    seek_pos
-};
-
-enum class pipeline_state_t : int8_t {
-    inactive,
-    paused,
-    normal_flow,
-    flush_in_progress,
-    flush_done,
-    seek_pos
-};
-
 enum struct stream_type_t : size_t {
     video = 0,
     audio,
@@ -88,15 +71,6 @@ enum struct stream_type_t : size_t {
     ads,
     SIZE = ads +1 			///< One past the last as we start from zero
 };
-
-
-//inline bool operator<(const pipeline_control_t& pc_left, const pipeline_control_t& pc_right) {
-//    using int_type = typename std::underlying_type<pipeline_control_t>::type;
-//    const int_type left_int = static_cast<int_type>(pc_left);
-//    const int_type right_int = static_cast<int_type>(pc_right);
-//    return left_int < right_int;
-//}
-
 
 inline bool media_type_valid (AVMediaType ff_mt) {
     return AVMEDIA_TYPE_UNKNOWN < ff_mt && ff_mt <= AVMEDIA_TYPE_NB;
@@ -138,8 +112,6 @@ inline constexpr std::chrono::microseconds illegal_timestamp()
 }
 
 std::string to_string						(media_type mt);
-std::string to_string						(pipeline_control_t pc);
-std::string to_string						(pipeline_state_t ps);
 std::string to_string						(seek_state_t ss);
 
 surface_dimensions_t scale_surface_dimensions(const surface_dimensions_t& src_dimensions, const surface_dimensions_t& dst_dimensions);

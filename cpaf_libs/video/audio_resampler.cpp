@@ -393,7 +393,6 @@ av_samples_buffer audio_resampler::audio_resampling(const av_frame& decoded_audi
     buf.presentation_time_set(decoded_audio_frame.presentation_time());
     buf.bytes_per_microsecond_set(out_bytes_per_microsecond());
     buf.bytes_per_sample_set(out_bytes_per_sample());
-    buf.pipeline_control_set(decoded_audio_frame.pipeline_control());
     return buf;
 }
 

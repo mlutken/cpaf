@@ -83,14 +83,11 @@ void audio_render_thread::render_audio_silence(uint8_t* stream, int32_t length)
 void audio_render_thread::debug_audio_callback(uint8_t* /*stream*/, int32_t /*length*/)
 {
     if ((audio_callback_dbg_counter_ % 50000 == 0) ||
-//            (pipeline_state_ != pipeline_state_t::normal_flow) ||
 //            (audio_samples_queue().front().pipeline_index() != prev_pipeline_index_) ||
-//            (audio_samples_queue().front().pipeline_control() == pipeline_control_t::seek_pos) ||
             (  0 < audio_samples_queue().size() && audio_samples_queue().size() < 5  )) {
         std::cerr
                 << "AUDIO(" << audio_callback_dbg_counter_ << ") [" << (audio_samples_queue().front().presentation_time_ms() - current_media_time().current_time_pos_ms()).count() << " ms]"
 //                << " state: '" << to_string(pipeline_state_) << "' "
-                << " => '" << to_string(audio_samples_queue().front().pipeline_control()) << "'"
                 << " current media time: " << current_media_time().current_time_pos_ms().count() << " ms"
                 << ", audio time: " << audio_samples_queue().front().presentation_time_ms().count() << " ms"
                    //                << ", audio pkts buf: " << format_context().packet_queue(media_type::audio).size() << ""

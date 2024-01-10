@@ -63,8 +63,6 @@ public:
     void                        bytes_per_microsecond_set   (float count)   { bytes_per_microsecond_ = count; }
     int32_t                     bytes_per_sample            () const        { return bytes_per_sample_; }
     void                        bytes_per_sample_set        (int32_t count) { bytes_per_sample_ = count; }
-    pipeline_control_t          pipeline_control            () const        { return pipeline_control_; }
-    void                        pipeline_control_set        (pipeline_control_t pc) { pipeline_control_ = pc; }
 
     int32_t                     skip_samples                (int32_t bytes_to_skip);
     int32_t                     skip_samples                (const std::chrono::microseconds& us_to_skip);
@@ -92,7 +90,6 @@ private:
     int64_t						buffer_pos_				= 0;
     float                       bytes_per_microsecond_  = 0;
     int32_t                     bytes_per_sample_       = 0;
-    pipeline_control_t          pipeline_control_       = pipeline_control_t::none;
     bool                        is_flush_sample_        = false;
 };
 
