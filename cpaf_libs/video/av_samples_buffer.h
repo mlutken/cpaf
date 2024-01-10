@@ -65,8 +65,6 @@ public:
     void                        bytes_per_sample_set        (int32_t count) { bytes_per_sample_ = count; }
     pipeline_control_t          pipeline_control            () const        { return pipeline_control_; }
     void                        pipeline_control_set        (pipeline_control_t pc) { pipeline_control_ = pc; }
-    const pipeline_index_t&     pipeline_index              () const { return pipeline_index_; }
-    void                        pipeline_index_set          (pipeline_index_t index) { pipeline_index_ = index; }
 
     int32_t                     skip_samples                (int32_t bytes_to_skip);
     int32_t                     skip_samples                (const std::chrono::microseconds& us_to_skip);
@@ -95,7 +93,6 @@ private:
     float                       bytes_per_microsecond_  = 0;
     int32_t                     bytes_per_sample_       = 0;
     pipeline_control_t          pipeline_control_       = pipeline_control_t::none;
-    pipeline_index_t            pipeline_index_         = 0;
     bool                        is_flush_sample_        = false;
 };
 

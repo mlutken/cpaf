@@ -73,7 +73,6 @@ void av_frame::swap(av_frame& src) noexcept
     std::swap(presentation_time_, src.presentation_time_);
     std::swap(create_number_, src.create_number_);
     std::swap(pipeline_control_, src.pipeline_control_);
-    std::swap(pipeline_index_, src.pipeline_index_);
 }
 
 std::chrono::microseconds av_frame::distance_to_abs(std::chrono::microseconds media_time_point) const

@@ -65,7 +65,6 @@ void av_packet::swap(av_packet& src) noexcept
     std::swap(media_type_, src.media_type_);
     std::swap(presentation_time_, src.presentation_time_);
     std::swap(pipeline_control_, src.pipeline_control_);
-    std::swap(pipeline_index_, src.pipeline_index_);
 }
 
 // -----------------------

@@ -33,24 +33,11 @@ public:
     void                    current_media_time_set  (cpaf::video::media_stream_time& mts)    { current_media_time_ptr_ = &mts; }
 
     void                    start                   ();
-//    bool                    flush_to_index          (const cpaf::video::pipeline_index_t& pipeline_index);
-//    void                    audio_queue_flush_start ()                          { audio_queue_flush_in_progress_ = true; }
-//    void                    audio_queue_flush_done  ()                          { audio_queue_flush_in_progress_ = false; audio_queue_flushed_ = true; }
-///    bool                    state_matches           (cpaf::video::pipeline_state_t desired_state, const cpaf::video::pipeline_index_t& desired_index) const;
-
 
     audio_play_callback_t   audio_callback_get      ();
 
-///    const cpaf::video::atomic_pipeline_index_t&      current_pipeline_index  () const { return current_pipeline_index_; }
-
 private:
-    using flush_queue_t = estl::srsw_fifo_s<cpaf::video::pipeline_index_t, 32>;
-
     void                    audio_callback_function (uint8_t* stream, int32_t length);
-///    cpaf::video::pipeline_index_t        get_flush_to_index      ();
-///    void                    switch_state            ();
-///    void                    state__normal_flow      (uint8_t* stream, int32_t length);
-//    void                    state__flush_in_progress(uint8_t* stream, int32_t length);
     void                    render_audio_silence    (uint8_t* stream, int32_t length);
     void                    debug_audio_callback    (uint8_t* stream, int32_t length);
 
@@ -60,22 +47,12 @@ private:
 
     pipeline_threads&                           pipeline_threads_;
     std::atomic<cpaf::video::seek_state_t>&     seek_state_;
-    flush_queue_t                               flush_queue_;
     cpaf::video::av_format_context*             format_context_ptr_             = nullptr;
     cpaf::video::av_codec_context*              audio_codec_ctx_ptr_            = nullptr;
     cpaf::video::av_samples_queue*              audio_samples_queue_ptr_        = nullptr;
     cpaf::video::media_stream_time*             current_media_time_ptr_         = nullptr;
-
-    std::chrono::microseconds       sync_ok_interval                = std::chrono::milliseconds(15);
-//    cpaf::video::pipeline_index_t                prev_pipeline_index_            = std::numeric_limits<cpaf::video::pipeline_index_t>::max();
-//    cpaf::video::pipeline_index_t                flush_in_progress_index_        = 0;
-//    cpaf::video::pipeline_state_t                pipeline_state_                 = cpaf::video::pipeline_state_t::normal_flow;
-//    cpaf::video::atomic_pipeline_index_t         current_pipeline_index_         = 0;
-
-    int                             audio_callback_dbg_counter_     = 0;
-///    std::atomic_bool                audio_queue_flush_in_progress_  = false;
-///    std::atomic_bool                audio_queue_flushed_            = false;
-
+    std::chrono::microseconds                   sync_ok_interval                = std::chrono::milliseconds(15);
+    int                                         audio_callback_dbg_counter_     = 0;
 };
 
 } // namespace cpaf::gui::video

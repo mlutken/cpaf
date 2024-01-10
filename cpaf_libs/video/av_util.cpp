@@ -93,7 +93,6 @@ string to_string(seek_state_t ss)
     case seek_state_t::requested:       return "requested"; break;
     case seek_state_t::flushing:        return "flushing"; break;
     case seek_state_t::flush_done:      return "flush_done"; break;
-    case seek_state_t::sync_to_frame:   return "sync_to_frame"; break;
     }
     return "";
 }

@@ -107,9 +107,6 @@ public:
     void                        flush_packet_queues     ();
     pipeline_control_t          pipeline_control        () const { return pipeline_control_; }
     void                        pipeline_control_set    (pipeline_control_t pc) { pipeline_control_ = pc; }
-    const pipeline_index_t&     pipeline_index          () const { return pipeline_index_; }
-    void                        pipeline_index_set      (pipeline_index_t index) { pipeline_index_ = index; }
-    const pipeline_index_t&     pipeline_index_inc      () { ++pipeline_index_; return pipeline_index_; }
 
     // --- Time functions ---
     std::chrono::microseconds   time_from_stream_time   (size_t stream_index, int64_t stream_time_duration) const;
@@ -150,7 +147,6 @@ private:
     size_t                                                  packet_queue_capacity_  = 200;
     size_t                                                  primary_stream_index_   = no_stream_index;
     pipeline_control_t                                      pipeline_control_       = pipeline_control_t::none;
-    pipeline_index_t                                        pipeline_index_         = 1;
     std::mutex                                              packet_queues_mutex_;
     std::unique_ptr<custom_io_base>                         custom_io_ptr_;
 };

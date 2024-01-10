@@ -23,8 +23,6 @@ namespace cpaf::torrent {
 
 
 namespace cpaf::video {
-using pipeline_index_t = std::uint64_t;
-using atomic_pipeline_index_t = std::atomic<pipeline_index_t>;
 using av_base_duration = std::chrono::duration<int64_t, std::ratio<1, AV_TIME_BASE>>;
 using surface_dimensions_t = cpaf::math::v2<int32_t>;
 using get_torrents_fn = std::function<std::shared_ptr<cpaf::torrent::torrents> ()>;
@@ -62,8 +60,7 @@ enum class seek_state_t : int8_t {
     ready,
     requested,
     flushing,
-    flush_done,
-    sync_to_frame
+    flush_done
 };
 
 

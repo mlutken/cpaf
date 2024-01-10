@@ -394,7 +394,6 @@ av_samples_buffer audio_resampler::audio_resampling(const av_frame& decoded_audi
     buf.bytes_per_microsecond_set(out_bytes_per_microsecond());
     buf.bytes_per_sample_set(out_bytes_per_sample());
     buf.pipeline_control_set(decoded_audio_frame.pipeline_control());
-    buf.pipeline_index_set(decoded_audio_frame.pipeline_index());
     return buf;
 }
 
@@ -405,10 +404,6 @@ int32_t audio_resampler::out_bytes_per_sample_channel() const
 
 float audio_resampler::out_bytes_per_microsecond() const
 {
-//    return time_between_out_samples().count() * out_channel_count() * out_bytes_per_sample();
-//    const auto time_between_samples_us = time_between_out_samples().count();
-//    const auto channel_count = out_channel_count();
-//    const auto bytes_per_sample = out_bytes_per_sample();
     const auto bytes_per_second = out_sample_rate() * out_channel_count() * out_bytes_per_sample_channel() ;
     return bytes_per_second / 1'000'000.0f;
 }

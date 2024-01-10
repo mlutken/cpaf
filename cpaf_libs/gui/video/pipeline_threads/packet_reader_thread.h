@@ -42,8 +42,6 @@ public:
     std::chrono::microseconds           seek_position_requested () const { return seek_position_requested_; }
 
 private:
-    using flush_queue_t = estl::srsw_fifo_s<cpaf::video::pipeline_index_t, 32>;
-
     void                    read_packets_thread_fn  ();
     void                    check_seek_position     ();
     void                    flush_queues            ();
@@ -59,7 +57,6 @@ private:
     const std::atomic_bool&                 threads_paused_;
     std::atomic<cpaf::video::seek_state_t>& seek_state_;
 
-    flush_queue_t                           flush_queue_;
     std::chrono::microseconds               seek_from_position_;
     std::chrono::microseconds               seek_position_requested_;
     cpaf::video::seek_dir                   seek_direction_                 = cpaf::video::seek_dir::forward;
@@ -69,7 +66,6 @@ private:
 
     std::chrono::microseconds               read_packets_yield_time_        = std::chrono::milliseconds(1);
     uint32_t                                primary_queue_fill_level_       = 30;
-//    std::atomic<cpaf::video::pipeline_index_t>   flush_to_index_requested_index_ = 0;
     std::unique_ptr<std::thread>            read_packets_thread_;
 
 };

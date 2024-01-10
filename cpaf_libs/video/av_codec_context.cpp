@@ -191,10 +191,10 @@ void av_codec_context::get_packet_function_set(get_packet_fun&& get_packet)
 */
 av_frame av_codec_context::read_frame() const
 {
-    static int FIXMENM_audio__read_frame__counter = 0;
-    if ((this->media_type_get() == media_type::audio)) {
-        FIXMENM_audio__read_frame__counter++;
-    }
+//    static int FIXMENM_audio__read_frame__counter = 0;
+//    if ((this->media_type_get() == media_type::audio)) {
+//        FIXMENM_audio__read_frame__counter++;
+//    }
 
     auto packet = get_packet_fun_();
     if ((this->media_type_get() == media_type::audio)) {
@@ -205,13 +205,7 @@ av_frame av_codec_context::read_frame() const
 
     av_frame frame = av_frame::create_alloc();
     frame.pipeline_control_set(packet.pipeline_control());
-    frame.pipeline_index_set(packet.pipeline_index());
     while (packet.is_valid()) {
-
-        // Ensure we get the largest pipeline index propagated!
-        if (frame.pipeline_index() < packet.pipeline_index()) {
-            frame.pipeline_index_set(packet.pipeline_index());
-        }
 
         if (frame.pipeline_control() < packet.pipeline_control()) {
             frame.pipeline_control_set(packet.pipeline_control());

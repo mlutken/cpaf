@@ -67,8 +67,6 @@ public:
     int                     nb_samples          () const { return ff_frame_->nb_samples; }
     pipeline_control_t      pipeline_control    () const { return pipeline_control_; }
     void                    pipeline_control_set(pipeline_control_t pc) { pipeline_control_ = pc; }
-    const pipeline_index_t& pipeline_index      () const { return pipeline_index_; }
-    void                    pipeline_index_set  (pipeline_index_t index) { pipeline_index_ = index; }
 
     const std::chrono::microseconds&    presentation_time       () const { return presentation_time_; }
     std::chrono::milliseconds           presentation_time_ms    () const { return std::chrono::duration_cast<std::chrono::milliseconds>(presentation_time()); }
@@ -103,7 +101,6 @@ private:
     std::chrono::microseconds   presentation_time_  = illegal_timestamp();
     uint32_t                    create_number_      = 0;
     pipeline_control_t          pipeline_control_   = pipeline_control_t::none;
-    pipeline_index_t            pipeline_index_     = 0;
 };
 
 
