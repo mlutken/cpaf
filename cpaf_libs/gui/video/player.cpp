@@ -125,6 +125,44 @@ play_stream* player::source_stream(stream_type_t sti)
     return nullptr;
 }
 
+// ----------------
+// --- Contexts ---
+// ----------------
+av_codec_context& player::video_codec_context() const
+{
+    if (!video_codec_ctx_.is_valid()) {
+        auto* video_stream = source_stream(stream_type_t::video);
+        if (video_stream){
+            video_codec_ctx_ = video_stream->codec_context(video_stream_index());
+            update_scaling_context();
+        }
+    }
+    return video_codec_ctx_;
+}
+
+av_codec_context& player::audio_codec_context() const
+{
+    if (!audio_codec_ctx_.is_valid()) {
+        auto* audio_stream = source_stream(stream_type_t::audio);
+        if (audio_stream){
+            audio_codec_ctx_ = audio_stream->codec_context(audio_stream_index());
+            //TODO: Should we call update_resampler_context() or similar named function?;
+        }
+    }
+    return audio_codec_ctx_;
+}
+
+av_codec_context& player::subtitle_codec_context() const
+{
+    if (!subtitle_codec_ctx_.is_valid()) {
+        auto* subtitle_stream = source_stream(stream_type_t::subtitle);
+        if (subtitle_stream){
+            subtitle_codec_ctx_ = subtitle_stream->codec_context(subtitle_stream_index());
+        }
+    }
+    return subtitle_codec_ctx_;
+}
+
 // ---------------------------
 // --- Video setup/control ---
 // ---------------------------
@@ -157,18 +195,6 @@ void player::video_scaler_align_set(int32_t align)
 void player::ff_dst_pixel_format_set(AVPixelFormat pixel_format)
 {
     ff_dst_pixel_format_ = pixel_format;
-}
-
-av_codec_context& player::video_codec_context() const
-{
-    if (!video_codec_ctx_.is_valid()) {
-        auto* video_stream = source_stream(stream_type_t::video);
-        if (video_stream){
-            video_codec_ctx_ = video_stream->codec_context(video_stream_index());
-            update_scaling_context();
-        }
-    }
-    return video_codec_ctx_;
 }
 
 
@@ -224,18 +250,6 @@ bool player::audio_out_formats_set(const ff_audio_format_t& ff_audio_format)
     return audio_resampler_.out_formats_set(ff_audio_format);
 }
 
-av_codec_context& player::audio_codec_context() const
-{
-    if (!audio_codec_ctx_.is_valid()) {
-        auto* audio_stream = source_stream(stream_type_t::audio);
-        if (audio_stream){
-            audio_codec_ctx_ = audio_stream->codec_context(audio_stream_index());
-            //TODO: Should we call update_resampler_context() or similar named function?;
-        }
-    }
-    return audio_codec_ctx_;
-}
-
 // ----------------------------
 // --- Audio info functions ---
 // ----------------------------
@@ -253,17 +267,6 @@ size_t player::subtitle_stream_index() const
 // -------------------------------
 // --- Subtitles setup/control ---
 // -------------------------------
-
-av_codec_context& player::subtitle_codec_context() const
-{
-    if (!subtitle_codec_ctx_.is_valid()) {
-        auto* subtitle_stream = source_stream(stream_type_t::subtitle);
-        if (subtitle_stream){
-            subtitle_codec_ctx_ = subtitle_stream->codec_context(subtitle_stream_index());
-        }
-    }
-    return subtitle_codec_ctx_;
-}
 
 // ---------------------------------------------
 // --- Interfacing to surrounding app/system ---

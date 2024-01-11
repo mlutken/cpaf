@@ -62,6 +62,15 @@ public:
     std::chrono::microseconds       total_time              () const { return primary_stream().total_time(); }
     std::chrono::microseconds       remaining_time          () const { return total_time() - current_time(); }
 
+    // ----------------
+    // --- Contexts ---
+    // ----------------
+    av_format_context&                  format_context          ()                          { return primary_stream().format_context(); }
+    const av_format_context&            format_context          () const                    { return primary_stream().format_context(); }
+    cpaf::video::av_codec_context&      video_codec_context     () const;
+    cpaf::video::av_codec_context&      audio_codec_context     () const;
+    cpaf::video::av_codec_context&      subtitle_codec_context  () const;
+
     // ---------------------------
     // --- Video setup/control ---
     // ---------------------------
@@ -70,7 +79,6 @@ public:
     void                                video_scaler_flags_set  (int32_t flags);
     void                                video_scaler_align_set  (int32_t align);
     void                                ff_dst_pixel_format_set (AVPixelFormat pixel_format);
-    cpaf::video::av_codec_context&      video_codec_context     () const;
 
     // ----------------------------
     // --- Video info functions ---
@@ -85,7 +93,6 @@ public:
     // ---------------------------
     bool                                audio_out_formats_set   (const cpaf::audio::device& audio_device);
     bool                                audio_out_formats_set   (const cpaf::video::ff_audio_format_t& ff_audio_format);
-    cpaf::video::av_codec_context&      audio_codec_context     () const;
 
     // ----------------------------
     // --- Audio info functions ---
@@ -97,7 +104,6 @@ public:
     // --- Subtitles setup/control ---
     // -------------------------------
     size_t                              subtitle_stream_index	() const;
-    cpaf::video::av_codec_context&      subtitle_codec_context  () const;
 
     // ---------------------------------------------
     // --- Interfacing to surrounding app/system ---

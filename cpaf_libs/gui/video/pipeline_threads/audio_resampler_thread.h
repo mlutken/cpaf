@@ -72,5 +72,6 @@ private:
 
 };
 
+
 } // namespace cpaf::gui::video
 
