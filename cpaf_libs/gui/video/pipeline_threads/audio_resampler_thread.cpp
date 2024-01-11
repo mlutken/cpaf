@@ -5,13 +5,18 @@
 #include <cpaf_libs/video/av_codec_context.h>
 #include <cpaf_libs/video/audio_resampler.h>
 #include <cpaf_libs/video/av_samples_queue.h>
+#include <cpaf_libs/gui/video/player.h>
 
 using namespace std::chrono;
 
 namespace cpaf::gui::video {
 
-audio_resampler_thread::audio_resampler_thread(const std::atomic_bool& threads_running, const std::atomic_bool& threads_paused)
-    : threads_running_(threads_running)
+audio_resampler_thread::audio_resampler_thread(
+    player& owning_player,
+    const std::atomic_bool& threads_running,
+    const std::atomic_bool& threads_paused)
+    : player_(owning_player)
+    , threads_running_(threads_running)
     , threads_paused_(threads_paused)
 {
 

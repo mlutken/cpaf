@@ -5,6 +5,7 @@
 #include <cpaf_libs/video/av_format_context.h>
 #include <cpaf_libs/video/av_samples_queue.h>
 #include <cpaf_libs/gui/video/pipeline_threads/pipeline_threads.h>
+#include <cpaf_libs/gui/video/player.h>
 
 
 using namespace std;
@@ -16,9 +17,11 @@ using namespace cpaf;
 namespace cpaf::gui::video {
 
 audio_render_thread::audio_render_thread(
+    player& owning_player,
     pipeline_threads& pline_threads,
     std::atomic<cpaf::video::seek_state_t>& seek_state)
-    : pipeline_threads_(pline_threads),
+    : player_(owning_player)
+    , pipeline_threads_(pline_threads),
     seek_state_(seek_state)
 {
 

@@ -7,6 +7,7 @@
 #include <cpaf_libs/video/subtitle_frame.h>
 #include <cpaf_libs/video/av_samples_queue.h>
 #include <cpaf_libs/gui/video/render/render.h>
+#include <cpaf_libs/gui/video/player.h>
 
 using namespace std::chrono_literals;
 using namespace std::chrono;
@@ -17,12 +18,14 @@ using namespace cpaf;
 namespace cpaf::gui::video {
 
 video_render_thread::video_render_thread(
+    player& owning_player,
     const std::atomic_bool& threads_running,
     const std::atomic_bool& threads_paused,
     std::atomic<seek_state_t>& seek_state)
-    : threads_running_(threads_running)
+    : player_(owning_player)
+    , threads_running_(threads_running)
     , threads_paused_(threads_paused)
-    ,seek_state_(seek_state)
+    , seek_state_(seek_state)
 {
 
 }

@@ -19,13 +19,15 @@ class audio_resampler_thread;
 class audio_render_thread;
 class video_render_thread;
 class pipeline_threads;
+class player;
 
 
 
 class packet_reader_thread
 {
 public:
-    packet_reader_thread(const std::atomic_bool& threads_running,
+    packet_reader_thread(player& owning_player,
+                         const std::atomic_bool& threads_running,
                          const std::atomic_bool& threads_paused,
                          std::atomic<cpaf::video::seek_state_t>& seek_state);
     void                                pipeline_threads_set    (pipeline_threads* ptr)     { pipeline_threads_ptr_ = ptr; }
@@ -53,6 +55,7 @@ private:
     cpaf::video:: av_format_context&        format_context          () { return *format_context_ptr_; }
     const std::atomic_bool&                 threads_running         () const { return threads_running_; }
 
+    player&                                 player_;
     const std::atomic_bool&                 threads_running_;
     const std::atomic_bool&                 threads_paused_;
     std::atomic<cpaf::video::seek_state_t>& seek_state_;

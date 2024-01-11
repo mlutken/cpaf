@@ -2,6 +2,7 @@
 #include <cpaf_libs/video/av_format_context.h>
 #include <cpaf_libs/video/media_stream_time.h>
 #include <cpaf_libs/gui/video/pipeline_threads/pipeline_threads.h>
+#include <cpaf_libs/gui/video/player.h>
 
 using namespace std;
 using namespace cpaf::video;
@@ -11,10 +12,12 @@ using namespace std::chrono_literals;
 namespace cpaf::gui::video {
 
 packet_reader_thread::packet_reader_thread(
+    player& owning_player,
     const std::atomic_bool& threads_running,
     const std::atomic_bool& threads_paused,
     std::atomic<seek_state_t>& seek_state)
-    : threads_running_(threads_running)
+    : player_(owning_player)
+    , threads_running_(threads_running)
     , threads_paused_(threads_paused)
     , seek_state_(seek_state)
 {

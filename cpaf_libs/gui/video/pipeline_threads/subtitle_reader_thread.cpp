@@ -3,13 +3,18 @@
 #include <cpaf_libs/video/media_stream_time.h>
 #include <cpaf_libs/video/av_format_context.h>
 #include <cpaf_libs/video/av_codec_context.h>
+#include <cpaf_libs/gui/video/player.h>
 
 using namespace std::chrono;
 
 namespace cpaf::gui::video {
 
-subtitle_reader_thread::subtitle_reader_thread(const std::atomic_bool& threads_running, const std::atomic_bool& threads_paused)
-    : threads_running_(threads_running)
+subtitle_reader_thread::subtitle_reader_thread(
+    player& owning_player,
+    const std::atomic_bool& threads_running,
+    const std::atomic_bool& threads_paused)
+    : player_(owning_player)
+    , threads_running_(threads_running)
     , threads_paused_(threads_paused)
 {
 

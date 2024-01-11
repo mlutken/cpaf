@@ -7,6 +7,7 @@
 #include <cpaf_libs/video/audio_resampler.h>
 #include <cpaf_libs/video/media_stream_time.h>
 #include <cpaf_libs/video/av_samples_queue.h>
+#include <cpaf_libs/gui/video/player.h>
 
 using namespace std;
 using namespace cpaf::video;
@@ -17,12 +18,13 @@ namespace cpaf::gui::video {
 
 
 //pipeline_threads::pipeline_threads(atomic_bool& /*threads_running*/, atomic_bool& /*threads_paused*/)
-pipeline_threads::pipeline_threads()
-    : packet_reader_thread_(threads_running_, threads_paused_, seek_state_)
-    , audio_resampler_thread_(threads_running_, threads_paused_)
-    , audio_render_thread_(*this, seek_state_)
-    , subtitle_reader_thread_(threads_running_, threads_paused_)
-    , video_render_thread_(threads_running_, threads_paused_, seek_state_)
+pipeline_threads::pipeline_threads(player& owning_player)
+    : player_(owning_player)
+    , packet_reader_thread_(owning_player, threads_running_, threads_paused_, seek_state_)
+    , audio_resampler_thread_(owning_player, threads_running_, threads_paused_)
+    , audio_render_thread_(owning_player, *this, seek_state_)
+    , subtitle_reader_thread_(owning_player, threads_running_, threads_paused_)
+    , video_render_thread_(owning_player, threads_running_, threads_paused_, seek_state_)
 {
     packet_reader_thread_.pipeline_threads_set(this);
 }

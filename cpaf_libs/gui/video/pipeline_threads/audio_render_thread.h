@@ -14,6 +14,7 @@ class av_samples_queue;
 };
 
 namespace cpaf::gui::video {
+class player;
 
 class pipeline_threads;
 
@@ -23,7 +24,9 @@ class audio_render_thread
 {
 public:
     using audio_play_callback_t  = cpaf::audio::device_base::play_callback_t;
-    explicit audio_render_thread(pipeline_threads& pline_threads, std::atomic<cpaf::video::seek_state_t>& seek_state);
+    explicit audio_render_thread(player& owning_player,
+                                 pipeline_threads& pline_threads,
+                                 std::atomic<cpaf::video::seek_state_t>& seek_state);
 
     void                    format_context_set      (cpaf::video::av_format_context* ctx)    { format_context_ptr_ = ctx; }
     void                    format_context_set      (cpaf::video::av_format_context& ctx)    { format_context_ptr_ = &ctx; }
@@ -45,6 +48,7 @@ private:
     cpaf::video::av_samples_queue&       audio_samples_queue     () { return *audio_samples_queue_ptr_; }
     cpaf::video::media_stream_time&      current_media_time      () { return *current_media_time_ptr_; }
 
+    player&                                     player_;
     pipeline_threads&                           pipeline_threads_;
     std::atomic<cpaf::video::seek_state_t>&     seek_state_;
     cpaf::video::av_format_context*             format_context_ptr_             = nullptr;

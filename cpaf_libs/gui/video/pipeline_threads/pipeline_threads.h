@@ -23,6 +23,7 @@ class media_stream_time;
 };
 
 namespace cpaf::gui::video {
+class player;
 
 class pipeline_threads
 {
@@ -33,7 +34,7 @@ public:
     pipeline_threads(const pipeline_threads&) = delete;
     pipeline_threads& operator=(const pipeline_threads&)  = delete;
 
-    pipeline_threads();
+    explicit pipeline_threads(player& owning_player);
     ~pipeline_threads();
 //    pipeline_threads(std::atomic_bool& threads_running, std::atomic_bool& threads_paused);
 
@@ -76,7 +77,7 @@ private:
     cpaf::video::av_samples_queue&       audio_samples_queue     () { return *audio_samples_queue_ptr_; }
     cpaf::video::media_stream_time&      current_media_time      () { return *current_media_time_ptr_; }
 
-    std::atomic<cpaf::video::seek_state_t>      seek_state_                     = cpaf::video::seek_state_t::ready;
+    player&                                     player_;
     packet_reader_thread                        packet_reader_thread_;
     audio_resampler_thread                      audio_resampler_thread_;
     audio_render_thread                         audio_render_thread_;
@@ -88,6 +89,7 @@ private:
     cpaf::video::audio_resampler*               audio_resampler_ptr_            = nullptr;
     cpaf::video::av_samples_queue*              audio_samples_queue_ptr_        = nullptr;
     cpaf::video::media_stream_time*             current_media_time_ptr_         = nullptr;
+    std::atomic<cpaf::video::seek_state_t>      seek_state_                     = cpaf::video::seek_state_t::ready;
     std::atomic_bool                            threads_running_                = true;
     std::atomic_bool                            threads_paused_                 = false;
     std::chrono::steady_clock::time_point       seek_flush_done_time_point_;

@@ -17,11 +17,14 @@ class av_samples_queue;
 };
 
 namespace cpaf::gui::video {
+class player;
 
 class audio_resampler_thread
 {
 public:
-    audio_resampler_thread(const std::atomic_bool& threads_running, const std::atomic_bool& threads_paused);
+    audio_resampler_thread( player& owning_player,
+                            const std::atomic_bool& threads_running,
+                            const std::atomic_bool& threads_paused);
     void                    format_context_set      (cpaf::video::av_format_context* ctx)    { format_context_ptr_ = ctx; }
     void                    format_context_set      (cpaf::video::av_format_context& ctx)    { format_context_ptr_ = &ctx; }
     void                    audio_codec_ctx_set     (cpaf::video::av_codec_context* ctx)     { audio_codec_ctx_ptr_ = ctx; }
@@ -49,22 +52,23 @@ private:
     const std::atomic_bool& threads_running         () const { return threads_running_; }
     const std::atomic_bool& threads_paused          () const { return threads_paused_; }
 
-    const std::atomic_bool&         threads_running_;
-    const std::atomic_bool&         threads_paused_;
+    player&                             player_;
+    const std::atomic_bool&             threads_running_;
+    const std::atomic_bool&             threads_paused_;
 
-    cpaf::video::av_format_context*              format_context_ptr_             = nullptr;
-    cpaf::video::av_codec_context*               audio_codec_ctx_ptr_            = nullptr;
-    cpaf::video::audio_resampler*                audio_resampler_ptr_            = nullptr;
-    cpaf::video::av_samples_queue*               audio_samples_queue_ptr_        = nullptr;
-    cpaf::video::media_stream_time*              current_media_time_ptr_         = nullptr;
+    cpaf::video::av_format_context*     format_context_ptr_             = nullptr;
+    cpaf::video::av_codec_context*      audio_codec_ctx_ptr_            = nullptr;
+    cpaf::video::audio_resampler*       audio_resampler_ptr_            = nullptr;
+    cpaf::video::av_samples_queue*      audio_samples_queue_ptr_        = nullptr;
+    cpaf::video::media_stream_time*     current_media_time_ptr_         = nullptr;
 
-    uint32_t                        audio_samples_fill_level_       = 30;
-    std::chrono::microseconds       audio_samples_yield_time_       = std::chrono::milliseconds(1);
-    std::chrono::microseconds       audio_samples_read_ahead_time_  = std::chrono::milliseconds(300);
-    std::atomic_bool                samples_queue_flush_in_progress_= false;
-    std::atomic_bool                samples_queue_flushed_          = false;
+    uint32_t                            audio_samples_fill_level_       = 30;
+    std::chrono::microseconds           audio_samples_yield_time_       = std::chrono::milliseconds(1);
+    std::chrono::microseconds           audio_samples_read_ahead_time_  = std::chrono::milliseconds(300);
+    std::atomic_bool                    samples_queue_flush_in_progress_= false;
+    std::atomic_bool                    samples_queue_flushed_          = false;
 
-    std::unique_ptr<std::thread>    thread_object_;
+    std::unique_ptr<std::thread>        thread_object_;
 
 };
 
