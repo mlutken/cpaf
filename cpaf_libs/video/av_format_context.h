@@ -85,7 +85,10 @@ public:
     // --- Codec Functions ---
     av_codec_parameters     codec_parameters            (size_t stream_index) const;
     av_codec_context		codec_context               (size_t stream_index) const;
-    av_codec_context		codec_context               (media_type selected_media_type) const;
+    av_codec_context		codec_context               (media_type selected_media) const;
+    av_codec_context		codec_context_video         () const    { return codec_context(media_type::video); }
+    av_codec_context		codec_context_audio         () const    { return codec_context(media_type::audio); }
+    av_codec_context		codec_context_subtitle      () const    { return codec_context(media_type::subtitle); }
 
 //    av_codec                codec                   (size_t stream_index) const;
     // --- Packet Functions ---

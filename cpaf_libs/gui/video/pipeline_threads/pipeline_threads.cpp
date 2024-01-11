@@ -21,6 +21,7 @@ pipeline_threads::pipeline_threads()
     : packet_reader_thread_(threads_running_, threads_paused_, seek_state_)
     , audio_resampler_thread_(threads_running_, threads_paused_)
     , audio_render_thread_(*this, seek_state_)
+    , subtitle_reader_thread_(threads_running_, threads_paused_)
     , video_render_thread_(threads_running_, threads_paused_, seek_state_)
 {
     packet_reader_thread_.pipeline_threads_set(this);
@@ -130,6 +131,7 @@ void pipeline_threads::start()
     audio_render_thread_.start();
     audio_resampler_thread_.start();
     packet_reader_thread_.start();
+    subtitle_reader_thread_.start();
     video_render_thread_.start();
 }
 
@@ -170,9 +172,9 @@ void pipeline_threads::resume_playback()
 
 void pipeline_threads::video_frame_update(cpaf::video::av_frame& current_frame, gui::video::render& video_render)
 {
-    if (seek_state_ != seek_state_t::ready) {
-        cerr << "FIXMENM seek_state: " << to_string(seek_state_) << "\n";
-    }
+//    if (seek_state_ != seek_state_t::ready) {
+//        cerr << "FIXMENM seek_state: " << to_string(seek_state_) << "\n";
+//    }
 
     video_render_thread_.video_frame_update(current_frame, video_render);
 }

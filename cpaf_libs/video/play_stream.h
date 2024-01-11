@@ -21,6 +21,10 @@ public:
              ~play_stream();
     bool                        open                    (const std::string& resource_path);
 
+     void                       video_index_set             (size_t stream_index) { format_context_.video_index_set(stream_index);}
+     void                       audio_index_set             (size_t stream_index) { format_context_.audio_index_set(stream_index);}
+     void                       subtitle_index_set          (size_t stream_index) { format_context_.subtitle_index_set(stream_index);}
+
     // ----------------------
     // --- Info functions ---
     // ----------------------
@@ -40,6 +44,7 @@ public:
     const surface_dimensions_t& render_dimensions       () const { return render_dimensions_; }
     std::chrono::microseconds   total_time              () const { return format_context_.total_time(); }
 
+
     // ---------------------
     // --- Context/codec ---
     // ---------------------
@@ -47,6 +52,10 @@ public:
     const av_format_context&	format_context          () const                    { return format_context_; }
     av_codec_parameters         codec_parameters        (size_t stream_index) const { return format_context_.codec_parameters(stream_index);}
     av_codec_context            codec_context			(size_t stream_index) const { return format_context_.codec_context(stream_index); }
+    av_codec_context            codec_context           (media_type selected_media) const { return format_context_.codec_context(selected_media); }
+    av_codec_context            codec_context_video     () const    { return format_context_.codec_context_video(); }
+    av_codec_context            codec_context_audio     () const    { return format_context_.codec_context_audio(); }
+    av_codec_context            codec_context_subtitle  () const    { return format_context_.codec_context_subtitle(); }
 
     // -----------------------
     // --- Video functions ---

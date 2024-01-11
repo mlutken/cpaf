@@ -9,6 +9,7 @@ extern "C"
 #include <string>
 #include <functional>
 #include <cpaf_libs/video/av_frame.h>
+#include <cpaf_libs/video/subtitle_frame.h>
 #include <cpaf_libs/video/av_util.h>
 
 namespace cpaf::video {
@@ -103,6 +104,9 @@ public:
     av_frame                read_frame                  () const;
     int                     send_packet                 (const av_packet& packet) const;
     int                     receive_frame               (av_frame& frame) const;
+
+    // --- Subtitle functions ---
+    subtitle_frame          read_subtitle               () const;
 
     // --- Time functions ---
     std::chrono::microseconds   time_from_stream_time   (int64_t stream_time_duration) const;

@@ -69,13 +69,13 @@ bool video_render_thread::video_frame_do_render(cpaf::video::av_frame& current_f
     // --- Special case when we are flushing (seeking) ---
     if (seek_state_ == seek_state_t::flushing) {
         video_render.render_video_frame(current_frame);
-        video_render.render_subtitle(current_subtitle());
+        video_render.update_current_subtitle(current_subtitle());
         return false;
     }
     else if ( seek_state_ == seek_state_t::flush_done) {
         current_frame = video_codec_ctx().read_frame();
         video_render.render_video_frame(current_frame);
-        video_render.render_subtitle(current_subtitle());
+        video_render.update_current_subtitle(current_subtitle());
         return true;
     }
 
@@ -87,7 +87,7 @@ bool video_render_thread::video_frame_do_render(cpaf::video::av_frame& current_f
     }
 
     video_render.render_video_frame(current_frame);
-    video_render.render_subtitle(current_subtitle());
+    video_render.update_current_subtitle(current_subtitle());
 
     if (!current_media_time().time_is_paused()) {
         if (time_to_current_frame(current_frame) <= 1ms ) {
@@ -108,7 +108,8 @@ void video_render_thread::update_is_seek_possible(av_frame& current_frame)
 cpaf::video::subtitle_frame video_render_thread::current_subtitle() const
 {
     // FIXMENM
-    subtitle_frame sf("My name is John Rambo. We served", "on the same team together in Nam.");
+    subtitle_frame sf("ëËïÏÿŸæÆäÄüÜøØöÖåÅ -> ß", "on the same team together in Nam.");
+//    subtitle_frame sf("My name is John Rambo. We served", "on the same team together in Nam.");
 //    subtitle_frame sf("My name is John Rambo. We served");
     return sf;
 }

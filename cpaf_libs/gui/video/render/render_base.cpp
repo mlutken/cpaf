@@ -60,12 +60,12 @@ bool render_base::render_video_frame(const cpaf::video::av_frame& frame) {
     return do_render_video_frame(frame);
 }
 
-void render_base::render_subtitle(const cpaf::video::subtitle_frame& subtitle)
+void render_base::update_current_subtitle(cpaf::video::subtitle_frame&& subtitle)
 {
     if (subtitle.sequence_number != current_subtitle_frame_.sequence_number ||
         subtitle.presentation_time != current_subtitle_frame_.presentation_time ||
         subtitle.should_show() != current_subtitle_frame_.should_show() ) {
-        current_subtitle_frame_ = subtitle;
+        current_subtitle_frame_ = std::move(subtitle);
         on_render_geometry_changed();
     }
     do_render_subtitle();

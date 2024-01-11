@@ -280,9 +280,9 @@ av_codec_context av_format_context::codec_context(size_t stream_index) const
     return codec_ctx;
 }
 
-av_codec_context av_format_context::codec_context(media_type selected_media_type) const
+av_codec_context av_format_context::codec_context(media_type selected_media) const
 {
-    const size_t stream_index = media_type_to_index(selected_media_type);
+    const size_t stream_index = media_type_to_index(selected_media);
     return codec_context(stream_index);
 }
 
@@ -310,6 +310,9 @@ av_packet av_format_context::read_packet() const
         pts = time_from_stream_time(stream_index, packet.dts_stream_base());    // Fall back to decode timestamp if pts is invalid!
     }
     packet.presentation_time_set(pts);
+//    if (packet.media_type_get() == media_type::subtitle) {
+//        std::cerr << "FIXMENM packet media type:" << to_string(packet.media_type_get()) << "\n";
+//    }
     return packet;
 }
 
@@ -432,6 +435,15 @@ av_packet av_format_context::packet_queue_front(media_type mt)
 av_packet av_format_context::packet_queue_pop_front(media_type mt)
 {
     packet_queue_t& queue = packet_queue(mt);
+
+//    if (mt == media_type::subtitle) {
+//        if (!queue.empty()) {
+//            std::cerr << "FIXMENM packet_queue_pop_front subtitle\n";
+
+////            return av_packet(); // FIXMENM
+//        }
+//    }
+
     if (queue.empty()) {
         return av_packet();
     }

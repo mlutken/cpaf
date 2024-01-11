@@ -12,6 +12,7 @@
 #include <cpaf_libs/gui/video/pipeline_threads/audio_render_thread.h>
 #include <cpaf_libs/gui/video/pipeline_threads/audio_resampler_thread.h>
 #include <cpaf_libs/gui/video/pipeline_threads/packet_reader_thread.h>
+#include <cpaf_libs/gui/video/pipeline_threads/subtitle_reader_thread.h>
 #include <cpaf_libs/gui/video/pipeline_threads/video_render_thread.h>
 
 namespace cpaf::video {
@@ -79,6 +80,7 @@ private:
     packet_reader_thread                        packet_reader_thread_;
     audio_resampler_thread                      audio_resampler_thread_;
     audio_render_thread                         audio_render_thread_;
+    subtitle_reader_thread                      subtitle_reader_thread_;
     video_render_thread                         video_render_thread_;
     cpaf::video::av_format_context*             format_context_ptr_             = nullptr;
     cpaf::video::av_codec_context*              audio_codec_ctx_ptr_            = nullptr;

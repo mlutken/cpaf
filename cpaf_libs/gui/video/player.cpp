@@ -10,8 +10,9 @@ using namespace cpaf::video;
 namespace cpaf::gui::video {
 
 player::player()
-    : primary_source_stream_([this]() {return torrents_get();}),
-      audio_samples_queue_(1000)
+    :   primary_source_stream_([this]() {return torrents_get();}),
+        audio_samples_queue_(1000),
+        media_pipeline_threads_()
 {
     next_video_frame_ = av_frame::create_alloc();
     current_media_time_set(cur_media_time_);
@@ -277,10 +278,10 @@ void player::render()
 {
     // TODO: Move to some other place!
     if (has_subtitle_stream()) {
-        auto frame = subtitle_codec_context().read_frame();
-        if (frame.is_valid()) {
-            std::cerr << "FIXMENM subtitle\n";
-        }
+        auto sub = subtitle_codec_context().read_subtitle();
+//        if (frame.is_valid()) {
+//            std::cerr << "FIXMENM subtitle\n";
+//        }
     }
 
 

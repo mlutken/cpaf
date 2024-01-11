@@ -259,6 +259,28 @@ int av_codec_context::receive_frame(av_frame& frame) const
     return ret_val;
 }
 
+subtitle_frame av_codec_context::read_subtitle() const
+{
+    if (media_type_get() != media_type::subtitle) { return subtitle_frame(); }
+
+    subtitle_frame frm;
+    // https://stackoverflow.com/questions/54125207/dump-subtitle-from-avsubtitle-in-the-file
+    auto packet = get_packet_fun_();
+    if (packet.is_valid()) {
+        std::cerr << "FIXMENM Got subtitle packet An";
+        AVSubtitle sub; // sub.rects[0].type = SUBTITLE_BITMAT, SUBTITLE_TEXT, SUBTITLE_ASS
+        int got_sub = 0;
+//        const AVPacket *avpkt;
+
+
+        avcodec_decode_subtitle2(ff_codec_context_, &sub, &got_sub, packet.ff_packet());
+        avsubtitle_free(&sub);
+        std::cerr << "FIXMENM Got subtitle packet B\n";
+    }
+
+    return frm;
+}
+
 // ----------------------
 // --- Time functions ---
 // ----------------------

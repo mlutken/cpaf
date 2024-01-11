@@ -73,6 +73,7 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/audio_render_thread.h
     ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/audio_resampler_thread.h
     ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/packet_reader_thread.h
+    ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/subtitle_reader_thread.h
     ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/video_render_thread.h
     ${CMAKE_CURRENT_LIST_DIR}/video/render/render.h
     ${CMAKE_CURRENT_LIST_DIR}/video/render/render_base.h
@@ -137,6 +138,7 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/audio_render_thread.cpp
     ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/audio_resampler_thread.cpp
     ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/packet_reader_thread.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/subtitle_reader_thread.cpp
     ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/video_render_thread.cpp
     ${CMAKE_CURRENT_LIST_DIR}/video/render/render.cpp
     ${CMAKE_CURRENT_LIST_DIR}/video/render/render_base.cpp

@@ -54,7 +54,7 @@ public:
 
     void                        clear_screen                ()                              { do_clear_screen();  }
     bool                        render_video_frame          (const cpaf::video::av_frame& frame);
-    void                        render_subtitle             (const cpaf::video::subtitle_frame& subtitle);
+    void                        update_current_subtitle     (cpaf::video::subtitle_frame&& subtitle);
 
     bool                        show_subtitles              () const                        { return show_subtitles_;   }
     void                        show_subtitles_set          (bool show)                     { show_subtitles_ = show;   }
