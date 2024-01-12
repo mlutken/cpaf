@@ -49,7 +49,7 @@ void video_render_thread::video_frame_update(cpaf::video::av_frame& current_fram
 
 std::chrono::microseconds video_render_thread::time_to_current_frame(cpaf::video::av_frame& current_frame) const
 {
-    return current_frame.presentation_time() - current_media_time().video_time_pos();
+    return current_frame.presentation_time() - player_.cur_media_time().video_time_pos();
 }
 
 std::chrono::microseconds video_render_thread::time_to_current_frame_abs(cpaf::video::av_frame& current_frame) const
@@ -76,7 +76,7 @@ bool video_render_thread::video_frame_do_render(cpaf::video::av_frame& current_f
         return false;
     }
     else if ( seek_state_ == seek_state_t::flush_done) {
-        current_frame = video_codec_ctx().read_frame();
+        current_frame = player_.video_codec_context().read_frame();
         video_render.render_video_frame(current_frame);
         video_render.update_current_subtitle(current_subtitle());
         return true;
@@ -85,16 +85,16 @@ bool video_render_thread::video_frame_do_render(cpaf::video::av_frame& current_f
     bool new_frame_was_read = false;
     if (time_to_current_frame(current_frame) > 1s ) {
         std::cerr << "******* ERROR long time to current video frame " << duration_cast<seconds>(time_to_current_frame(current_frame)) << "\n";
-        current_frame = video_codec_ctx().read_frame();
+        current_frame = player_.video_codec_context().read_frame();
         new_frame_was_read = true;
     }
 
     video_render.render_video_frame(current_frame);
     video_render.update_current_subtitle(current_subtitle());
 
-    if (!current_media_time().time_is_paused()) {
+    if (!player_.cur_media_time().time_is_paused()) {
         if (time_to_current_frame(current_frame) <= 1ms ) {
-            current_frame = video_codec_ctx().read_frame();
+            current_frame = player_.video_codec_context().read_frame();
             new_frame_was_read = true;
         }
     }
@@ -123,17 +123,17 @@ void video_render_thread::debug_video_frame_update(cpaf::video::av_frame& curren
        (true && video_frame_update_dbg_counter_ % 2000 == 0)
     )
     {
-        const auto video_to_media_ms = (current_frame.presentation_time_ms() - current_media_time().current_time_pos_ms()).count();
+        const auto video_to_media_ms = (current_frame.presentation_time_ms() - player_.cur_media_time().current_time_pos_ms()).count();
         const auto video_to_audio_ms = (current_frame.presentation_time_ms() - audio_samples_queue().front().presentation_time_ms()).count();
 
-        const auto cur_video_time = current_media_time().video_time_pos();
+        const auto cur_video_time = player_.cur_media_time().video_time_pos();
         const auto cur_frame_time = current_frame.presentation_time();
 
         auto time_dist_to_cur_frame_ms = duration_cast<milliseconds>(cur_frame_time - cur_video_time);
 
         std::cerr
                 << "XXX VIDEO [" << video_to_media_ms << "/" << video_to_audio_ms << " ms]"
-                << " current media time: " << current_media_time().current_time_pos_ms().count() << " ms"
+                << " current media time: " << player_.cur_media_time().current_time_pos_ms().count() << " ms"
                 << ", audio frm t: " << audio_samples_queue().front().presentation_time_ms().count() << " ms"
                 << ", video frm t: " << current_frame.presentation_time_ms().count() << " ms"
                 << ", time_dist_to_cur_frame_ms: " << time_dist_to_cur_frame_ms.count() << " ms"
@@ -144,22 +144,22 @@ void video_render_thread::debug_video_frame_update(cpaf::video::av_frame& curren
 
 cpaf::video::av_packet video_render_thread::video_packet_queue_front()
 {
-    return format_context().packet_queue_front(cpaf::video::media_type::video);
+    return player_.format_context().packet_queue_front(cpaf::video::media_type::video);
 }
 
 void video_render_thread::video_packet_queue_pop()
 {
-    format_context().packet_queue_pop(cpaf::video::media_type::video);
+    player_.format_context().packet_queue_pop(cpaf::video::media_type::video);
 }
 
 const cpaf::video::packet_queue_t& video_render_thread::video_packet_queue() const
 {
-    return format_context().packet_queue(cpaf::video::media_type::video);
+    return player_.format_context().packet_queue(cpaf::video::media_type::video);
 }
 
 const cpaf::video::packet_queue_t& video_render_thread::video_packet_queue_const() const
 {
-    return format_context().packet_queue(cpaf::video::media_type::video);
+    return player_.format_context().packet_queue(cpaf::video::media_type::video);
 }
 
 } // namespace cpaf::gui::video

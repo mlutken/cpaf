@@ -34,19 +34,12 @@ public:
                         const std::atomic_bool& threads_paused,
                         std::atomic<cpaf::video::seek_state_t>& seek_state);
 
-    void                        format_context_set          (cpaf::video::av_format_context* ctx)    { format_context_ptr_ = ctx; }
-    void                        format_context_set          (cpaf::video::av_format_context& ctx)    { format_context_ptr_ = &ctx; }
-    void                        video_codec_ctx_set         (cpaf::video::av_codec_context* ctx)     { video_codec_ctx_ptr_ = ctx; }
-    void                        video_codec_ctx_set         (cpaf::video::av_codec_context& ctx)     { video_codec_ctx_ptr_ = &ctx; }
     void                        audio_samples_queue_set     (cpaf::video::av_samples_queue* queue)   { audio_samples_queue_ptr_ = queue; }
     void                        audio_samples_queue_set     (cpaf::video::av_samples_queue& queue)   { audio_samples_queue_ptr_ = &queue; }
-    void                        current_media_time_set      (cpaf::video::media_stream_time* mts)    { current_media_time_ptr_ = mts; }
-    void                        current_media_time_set      (cpaf::video::media_stream_time& mts)    { current_media_time_ptr_ = &mts; }
 
     void                        start                       ();
     void                        terminate                   ();
     void                        video_frame_update          (cpaf::video::av_frame& current_frame, cpaf::gui::video::render& video_render);
-//    bool                        subtitle_frame_update      (cpaf::video::av_frame& current_frame, cpaf::gui::video::render& video_render);
     void                        video_queue_flush_start     ()                          { video_queue_flush_in_progress_ = true; }
     void                        video_queue_flush_done      ()                          { video_queue_flush_in_progress_ = false; video_queue_flushed_ = true; }
     std::chrono::microseconds   time_to_current_frame       (cpaf::video::av_frame& current_frame) const;
@@ -60,16 +53,11 @@ private:
 
     void                                    debug_video_frame_update(cpaf::video::av_frame& current_frame, cpaf::gui::video::render& video_render);
 
-    cpaf::video::av_format_context&         format_context          () { return *format_context_ptr_; }
-    const cpaf::video::av_format_context&   format_context          () const { return *format_context_ptr_; }
-    cpaf::video::av_codec_context&          video_codec_ctx         () { return *video_codec_ctx_ptr_; }
     cpaf::video::av_packet                  video_packet_queue_front();
     void                                    video_packet_queue_pop  ();
     const cpaf::video::packet_queue_t&      video_packet_queue      () const;
     const cpaf::video::packet_queue_t&      video_packet_queue_const() const;
     const cpaf::video::av_samples_queue&    audio_samples_queue     () const { return *audio_samples_queue_ptr_; }
-    const cpaf::video::media_stream_time&   current_media_time      () const { return *current_media_time_ptr_; }
-    cpaf::video::media_stream_time&         current_media_time      () { return *current_media_time_ptr_; }
 
     const std::atomic_bool&                 threads_running         () const { return threads_running_; }
     const std::atomic_bool&                 threads_paused          () const { return threads_paused_; }
@@ -79,10 +67,7 @@ private:
     const std::atomic_bool&                 threads_paused_;
     std::atomic<cpaf::video::seek_state_t>& seek_state_;
 
-    cpaf::video::av_format_context*         format_context_ptr_             = nullptr;
-    cpaf::video::av_codec_context*          video_codec_ctx_ptr_            = nullptr;
     cpaf::video::av_samples_queue*          audio_samples_queue_ptr_        = nullptr;
-    cpaf::video::media_stream_time*         current_media_time_ptr_         = nullptr;
 
     int                                     video_frame_update_dbg_counter_ = 0;
     std::atomic_bool                        video_queue_flush_in_progress_  = false;

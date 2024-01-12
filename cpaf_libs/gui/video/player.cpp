@@ -15,7 +15,6 @@ player::player()
         media_pipeline_threads_(*this)
 {
     next_video_frame_ = av_frame::create_alloc();
-    current_media_time_set(cur_media_time_);
 }
 
 player::~player()
@@ -50,13 +49,10 @@ void player::start(const std::chrono::microseconds& start_time_pos)
     audio_codec_context().get_packet_function_set(video_fmt_ctx.get_packet_function(media_type::audio));
     subtitle_codec_context().get_packet_function_set(video_fmt_ctx.get_packet_function(media_type::subtitle));
 
-    media_pipeline_threads().audio_codec_ctx_set(audio_codec_context());
     media_pipeline_threads().audio_resampler_set(audio_resampler_);
     media_pipeline_threads().audio_samples_queue_set(audio_samples_queue_);
 
     video_fmt_ctx.read_packets_to_queues(video_fmt_ctx.primary_media_type(), 10);
-    media_pipeline_threads().format_context_set(video_fmt_ctx);
-    media_pipeline_threads().video_codec_ctx_set(video_codec_context());
 
     media_pipeline_threads().start();
 }
@@ -402,16 +398,6 @@ bool player::open_primary_stream(const std::string& resource_path)
     primary_resource_path_ = resource_path;
     const auto open_ok = primary_source_stream_.open(resource_path);
     return open_ok;
-}
-
-void player::current_media_time_set(media_stream_time* mts)
-{
-    media_pipeline_threads().current_media_time_set(mts);
-}
-
-void player::current_media_time_set(media_stream_time& mts)
-{
-    media_pipeline_threads().current_media_time_set(mts);
 }
 
 void player::update_scaling_context() const

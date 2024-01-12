@@ -32,7 +32,7 @@ void audio_resampler_thread::thread_function()
 {
     while(threads_running()) {
         if (!threads_paused()) {
-            const auto cur_media_time_pos = current_media_time().current_time_pos();
+            const auto cur_media_time_pos = player_.cur_media_time().current_time_pos();
             bool add_samples = true;
             while (add_samples) {
                 resample_frame(add_samples, cur_media_time_pos);
@@ -47,11 +47,11 @@ void audio_resampler_thread::resample_frame(bool& add_samples, const std::chrono
 {
     add_samples = false;
 
-    if (audio_samples_queue().full() || format_context().packet_queue_const(cpaf::video::media_type::audio).empty()) {
+    if (audio_samples_queue().full() || player_.format_context().packet_queue_const(cpaf::video::media_type::audio).empty()) {
         return;
     }
 
-    const auto frame = audio_codec_ctx().read_frame();
+    const auto frame = player_.audio_codec_context().read_frame();
     if(!frame.is_valid()) {
         return;
     }

@@ -130,7 +130,7 @@ public:
 
 private:
     // --- Helper functions ---
-    packet_queue_t&             packet_queue            (media_type mt) { return packet_queue_per_media_type_[to_size_t(mt)]; }
+    packet_queue_t&             packet_queue_get        (media_type mt) { return packet_queue_per_media_type_[to_size_t(mt)]; }
 
     void                    read_codec_contexts         ();
     size_t                  default_primary_stream_index() const;

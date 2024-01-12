@@ -33,7 +33,7 @@ bool packet_reader_thread::seek_position(const std::chrono::microseconds& stream
 {
     auto seek_state = seek_state_t::ready;
     if (seek_state_.compare_exchange_strong(seek_state, seek_state_t::requested)) {
-        seek_from_position_ = current_media_time().current_time_pos();
+        seek_from_position_ = player_.cur_media_time().current_time_pos();
         seek_position_requested_ = stream_pos;
         seek_direction_ = dir;
         return true;
@@ -46,7 +46,7 @@ bool packet_reader_thread::seek_position(const std::chrono::microseconds& stream
     auto seek_state = seek_state_t::ready;
     if (seek_state_.compare_exchange_strong(seek_state, seek_state_t::requested)) {
 
-        seek_from_position_ = current_media_time().current_time_pos();
+        seek_from_position_ = player_.cur_media_time().current_time_pos();
         seek_position_requested_ = stream_pos;
         seek_direction_ = cpaf::video::seek_dir::forward;
         return true;
@@ -56,11 +56,11 @@ bool packet_reader_thread::seek_position(const std::chrono::microseconds& stream
 
 void packet_reader_thread::read_packets_thread_fn()
 {
-    const auto mt = format_context().primary_media_type();
+    const auto mt = player_.format_context().primary_media_type();
     while(threads_running()) {
         check_seek_position();
         if (!threads_paused_) {
-            format_context().read_packets_to_queues(mt, primary_queue_fill_level_);
+            player_.format_context().read_packets_to_queues(mt, primary_queue_fill_level_);
         }
         std::this_thread::sleep_for(read_packets_yield_time_);
     }
@@ -71,12 +71,12 @@ void packet_reader_thread::check_seek_position()
 {
     auto seek_state = seek_state_t::requested;
     if (seek_state_.compare_exchange_strong(seek_state, seek_state_t::flushing)) {
-        const auto mt = format_context().primary_media_type();
+        const auto mt = player_.format_context().primary_media_type();
         signal_flush_start();
-        format_context().read_packets_to_queues(mt, primary_queue_fill_level_ + 1);
-        format_context().seek_time_pos(mt, seek_position_requested_, seek_direction_);
+        player_.format_context().read_packets_to_queues(mt, primary_queue_fill_level_ + 1);
+        player_.format_context().seek_time_pos(mt, seek_position_requested_, seek_direction_);
         flush_queues();
-        format_context().read_packets_to_queues(mt, primary_queue_fill_level_);
+        player_.format_context().read_packets_to_queues(mt, primary_queue_fill_level_);
         signal_flush_done();
         seek_state_ = seek_state_t::flush_done;
         std::this_thread::sleep_for(5ms);

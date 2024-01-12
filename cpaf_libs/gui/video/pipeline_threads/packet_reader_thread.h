@@ -31,11 +31,6 @@ public:
                          const std::atomic_bool& threads_paused,
                          std::atomic<cpaf::video::seek_state_t>& seek_state);
     void                                pipeline_threads_set    (pipeline_threads* ptr)     { pipeline_threads_ptr_ = ptr; }
-    void                                format_context_set      (cpaf::video::av_format_context* ctx)    { format_context_ptr_ = ctx; }
-    void                                format_context_set      (cpaf::video::av_format_context& ctx)    { format_context_ptr_ = &ctx; }
-    void                                current_media_time_set  (cpaf::video::media_stream_time* mts)    { current_media_time_ptr_ = mts; }
-    void                                current_media_time_set  (cpaf::video::media_stream_time& mts)    { current_media_time_ptr_ = &mts; }
-
     void                                start                   ();
     bool                                seek_position           (const std::chrono::microseconds& stream_pos, cpaf::video::seek_dir dir);
     bool                                seek_position           (const std::chrono::microseconds& stream_pos);
@@ -50,9 +45,6 @@ private:
     void                    signal_flush_start      ();
     void                    signal_flush_done       ();
 
-
-    cpaf::video::media_stream_time&         current_media_time      () { return *current_media_time_ptr_; }
-    cpaf::video:: av_format_context&        format_context          () { return *format_context_ptr_; }
     const std::atomic_bool&                 threads_running         () const { return threads_running_; }
 
     player&                                 player_;
@@ -64,8 +56,6 @@ private:
     std::chrono::microseconds               seek_position_requested_;
     cpaf::video::seek_dir                   seek_direction_                 = cpaf::video::seek_dir::forward;
     pipeline_threads*                       pipeline_threads_ptr_           = nullptr;
-    cpaf::video::av_format_context*         format_context_ptr_             = nullptr;
-    cpaf::video::media_stream_time*         current_media_time_ptr_         = nullptr;
 
     std::chrono::microseconds               read_packets_yield_time_        = std::chrono::milliseconds(1);
     uint32_t                                primary_queue_fill_level_       = 30;

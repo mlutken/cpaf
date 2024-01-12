@@ -362,7 +362,7 @@ media_type av_format_context::read_packet_to_queue()
     }
     const media_type mt = packet.media_type_get();
 
-    packet_queue_t& queue = packet_queue(mt);
+    packet_queue_t& queue = packet_queue_get(mt);
     if (queue.capacity() == 0) {
         queue.resize_queue(packet_queue_capacity_);
     }
@@ -434,7 +434,7 @@ av_packet av_format_context::packet_queue_front(media_type mt)
 
 av_packet av_format_context::packet_queue_pop_front(media_type mt)
 {
-    packet_queue_t& queue = packet_queue(mt);
+    packet_queue_t& queue = packet_queue_get(mt);
 
 //    if (mt == media_type::subtitle) {
 //        if (!queue.empty()) {

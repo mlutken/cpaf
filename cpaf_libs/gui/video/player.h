@@ -158,8 +158,6 @@ private:
     void                            init_video              (const system_window& main_window);
     bool                            open_stream             (const std::string& resource_path, cpaf::video::stream_type_t sti);
     bool                            open_primary_stream     (const std::string& resource_path);
-    void                            current_media_time_set  (cpaf::video::media_stream_time* mts);
-    void                            current_media_time_set  (cpaf::video::media_stream_time& mts);
     void                            update_scaling_context  () const;
     pipeline_threads&               media_pipeline_threads  () { return media_pipeline_threads_; }
 

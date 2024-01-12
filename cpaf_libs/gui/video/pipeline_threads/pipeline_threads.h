@@ -36,20 +36,11 @@ public:
 
     explicit pipeline_threads(player& owning_player);
     ~pipeline_threads();
-//    pipeline_threads(std::atomic_bool& threads_running, std::atomic_bool& threads_paused);
 
-    void                        format_context_set      (cpaf::video::av_format_context* ctx);
-    void                        format_context_set      (cpaf::video::av_format_context& ctx);
-    void                        video_codec_ctx_set     (cpaf::video::av_codec_context* ctx);
-    void                        video_codec_ctx_set     (cpaf::video::av_codec_context& ctx);
-    void                        audio_codec_ctx_set     (cpaf::video::av_codec_context* ctx);
-    void                        audio_codec_ctx_set     (cpaf::video::av_codec_context& ctx);
     void                        audio_resampler_set     (cpaf::video::audio_resampler* resampler);
     void                        audio_resampler_set     (cpaf::video::audio_resampler& resampler);
     void                        audio_samples_queue_set (cpaf::video::av_samples_queue* queue);
     void                        audio_samples_queue_set (cpaf::video::av_samples_queue& queue);
-    void                        current_media_time_set  (cpaf::video::media_stream_time* mts);
-    void                        current_media_time_set  (cpaf::video::media_stream_time& mts);
     audio_play_callback_t       audio_callback_get      ();
 
     void                        start                   ();
@@ -70,12 +61,8 @@ private:
     void                        signal_flush_start      ();
     void                        signal_flush_done       ();
 
-    cpaf::video::av_format_context&      format_context          () { return *format_context_ptr_; }
-    cpaf::video::av_codec_context&       audio_codec_ctx         () { return *audio_codec_ctx_ptr_; }
-    cpaf::video::av_codec_context&       video_codec_ctx         () { return *video_codec_ctx_ptr_; }
     cpaf::video::audio_resampler&        audio_sampler           () { return *audio_resampler_ptr_; }
     cpaf::video::av_samples_queue&       audio_samples_queue     () { return *audio_samples_queue_ptr_; }
-    cpaf::video::media_stream_time&      current_media_time      () { return *current_media_time_ptr_; }
 
     player&                                     player_;
     packet_reader_thread                        packet_reader_thread_;
@@ -83,17 +70,11 @@ private:
     audio_render_thread                         audio_render_thread_;
     subtitle_reader_thread                      subtitle_reader_thread_;
     video_render_thread                         video_render_thread_;
-    cpaf::video::av_format_context*             format_context_ptr_             = nullptr;
-    cpaf::video::av_codec_context*              audio_codec_ctx_ptr_            = nullptr;
-    cpaf::video::av_codec_context*              video_codec_ctx_ptr_            = nullptr;
     cpaf::video::audio_resampler*               audio_resampler_ptr_            = nullptr;
     cpaf::video::av_samples_queue*              audio_samples_queue_ptr_        = nullptr;
-    cpaf::video::media_stream_time*             current_media_time_ptr_         = nullptr;
     std::atomic<cpaf::video::seek_state_t>      seek_state_                     = cpaf::video::seek_state_t::ready;
     std::atomic_bool                            threads_running_                = true;
     std::atomic_bool                            threads_paused_                 = false;
-    std::chrono::steady_clock::time_point       seek_flush_done_time_point_;
-
 };
 
 
