@@ -1,11 +1,13 @@
 #include "player.h"
 
+#include <cpaf_libs/time/cpaf_time.h>
 #include <cpaf_libs/torrent/torrents.h>
 #include <cpaf_libs/gui/system_window.h>
 #include <cpaf_libs/gui/video/render/render.h>
 #include <cpaf_libs/gui/video/ui/controls_default.h>
 
 using namespace cpaf::video;
+using namespace cpaf::time;
 
 namespace cpaf::gui::video {
 
@@ -254,6 +256,7 @@ size_t player::audio_stream_index() const
     return audio_stream_index_ != no_stream_index ? audio_stream_index_ : source_stream(stream_type_t::audio)->first_audio_index();
 }
 
+
 size_t player::subtitle_stream_index() const
 {
     return subtitle_stream_index_ != no_stream_index ? subtitle_stream_index_ : source_stream(stream_type_t::subtitle)->first_subtitle_index();
@@ -275,13 +278,12 @@ player::audio_play_callback_t player::audio_callback_get()
 void player::render()
 {
     // TODO: Move to some other place!
-    if (has_subtitle_stream()) {
-        auto subtitles = subtitle_codec_context().read_subtitles();
-        if (!subtitles.empty()) {
-
-            std::cerr << "FIXMENM subtitle\n";
-        }
-    }
+//    if (has_subtitle_stream()) {
+//        auto subtitles = subtitle_codec_context().read_subtitles();
+//        for (const auto& sub: subtitles) {
+//            std::cerr << "FIXMENM subtitle time: " << format_h_m_s(sub.presentation_time) << " , " << format_h_m_s(sub.presentation_time_end) <<  "\n";
+//        }
+//    }
 
 
     if (has_video_stream()) {

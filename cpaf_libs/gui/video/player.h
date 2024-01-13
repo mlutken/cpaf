@@ -103,6 +103,7 @@ public:
     // -------------------------------
     // --- Subtitles setup/control ---
     // -------------------------------
+    subtitle_source_t                   subtitle_source         () const { return subtitle_source_; }
     size_t                              subtitle_stream_index	() const;
 
     // ---------------------------------------------
@@ -192,7 +193,7 @@ private:
     std::unique_ptr<video::controls>                video_controls_;
     bool                                            show_controls_                  = true;
     bool                                            resume_from_pause_on_seek_      = true;
-
+    subtitle_source_t                               subtitle_source_                = subtitle_source_t::stream;    /// @todo
 };
 
 } //END namespace cpaf::gui::video

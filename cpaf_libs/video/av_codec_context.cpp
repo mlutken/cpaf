@@ -14,6 +14,7 @@ extern "C"
 #include <cpaf_libs/video/av_format_context.h>
 
 using namespace std;
+using namespace std::chrono;
 namespace cpaf::video {
 
 // -------------------------
@@ -268,21 +269,32 @@ std::vector<subtitle_frame> av_codec_context::read_subtitles() const
     auto packet = get_packet_fun_();
     if (packet.is_valid()) {
         std::cerr << "FIXMENM Got subtitle packet A\n";
-        subtitle_frame frm;
-
-//        AVSubtitle sub; // sub.rects[0].type = SUBTITLE_BITMAT, SUBTITLE_TEXT, SUBTITLE_ASS
+        int got_sub = 0;
         auto ff_subtitle_ptr = std::make_unique<AVSubtitle>();
         AVSubtitle& sub = *ff_subtitle_ptr; // sub.rects[0].type = SUBTITLE_BITMAT, SUBTITLE_TEXT, SUBTITLE_ASS
-        int got_sub = 0;
-//        const AVPacket *avpkt;
-
-
         avcodec_decode_subtitle2(ff_codec_context_, &sub, &got_sub, packet.ff_packet());
-        if ( got_sub) {
-//            avsubtitle_free(&sub);
-            subtitles.push_back(subtitle_frame(std::move(ff_subtitle_ptr)));
+        if (got_sub) {
+            subtitles.emplace_back(std::move(ff_subtitle_ptr));
+            subtitles.front().presentation_time = packet.presentation_time() + milliseconds(sub.start_display_time);
+            subtitles.front().presentation_time_end = packet.presentation_time() + milliseconds(sub.end_display_time);
         }
-//        if(frm.is_valid() &&
+
+        // Flush
+        // Note: The loop is merely so that we exit for sure even if avcodec_decode_subtitle2 should set got_sub to 1 forever
+        AVPacket ff_flush_pkt;
+        ff_flush_pkt.data = nullptr;
+        ff_flush_pkt.size = 0;
+        for (auto i = 100u; 0u < i; --i) {
+            int got_sub = 0;
+            auto ff_subtitle_ptr = std::make_unique<AVSubtitle>();
+            AVSubtitle& sub = *ff_subtitle_ptr; // sub.rects[0].type = SUBTITLE_BITMAT, SUBTITLE_TEXT, SUBTITLE_ASS
+
+            avcodec_decode_subtitle2(ff_codec_context_, &sub, &got_sub, &ff_flush_pkt);
+            if (!got_sub) { break; }
+            subtitles.emplace_back(std::move(ff_subtitle_ptr));
+            subtitles.front().presentation_time = packet.presentation_time() + milliseconds(sub.start_display_time);
+            subtitles.front().presentation_time_end = packet.presentation_time() + milliseconds(sub.end_display_time);
+        }
 
         std::cerr << "FIXMENM Got subtitle packet B got_sub: " << got_sub  << "\n";
     }

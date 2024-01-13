@@ -32,11 +32,31 @@ void subtitle_reader_thread::thread_function()
 {
     while(threads_running()) {
         if (!threads_paused()) {
+            if (player_.subtitle_source() == subtitle_source_t::stream) {
+                read_from_stream();
+            }
+            else if (player_.subtitle_source() == subtitle_source_t::text_file) {
+                std::cerr << "TODO subtitle reader thread subtitle_source_t::text_file support!\n";
+            }
+
 //            std::cerr << "FIXMENM subtitle reader thread ....\n";
         }
         std::this_thread::sleep_for(thread_yield_time_);
     }
     std::cerr << "\n!!! EXIT subtitle_reader_thread::audio_samples_thread_fn() !!!\n";
+}
+
+void subtitle_reader_thread::read_from_stream()
+{
+    if (player_.has_subtitle_stream()) {
+        auto subtitles = player_.subtitle_codec_context().read_subtitles();
+        for (auto& sub: subtitles) {
+            std::cerr << sub.dbg_str() << "\n";
+            if (!subtitles_queue_.push(std::move(sub)) ) {
+                std::cerr << "ERROR: Can't push subtitle to queue!\n";
+            }
+        }
+    }
 }
 
 

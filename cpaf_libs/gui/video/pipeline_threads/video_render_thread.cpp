@@ -20,11 +20,13 @@ namespace cpaf::gui::video {
 video_render_thread::video_render_thread(
     player& owning_player,
     cpaf::video::av_samples_queue& audio_samples_queue,
+    cpaf::video::subtitles_queue& subtitles_queue,
     const std::atomic_bool& threads_running,
     const std::atomic_bool& threads_paused,
     std::atomic<seek_state_t>& seek_state)
     : player_(owning_player)
     , audio_samples_queue_(audio_samples_queue)
+    , subtitles_queue_(subtitles_queue)
     , threads_running_(threads_running)
     , threads_paused_(threads_paused)
     , seek_state_(seek_state)
@@ -49,6 +51,16 @@ void video_render_thread::video_frame_update(cpaf::video::av_frame& current_fram
     debug_video_frame_update(current_frame, video_render);
 }
 
+void video_render_thread::video_queue_flush_start() {
+    flush_requested_ = true;
+    video_queue_flush_in_progress_ = true;
+}
+
+void video_render_thread::video_queue_flush_done() {
+    video_queue_flush_in_progress_ = false;
+    video_queue_flushed_ = true;
+}
+
 std::chrono::microseconds video_render_thread::time_to_current_frame(cpaf::video::av_frame& current_frame) const
 {
     return current_frame.presentation_time() - player_.cur_media_time().video_time_pos();
@@ -59,18 +71,22 @@ std::chrono::microseconds video_render_thread::time_to_current_frame_abs(cpaf::v
     return cpaf::time::abs(time_to_current_frame(current_frame));
 }
 
-bool video_render_thread::is_seek_currently_possible() const {
-    if (video_queue_flush_in_progress_ || video_queue_flushed_) {
-        return false;
-    }
-    return is_seek_currently_possible_;
-}
+///bool video_render_thread::is_seek_currently_possible() const {
+///    if (video_queue_flush_in_progress_ || video_queue_flushed_) {
+///        return false;
+///    }
+///    return is_seek_currently_possible_;
+///}
 
 /**
 @todo Do we in case on non valid frame want to call video_render.clear_screen() ?
 */
 bool video_render_thread::video_frame_do_render(cpaf::video::av_frame& current_frame, cpaf::gui::video::render& video_render)
 {
+    if (flush_requested_) {
+        flush_queues();
+    }
+
     // --- Special case when we are flushing (seeking) ---
     if (seek_state_ == seek_state_t::flushing) {
         video_render.render_video_frame(current_frame);
@@ -104,11 +120,11 @@ bool video_render_thread::video_frame_do_render(cpaf::video::av_frame& current_f
     return new_frame_was_read;
 }
 
-void video_render_thread::update_is_seek_possible(av_frame& current_frame)
-{
-    const auto abs_dist_to_cur_frame = cpaf::time::abs(time_to_current_frame(current_frame));
-    is_seek_currently_possible_ = abs_dist_to_cur_frame < 40ms;
-}
+///void video_render_thread::update_is_seek_possible(av_frame& current_frame)
+///{
+///    const auto abs_dist_to_cur_frame = cpaf::time::abs(time_to_current_frame(current_frame));
+///    is_seek_currently_possible_ = abs_dist_to_cur_frame < 40ms;
+///}
 
 cpaf::video::subtitle_frame video_render_thread::current_subtitle() const
 {
@@ -162,6 +178,15 @@ const cpaf::video::packet_queue_t& video_render_thread::video_packet_queue() con
 const cpaf::video::packet_queue_t& video_render_thread::video_packet_queue_const() const
 {
     return player_.format_context().packet_queue(cpaf::video::media_type::video);
+}
+
+/**
+ *  @note. Here only flush the subtitles queue. The vide frames are flushed from pipeline_threads
+ */
+void video_render_thread::flush_queues()
+{
+    subtitles_queue_.flush();
+    flush_requested_ = false;
 }
 
 } // namespace cpaf::gui::video

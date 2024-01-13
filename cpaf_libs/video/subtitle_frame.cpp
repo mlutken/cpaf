@@ -1,5 +1,8 @@
 #include "subtitle_frame.h"
 #include <iostream>
+#include <exception>
+#include <fmt/format.h>
+#include <cpaf_libs/time/cpaf_time.h>
 
 extern "C"
 {
@@ -15,6 +18,8 @@ extern "C"
 
 
 using namespace std;
+using namespace cpaf;
+using namespace cpaf::time;
 
 namespace cpaf::video {
 
@@ -22,15 +27,22 @@ subtitle_frame::subtitle_frame()
 {
 }
 
+subtitle_frame::subtitle_frame(std::unique_ptr<AVSubtitle> ff_subtitle_ptr)
+    : ff_subtitle_ptr_(std::move(ff_subtitle_ptr))
+{
+    if (!ff_subtitle_ptr_) { return; }
+    AVSubtitle& sub = *ff_subtitle_ptr_;
+
+    if (sub.format == 0) {
+        format_ = format_t::graphics;
+        return;
+    }
+}
+
 subtitle_frame::subtitle_frame(std::string s0)
     : lines{std::move(s0)}
 {
 
-}
-
-subtitle_frame::subtitle_frame(std::unique_ptr<AVSubtitle> ff_subtitle_ptr)
-    : ff_subtitle_ptr_(std::move(ff_subtitle_ptr))
-{
 }
 
 subtitle_frame& subtitle_frame::operator=(subtitle_frame&& moving) noexcept
@@ -68,6 +80,7 @@ bool subtitle_frame::is_valid() const {
     return !lines.empty() || ff_subtitle_ptr_;
 }
 
+
 void subtitle_frame::set_presentaion_times(std::chrono::microseconds start, std::chrono::microseconds end)
 {
     presentation_time = start;
@@ -91,6 +104,24 @@ void subtitle_frame::swap(subtitle_frame& src) noexcept
     std::swap(presentation_time_end, src.presentation_time_end);
     std::swap(sequence_number, src.sequence_number);
     std::swap(ff_subtitle_ptr_, src.ff_subtitle_ptr_);
+    std::swap(format_, src.format_);
+}
+
+AVSubtitle& subtitle_frame::ff_subtitle()
+{
+    if (!ff_subtitle_ptr_) { throw std::bad_exception(); }
+    return *ff_subtitle_ptr_;
+}
+
+string subtitle_frame::dbg_str() const
+{
+    auto str = fmt::format("Subtitle time: {} -> {}\n", format_h_m_s(presentation_time), format_h_m_s(presentation_time_end));
+    if (format() == format_t::text){
+        for (const auto& line: lines) {
+            str += "    " + line + "\n";
+        }
+    }
+    return str;
 }
 
 //AVSubtitle& subtitle_frame::ff_subtitle()

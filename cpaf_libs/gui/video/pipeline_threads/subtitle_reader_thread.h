@@ -31,7 +31,7 @@ public:
 
 private:
     void                                thread_function         ();
-    void                                resample_frame          (bool& add_samples, const std::chrono::microseconds& cur_media_time_pos);
+    void                                read_from_stream ();
     const std::atomic_bool&             threads_running         () const { return threads_running_; }
     const std::atomic_bool&             threads_paused          () const { return threads_paused_; }
 

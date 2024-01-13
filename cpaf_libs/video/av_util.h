@@ -63,7 +63,7 @@ enum class seek_state_t : int8_t {
     flush_done
 };
 
-enum struct stream_type_t : size_t {
+enum class stream_type_t : size_t {
     video = 0,
     audio,
     subtitle,
@@ -71,6 +71,13 @@ enum struct stream_type_t : size_t {
     ads,
     SIZE = ads +1 			///< One past the last as we start from zero
 };
+
+enum class subtitle_source_t : int8_t {
+    none,
+    stream,
+    text_file
+};
+
 
 inline bool media_type_valid (AVMediaType ff_mt) {
     return AVMEDIA_TYPE_UNKNOWN < ff_mt && ff_mt <= AVMEDIA_TYPE_NB;
