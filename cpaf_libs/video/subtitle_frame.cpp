@@ -1,4 +1,5 @@
 #include "subtitle_frame.h"
+#include <iostream>
 
 extern "C"
 {
@@ -19,13 +20,17 @@ namespace cpaf::video {
 
 subtitle_frame::subtitle_frame()
 {
-
 }
 
 subtitle_frame::subtitle_frame(std::string s0)
     : lines{std::move(s0)}
 {
 
+}
+
+subtitle_frame::subtitle_frame(std::unique_ptr<AVSubtitle> ff_subtitle_ptr)
+    : ff_subtitle_ptr_(std::move(ff_subtitle_ptr))
+{
 }
 
 subtitle_frame& subtitle_frame::operator=(subtitle_frame&& moving) noexcept
@@ -43,6 +48,7 @@ subtitle_frame::~subtitle_frame()
 {
     if (ff_subtitle_ptr_) {
         avsubtitle_free(ff_subtitle_ptr_.get());
+        std::cerr << "FIXMENM avsubtitle_free()\n";
     }
 }
 
@@ -86,6 +92,14 @@ void subtitle_frame::swap(subtitle_frame& src) noexcept
     std::swap(sequence_number, src.sequence_number);
     std::swap(ff_subtitle_ptr_, src.ff_subtitle_ptr_);
 }
+
+//AVSubtitle& subtitle_frame::ff_subtitle()
+//{
+//    if (!ff_subtitle_ptr_) {
+//        std::make_unique<AVSubtitle>();
+//    }
+//    return *ff_subtitle_ptr_;
+//}
 
 
 } //END namespace cpaf::video

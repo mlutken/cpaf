@@ -105,7 +105,7 @@ public:
     int                     receive_frame               (av_frame& frame) const;
 
     // --- Subtitle functions ---
-    subtitle_frame          read_subtitle               () const;
+    std::vector<subtitle_frame> read_subtitles          () const;
 
     // --- Time functions ---
     std::chrono::microseconds   time_from_stream_time   (int64_t stream_time_duration) const;

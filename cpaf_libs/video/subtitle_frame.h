@@ -11,11 +11,14 @@ struct AVSubtitle;
 
 namespace cpaf::video {
 
+class av_packet;
+
 /**
 typedef struct AVSubtitle {
 */
-struct subtitle_frame
+class subtitle_frame
 {
+public:
     enum class type_t {text, bitmap};
 
     std::vector<std::string>        lines                   {};
@@ -25,6 +28,7 @@ struct subtitle_frame
 
     subtitle_frame();
     explicit subtitle_frame(std::string s0);
+    explicit subtitle_frame(std::unique_ptr<AVSubtitle> ff_subtitle_ptr);
     subtitle_frame(std::string s0, std::string s1);
     subtitle_frame(std::string s0, std::string s1, std::string s2);
     subtitle_frame (const subtitle_frame&) = delete;
@@ -43,6 +47,7 @@ struct subtitle_frame
     std::chrono::milliseconds       presentation_time_end_ms    () const { return std::chrono::duration_cast<std::chrono::milliseconds>(presentation_time_end); }
     bool                            should_show                 () const;
     void                            swap                        (subtitle_frame& src) noexcept;
+//    AVSubtitle&                     ff_subtitle                 ();
 
     static constexpr size_t         max_lines               {3};
 private:

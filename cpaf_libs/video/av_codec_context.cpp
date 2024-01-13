@@ -259,26 +259,35 @@ int av_codec_context::receive_frame(av_frame& frame) const
     return ret_val;
 }
 
-subtitle_frame av_codec_context::read_subtitle() const
+std::vector<subtitle_frame> av_codec_context::read_subtitles() const
 {
-    if (media_type_get() != media_type::subtitle) { return subtitle_frame(); }
+    if (media_type_get() != media_type::subtitle) { return std::vector<subtitle_frame>(); }
 
-    subtitle_frame frm;
+    std::vector<subtitle_frame> subtitles;
     // https://stackoverflow.com/questions/54125207/dump-subtitle-from-avsubtitle-in-the-file
     auto packet = get_packet_fun_();
     if (packet.is_valid()) {
-        std::cerr << "FIXMENM Got subtitle packet An";
-        AVSubtitle sub; // sub.rects[0].type = SUBTITLE_BITMAT, SUBTITLE_TEXT, SUBTITLE_ASS
+        std::cerr << "FIXMENM Got subtitle packet A\n";
+        subtitle_frame frm;
+
+//        AVSubtitle sub; // sub.rects[0].type = SUBTITLE_BITMAT, SUBTITLE_TEXT, SUBTITLE_ASS
+        auto ff_subtitle_ptr = std::make_unique<AVSubtitle>();
+        AVSubtitle& sub = *ff_subtitle_ptr; // sub.rects[0].type = SUBTITLE_BITMAT, SUBTITLE_TEXT, SUBTITLE_ASS
         int got_sub = 0;
 //        const AVPacket *avpkt;
 
 
         avcodec_decode_subtitle2(ff_codec_context_, &sub, &got_sub, packet.ff_packet());
-        avsubtitle_free(&sub);
-        std::cerr << "FIXMENM Got subtitle packet B\n";
+        if ( got_sub) {
+//            avsubtitle_free(&sub);
+            subtitles.push_back(subtitle_frame(std::move(ff_subtitle_ptr)));
+        }
+//        if(frm.is_valid() &&
+
+        std::cerr << "FIXMENM Got subtitle packet B got_sub: " << got_sub  << "\n";
     }
 
-    return frm;
+    return subtitles;
 }
 
 // ----------------------

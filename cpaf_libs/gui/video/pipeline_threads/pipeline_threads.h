@@ -11,6 +11,7 @@
 #include <cpaf_libs/video/av_samples_buffer.h>
 #include <cpaf_libs/video/subtitle_frame.h>
 #include <cpaf_libs/video/av_samples_queue.h>
+#include <cpaf_libs/video/audio_resampler.h>
 #include <cpaf_libs/gui/video/pipeline_threads/audio_render_thread.h>
 #include <cpaf_libs/gui/video/pipeline_threads/audio_resampler_thread.h>
 #include <cpaf_libs/gui/video/pipeline_threads/packet_reader_thread.h>
@@ -68,6 +69,7 @@ private:
     player&                                     player_;
     cpaf::video::av_samples_queue               audio_samples_queue_;
     cpaf::video::subtitles_queue                subtitles_queue_;
+//TODO: Nove this to here    cpaf::video::audio_resampler                audio_resampler_;
     packet_reader_thread                        packet_reader_thread_;
     audio_resampler_thread                      audio_resampler_thread_;
     audio_render_thread                         audio_render_thread_;

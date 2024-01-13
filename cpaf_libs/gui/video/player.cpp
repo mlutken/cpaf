@@ -276,10 +276,11 @@ void player::render()
 {
     // TODO: Move to some other place!
     if (has_subtitle_stream()) {
-        auto sub = subtitle_codec_context().read_subtitle();
-//        if (frame.is_valid()) {
-//            std::cerr << "FIXMENM subtitle\n";
-//        }
+        auto subtitles = subtitle_codec_context().read_subtitles();
+        if (!subtitles.empty()) {
+
+            std::cerr << "FIXMENM subtitle\n";
+        }
     }
 
 
