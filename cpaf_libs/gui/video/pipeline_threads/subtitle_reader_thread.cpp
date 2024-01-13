@@ -11,9 +11,11 @@ namespace cpaf::gui::video {
 
 subtitle_reader_thread::subtitle_reader_thread(
     player& owning_player,
+    cpaf::video::subtitles_queue& subtitles_queue,
     const std::atomic_bool& threads_running,
     const std::atomic_bool& threads_paused)
     : player_(owning_player)
+    , subtitles_queue_(subtitles_queue)
     , threads_running_(threads_running)
     , threads_paused_(threads_paused)
 {

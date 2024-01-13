@@ -16,16 +16,13 @@ using namespace std::chrono_literals;
 
 namespace cpaf::gui::video {
 
-
-//pipeline_threads::pipeline_threads(atomic_bool& /*threads_running*/, atomic_bool& /*threads_paused*/)
 pipeline_threads::pipeline_threads(player& owning_player)
     : player_(owning_player)
     , audio_samples_queue_(1000)
-//    , subtitles_queue_(subtitles_queue)
     , packet_reader_thread_(owning_player, threads_running_, threads_paused_, seek_state_)
     , audio_resampler_thread_(owning_player, audio_samples_queue_, threads_running_, threads_paused_)
     , audio_render_thread_(owning_player, *this, audio_samples_queue_, seek_state_)
-    , subtitle_reader_thread_(owning_player, threads_running_, threads_paused_)
+    , subtitle_reader_thread_(owning_player, subtitles_queue_, threads_running_, threads_paused_)
     , video_render_thread_(owning_player, audio_samples_queue_, threads_running_, threads_paused_, seek_state_)
 {
     packet_reader_thread_.pipeline_threads_set(this);

@@ -67,6 +67,7 @@ private:
 
     player&                                     player_;
     cpaf::video::av_samples_queue               audio_samples_queue_;
+    cpaf::video::subtitles_queue                subtitles_queue_;
     packet_reader_thread                        packet_reader_thread_;
     audio_resampler_thread                      audio_resampler_thread_;
     audio_render_thread                         audio_render_thread_;
@@ -77,7 +78,6 @@ private:
     std::atomic_bool                            threads_running_                = true;
     std::atomic_bool                            threads_paused_                 = false;
 };
-
 
 } //END namespace cpaf::gui::video
 

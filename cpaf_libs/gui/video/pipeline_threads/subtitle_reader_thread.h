@@ -6,6 +6,7 @@
 #include <atomic>
 
 #include <cpaf_libs/video/av_util.h>
+#include <cpaf_libs/video/subtitle_frame.h>
 
 namespace cpaf::video {
 class av_format_context;
@@ -22,6 +23,7 @@ class subtitle_reader_thread
 {
 public:
     subtitle_reader_thread(player& owning_player,
+                           cpaf::video::subtitles_queue& subtitles_queue,
                            const std::atomic_bool& threads_running,
                            const std::atomic_bool& threads_paused);
 
@@ -34,6 +36,7 @@ private:
     const std::atomic_bool&             threads_paused          () const { return threads_paused_; }
 
     player&                             player_;
+    cpaf::video::subtitles_queue&       subtitles_queue_;
     const std::atomic_bool&             threads_running_;
     const std::atomic_bool&             threads_paused_;
 
