@@ -100,7 +100,7 @@ public:
     // --- Audio info functions ---
     // ----------------------------
     size_t                              audio_stream_index		() const;
-    const cpaf::video::av_samples_queue&audio_samples_queue     () const { return audio_samples_queue_; }
+    const cpaf::video::av_samples_queue&audio_samples_queue     () const { return media_pipeline_threads_.audio_samples_queue(); }
 
     // -------------------------------
     // --- Subtitles setup/control ---
@@ -168,7 +168,6 @@ private:
     // ----------------------------
     using source_streams_array_t = std::array<std::unique_ptr<cpaf::video::play_stream>, cpaf::video::stream_type_index_size()>;
     cpaf::video::play_stream                        primary_source_stream_;
-    cpaf::video::av_samples_queue                   audio_samples_queue_;
     pipeline_threads                                media_pipeline_threads_;
     const system_window*                            main_window_ptr_                = nullptr;
     source_streams_array_t                          source_streams_                 = {nullptr, nullptr, nullptr, nullptr, nullptr};

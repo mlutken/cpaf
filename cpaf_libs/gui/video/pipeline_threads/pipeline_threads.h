@@ -36,12 +36,11 @@ public:
     pipeline_threads(const pipeline_threads&) = delete;
     pipeline_threads& operator=(const pipeline_threads&)  = delete;
 
-    explicit pipeline_threads(player& owning_player, cpaf::video::av_samples_queue& audio_samples_queue);
+    explicit pipeline_threads(player& owning_player);
     ~pipeline_threads();
 
     void                        audio_resampler_set     (cpaf::video::audio_resampler* resampler);
     void                        audio_resampler_set     (cpaf::video::audio_resampler& resampler);
-    void                        audio_samples_queue_set (cpaf::video::av_samples_queue& queue);
     audio_play_callback_t       audio_callback_get      ();
 
     void                        start                   ();
@@ -57,9 +56,8 @@ public:
     bool                        playback_paused         () const { return threads_paused_; }
     void                        video_frame_update      (cpaf::video::av_frame& current_frame, cpaf::gui::video::render& video_render);
 
-//    cpaf::video::av_samples_queue& audio_samples_queue() { return audio_samples_queue_; }
-    cpaf::video::av_samples_queue&       audio_samples_queue     () { return *audio_samples_queue_ptr_; }
-
+    cpaf::video::av_samples_queue& audio_samples_queue() { return audio_samples_queue_; }
+    const cpaf::video::av_samples_queue&       audio_samples_queue () const { return audio_samples_queue_; }
 private:
     void                        flush_queues            ();
     void                        signal_flush_start      ();
@@ -75,7 +73,6 @@ private:
     subtitle_reader_thread                      subtitle_reader_thread_;
     video_render_thread                         video_render_thread_;
     cpaf::video::audio_resampler*               audio_resampler_ptr_            = nullptr;
-    cpaf::video::av_samples_queue*              audio_samples_queue_ptr_        = nullptr;
     std::atomic<cpaf::video::seek_state_t>      seek_state_                     = cpaf::video::seek_state_t::ready;
     std::atomic_bool                            threads_running_                = true;
     std::atomic_bool                            threads_paused_                 = false;

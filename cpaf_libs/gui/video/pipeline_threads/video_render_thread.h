@@ -30,13 +30,10 @@ class video_render_thread
 {
 public:
     video_render_thread(player& owning_player,
+                        cpaf::video::av_samples_queue& audio_samples_queue,
                         const std::atomic_bool& threads_running,
                         const std::atomic_bool& threads_paused,
                         std::atomic<cpaf::video::seek_state_t>& seek_state);
-
-    void                        audio_samples_queue_set     (cpaf::video::av_samples_queue* queue)   { audio_samples_queue_ptr_ = queue; }
-    void                        audio_samples_queue_set     (cpaf::video::av_samples_queue& queue)   { audio_samples_queue_ptr_ = &queue; }
-
     void                        start                       ();
     void                        terminate                   ();
     void                        video_frame_update          (cpaf::video::av_frame& current_frame, cpaf::gui::video::render& video_render);
@@ -57,17 +54,16 @@ private:
     void                                    video_packet_queue_pop  ();
     const cpaf::video::packet_queue_t&      video_packet_queue      () const;
     const cpaf::video::packet_queue_t&      video_packet_queue_const() const;
-    const cpaf::video::av_samples_queue&    audio_samples_queue     () const { return *audio_samples_queue_ptr_; }
+    const cpaf::video::av_samples_queue&    audio_samples_queue     () const { return audio_samples_queue_; }
 
     const std::atomic_bool&                 threads_running         () const { return threads_running_; }
     const std::atomic_bool&                 threads_paused          () const { return threads_paused_; }
 
     player&                                 player_;
+    cpaf::video::av_samples_queue&          audio_samples_queue_;
     const std::atomic_bool&                 threads_running_;
     const std::atomic_bool&                 threads_paused_;
     std::atomic<cpaf::video::seek_state_t>& seek_state_;
-
-    cpaf::video::av_samples_queue*          audio_samples_queue_ptr_        = nullptr;
 
     int                                     video_frame_update_dbg_counter_ = 0;
     std::atomic_bool                        video_queue_flush_in_progress_  = false;

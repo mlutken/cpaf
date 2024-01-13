@@ -11,8 +11,7 @@ namespace cpaf::gui::video {
 
 player::player()
     :   primary_source_stream_([this]() {return torrents_get();}),
-        audio_samples_queue_(1000),
-        media_pipeline_threads_(*this, audio_samples_queue_/*, subtitles_queue_*/)
+        media_pipeline_threads_(*this)
 {
     next_video_frame_ = av_frame::create_alloc();
 }
@@ -50,7 +49,7 @@ void player::start(const std::chrono::microseconds& start_time_pos)
     subtitle_codec_context().get_packet_function_set(video_fmt_ctx.get_packet_function(media_type::subtitle));
 
     media_pipeline_threads().audio_resampler_set(audio_resampler_);
-    media_pipeline_threads().audio_samples_queue_set(audio_samples_queue_);
+///    media_pipeline_threads().audio_samples_queue_set(audio_samples_queue_);
 
     video_fmt_ctx.read_packets_to_queues(video_fmt_ctx.primary_media_type(), 10);
 

@@ -19,10 +19,12 @@ namespace cpaf::gui::video {
 
 video_render_thread::video_render_thread(
     player& owning_player,
+    cpaf::video::av_samples_queue& audio_samples_queue,
     const std::atomic_bool& threads_running,
     const std::atomic_bool& threads_paused,
     std::atomic<seek_state_t>& seek_state)
     : player_(owning_player)
+    , audio_samples_queue_(audio_samples_queue)
     , threads_running_(threads_running)
     , threads_paused_(threads_paused)
     , seek_state_(seek_state)

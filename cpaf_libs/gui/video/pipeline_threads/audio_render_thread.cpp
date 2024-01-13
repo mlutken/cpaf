@@ -18,12 +18,13 @@ namespace cpaf::gui::video {
 
 audio_render_thread::audio_render_thread(
     player& owning_player,
-    av_samples_queue& audio_samples_queue,
     pipeline_threads& pline_threads,
+    av_samples_queue& audio_samples_queue,
     std::atomic<cpaf::video::seek_state_t>& seek_state)
     : player_(owning_player)
-    , pipeline_threads_(pline_threads),
-    seek_state_(seek_state)
+    , pipeline_threads_(pline_threads)
+    , audio_samples_queue_(audio_samples_queue)
+    , seek_state_(seek_state)
 {
 
 }
