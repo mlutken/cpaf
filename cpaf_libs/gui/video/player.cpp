@@ -12,7 +12,7 @@ namespace cpaf::gui::video {
 player::player()
     :   primary_source_stream_([this]() {return torrents_get();}),
         audio_samples_queue_(1000),
-        media_pipeline_threads_(*this)
+        media_pipeline_threads_(*this, audio_samples_queue_/*, subtitles_queue_*/)
 {
     next_video_frame_ = av_frame::create_alloc();
 }

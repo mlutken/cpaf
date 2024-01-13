@@ -18,6 +18,7 @@ namespace cpaf::gui::video {
 
 audio_render_thread::audio_render_thread(
     player& owning_player,
+    av_samples_queue& audio_samples_queue,
     pipeline_threads& pline_threads,
     std::atomic<cpaf::video::seek_state_t>& seek_state)
     : player_(owning_player)

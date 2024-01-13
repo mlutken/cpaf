@@ -25,6 +25,7 @@ class audio_render_thread
 public:
     using audio_play_callback_t  = cpaf::audio::device_base::play_callback_t;
     explicit audio_render_thread(player& owning_player,
+                                 cpaf::video::av_samples_queue& audio_samples_queue,
                                  pipeline_threads& pline_threads,
                                  std::atomic<cpaf::video::seek_state_t>& seek_state);
 

@@ -5,6 +5,7 @@
 #include <chrono>
 #include <memory>
 #include <cstdint>
+#include <concurrent/srsw_fifo.hpp>
 
 struct AVSubtitle;
 
@@ -48,6 +49,8 @@ private:
 
     std::unique_ptr<AVSubtitle>     ff_subtitle_ptr_    {nullptr};
 };
+
+using subtitles_queue = estl::srsw_fifo<subtitle_frame>;
 
 } //END namespace cpaf::video
 

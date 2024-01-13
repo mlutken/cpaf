@@ -9,6 +9,8 @@
 #include <cpaf_libs/audio/cpaf_audio_device_base.h>
 #include <cpaf_libs/video/av_util.h>
 #include <cpaf_libs/video/av_samples_buffer.h>
+#include <cpaf_libs/video/subtitle_frame.h>
+#include <cpaf_libs/video/av_samples_queue.h>
 #include <cpaf_libs/gui/video/pipeline_threads/audio_render_thread.h>
 #include <cpaf_libs/gui/video/pipeline_threads/audio_resampler_thread.h>
 #include <cpaf_libs/gui/video/pipeline_threads/packet_reader_thread.h>
@@ -34,12 +36,11 @@ public:
     pipeline_threads(const pipeline_threads&) = delete;
     pipeline_threads& operator=(const pipeline_threads&)  = delete;
 
-    explicit pipeline_threads(player& owning_player);
+    explicit pipeline_threads(player& owning_player, cpaf::video::av_samples_queue& audio_samples_queue);
     ~pipeline_threads();
 
     void                        audio_resampler_set     (cpaf::video::audio_resampler* resampler);
     void                        audio_resampler_set     (cpaf::video::audio_resampler& resampler);
-    void                        audio_samples_queue_set (cpaf::video::av_samples_queue* queue);
     void                        audio_samples_queue_set (cpaf::video::av_samples_queue& queue);
     audio_play_callback_t       audio_callback_get      ();
 
@@ -54,17 +55,20 @@ public:
     void                        pause_playback          ();
     void                        resume_playback         ();
     bool                        playback_paused         () const { return threads_paused_; }
-
     void                        video_frame_update      (cpaf::video::av_frame& current_frame, cpaf::gui::video::render& video_render);
+
+//    cpaf::video::av_samples_queue& audio_samples_queue() { return audio_samples_queue_; }
+    cpaf::video::av_samples_queue&       audio_samples_queue     () { return *audio_samples_queue_ptr_; }
+
 private:
     void                        flush_queues            ();
     void                        signal_flush_start      ();
     void                        signal_flush_done       ();
 
     cpaf::video::audio_resampler&        audio_sampler           () { return *audio_resampler_ptr_; }
-    cpaf::video::av_samples_queue&       audio_samples_queue     () { return *audio_samples_queue_ptr_; }
 
     player&                                     player_;
+    cpaf::video::av_samples_queue               audio_samples_queue_;
     packet_reader_thread                        packet_reader_thread_;
     audio_resampler_thread                      audio_resampler_thread_;
     audio_render_thread                         audio_render_thread_;

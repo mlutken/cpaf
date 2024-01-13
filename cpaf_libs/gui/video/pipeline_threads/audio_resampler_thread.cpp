@@ -13,6 +13,7 @@ namespace cpaf::gui::video {
 
 audio_resampler_thread::audio_resampler_thread(
     player& owning_player,
+    cpaf::video::av_samples_queue& audio_samples_queue,
     const std::atomic_bool& threads_running,
     const std::atomic_bool& threads_paused)
     : player_(owning_player)

@@ -23,6 +23,7 @@ class audio_resampler_thread
 {
 public:
     audio_resampler_thread( player& owning_player,
+                            cpaf::video::av_samples_queue& audio_samples_queue,
                             const std::atomic_bool& threads_running,
                             const std::atomic_bool& threads_paused);
     void                    audio_resampler_set     (cpaf::video::audio_resampler* resampler){ audio_resampler_ptr_ = resampler; }
@@ -38,10 +39,10 @@ private:
     void                    thread_function         ();
     void                    resample_frame          (bool& add_samples, const std::chrono::microseconds& cur_media_time_pos);
 
-    cpaf::video::audio_resampler&        audio_sampler           () { return *audio_resampler_ptr_; }
-    cpaf::video::av_samples_queue&       audio_samples_queue     () { return *audio_samples_queue_ptr_; }
-    const std::atomic_bool& threads_running         () const { return threads_running_; }
-    const std::atomic_bool& threads_paused          () const { return threads_paused_; }
+    const std::atomic_bool&             threads_running         () const { return threads_running_; }
+    const std::atomic_bool&             threads_paused          () const { return threads_paused_; }
+    cpaf::video::audio_resampler&       audio_sampler           () { return *audio_resampler_ptr_; }
+    cpaf::video::av_samples_queue&      audio_samples_queue     () { return *audio_samples_queue_ptr_; }
 
     player&                             player_;
     const std::atomic_bool&             threads_running_;

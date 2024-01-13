@@ -8,6 +8,8 @@
 #include <cpaf_libs/video/play_stream.h>
 #include <cpaf_libs/video/media_stream_time.h>
 #include <cpaf_libs/video/audio_resampler.h>
+#include <cpaf_libs/video/subtitle_frame.h>
+#include <cpaf_libs/gui/video/pipeline_threads/pipeline_threads.h>
 
 namespace cpaf::gui {
 class system_window;

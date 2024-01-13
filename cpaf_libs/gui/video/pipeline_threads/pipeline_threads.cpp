@@ -18,11 +18,13 @@ namespace cpaf::gui::video {
 
 
 //pipeline_threads::pipeline_threads(atomic_bool& /*threads_running*/, atomic_bool& /*threads_paused*/)
-pipeline_threads::pipeline_threads(player& owning_player)
+pipeline_threads::pipeline_threads(player& owning_player, av_samples_queue& /* audio_samples_queue REMOVE*/)
     : player_(owning_player)
+    , audio_samples_queue_(1000)
+//    , subtitles_queue_(subtitles_queue)
     , packet_reader_thread_(owning_player, threads_running_, threads_paused_, seek_state_)
-    , audio_resampler_thread_(owning_player, threads_running_, threads_paused_)
-    , audio_render_thread_(owning_player, *this, seek_state_)
+    , audio_resampler_thread_(owning_player, audio_samples_queue_, threads_running_, threads_paused_)
+    , audio_render_thread_(owning_player, audio_samples_queue_, *this, seek_state_)
     , subtitle_reader_thread_(owning_player, threads_running_, threads_paused_)
     , video_render_thread_(owning_player, threads_running_, threads_paused_, seek_state_)
 {
@@ -44,14 +46,6 @@ void pipeline_threads::audio_resampler_set(cpaf::video::audio_resampler& resampl
 {
     audio_resampler_thread_.audio_resampler_set(resampler);
     audio_resampler_ptr_ = &resampler;
-}
-
-void pipeline_threads::audio_samples_queue_set(cpaf::video::av_samples_queue* queue)
-{
-    audio_resampler_thread_.audio_samples_queue_set(queue);
-    audio_render_thread_.audio_samples_queue_set(queue);
-    video_render_thread_.audio_samples_queue_set(queue);
-    audio_samples_queue_ptr_ = queue;
 }
 
 void pipeline_threads::audio_samples_queue_set(cpaf::video::av_samples_queue& queue)

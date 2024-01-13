@@ -4,7 +4,6 @@
 #include <cpaf_libs/video/av_format_context.h>
 #include <cpaf_libs/video/av_samples_queue.h>
 #include <cpaf_libs/video/av_util.h>
-#include <cpaf_libs/gui/video/pipeline_threads/pipeline_threads.h>
 
 namespace cpaf::video {
 
