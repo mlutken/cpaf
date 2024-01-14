@@ -268,7 +268,6 @@ std::vector<subtitle_frame> av_codec_context::read_subtitles() const
     // https://stackoverflow.com/questions/54125207/dump-subtitle-from-avsubtitle-in-the-file
     auto packet = get_packet_fun_();
     if (packet.is_valid()) {
-        std::cerr << "FIXMENM Got subtitle packet A\n";
         int got_sub = 0;
         auto ff_subtitle_ptr = std::make_unique<AVSubtitle>();
         AVSubtitle& sub = *ff_subtitle_ptr; // sub.rects[0].type = SUBTITLE_BITMAT, SUBTITLE_TEXT, SUBTITLE_ASS
@@ -295,8 +294,6 @@ std::vector<subtitle_frame> av_codec_context::read_subtitles() const
             subtitles.front().presentation_time = packet.presentation_time() + milliseconds(sub.start_display_time);
             subtitles.front().presentation_time_end = packet.presentation_time() + milliseconds(sub.end_display_time);
         }
-
-        std::cerr << "FIXMENM Got subtitle packet B got_sub: " << got_sub  << "\n";
     }
 
     return subtitles;

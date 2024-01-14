@@ -80,6 +80,7 @@ void render_base::set_current_subtitle(cpaf::video::subtitle_frame&& subtitle)
 
     current_subtitle_frame_ = std::move(subtitle);
     if (current_subtitle_frame_.should_show()) {
+        std::cerr << "FIXMENM set_current_subtitle: " << current_subtitle_frame_.dbg_str() << "\n";
         on_render_geometry_changed();
     }
 }

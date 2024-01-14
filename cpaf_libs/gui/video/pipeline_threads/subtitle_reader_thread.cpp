@@ -51,7 +51,6 @@ void subtitle_reader_thread::read_from_stream()
     if (player_.has_subtitle_stream()) {
         auto subtitles = player_.subtitle_codec_context().read_subtitles();
         for (auto& sub: subtitles) {
-            std::cerr << sub.dbg_str() << "\n";
             if (!subtitles_queue_.push(std::move(sub)) ) {
                 std::cerr << "ERROR: Can't push subtitle to queue!\n";
             }

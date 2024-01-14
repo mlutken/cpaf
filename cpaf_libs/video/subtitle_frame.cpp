@@ -60,7 +60,7 @@ subtitle_frame::~subtitle_frame()
 {
     if (ff_subtitle_ptr_) {
         avsubtitle_free(ff_subtitle_ptr_.get());
-        std::cerr << "FIXMENM avsubtitle_free()\n";
+//        std::cerr << "FIXMENM avsubtitle_free()\n";
     }
 }
 
@@ -115,7 +115,11 @@ AVSubtitle& subtitle_frame::ff_subtitle()
 
 string subtitle_frame::dbg_str() const
 {
-    auto str = fmt::format("Subtitle time: {} -> {}\n", format_h_m_s(presentation_time), format_h_m_s(presentation_time_end));
+    auto str = fmt::format("Subtitle time: {} -> {}", format_h_m_s(presentation_time), format_h_m_s(presentation_time_end));
+    if (!lines.empty()) {
+        str += "\n";
+    }
+
     if (format() == format_t::text){
         for (const auto& line: lines) {
             str += "    " + line + "\n";
