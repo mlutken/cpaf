@@ -50,6 +50,7 @@ private:
     void                                    update_current_subtitle     (cpaf::gui::video::render& video_render);
     cpaf::video::subtitle_frame             test_subtitle            () const;
     bool                                    subtitle_within_display_time(const cpaf::video::subtitle_frame& subtitle) const;
+    bool                                    subtitle_too_old            (const cpaf::video::subtitle_frame& subtitle) const;
 
     void                                    debug_video_frame_update    (cpaf::video::av_frame& current_frame,
                                                                          cpaf::gui::video::render& video_render);
@@ -67,7 +68,6 @@ private:
     const std::atomic_bool&                 threads_running_;
     const std::atomic_bool&                 threads_paused_;
     std::atomic<cpaf::video::seek_state_t>& seek_state_;
-////    cpaf::video::subtitle_frame             current_subtitle_;
 
     int                                     video_frame_update_dbg_counter_ = 0;
     std::atomic_bool                        video_queue_flush_in_progress_  = false;

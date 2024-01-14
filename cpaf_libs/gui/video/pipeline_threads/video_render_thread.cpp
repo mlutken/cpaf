@@ -85,11 +85,6 @@ bool video_render_thread::video_frame_do_render(
     cpaf::video::av_frame& current_frame,
     cpaf::gui::video::render& video_render)
 {
-    if (flush_requested_) {
-        flush_queues();
-    }
-
-    update_current_subtitle(video_render);
 
     // --- Special case when we are flushing (seeking) ---
     if (seek_state_ == seek_state_t::flushing) {
@@ -101,6 +96,12 @@ bool video_render_thread::video_frame_do_render(
         video_render.render_video_frame(current_frame);
         return true;
     }
+
+    if (flush_requested_) {
+        flush_queues();
+    }
+
+    update_current_subtitle(video_render);
 
     bool new_frame_was_read = false;
     if (time_to_current_frame(current_frame) > 1s ) {
@@ -123,21 +124,21 @@ bool video_render_thread::video_frame_do_render(
 
 void video_render_thread::update_current_subtitle(render& video_render)
 {
-    video_render.set_current_subtitle(test_subtitle());
-    return; // FIXMENM
     const auto& cur_subtitle = video_render.current_subtitle();
     if (!subtitle_within_display_time(cur_subtitle)) {
         video_render.clear_current_subtitle();
     }
 
-    const auto cur_time = player_.cur_media_time().video_time_pos();
-    while (!subtitles_queue_.empty()) {
-        const bool frame_too_old = subtitles_queue_.front().presentation_time_end < cur_time;
-        if (frame_too_old) {
-            subtitles_queue_.pop();
-        }
+
+    while (!subtitles_queue_.empty() && subtitle_too_old(subtitles_queue_.front())) {
+        subtitles_queue_.pop();
     }
-    if (subtitles_queue_.empty()) { return; }
+    if (subtitles_queue_.empty()) {
+        return;
+    }
+
+    video_render.set_current_subtitle(test_subtitle());
+    return; // FIXMENM
 
     if (subtitle_within_display_time(subtitles_queue_.front())) {
         video_render.set_current_subtitle(std::move(subtitles_queue_.front()));
@@ -162,6 +163,15 @@ bool video_render_thread::subtitle_within_display_time(const cpaf::video::subtit
     }
     const auto cur_time = player_.cur_media_time().video_time_pos();
     return cur_time <= subtitle.presentation_time && subtitle.presentation_time_end <= cur_time;
+}
+
+bool video_render_thread::subtitle_too_old(const cpaf::video::subtitle_frame& subtitle) const
+{
+    if (!subtitle.is_valid()) {
+        return true;
+    }
+    const auto cur_time = player_.cur_media_time().video_time_pos();
+    return subtitle.presentation_time_end < cur_time;
 }
 
 void video_render_thread::debug_video_frame_update(cpaf::video::av_frame& current_frame, gui::video::render& /*video_render*/)
