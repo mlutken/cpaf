@@ -81,22 +81,24 @@ std::chrono::microseconds video_render_thread::time_to_current_frame_abs(cpaf::v
 /**
 @todo Do we in case on non valid frame want to call video_render.clear_screen() ?
 */
-bool video_render_thread::video_frame_do_render(cpaf::video::av_frame& current_frame, cpaf::gui::video::render& video_render)
+bool video_render_thread::video_frame_do_render(
+    cpaf::video::av_frame& current_frame,
+    cpaf::gui::video::render& video_render)
 {
     if (flush_requested_) {
         flush_queues();
     }
 
+    update_current_subtitle(video_render);
+
     // --- Special case when we are flushing (seeking) ---
     if (seek_state_ == seek_state_t::flushing) {
         video_render.render_video_frame(current_frame);
-        video_render.update_current_subtitle(current_subtitle());
         return false;
     }
     else if ( seek_state_ == seek_state_t::flush_done) {
         current_frame = player_.video_codec_context().read_frame();
         video_render.render_video_frame(current_frame);
-        video_render.update_current_subtitle(current_subtitle());
         return true;
     }
 
@@ -108,7 +110,6 @@ bool video_render_thread::video_frame_do_render(cpaf::video::av_frame& current_f
     }
 
     video_render.render_video_frame(current_frame);
-    video_render.update_current_subtitle(current_subtitle());
 
     if (!player_.cur_media_time().time_is_paused()) {
         if (time_to_current_frame(current_frame) <= 1ms ) {
@@ -120,19 +121,47 @@ bool video_render_thread::video_frame_do_render(cpaf::video::av_frame& current_f
     return new_frame_was_read;
 }
 
-///void video_render_thread::update_is_seek_possible(av_frame& current_frame)
-///{
-///    const auto abs_dist_to_cur_frame = cpaf::time::abs(time_to_current_frame(current_frame));
-///    is_seek_currently_possible_ = abs_dist_to_cur_frame < 40ms;
-///}
+void video_render_thread::update_current_subtitle(render& video_render)
+{
+    video_render.set_current_subtitle(test_subtitle());
+    return; // FIXMENM
+    const auto& cur_subtitle = video_render.current_subtitle();
+    if (!subtitle_within_display_time(cur_subtitle)) {
+        video_render.clear_current_subtitle();
+    }
 
-cpaf::video::subtitle_frame video_render_thread::current_subtitle() const
+    const auto cur_time = player_.cur_media_time().video_time_pos();
+    while (!subtitles_queue_.empty()) {
+        const bool frame_too_old = subtitles_queue_.front().presentation_time_end < cur_time;
+        if (frame_too_old) {
+            subtitles_queue_.pop();
+        }
+    }
+    if (subtitles_queue_.empty()) { return; }
+
+    if (subtitle_within_display_time(subtitles_queue_.front())) {
+        video_render.set_current_subtitle(std::move(subtitles_queue_.front()));
+        subtitles_queue_.pop();
+    }
+}
+
+
+cpaf::video::subtitle_frame video_render_thread::test_subtitle() const
 {
     // FIXMENM
     subtitle_frame sf("ëËïÏÿŸæÆäÄüÜøØöÖåÅ -> ß", "on the same team together in Nam.");
 //    subtitle_frame sf("My name is John Rambo. We served", "on the same team together in Nam.");
 //    subtitle_frame sf("My name is John Rambo. We served");
     return sf;
+}
+
+bool video_render_thread::subtitle_within_display_time(const cpaf::video::subtitle_frame& subtitle) const
+{
+    if (!subtitle.is_valid()) {
+        return false;
+    }
+    const auto cur_time = player_.cur_media_time().video_time_pos();
+    return cur_time <= subtitle.presentation_time && subtitle.presentation_time_end <= cur_time;
 }
 
 void video_render_thread::debug_video_frame_update(cpaf::video::av_frame& current_frame, gui::video::render& /*video_render*/)

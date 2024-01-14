@@ -51,7 +51,7 @@ private:
     void           do_render_dimensions_set    (const cpaf::video::surface_dimensions_t& dimensions ) override;
     void           do_clear_screen             () override;
     bool           do_render_video_frame       (const cpaf::video::av_frame& frame) override;
-    void           on_render_geometry_changed         () override;
+    void           on_render_geometry_changed  () override;
     void           do_render_subtitle          () override;
 
     std::shared_ptr<system_render>      system_renderer_;

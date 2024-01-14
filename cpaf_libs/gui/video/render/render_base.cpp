@@ -57,18 +57,31 @@ bool render_base::render_video_frame(const cpaf::video::av_frame& frame) {
         return false;
     }
 
-    return do_render_video_frame(frame);
+    const bool res = do_render_video_frame(frame);
+    do_render_subtitle();
+    return res;
 }
 
-void render_base::update_current_subtitle(cpaf::video::subtitle_frame&& subtitle)
+void render_base::clear_current_subtitle()
 {
-    if (subtitle.sequence_number != current_subtitle_frame_.sequence_number ||
-        subtitle.presentation_time != current_subtitle_frame_.presentation_time ||
-        subtitle.should_show() != current_subtitle_frame_.should_show() ) {
-        current_subtitle_frame_ = std::move(subtitle);
+    if (current_subtitle_frame_.is_valid()) {
+        current_subtitle_frame_ = cpaf::video::subtitle_frame();
+    }
+}
+
+void render_base::set_current_subtitle(cpaf::video::subtitle_frame&& subtitle)
+{
+//    if (subtitle.sequence_number != current_subtitle_frame_.sequence_number ||
+//        subtitle.presentation_time != current_subtitle_frame_.presentation_time ||
+//        subtitle.should_show() != current_subtitle_frame_.should_show() ) {
+//        current_subtitle_frame_ = std::move(subtitle);
+//        on_render_geometry_changed();
+//    }
+
+    current_subtitle_frame_ = std::move(subtitle);
+    if (current_subtitle_frame_.should_show()) {
         on_render_geometry_changed();
     }
-    do_render_subtitle();
 }
 
 pos_2df render_base::subtitle_pos() const

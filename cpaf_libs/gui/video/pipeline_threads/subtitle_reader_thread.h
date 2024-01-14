@@ -39,6 +39,7 @@ private:
     cpaf::video::subtitles_queue&       subtitles_queue_;
     const std::atomic_bool&             threads_running_;
     const std::atomic_bool&             threads_paused_;
+    cpaf::video::subtitle_frame         current_subtitle_frame_     {};
 
 
     std::chrono::microseconds           thread_yield_time_              = std::chrono::milliseconds(1);

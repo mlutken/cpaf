@@ -32,6 +32,8 @@ enum class subtitle_pos_t { buttom, top };
 class render_base
 {
 public:
+    using subtitle_frame = cpaf::video::subtitle_frame;
+    using surface_dimensions_t = cpaf::video::surface_dimensions_t;
     virtual ~render_base() = default;
     render_base();
     render_geometry_t           render_geometry             () const { return render_geometry_; }
@@ -50,11 +52,13 @@ public:
     void                        ff_pixel_format_set         (AVPixelFormat pf)              { ff_pixel_format_ = pf;        }
     AVPixelFormat               ff_pixel_format             () const                        { return ff_pixel_format_;      }
 
-    const cpaf::video::surface_dimensions_t& render_dimensions           () const                   { return render_dimensions_;      }
+    const surface_dimensions_t& render_dimensions           () const                        { return render_dimensions_;      }
 
     void                        clear_screen                ()                              { do_clear_screen();  }
     bool                        render_video_frame          (const cpaf::video::av_frame& frame);
-    void                        update_current_subtitle     (cpaf::video::subtitle_frame&& subtitle);
+    const subtitle_frame&       current_subtitle            () const { return current_subtitle_frame_; }
+    void                        clear_current_subtitle      ();
+    void                        set_current_subtitle     (cpaf::video::subtitle_frame&& subtitle);
 
     bool                        show_subtitles              () const                        { return show_subtitles_;   }
     void                        show_subtitles_set          (bool show)                     { show_subtitles_ = show;   }
