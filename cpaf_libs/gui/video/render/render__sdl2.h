@@ -17,17 +17,19 @@ class system_window;
 }
 
 namespace cpaf::gui::video {
-
+class player;
 class render;
 
 class render_platform : public render_base
 {
 public:
-    static std::unique_ptr<render>   create_video_render(const system_window& win,
-                                                         const cpaf::video::surface_dimensions_t& dimensions);
+    static std::unique_ptr<render>   create_video_render(
+        player& owning_player,
+        const system_window& win,
+        const cpaf::video::surface_dimensions_t& dimensions);
 
     ~render_platform();
-    render_platform();
+    explicit render_platform(player& owning_player);
 
 protected:
 
@@ -35,12 +37,12 @@ protected:
 private:
     using subtitle_render_geometries_t = std::array<rect, cpaf::video::subtitle_frame::max_lines>;
 
-    void            prepare_native_video_frame                  (const cpaf::video::av_frame& frame,
+    void            fill_native_video_frame                     (const cpaf::video::av_frame& frame,
                                                                  cpaf::video::av_frame& frame_display);
-    void            render_current_native_video_frame_texture   ();
     void            ensure_valid_render_texture                 (const cpaf::video::surface_dimensions_t& dimensions);
     void            ensure_valid_subtitles_graphics_texture     (const cpaf::video::subtitle_frame& subtitle);
     void            calc_subtitle_geometry                      ();
+    void            render_current_native_video_frame_texture   ();
 
 
     SDL_Renderer*   get_sdl_renderer            ();
@@ -53,7 +55,7 @@ private:
     bool            do_render_video_frame       (const cpaf::video::av_frame& frame) override;
     void            on_render_geometry_changed  () override;
     void            on_subtitle_changed         () override;
-    void            do_render_subtitle          () override;
+    void            render_subtitle             ();
     void            render_subtitle_text        ();
     void            render_subtitle_graphics    ();
 
@@ -61,7 +63,7 @@ private:
     SDL_Texture*                        sdl_frame_render_texture_       {nullptr};
     SDL_Texture*                        sdl_subtitles_render_texture_   {nullptr};
     subtitle_render_geometries_t        subtitle_render_geometries_;
-    rect                   controls_render_geometry_;
+    rect                                controls_render_geometry_;
     SDL_Rect                            subtitles_dst_rect_;
 };
 

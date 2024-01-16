@@ -6,8 +6,8 @@
 #include <cpaf_libs/gui/system_render.h>
 #include <cpaf_libs/video/av_codec_context.h>
 #include <cpaf_libs/gui/assets/fonts/imgui_fonts.h>
-
 #include <cpaf_libs/gui/platform_utils/sdl_convert.h>
+#include <cpaf_libs/gui/video/player.h>
 
 using namespace std;
 using namespace cpaf::video;
@@ -15,10 +15,11 @@ using namespace cpaf::video;
 namespace cpaf::gui::video {
 
 std::unique_ptr<render> render_platform::create_video_render(
+    player& owning_player,
     const cpaf::gui::system_window& win,
     const cpaf::video::surface_dimensions_t& dimensions)
 {
-    auto video_renderer = std::make_unique<render>();
+    auto video_renderer = std::make_unique<render>(owning_player);
     video_renderer->init(win, dimensions);
 
     return video_renderer;
@@ -34,30 +35,30 @@ render_platform::~render_platform()
     }
 }
 
-render_platform::render_platform()
-    : render_base()
+render_platform::render_platform(player& owning_player)
+    : render_base(owning_player)
 {
 
 }
 
 
-void render_platform::prepare_native_video_frame(
+void render_platform::fill_native_video_frame(
     const cpaf::video::av_frame& frame,
     cpaf::video::av_frame& frame_display
 )
 {
     video_codec_ctx().scale_video_frame(frame_display, frame);
     // the area of the texture to be updated
-    SDL_Rect rect;
-    rect.x = 0;
-    rect.y = 0;
-    rect.w = render_dimensions().x();
-    rect.h = render_dimensions().y();
+    SDL_Rect r;
+    r.x = 0;
+    r.y = 0;
+    r.w = render_dimensions().x();
+    r.h = render_dimensions().y();
 
     // update the texture with the new pixel data
     SDL_UpdateYUVTexture(
         sdl_frame_render_texture_,
-        &rect,
+        &r,
         frame_display.ff_frame()->data[0],
         frame_display.ff_frame()->linesize[0],
         frame_display.ff_frame()->data[1],
@@ -65,12 +66,8 @@ void render_platform::prepare_native_video_frame(
         frame_display.ff_frame()->data[2],
         frame_display.ff_frame()->linesize[2]
     );
-}
 
-void render_platform::render_current_native_video_frame_texture()
-{
-    auto dst_rect = to_sdl_rect(render_geometry());
-    SDL_RenderCopy(get_sdl_renderer(), sdl_frame_render_texture_, NULL, &dst_rect);
+    SDL_SetRenderTarget( get_sdl_renderer(), sdl_frame_render_texture_ );
 }
 
 void render_platform::ensure_valid_render_texture(const cpaf::video::surface_dimensions_t& dimensions)
@@ -109,13 +106,8 @@ void render_platform::ensure_valid_subtitles_graphics_texture(const subtitle_fra
         subtitle.ff_rect_h()
         );
     SDL_SetTextureBlendMode(sdl_frame_render_texture_, SDL_BLENDMODE_BLEND);
-    SDL_SetRenderTarget( get_sdl_renderer(), sdl_subtitles_render_texture_ );
-    SDL_SetRenderTarget( get_sdl_renderer(), nullptr );
-
-
 }
 
-/// For text subtitles only
 void render_platform::calc_subtitle_geometry()
 {
     if ( !(current_subtitle_frame_.is_valid() && show_subtitles_) ) {
@@ -144,78 +136,20 @@ void render_platform::calc_subtitle_geometry()
     }
 
     if (current_subtitle_frame_.format() == subtitle_frame::format_t::graphics && current_subtitle_frame_.ff_subtitle_is_valid() ) {
-        subtitles_dst_rect_.h = current_subtitle_frame_.ff_rect_h();
-        subtitles_dst_rect_.h = current_subtitle_frame_.ff_rect_w();
+        const auto scale = player_.video_src_dimensions() / render_geometry().size();
+        const auto subtitle_rect = current_subtitle_frame_.ff_bitmap_rect();
+        subtitles_dst_rect_ = to_sdl_rect(subtitle_rect);
     }
-
 }
+
+void render_platform::render_current_native_video_frame_texture()
+{
+}
+
+
 
 SDL_Renderer* render_platform::get_sdl_renderer() {
     return system_renderer_->native_renderer<SDL_Renderer>();
-}
-
-void render_platform::do_init(const system_window& win, const cpaf::video::surface_dimensions_t& dimensions)
-{
-    system_renderer_ = win.renderer_shared();
-    ensure_valid_render_texture(dimensions);
-}
-
-void render_platform::do_init(std::shared_ptr<system_render> sys_renderer, const cpaf::video::surface_dimensions_t& dimensions)
-{
-    system_renderer_ = sys_renderer;
-    ensure_valid_render_texture(dimensions);
-}
-
-void render_platform::do_render_dimensions_set(const cpaf::video::surface_dimensions_t& dimensions)
-{
-    ensure_valid_render_texture(dimensions);
-}
-
-void render_platform::do_clear_screen()
-{
-    auto dst_rect = to_sdl_rect(render_geometry());
-    SDL_RenderFillRect(get_sdl_renderer(), &dst_rect);
-}
-
-bool render_platform::do_render_video_frame(const cpaf::video::av_frame& frame)
-{
-    prepare_native_video_frame(frame, frame_display());
-    render_current_native_video_frame_texture();
-
-    // FIXMENM DEBUG ONLY BEGIN
-//    SDL_SetRenderDrawBlendMode( get_sdl_renderer(), SDL_BLENDMODE_BLEND );
-//    SDL_SetRenderDrawColor( get_sdl_renderer(), 255, 255, 255, 255 ); // Set color to solid white
-//    SDL_RenderDrawLine( get_sdl_renderer(), 0, 0, 300, 300 );
-//    system_renderer_->set_color(color(0, 1, 0, 0.5));
-//    system_renderer_->fill_rect(render_geometry_t(100,100,200,300));
-    // FIXMENM DEBUG ONLY END
-
-    do_render_subtitle();
-    return true;
-}
-
-void render_platform::on_render_geometry_changed()
-{
-    calc_subtitle_geometry();
-    ensure_valid_subtitles_graphics_texture(current_subtitle_frame_);
-}
-
-void render_platform::on_subtitle_changed()
-{
-
-}
-
-void render_platform::do_render_subtitle()
-{
-    if ( !(current_subtitle_frame_.should_show() && show_subtitles_) ) {
-        return;
-    }
-    if (current_subtitle_frame_.format() == subtitle_frame::format_t::text) {
-        render_subtitle_text();
-    }
-    else if (current_subtitle_frame_.format() == subtitle_frame::format_t::graphics) {
-        render_subtitle_graphics();
-    }
 }
 
 void render_platform::render_subtitle_text()
@@ -267,52 +201,132 @@ void render_platform::render_subtitle_graphics()
         return;
     }
 
-    SDL_Rect sdl_rect {50,50,150,150};
+    SDL_RenderCopy(get_sdl_renderer(), sdl_subtitles_render_texture_, NULL, &subtitles_dst_rect_);
+    SDL_SetRenderTarget( get_sdl_renderer(), nullptr );
 
-    SDL_RenderCopy(get_sdl_renderer(), sdl_subtitles_render_texture_, NULL, &sdl_rect);
 
     std::cerr << "FIXMENM render subtitle: " << current_subtitle_frame_.dbg_str() << "\n";
     std::cerr << "pixel_count: " << current_subtitle_frame_.ff_bitmap_pixel_count()
               << " num rects: " << current_subtitle_frame_.ff_num_rects()
               << "\n"
               << " w, h: " << current_subtitle_frame_.ff_rect(0).w << ", " << current_subtitle_frame_.ff_rect(0).h
+              << " dst rect: " << current_subtitle_frame_.ff_bitmap_rect()
               << "\n"
         ;
     AVSubtitle& sub = current_subtitle_frame_.ff_subtitle();
 
 
 
-//    std::cerr << " w, h: " << sub. << "\n";
+    //    std::cerr << " w, h: " << sub. << "\n";
 
-//    for (unsigned int i = 0; i < sub.num_rects; ++ i) {
-//        AVSubtitleRect* rect = sub.rects[i];
-//        for (int y = 0; y < rect->h; ++ y) {
-//            int dest_y = y + rect->y;
+    //    for (unsigned int i = 0; i < sub.num_rects; ++ i) {
+    //        AVSubtitleRect* rect = sub.rects[i];
+    //        for (int y = 0; y < rect->h; ++ y) {
+    //            int dest_y = y + rect->y;
 
-//            // data[0] holds index data
-//            uint8_t *in_linedata = rect->data[0] + y * rect->linesize[0];
+    //            // data[0] holds index data
+    //            uint8_t *in_linedata = rect->data[0] + y * rect->linesize[0];
 
-//            // In AVFrame, data[0] holds the pixel buffer directly
-//            uint8_t *out_linedata = frame->data[0] + dest_y * frame->linesize[0];
-//            rgbaPixel *out_pixels = reinterpret_cast<rgbaPixel*>(out_linedata);
+    //            // In AVFrame, data[0] holds the pixel buffer directly
+    //            uint8_t *out_linedata = frame->data[0] + dest_y * frame->linesize[0];
+    //            rgbaPixel *out_pixels = reinterpret_cast<rgbaPixel*>(out_linedata);
 
-//            for (int x = 0; x < rect->w; ++ x) {
-//                // data[1] contains the color map
-//                // compare libavcodec/dvbsubenc.c
-//                uint8_t colidx = in_linedata[x];
-//                uint32_t color = reinterpret_cast<uint32_t*>(rect->data[1])[colidx];
+    //            for (int x = 0; x < rect->w; ++ x) {
+    //                // data[1] contains the color map
+    //                // compare libavcodec/dvbsubenc.c
+    //                uint8_t colidx = in_linedata[x];
+    //                uint32_t color = reinterpret_cast<uint32_t*>(rect->data[1])[colidx];
 
-//                // Now store the pixel in the target buffer
-//                out_pixels[x + rect->x] = rgbaPixel{
-//                    .r = static_cast<uint8_t>((color >> 16) & 0xff),
-//                    .g = static_cast<uint8_t>((color >>  8) & 0xff),
-//                    .b = static_cast<uint8_t>((color >>  0) & 0xff),
-//                    .a = static_cast<uint8_t>((color >> 24) & 0xff),
-//                };
-//            }
-//        }
-//    }
+    //                // Now store the pixel in the target buffer
+    //                out_pixels[x + rect->x] = rgbaPixel{
+    //                    .r = static_cast<uint8_t>((color >> 16) & 0xff),
+    //                    .g = static_cast<uint8_t>((color >>  8) & 0xff),
+    //                    .b = static_cast<uint8_t>((color >>  0) & 0xff),
+    //                    .a = static_cast<uint8_t>((color >> 24) & 0xff),
+    //                };
+    //            }
+    //        }
+    //    }
 
 }
+
+
+// -------------------------
+// --- Platform overides ---
+// -------------------------
+
+void render_platform::do_init(const system_window& win, const cpaf::video::surface_dimensions_t& dimensions)
+{
+    system_renderer_ = win.renderer_shared();
+    ensure_valid_render_texture(dimensions);
+}
+
+void render_platform::do_init(std::shared_ptr<system_render> sys_renderer, const cpaf::video::surface_dimensions_t& dimensions)
+{
+    system_renderer_ = sys_renderer;
+    ensure_valid_render_texture(dimensions);
+}
+
+void render_platform::do_render_dimensions_set(const cpaf::video::surface_dimensions_t& dimensions)
+{
+    ensure_valid_render_texture(dimensions);
+}
+
+void render_platform::do_clear_screen()
+{
+    auto dst_rect = to_sdl_rect(render_geometry());
+    SDL_RenderFillRect(get_sdl_renderer(), &dst_rect);
+}
+
+bool render_platform::do_render_video_frame(const cpaf::video::av_frame& frame)
+{
+    fill_native_video_frame(frame, frame_display());
+
+    auto dst_rect = to_sdl_rect(render_geometry());
+    SDL_RenderCopy(get_sdl_renderer(), sdl_frame_render_texture_, NULL, &dst_rect);
+
+    if (current_subtitle_frame_.format() == subtitle_frame::format_t::text) {
+        render_subtitle_text();
+    }
+    else if (current_subtitle_frame_.format() == subtitle_frame::format_t::graphics) {
+        render_subtitle_graphics();
+    }
+
+
+    // FIXMENM DEBUG ONLY BEGIN
+//    SDL_SetRenderDrawBlendMode( get_sdl_renderer(), SDL_BLENDMODE_BLEND );
+//    SDL_SetRenderDrawColor( get_sdl_renderer(), 255, 255, 255, 255 ); // Set color to solid white
+//    SDL_RenderDrawLine( get_sdl_renderer(), 0, 0, 300, 300 );
+//    system_renderer_->set_color(color(0, 1, 0, 0.5));
+//    system_renderer_->fill_rect(render_geometry_t(100,100,200,300));
+    // FIXMENM DEBUG ONLY END
+
+    return true;
+}
+
+void render_platform::on_render_geometry_changed()
+{
+    calc_subtitle_geometry();
+    ensure_valid_subtitles_graphics_texture(current_subtitle_frame_);
+}
+
+void render_platform::on_subtitle_changed()
+{
+
+}
+
+void render_platform::render_subtitle()
+{
+    if ( !(current_subtitle_frame_.should_show() && show_subtitles_) ) {
+        return;
+    }
+    if (current_subtitle_frame_.format() == subtitle_frame::format_t::text) {
+        render_subtitle_text();
+    }
+    else if (current_subtitle_frame_.format() == subtitle_frame::format_t::graphics) {
+        render_subtitle_graphics();
+    }
+}
+
 
 } //END namespace cpaf::gui::video

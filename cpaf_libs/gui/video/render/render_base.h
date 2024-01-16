@@ -24,6 +24,7 @@ struct platform_surface_t;
 };
 
 namespace cpaf::gui::video {
+class player;
 struct platform_render_t;
 struct platform_texture_t;
 
@@ -34,9 +35,8 @@ class render_base
 public:
     using subtitle_frame = cpaf::video::subtitle_frame;
     using surface_dimensions_t = cpaf::video::surface_dimensions_t;
-    virtual ~render_base() = default;
-    render_base();
-    rect           render_geometry             () const { return render_geometry_; }
+    explicit render_base(player& owning_player);
+    rect                        render_geometry             () const { return render_geometry_; }
     void                        render_geometry_set         (rect render_geom);
     void                        format_context_set          (cpaf::video::av_format_context* ctx)        { format_context_ptr_ = ctx; }
     void                        format_context_set          (cpaf::video::av_format_context& ctx)        { format_context_ptr_ = &ctx; }
@@ -77,6 +77,7 @@ protected:
     cpaf::video::surface_dimensions_t       render_dimensions_;
     pos_2df                                 subtitle_pos                () const;
 
+    player&                                 player_;
     std::string                             subtitles_font_name_        {"manrope"};
     color                                   subtitles_text_color_       {1,1,1,1};
     color                                   subtitles_bg_color_         {0,0,0,1};
@@ -107,7 +108,6 @@ private:
     virtual bool                do_render_video_frame               (const cpaf::video::av_frame& frame) = 0;
     virtual void                on_render_geometry_changed          () = 0;
     virtual void                on_subtitle_changed                 () = 0;
-    virtual void                do_render_subtitle                  () = 0;
 
 };
 

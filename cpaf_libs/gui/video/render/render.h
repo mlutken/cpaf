@@ -11,7 +11,7 @@ namespace cpaf::gui::video {
 class render : public render_platform
 {
 public:
-    render();
+    using render_platform::render_platform;	// "Import" constructors to scope
 
 };
 

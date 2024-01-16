@@ -10,7 +10,7 @@ SDL_Rect to_sdl_rect(rect geom)
                     static_cast<int>(geom.size().height())};
 }
 
-rect to_render_geometry(SDL_Rect rct)
+rect to_rect(SDL_Rect rct)
 {
     return rect{static_cast<float>(rct.x),
                 static_cast<float>(rct.y),

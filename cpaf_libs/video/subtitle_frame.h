@@ -6,6 +6,7 @@
 #include <memory>
 #include <cstdint>
 #include <concurrent/srsw_fifo.hpp>
+#include <cpaf_libs/math/primitives2d/rectangle.hpp>
 
 struct AVSubtitle;
 struct AVSubtitleRect;
@@ -76,6 +77,7 @@ public:
     std::string                     dbg_str                     () const;
     void                            format_set                  (format_t format) { format_ = format; }
 
+    cpaf::math::rectf               ff_bitmap_rect              () const;
     uint32_t                        ff_bitmap_pixel_count       () const;
     uint32_t                        ff_num_rects                () const;
     const AVSubtitleRect&           ff_rect                     (uint32_t i) const;

@@ -11,7 +11,7 @@
 
 namespace cpaf::gui {
 SDL_Rect            to_sdl_rect             (rect geom);
-rect   to_render_geometry      (SDL_Rect rect);
+rect                to_rect                 (SDL_Rect rect);
 
 
 } // namespace cpaf::gui

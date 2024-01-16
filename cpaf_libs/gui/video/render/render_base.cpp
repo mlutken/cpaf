@@ -4,7 +4,9 @@
 
 namespace cpaf::gui::video {
 
-render_base::render_base()
+
+render_base::render_base(player& owning_player)
+    : player_(owning_player)
 {
 
 }

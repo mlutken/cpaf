@@ -128,6 +128,11 @@ string subtitle_frame::dbg_str() const
     return str;
 }
 
+math::rectf subtitle_frame::ff_bitmap_rect() const
+{
+    return cpaf::math::rectf(ff_rect_x(), ff_rect_y(), ff_rect_w(), ff_rect_h());
+}
+
 uint32_t subtitle_frame::ff_bitmap_pixel_count() const
 {
     AVSubtitle& sub = *ff_subtitle_ptr_;
