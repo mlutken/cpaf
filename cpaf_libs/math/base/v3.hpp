@@ -226,21 +226,46 @@ public:
 		return value_type(x() + v.x(), y() + v.y(), z() + v.z());
 	}
 
-	/** '*' operator, Dot product of two vectors.
-		\return Scalar (number) holding the result of the dot product. */
-	T				operator *(const_reference v		///< [in] Right hand side operand.
-							  ) const
-	{
-		return ( x()*v.x() + y()*v.y() + z()*v.z());
-	}
+    /** '*' operator, Element wise multiplication of two vectors.
+     *  @sa dot() Dot product
+        \return Vector which is the two vectors multiplied element wise. */
+    template <typename T1>
+    value_type	operator *(v3<T1> v		///< [in] Right hand side operand.
+                         ) const
+    {
+        const auto x1 = x()*static_cast<T>(v.x());
+        const auto y1 = y()*static_cast<T>(v.y());
+        const auto z1 = y()*static_cast<T>(v.y());
+        return value_type(x1, y1, z1);
+    }
 
-	/** '*' operator, Scales the vector with a scalar  
+    /** '/' operator, Element wise division of two vectors.
+        \return Vector which is the two vectors divided element wise. */
+    template <typename T1>
+    value_type	operator /(v3<T1> v		///< [in] Right hand side operand.
+                         ) const
+    {
+        const auto x1 = x()/static_cast<T>(v.x());
+        const auto y1 = y()/static_cast<T>(v.y());
+        const auto z1 = y()/static_cast<T>(v.y());
+        return value_type(x1, y1, z1);
+    }
+
+    /** '*' operator, Scales the vector with a scalar
 		\return Vector holding the result of the scaling. */
 	value_type		operator *(const T fVal			///< [in] Right Hand Side operand (scalar) to scale with.
 							  ) const
 	{
 		return value_type( x()*fVal, y()*fVal, z()*fVal );
 	}
+
+    /** '*' operator, Dot product of two vectors.
+        \return Scalar (number) holding the result of the dot product. */
+    T	dot(const_reference v		///< [in] Right hand side operand.
+          ) const
+    {
+        return ( x()*v.x() + y()*v.y() + z()*v.z());
+    }
 
 	/** Calculates the cross product of two vectors returning the result as a 
 		value (v3). */

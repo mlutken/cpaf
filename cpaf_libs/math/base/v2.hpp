@@ -253,15 +253,26 @@ public:
         return value_type(x() + v.x(), y() + v.y());
     }
 
-    /** '*' operator, Product of two vectors.
+    /** '*' operator, Element wise multiplication of two vectors.
      *  @sa dot() Dot product
-        \return Scalar (number) holding the result of the dot product. */
+        \return Vector which is the two vectors multiplied element wise. */
     template <typename T1>
     value_type	operator *(v2<T1> v		///< [in] Right hand side operand.
                 ) const
     {
         const auto x1 = x()*static_cast<T>(v.x());
         const auto y1 = y()*static_cast<T>(v.y());
+        return value_type(x1, y1);
+    }
+
+    /** '/' operator, Element wise division of two vectors.
+        \return Vector which is the two vectors divided element wise. */
+    template <typename T1>
+    value_type	operator /(v2<T1> v		///< [in] Right hand side operand.
+                         ) const
+    {
+        const auto x1 = x()/static_cast<T>(v.x());
+        const auto y1 = y()/static_cast<T>(v.y());
         return value_type(x1, y1);
     }
 

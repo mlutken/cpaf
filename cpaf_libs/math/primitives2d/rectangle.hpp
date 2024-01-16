@@ -29,7 +29,7 @@ class rectangle
     // ----------------
 
 public:
-    using value_type = T;                               ;
+    using value_type                    = rectangle<T>;
     typedef value_type&						reference;
     typedef const value_type&				const_reference;
     typedef value_type*						pointer;
@@ -195,9 +195,30 @@ public:
 //    }
 
 
-    // -------------------------------------
-    // --- Multiplication math operators ---
-    // -------------------------------------
+    // ----------------------------------------------
+    // --- Multiplication/division math operators ---
+    // ----------------------------------------------
+    /** '*' operator, Scale rectangle with a scalar.
+        \return Rectangle which is scaled element wise in position and size using the scalar. */
+    value_type	operator *(T scalar		///< [in] Right hand side operand.
+                         ) const
+    {
+        const auto top_left = top_left_*scalar;
+        const auto size = size_*scalar;
+        return value_type(top_left, size);
+    }
+
+    /** '*' operator, Scale rectangle with a vector.
+        \return Rectangle which is scaled element wise in position and size using the vector. */
+    template <typename T1>
+    value_type	operator *(v2<T1> vec		///< [in] Right hand side operand.
+                         ) const
+    {
+        const auto top_left = top_left_*vec;
+        const auto size = size_*vec;
+        return value_type(top_left, size);
+    }
+
 
 
 
@@ -354,7 +375,7 @@ private:
 
 /** '<<' operator, Write rectangle to stream.
     \return Reference to (modified) ostream. */
-template < typename T, template <class> class StoragePolicy >
+template < typename T>
 inline std::ostream&
     operator <<(std::ostream& os,		///< [out] Output stream to write to.
                 const rectangle<T>& r)	///< [in] Rectangle to write.
@@ -364,7 +385,7 @@ inline std::ostream&
 }
 
 /** '>>' operator. Read rectangle from input stream. */
-template < typename T, template <class> class StoragePolicy >
+template < typename T>
 inline std::istream&
     operator >>(std::istream& is,	///< [in]  Input stream to read from.
                 rectangle<T>& r)	///< [out] Rectangle recieve the data from the stream.
