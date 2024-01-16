@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <concurrent/srsw_fifo.hpp>
 #include <cpaf_libs/math/primitives2d/rectangle.hpp>
+#include <cpaf_libs/video/av_util.h>
 
 struct AVSubtitle;
 struct AVSubtitleRect;
@@ -43,6 +44,7 @@ class subtitle_frame
 {
 public:
     enum class format_t {text, graphics};
+
 
     std::vector<std::string>        lines                   {};
     std::chrono::microseconds       presentation_time       {0};
@@ -81,10 +83,16 @@ public:
     uint32_t                        ff_bitmap_pixel_count       () const;
     uint32_t                        ff_num_rects                () const;
     const AVSubtitleRect&           ff_rect                     (uint32_t i) const;
-    int32_t                         ff_rect_x                   () const;
-    int32_t                         ff_rect_y                   () const;
-    int32_t                         ff_rect_w                   () const;
-    int32_t                         ff_rect_h                   () const;
+    uint16_t                        ff_rect_x                   () const;
+    uint16_t                        ff_rect_y                   () const;
+    uint16_t                        ff_rect_w                   () const;
+    uint16_t                        ff_rect_h                   () const;
+
+    uint32_t                        ff_data_line_size           () const;
+    const uint8_t*                  ff_pixel_data               () const ;
+    const pixel_rgba_t*             ff_pixel_color_map          () const ;
+    pixel_rgba_t                    ff_pixel_lookup             (uint8_t color_index) const;
+    pixel_rgba_t                    ff_pixel                    (uint32_t x, uint32_t y) const;
 
     static constexpr size_t         max_lines                   {3};
 private:

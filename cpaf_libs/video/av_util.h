@@ -79,6 +79,16 @@ enum class subtitle_source_t : int8_t {
 };
 
 
+struct pixel_rgba_t {
+    uint8_t r = 0;
+    uint8_t g = 0;
+    uint8_t b = 0;
+    uint8_t a = 0;
+};
+
+static_assert(sizeof(uint32_t) == sizeof(pixel_rgba_t), "ERROR pixel_rgba_t is NOT 4 bytes!" );
+
+
 inline bool media_type_valid (AVMediaType ff_mt) {
     return AVMEDIA_TYPE_UNKNOWN < ff_mt && ff_mt <= AVMEDIA_TYPE_NB;
 }

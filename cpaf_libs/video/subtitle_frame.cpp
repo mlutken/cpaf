@@ -154,24 +154,55 @@ const AVSubtitleRect& subtitle_frame::ff_rect(uint32_t i) const
     return *(ff_subtitle_ptr_->rects[i]);
 }
 
-int32_t subtitle_frame::ff_rect_x() const
+uint16_t subtitle_frame::ff_rect_x() const
 {
     return ff_rect(0).x;
 }
 
-int32_t subtitle_frame::ff_rect_y() const
+uint16_t subtitle_frame::ff_rect_y() const
 {
     return ff_rect(0).y;
 }
 
-int32_t subtitle_frame::ff_rect_w() const
+uint16_t subtitle_frame::ff_rect_w() const
 {
     return ff_rect(0).w;
 }
 
-int32_t subtitle_frame::ff_rect_h() const
+uint16_t subtitle_frame::ff_rect_h() const
 {
     return ff_rect(0).h;
+}
+
+uint32_t subtitle_frame::ff_data_line_size() const
+{
+    return static_cast<uint32_t>(ff_rect(0).linesize[0]);
+}
+
+const uint8_t* subtitle_frame::ff_pixel_data() const
+{
+    return ff_subtitle_ptr_->rects[0]->data[0];
+}
+
+const pixel_rgba_t* subtitle_frame::ff_pixel_color_map() const
+{
+    return reinterpret_cast<pixel_rgba_t*>(ff_subtitle_ptr_->rects[0]->data[1]);
+}
+
+pixel_rgba_t subtitle_frame::ff_pixel_lookup(uint8_t color_index) const
+{
+    return (ff_pixel_color_map())[color_index];
+}
+
+pixel_rgba_t subtitle_frame::ff_pixel(uint32_t x, uint32_t y) const
+{
+    const uint32_t index = x + y*ff_data_line_size();
+    if (index >= ff_bitmap_pixel_count()) {
+        return pixel_rgba_t();
+    }
+    const uint8_t* pixel_ptr = ff_pixel_data();
+    const uint8_t color_index = pixel_ptr[index];
+    return ff_pixel_lookup(color_index);
 }
 
 //AVSubtitle& subtitle_frame::ff_subtitle()

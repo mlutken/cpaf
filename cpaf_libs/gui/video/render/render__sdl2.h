@@ -39,10 +39,10 @@ private:
 
     void            fill_native_video_frame                     (const cpaf::video::av_frame& frame,
                                                                  cpaf::video::av_frame& frame_display);
+    void            fill_native_subtitle_texture                ();
     void            ensure_valid_render_texture                 (const cpaf::video::surface_dimensions_t& dimensions);
     void            ensure_valid_subtitles_graphics_texture     (const cpaf::video::subtitle_frame& subtitle);
     void            calc_subtitle_geometry                      ();
-    void            render_current_native_video_frame_texture   ();
 
 
     SDL_Renderer*   get_sdl_renderer            ();
@@ -55,7 +55,6 @@ private:
     bool            do_render_video_frame       (const cpaf::video::av_frame& frame) override;
     void            on_render_geometry_changed  () override;
     void            on_subtitle_changed         () override;
-    void            render_subtitle             ();
     void            render_subtitle_text        ();
     void            render_subtitle_graphics    ();
 

@@ -70,6 +70,29 @@ void render_platform::fill_native_video_frame(
     SDL_SetRenderTarget( get_sdl_renderer(), sdl_frame_render_texture_ );
 }
 
+void render_platform::fill_native_subtitle_texture()
+{
+    if ( !(current_subtitle_frame_.is_valid() && current_subtitle_frame_.format() == subtitle_frame::format_t::graphics)) {
+        return;
+    }
+    pixel_rgba_t* dst_pixels;
+    [[maybe_unused]]int pitch;
+
+    SDL_LockTexture( sdl_subtitles_render_texture_, nullptr, (void**)&dst_pixels, &pitch );
+
+    const uint8_t* src_pixels = current_subtitle_frame_.ff_pixel_data();
+    const auto pixel_count = current_subtitle_frame_.ff_bitmap_pixel_count();
+    const pixel_rgba_t* color_map = current_subtitle_frame_.ff_pixel_color_map();
+
+    for(uint32_t i = 0; i < pixel_count; ++i) {
+        const auto color_index = src_pixels[i];
+        auto src_pixel = color_map[color_index];
+        dst_pixels[i] = src_pixel;
+    }
+
+    SDL_UnlockTexture(sdl_subtitles_render_texture_);
+}
+
 void render_platform::ensure_valid_render_texture(const cpaf::video::surface_dimensions_t& dimensions)
 {
     if (dimensions != render_dimensions_) {
@@ -100,7 +123,7 @@ void render_platform::ensure_valid_subtitles_graphics_texture(const subtitle_fra
 
     sdl_subtitles_render_texture_ = SDL_CreateTexture(
         get_sdl_renderer(),
-        SDL_PIXELFORMAT_RGBA8888,
+        SDL_PIXELFORMAT_RGBA32,
         SDL_TEXTUREACCESS_STREAMING,
         subtitle.ff_rect_w(),
         subtitle.ff_rect_h()
@@ -137,29 +160,11 @@ void render_platform::calc_subtitle_geometry()
 
     if (current_subtitle_frame_.format() == subtitle_frame::format_t::graphics && current_subtitle_frame_.ff_subtitle_is_valid() ) {
         const auto scale = (render_geometry().size() / player_.video_src_dimensions_float())*subtitles_scale_;
-        std::cerr << "FIXMENM media src dims: " << player_.video_src_dimensions_float() << "\n";
-        std::cerr << "FIXMENM medi dst dims: " << render_geometry().size() << "\n";
-        std::cerr << "FIXMENM scale: " << scale << "\n";
-        std::cerr << "FIXMENM render subtitle: " << current_subtitle_frame_.dbg_str() << "\n";
-        std::cerr << "pixel_count: " << current_subtitle_frame_.ff_bitmap_pixel_count()
-                  << " num rects: " << current_subtitle_frame_.ff_num_rects()
-                  << "\n"
-                  << " w, h: " << current_subtitle_frame_.ff_rect(0).w << ", " << current_subtitle_frame_.ff_rect(0).h
-                  << " dst rect: " << current_subtitle_frame_.ff_bitmap_rect()
-                  << "\n"
-            ;
         const auto subtitle_size = current_subtitle_frame_.ff_bitmap_rect().size()*scale;
         const auto subtitle_rect = rect({x_pos - subtitle_size.width()*0.5f,lowest_y - subtitle_size.height()}, subtitle_size);
-        std::cerr << "FIXMENM subtitle_rect: " << subtitle_rect << "\n";
-
         subtitles_dst_rect_ = to_sdl_rect(subtitle_rect);
     }
 }
-
-void render_platform::render_current_native_video_frame_texture()
-{
-}
-
 
 
 SDL_Renderer* render_platform::get_sdl_renderer() {
@@ -202,13 +207,6 @@ void render_platform::render_subtitle_text()
 
 }
 
-struct rgbaPixel {
-    uint8_t r;
-    uint8_t g;
-    uint8_t b;
-    uint8_t a;
-};
-
 void render_platform::render_subtitle_graphics()
 {
     if (!sdl_subtitles_render_texture_) {
@@ -217,51 +215,6 @@ void render_platform::render_subtitle_graphics()
 
     SDL_RenderCopy(get_sdl_renderer(), sdl_subtitles_render_texture_, NULL, &subtitles_dst_rect_);
     SDL_SetRenderTarget( get_sdl_renderer(), nullptr );
-
-
-//    std::cerr << "FIXMENM render subtitle: " << current_subtitle_frame_.dbg_str() << "\n";
-//    std::cerr << "pixel_count: " << current_subtitle_frame_.ff_bitmap_pixel_count()
-//              << " num rects: " << current_subtitle_frame_.ff_num_rects()
-//              << "\n"
-//              << " w, h: " << current_subtitle_frame_.ff_rect(0).w << ", " << current_subtitle_frame_.ff_rect(0).h
-//              << " dst rect: " << current_subtitle_frame_.ff_bitmap_rect()
-//              << "\n"
-        ;
-    AVSubtitle& sub = current_subtitle_frame_.ff_subtitle();
-
-
-
-    //    std::cerr << " w, h: " << sub. << "\n";
-
-    //    for (unsigned int i = 0; i < sub.num_rects; ++ i) {
-    //        AVSubtitleRect* rect = sub.rects[i];
-    //        for (int y = 0; y < rect->h; ++ y) {
-    //            int dest_y = y + rect->y;
-
-    //            // data[0] holds index data
-    //            uint8_t *in_linedata = rect->data[0] + y * rect->linesize[0];
-
-    //            // In AVFrame, data[0] holds the pixel buffer directly
-    //            uint8_t *out_linedata = frame->data[0] + dest_y * frame->linesize[0];
-    //            rgbaPixel *out_pixels = reinterpret_cast<rgbaPixel*>(out_linedata);
-
-    //            for (int x = 0; x < rect->w; ++ x) {
-    //                // data[1] contains the color map
-    //                // compare libavcodec/dvbsubenc.c
-    //                uint8_t colidx = in_linedata[x];
-    //                uint32_t color = reinterpret_cast<uint32_t*>(rect->data[1])[colidx];
-
-    //                // Now store the pixel in the target buffer
-    //                out_pixels[x + rect->x] = rgbaPixel{
-    //                    .r = static_cast<uint8_t>((color >> 16) & 0xff),
-    //                    .g = static_cast<uint8_t>((color >>  8) & 0xff),
-    //                    .b = static_cast<uint8_t>((color >>  0) & 0xff),
-    //                    .a = static_cast<uint8_t>((color >> 24) & 0xff),
-    //                };
-    //            }
-    //        }
-    //    }
-
 }
 
 
@@ -322,25 +275,12 @@ void render_platform::on_render_geometry_changed()
 {
     calc_subtitle_geometry();
     ensure_valid_subtitles_graphics_texture(current_subtitle_frame_);
+    fill_native_subtitle_texture();
 }
 
 void render_platform::on_subtitle_changed()
 {
 
 }
-
-void render_platform::render_subtitle()
-{
-    if ( !(current_subtitle_frame_.should_show() && show_subtitles_) ) {
-        return;
-    }
-    if (current_subtitle_frame_.format() == subtitle_frame::format_t::text) {
-        render_subtitle_text();
-    }
-    else if (current_subtitle_frame_.format() == subtitle_frame::format_t::graphics) {
-        render_subtitle_graphics();
-    }
-}
-
 
 } //END namespace cpaf::gui::video
