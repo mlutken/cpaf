@@ -36,8 +36,8 @@ public:
     using surface_dimensions_t = cpaf::video::surface_dimensions_t;
     virtual ~render_base() = default;
     render_base();
-    render_geometry_t           render_geometry             () const { return render_geometry_; }
-    void                        render_geometry_set         (render_geometry_t render_geom);
+    rect           render_geometry             () const { return render_geometry_; }
+    void                        render_geometry_set         (rect render_geom);
     void                        format_context_set          (cpaf::video::av_format_context* ctx)        { format_context_ptr_ = ctx; }
     void                        format_context_set          (cpaf::video::av_format_context& ctx)        { format_context_ptr_ = &ctx; }
     void                        video_codec_ctx_set         (cpaf::video::av_codec_context* ctx);
@@ -96,7 +96,7 @@ private:
     cpaf::video::media_stream_time*         current_media_time_ptr_     = nullptr;
     AVPixelFormat                           ff_pixel_format_            = AV_PIX_FMT_YUV420P;
     pos_2df                                 subtitle_relative_pos_      {0.5, 0.9};
-    render_geometry_t                       render_geometry_            {};
+    rect                       render_geometry_            {};
 
     void                        create_frame_display                ();
 

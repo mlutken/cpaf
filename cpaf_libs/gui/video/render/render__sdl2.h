@@ -33,7 +33,7 @@ protected:
 
 
 private:
-    using subtitle_render_geometries_t = std::array<render_geometry_t, cpaf::video::subtitle_frame::max_lines>;
+    using subtitle_render_geometries_t = std::array<rect, cpaf::video::subtitle_frame::max_lines>;
 
     void            prepare_native_video_frame                  (const cpaf::video::av_frame& frame,
                                                                  cpaf::video::av_frame& frame_display);
@@ -61,7 +61,7 @@ private:
     SDL_Texture*                        sdl_frame_render_texture_       {nullptr};
     SDL_Texture*                        sdl_subtitles_render_texture_   {nullptr};
     subtitle_render_geometries_t        subtitle_render_geometries_;
-    render_geometry_t                   controls_render_geometry_;
+    rect                   controls_render_geometry_;
     SDL_Rect                            subtitles_dst_rect_;
 };
 

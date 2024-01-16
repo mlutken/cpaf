@@ -171,7 +171,7 @@ void player::video_dimensions_set(int32_t width, int32_t height)
 void player::video_dimensions_set(const surface_dimensions_t& dimensions)
 {
     if (video_render_) {
-        video_render_->render_geometry_set(render_geometry_t(dimensions));
+        video_render_->render_geometry_set(rect(dimensions));
     }
 //    video_dst_dimensions_requested_ = dimensions; // TODO: This is currently not working as intended!
 //    update_scaling_context(); // TODO: This is currently not working as intended!
@@ -220,17 +220,17 @@ size_t player::video_stream_index() const
     return video_stream_index_ != no_stream_index ? video_stream_index_ : source_stream(stream_type_t::video)->first_video_index();
 }
 
-render_geometry_t player::render_geometry() const
+rect player::render_geometry() const
 {
     if (video_render_) {
         return video_render_->render_geometry();
     }
     else if (main_window_ptr_) {
         const auto size = main_window_ptr_->get_size();
-        return render_geometry_t(0, 0, size.width(), size.height());
+        return rect(0, 0, size.width(), size.height());
     }
-
-    return render_geometry_t();
+    
+    return rect();
 }
 
 // ---------------------------
@@ -382,7 +382,7 @@ void player::init_video(const system_window& main_window)
 {
     video_render_ = render::create_video_render(main_window, video_dst_dimensions());
     video_render_->video_codec_ctx_set(video_codec_context());
-    video_render_->render_geometry_set(render_geometry_t(main_window.get_size()));
+    video_render_->render_geometry_set(rect(main_window.get_size()));
     ////    video_render_->render_geometry_set(render_geometry_t({100,100}, main_window.get_size())); // TEST ONLY!
 }
 

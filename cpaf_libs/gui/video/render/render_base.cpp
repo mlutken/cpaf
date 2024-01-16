@@ -9,7 +9,7 @@ render_base::render_base()
 
 }
 
-void render_base::render_geometry_set(render_geometry_t render_geom)
+void render_base::render_geometry_set(rect render_geom)
 {
     render_geometry_ = render_geom;
     on_render_geometry_changed();

@@ -10,8 +10,8 @@
 #include <SDL2/SDL.h>
 
 namespace cpaf::gui {
-SDL_Rect            to_sdl_rect             (render_geometry_t geom);
-render_geometry_t   to_render_geometry      (SDL_Rect rect);
+SDL_Rect            to_sdl_rect             (rect geom);
+rect   to_render_geometry      (SDL_Rect rect);
 
 
 } // namespace cpaf::gui

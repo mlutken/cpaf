@@ -2,7 +2,7 @@
 
 namespace cpaf::gui {
 
-SDL_Rect to_sdl_rect(render_geometry_t geom)
+SDL_Rect to_sdl_rect(rect geom)
 {
     return SDL_Rect{static_cast<int>(geom.top_left.x()),
                     static_cast<int>(geom.top_left.y()),
@@ -10,12 +10,12 @@ SDL_Rect to_sdl_rect(render_geometry_t geom)
                     static_cast<int>(geom.size.height())};
 }
 
-render_geometry_t to_render_geometry(SDL_Rect rect)
+rect to_render_geometry(SDL_Rect rct)
 {
-    return render_geometry_t{static_cast<float>(rect.x),
-                    static_cast<float>(rect.y),
-                    static_cast<float>(rect.w),
-                    static_cast<float>(rect.h)};
+    return rect{static_cast<float>(rct.x),
+                static_cast<float>(rct.y),
+                static_cast<float>(rct.w),
+                static_cast<float>(rct.h)};
 
  }
 

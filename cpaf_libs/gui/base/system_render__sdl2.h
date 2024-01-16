@@ -30,7 +30,7 @@ private:
     // --- Platform overrides ---
     void*               do_get_native_renderer    	() override;
     void                do_set_color                (color col) override;
-    void                do_fill_rect                (render_geometry_t rect) const override;
+    void                do_fill_rect                (rect rect) const override;
 
     // --- PRIVATE: Helpers  ---
 
