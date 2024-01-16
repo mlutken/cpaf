@@ -80,6 +80,7 @@ bool av_format_context::open(const std::string& resource_path)
     }
     read_codec_contexts();
     set_default_selected_streams();
+    ///subtitle_index_set(5); // FIXMENM
     return true;
 }
 
