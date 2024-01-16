@@ -127,26 +127,26 @@ void render_platform::calc_subtitle_geometry()
     if (!font) { return; }
 
     const float line_dist = subtitles_line_dist_*font_size_pixels;
-    const float x_pos = render_geometry().size.width() / 2;
-    const float lowest_y = subtitles_relative_ypos_* render_geometry().size.height();
-    const float max_width = render_geometry().size.width();
+    const float x_pos = render_geometry().size().width() / 2;
+    const float lowest_y = subtitles_relative_ypos_* render_geometry().size().height();
+    const float max_width = render_geometry().size().width();
     const size_t lines_count = current_subtitle_frame_.lines_count();
     const size_t max_line_index = lines_count -1;
     for (size_t sub_index = 0; sub_index < lines_count; ++sub_index) {
         const std::string& line = current_subtitle_frame_.lines[sub_index];
         auto& geom = subtitle_render_geometries_[sub_index];
-        geom.top_left.y(lowest_y - (max_line_index - sub_index)*(font_size_pixels+line_dist));
-        geom.top_left.x(x_pos);
+        geom.top_left().y(lowest_y - (max_line_index - sub_index)*(font_size_pixels+line_dist));
+        geom.top_left().x(x_pos);
 
         auto render_size = font->CalcTextSizeA(font->FontSize, max_width, 0, line.data(), line.data() + line.size());
         render_size.x = render_size.x + 3*(render_size.x/line.size());
-        geom.size = {render_size.x, render_size.y};
+        geom.size() = {render_size.x, render_size.y};
     }
 
-//    if (current_subtitle_frame_.format() == subtitle_frame::format_t::graphics && current_subtitle_frame_.ff_subtitle_is_valid() ) {
-//        subtitles_dst_rect_.h = current_subtitle_frame_.ff_rect_h();
-//        subtitles_dst_rect_.h = current_subtitle_frame_.ff_rect_w();
-//    }
+    if (current_subtitle_frame_.format() == subtitle_frame::format_t::graphics && current_subtitle_frame_.ff_subtitle_is_valid() ) {
+        subtitles_dst_rect_.h = current_subtitle_frame_.ff_rect_h();
+        subtitles_dst_rect_.h = current_subtitle_frame_.ff_rect_w();
+    }
 
 }
 
@@ -244,8 +244,8 @@ void render_platform::render_subtitle_text()
         const std::string& line = current_subtitle_frame_.lines[sub_index];
         const auto& geom = subtitle_render_geometries_[sub_index];
 
-        ImGui::SetNextWindowPos({geom.top_left.x(), geom.top_left.y()}, ImGuiCond_::ImGuiCond_Always, {0.5, 0.5} );
-        ImGui::SetNextWindowSize({geom.size.width(), geom.size.height()}, ImGuiCond_::ImGuiCond_Always);
+        ImGui::SetNextWindowPos({geom.top_left().x(), geom.top_left().y()}, ImGuiCond_::ImGuiCond_Always, {0.5, 0.5} );
+        ImGui::SetNextWindowSize({geom.size().width(), geom.size().height()}, ImGuiCond_::ImGuiCond_Always);
         ImGui::Begin(window_name.c_str(), &show_subtitles_, window_flags);
         ImGui::SetCursorPosY(0);
         ImGui::TextUnformatted(line.c_str());

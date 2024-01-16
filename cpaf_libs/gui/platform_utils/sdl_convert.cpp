@@ -4,10 +4,10 @@ namespace cpaf::gui {
 
 SDL_Rect to_sdl_rect(rect geom)
 {
-    return SDL_Rect{static_cast<int>(geom.top_left.x()),
-                    static_cast<int>(geom.top_left.y()),
-                    static_cast<int>(geom.size.width()),
-                    static_cast<int>(geom.size.height())};
+    return SDL_Rect{static_cast<int>(geom.top_left().x()),
+                    static_cast<int>(geom.top_left().y()),
+                    static_cast<int>(geom.size().width()),
+                    static_cast<int>(geom.size().height())};
 }
 
 rect to_render_geometry(SDL_Rect rct)

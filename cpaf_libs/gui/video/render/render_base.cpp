@@ -100,7 +100,7 @@ void render_base::render_dimensions_set(const surface_dimensions_t& dimensions) 
 
 pos_2df render_base::subtitle_pos() const
 {
-    return subtitle_relative_pos_ * render_geometry_.size;
+    return subtitle_relative_pos_ * render_geometry_.size();
 }
 
 

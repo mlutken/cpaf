@@ -53,9 +53,14 @@ public:
     /// Copy constructor. Initializing with another rectangle.
     rectangle(const rectangle& other) = default;
 
+    /** Constructor with size onnly initialization. */
+    explicit rectangle(const v2<T>& size)		///< [in] Rectangle size
+        : size_(size)
+    {}
+
     /** Constructor with 2 points initialization. */
     rectangle(	const v2<T>& top_left,		///< [in] Rectangle upper left corner
-                const v2<T>& size)		///< [in] Rectangle size
+              const v2<T>& size)		///< [in] Rectangle size
         : 	top_left_(top_left), size_(size)
     {}
 

@@ -21,23 +21,23 @@ void controls_default::calc_geometry()
 
 //    const ImFont* font = imgui_fonts::instance().get(font_name_, font_size_pixels, subtitles_create_dist_);
 
-    const float y_pos = relative_ypos_* render_geometry.size.height();
+    const float y_pos = relative_ypos_* render_geometry.size().height();
 
-    play_pause_btn_pos_.x = render_geometry.size.width() / 2;
+    play_pause_btn_pos_.x = render_geometry.size().width() / 2;
     play_pause_btn_pos_.y = y_pos;
 
     video_back_btn_pos_.x = fwd_back_font_size_pixels;
     video_back_btn_pos_.y = y_pos;
-    video_fwd_btn_pos_.x = render_geometry.size.width() - 1*fwd_back_font_size_pixels;
+    video_fwd_btn_pos_.x = render_geometry.size().width() - 1*fwd_back_font_size_pixels;
     video_fwd_btn_pos_.y = y_pos;
 
-    video_slider_pos_.x = render_geometry.size.width() / 2;
+    video_slider_pos_.x = render_geometry.size().width() / 2;
     video_slider_pos_.y = y_pos + 1.5*fwd_back_font_size_pixels;
 
-    video_slider_size_.x = render_geometry.size.width() - 0.8*fwd_back_font_size_pixels;
+    video_slider_size_.x = render_geometry.size().width() - 0.8*fwd_back_font_size_pixels;
     video_slider_grab_width_ = fwd_back_font_size_pixels / 2;
 
-    elapsed_time_pos_.x = (render_geometry.size.width() - video_slider_size_.x);
+    elapsed_time_pos_.x = (render_geometry.size().width() - video_slider_size_.x);
     elapsed_time_pos_.y = video_slider_pos_.y + slider_font_size_pixels + time_font_size_pixels;
 
     remaining_time_pos_.x = video_fwd_btn_pos_.x;
