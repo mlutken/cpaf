@@ -67,8 +67,10 @@ public:
 	// --- Constructors ---
 	// --------------------
 
-	/** Default constructor with no initialization. */
-	v4() {}
+    /** Default constructor with no initialization. */
+    v4() = default;
+
+    v4 (const v4& other) = default;
 
 	/** Copy constructor. Initializtion with general (v4<>) vector.
 		Also work as casting operator from general v4<>.*/

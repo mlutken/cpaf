@@ -128,6 +128,47 @@ string subtitle_frame::dbg_str() const
     return str;
 }
 
+uint32_t subtitle_frame::ff_bitmap_pixel_count() const
+{
+    AVSubtitle& sub = *ff_subtitle_ptr_;
+    int32_t pixel_count = 0;
+    for (unsigned int i = 0; i < sub.num_rects; ++ i) {
+        AVSubtitleRect* rect = sub.rects[i];
+        pixel_count += rect->h * rect->w;
+    }
+    return static_cast<uint32_t>(pixel_count);
+}
+
+uint32_t subtitle_frame::ff_num_rects() const {
+    return ff_subtitle_ptr_->num_rects;
+}
+
+const AVSubtitleRect& subtitle_frame::ff_rect(uint32_t i) const
+{
+//    DVDSubContext
+    return *(ff_subtitle_ptr_->rects[i]);
+}
+
+int32_t subtitle_frame::ff_rect_x() const
+{
+    return ff_rect(0).x;
+}
+
+int32_t subtitle_frame::ff_rect_y() const
+{
+    return ff_rect(0).y;
+}
+
+int32_t subtitle_frame::ff_rect_w() const
+{
+    return ff_rect(0).w;
+}
+
+int32_t subtitle_frame::ff_rect_h() const
+{
+    return ff_rect(0).h;
+}
+
 //AVSubtitle& subtitle_frame::ff_subtitle()
 //{
 //    if (!ff_subtitle_ptr_) {

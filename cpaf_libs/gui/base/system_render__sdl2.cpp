@@ -29,6 +29,17 @@ void* system_render_platform::do_get_native_renderer()
     return sdl_renderer_;
 }
 
+void system_render_platform::do_set_color(color col)
+{
+    const auto c = col.to_u8color();
+    SDL_SetRenderDrawColor(sdl_renderer_, c.r(), c.g(), c.b(), c.a());
+}
+
+void system_render_platform::do_fill_rect(render_geometry_t rect) const
+{
+    SDL_RenderFillRectF(sdl_renderer_, reinterpret_cast<SDL_FRect*>(&rect));
+}
+
 
 // -------------------------
 // --- PRIVATE: Helpers  ---

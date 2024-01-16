@@ -1,5 +1,6 @@
 #include "render_base.h"
 #include <cpaf_libs/video/av_format_context.h>
+#include <cpaf_libs/time/cpaf_time.h>
 
 namespace cpaf::gui::video {
 
@@ -43,11 +44,14 @@ void render_base::init(const system_window& win, const cpaf::video::surface_dime
 {
     main_window_ptr_ = &win;
     do_init(win, dimensions);
+    render_dimensions_ = dimensions;
 }
 
-void render_base::init_only_for_old_playground(std::shared_ptr<cpaf::gui::system_render> sys_renderer, const cpaf::video::surface_dimensions_t& dimensions)
+void render_base::init_only_for_old_playground(std::shared_ptr<cpaf::gui::system_render> sys_renderer,
+                                               const cpaf::video::surface_dimensions_t& dimensions)
 {
     do_init(sys_renderer, dimensions);
+    render_dimensions_ = dimensions;
 }
 
 bool render_base::render_video_frame(const cpaf::video::av_frame& frame) {
@@ -58,7 +62,6 @@ bool render_base::render_video_frame(const cpaf::video::av_frame& frame) {
     }
 
     const bool res = do_render_video_frame(frame);
-    do_render_subtitle();
     return res;
 }
 
@@ -80,9 +83,19 @@ void render_base::set_current_subtitle(cpaf::video::subtitle_frame&& subtitle)
 
     current_subtitle_frame_ = std::move(subtitle);
     if (current_subtitle_frame_.should_show()) {
-        std::cerr << "FIXMENM set_current_subtitle: " << current_subtitle_frame_.dbg_str() << "\n";
+
+// DEBUG ONLY BEGIN
+//        std::cerr << "FIXMENM set_current_subtitle: " << current_subtitle_frame_.dbg_str() << "\n";
+//        current_subtitle_frame_.lines.push_back(cpaf::time::format_h_m_s(current_subtitle_frame_.presentation_time));
+//        current_subtitle_frame_.format_set(subtitle_frame::format_t::text);
+// DEBUG ONLY BEGIN END
         on_render_geometry_changed();
     }
+}
+
+void render_base::render_dimensions_set(const surface_dimensions_t& dimensions) {
+    do_render_dimensions_set(dimensions);
+    render_dimensions_ = dimensions;
 }
 
 pos_2df render_base::subtitle_pos() const

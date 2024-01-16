@@ -21,9 +21,17 @@ set (CPAF_GUI_IMGUI_BACKEND_CPP_FILES "")
 if ( (CPAF_GRAPHICS_SYSTEM_NAME MATCHES "sdl2") )
     set (CPAF_GUI_LINK_LIBS "cpaf_sdl2")
     set (CPAF_GUI_IMGUI_BACKEND_CPP_FILES "${IMGUI_BACKEND_DIR}/imgui_impl_sdl.cpp;${IMGUI_BACKEND_DIR}/imgui_impl_sdlrenderer.cpp")
+
+    target_sources(${library_name}
+        PUBLIC
+
+        ${CMAKE_CURRENT_LIST_DIR}/platform_utils/sdl_convert.h
+        PRIVATE
+
+        ${CMAKE_CURRENT_LIST_DIR}/platform_utils/sdl_convert.cpp
+    )
+
 endif()
-
-
 
 
 target_sources(${library_name}
@@ -155,8 +163,6 @@ target_sources(${library_name}
 
     ${CMAKE_CURRENT_LIST_DIR}/assets/fonts/imgui_fonts.cpp
     ${CMAKE_CURRENT_LIST_DIR}/assets/fonts/manrope_ttf.cpp
-
-
 )
 
 

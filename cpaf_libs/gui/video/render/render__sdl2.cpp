@@ -7,7 +7,10 @@
 #include <cpaf_libs/video/av_codec_context.h>
 #include <cpaf_libs/gui/assets/fonts/imgui_fonts.h>
 
+#include <cpaf_libs/gui/platform_utils/sdl_convert.h>
+
 using namespace std;
+using namespace cpaf::video;
 
 namespace cpaf::gui::video {
 
@@ -25,6 +28,9 @@ render_platform::~render_platform()
 {
     if (sdl_frame_render_texture_) {
         SDL_DestroyTexture(sdl_frame_render_texture_);
+    }
+    if (sdl_subtitles_render_texture_) {
+        SDL_DestroyTexture(sdl_subtitles_render_texture_);
     }
 }
 
@@ -79,16 +85,40 @@ void render_platform::ensure_valid_render_texture(const cpaf::video::surface_dim
             get_sdl_renderer(),
             SDL_PIXELFORMAT_YV12,
             SDL_TEXTUREACCESS_STREAMING,
-            dimensions.x(),
-            dimensions.y()
+            dimensions.width(),
+            dimensions.height()
         );
         SDL_SetTextureBlendMode(sdl_frame_render_texture_, SDL_BLENDMODE_BLEND);
     }
 }
 
+void render_platform::ensure_valid_subtitles_graphics_texture(const subtitle_frame& subtitle)
+{
+    if ( !(subtitle.is_valid() && subtitle.format() == subtitle_frame::format_t::graphics)) {
+        return;
+    }
+    if (sdl_subtitles_render_texture_) {
+        SDL_DestroyTexture(sdl_subtitles_render_texture_);
+    }
+
+    sdl_subtitles_render_texture_ = SDL_CreateTexture(
+        get_sdl_renderer(),
+        SDL_PIXELFORMAT_RGBA8888,
+        SDL_TEXTUREACCESS_STREAMING,
+        subtitle.ff_rect_w(),
+        subtitle.ff_rect_h()
+        );
+    SDL_SetTextureBlendMode(sdl_frame_render_texture_, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderTarget( get_sdl_renderer(), sdl_subtitles_render_texture_ );
+    SDL_SetRenderTarget( get_sdl_renderer(), nullptr );
+
+
+}
+
+/// For text subtitles only
 void render_platform::calc_subtitle_geometry()
 {
-    if ( !(current_subtitle_frame_.should_show() && show_subtitles_) ) {
+    if ( !(current_subtitle_frame_.is_valid() && show_subtitles_) ) {
         return;
     }
 
@@ -112,14 +142,12 @@ void render_platform::calc_subtitle_geometry()
         render_size.x = render_size.x + 3*(render_size.x/line.size());
         geom.size = {render_size.x, render_size.y};
     }
-}
 
-SDL_Rect render_platform::to_sdl_rect(render_geometry_t geom)
-{
-    return SDL_Rect{static_cast<int>(geom.top_left.x()),
-                    static_cast<int>(geom.top_left.y()),
-                    static_cast<int>(geom.size.width()),
-                    static_cast<int>(geom.size.height())};
+//    if (current_subtitle_frame_.format() == subtitle_frame::format_t::graphics && current_subtitle_frame_.ff_subtitle_is_valid() ) {
+//        subtitles_dst_rect_.h = current_subtitle_frame_.ff_rect_h();
+//        subtitles_dst_rect_.h = current_subtitle_frame_.ff_rect_w();
+//    }
+
 }
 
 SDL_Renderer* render_platform::get_sdl_renderer() {
@@ -153,12 +181,28 @@ bool render_platform::do_render_video_frame(const cpaf::video::av_frame& frame)
 {
     prepare_native_video_frame(frame, frame_display());
     render_current_native_video_frame_texture();
+
+    // FIXMENM DEBUG ONLY BEGIN
+//    SDL_SetRenderDrawBlendMode( get_sdl_renderer(), SDL_BLENDMODE_BLEND );
+//    SDL_SetRenderDrawColor( get_sdl_renderer(), 255, 255, 255, 255 ); // Set color to solid white
+//    SDL_RenderDrawLine( get_sdl_renderer(), 0, 0, 300, 300 );
+//    system_renderer_->set_color(color(0, 1, 0, 0.5));
+//    system_renderer_->fill_rect(render_geometry_t(100,100,200,300));
+    // FIXMENM DEBUG ONLY END
+
+    do_render_subtitle();
     return true;
 }
 
 void render_platform::on_render_geometry_changed()
 {
     calc_subtitle_geometry();
+    ensure_valid_subtitles_graphics_texture(current_subtitle_frame_);
+}
+
+void render_platform::on_subtitle_changed()
+{
+
 }
 
 void render_platform::do_render_subtitle()
@@ -166,6 +210,16 @@ void render_platform::do_render_subtitle()
     if ( !(current_subtitle_frame_.should_show() && show_subtitles_) ) {
         return;
     }
+    if (current_subtitle_frame_.format() == subtitle_frame::format_t::text) {
+        render_subtitle_text();
+    }
+    else if (current_subtitle_frame_.format() == subtitle_frame::format_t::graphics) {
+        render_subtitle_graphics();
+    }
+}
+
+void render_platform::render_subtitle_text()
+{
     const int32_t font_size_pixels = font_size::to_pixels(subtitles_font_size_points_, main_window_ptr_);
     ImFont* font = imgui_fonts::instance().get(subtitles_font_name_, font_size_pixels, subtitles_create_dist_);
     if (!font) { return; }
@@ -176,7 +230,7 @@ void render_platform::do_render_subtitle()
     }
 
     ImGui::Rai imrai;
-        imrai.Font(font)
+    imrai.Font(font)
         .StyleColor(ImGuiCol_Border, reinterpret_cast<const ImVec4&>(subtitles_bg_color_))
         .StyleColor(ImGuiCol_WindowBg, reinterpret_cast<const ImVec4&>(subtitles_bg_color_))
         .StyleColor(ImGuiCol_Text, reinterpret_cast<const ImVec4&>(subtitles_text_color_))
@@ -196,8 +250,69 @@ void render_platform::do_render_subtitle()
         ImGui::SetCursorPosY(0);
         ImGui::TextUnformatted(line.c_str());
         ImGui::End();
+    }
 
-     }
+}
+
+struct rgbaPixel {
+    uint8_t r;
+    uint8_t g;
+    uint8_t b;
+    uint8_t a;
+};
+
+void render_platform::render_subtitle_graphics()
+{
+    if (!sdl_subtitles_render_texture_) {
+        return;
+    }
+
+    SDL_Rect sdl_rect {50,50,150,150};
+
+    SDL_RenderCopy(get_sdl_renderer(), sdl_subtitles_render_texture_, NULL, &sdl_rect);
+
+    std::cerr << "FIXMENM render subtitle: " << current_subtitle_frame_.dbg_str() << "\n";
+    std::cerr << "pixel_count: " << current_subtitle_frame_.ff_bitmap_pixel_count()
+              << " num rects: " << current_subtitle_frame_.ff_num_rects()
+              << "\n"
+              << " w, h: " << current_subtitle_frame_.ff_rect(0).w << ", " << current_subtitle_frame_.ff_rect(0).h
+              << "\n"
+        ;
+    AVSubtitle& sub = current_subtitle_frame_.ff_subtitle();
+
+
+
+//    std::cerr << " w, h: " << sub. << "\n";
+
+//    for (unsigned int i = 0; i < sub.num_rects; ++ i) {
+//        AVSubtitleRect* rect = sub.rects[i];
+//        for (int y = 0; y < rect->h; ++ y) {
+//            int dest_y = y + rect->y;
+
+//            // data[0] holds index data
+//            uint8_t *in_linedata = rect->data[0] + y * rect->linesize[0];
+
+//            // In AVFrame, data[0] holds the pixel buffer directly
+//            uint8_t *out_linedata = frame->data[0] + dest_y * frame->linesize[0];
+//            rgbaPixel *out_pixels = reinterpret_cast<rgbaPixel*>(out_linedata);
+
+//            for (int x = 0; x < rect->w; ++ x) {
+//                // data[1] contains the color map
+//                // compare libavcodec/dvbsubenc.c
+//                uint8_t colidx = in_linedata[x];
+//                uint32_t color = reinterpret_cast<uint32_t*>(rect->data[1])[colidx];
+
+//                // Now store the pixel in the target buffer
+//                out_pixels[x + rect->x] = rgbaPixel{
+//                    .r = static_cast<uint8_t>((color >> 16) & 0xff),
+//                    .g = static_cast<uint8_t>((color >>  8) & 0xff),
+//                    .b = static_cast<uint8_t>((color >>  0) & 0xff),
+//                    .a = static_cast<uint8_t>((color >> 24) & 0xff),
+//                };
+//            }
+//        }
+//    }
+
 }
 
 } //END namespace cpaf::gui::video

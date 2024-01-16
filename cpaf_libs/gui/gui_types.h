@@ -19,6 +19,7 @@ using size_2df = cpaf::math::v2<float>;
 using pos_2df = cpaf::math::v2<float>;
 
 
+/** @todo Rename to rect_t */
 struct render_geometry_t
 {
     render_geometry_t() = default;
@@ -28,13 +29,16 @@ struct render_geometry_t
     explicit render_geometry_t(size_2df render_size) : size(render_size) {}
 
     render_geometry_t(pos_2df  top_left_corner_pos, size_2df render_size)
-        : size(render_size), top_left(top_left_corner_pos) {}
+        : top_left(top_left_corner_pos)
+        , size(render_size) {}
 
     render_geometry_t(float top_left_x, float top_left_y, float render_width, float render_height)
-        : size(render_width, render_height), top_left(top_left_x, top_left_y) {}
+        : top_left(top_left_x, top_left_y)
+        , size(render_width, render_height)
+    {}
 
-    size_2df    size        {0,0};
     pos_2df     top_left    {0,0};
+    size_2df    size        {0,0};
 };
 
 enum class exit_status_t : int { success = 0, failure = 1 };

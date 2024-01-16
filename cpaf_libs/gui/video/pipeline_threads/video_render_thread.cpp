@@ -147,10 +147,10 @@ void video_render_thread::update_current_subtitle(render& video_render)
 //    }
 
     if (subtitle_within_display_time(subtitles_queue_.front())) {
-        std::cerr << "FIXMENM SET current subtitle 1: " << subtitles_queue_.front().dbg_str()
-                  << " cur time: " << cpaf::time::format_h_m_s(player_.cur_media_time().video_time_pos())
-                  << "  within time: '" << subtitle_within_display_time(subtitles_queue_.front()) << "'"
-                  << "\n";
+//        std::cerr << "FIXMENM SET current subtitle 1: " << subtitles_queue_.front().dbg_str()
+//                  << " cur time: " << cpaf::time::format_h_m_s(player_.cur_media_time().video_time_pos())
+//                  << "  within time: '" << subtitle_within_display_time(subtitles_queue_.front()) << "'"
+//                  << "\n";
 
         video_render.set_current_subtitle(std::move(subtitles_queue_.front()));
         subtitles_queue_.pop();

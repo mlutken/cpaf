@@ -58,7 +58,7 @@ public:
     bool                        render_video_frame          (const cpaf::video::av_frame& frame);
     const subtitle_frame&       current_subtitle            () const { return current_subtitle_frame_; }
     void                        clear_current_subtitle      ();
-    void                        set_current_subtitle     (cpaf::video::subtitle_frame&& subtitle);
+    void                        set_current_subtitle        (cpaf::video::subtitle_frame&& subtitle);
 
     bool                        show_subtitles              () const                        { return show_subtitles_;   }
     void                        show_subtitles_set          (bool show)                     { show_subtitles_ = show;   }
@@ -66,7 +66,7 @@ public:
     void                        subtitles_has_background_set(bool has_bgr)                  { subtitles_has_background_ = has_bgr;   }
 
     /// @todo Currently unused, See render_geometry_set()
-    void                        render_dimensions_set       (const cpaf::video::surface_dimensions_t& dimensions ) { return do_render_dimensions_set(dimensions);  }
+    void                        render_dimensions_set       (const cpaf::video::surface_dimensions_t& dimensions );
 
 protected:
     cpaf::video::av_format_context&         format_context              () { return *format_context_ptr_; }
@@ -106,6 +106,7 @@ private:
     virtual void                do_clear_screen                     () = 0;
     virtual bool                do_render_video_frame               (const cpaf::video::av_frame& frame) = 0;
     virtual void                on_render_geometry_changed          () = 0;
+    virtual void                on_subtitle_changed                 () = 0;
     virtual void                do_render_subtitle                  () = 0;
 
 };
