@@ -204,6 +204,11 @@ surface_dimensions_t player::video_src_dimensions() const
     return video_codec_context().dimensions();
 }
 
+math::v2f player::video_src_dimensions_float() const
+{
+    return video_codec_context().dimensions_float();
+}
+
 surface_dimensions_t player::video_dst_dimensions() const
 {
     if (video_codec_ctx_.is_valid()) {
@@ -214,6 +219,7 @@ surface_dimensions_t player::video_dst_dimensions() const
     }
     return video_dst_dimensions_requested_;
 }
+
 
 size_t player::video_stream_index() const
 {

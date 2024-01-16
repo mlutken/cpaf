@@ -83,10 +83,11 @@ public:
     // ----------------------------
     // --- Video info functions ---
     // ----------------------------
-    cpaf::video::surface_dimensions_t   video_src_dimensions    () const;
-    cpaf::video::surface_dimensions_t   video_dst_dimensions    () const;
-    size_t                              video_stream_index		() const;
-    rect                                render_geometry         () const;
+    cpaf::video::surface_dimensions_t   video_src_dimensions        () const;
+    cpaf::math::v2f                     video_src_dimensions_float  () const;
+    cpaf::video::surface_dimensions_t   video_dst_dimensions        () const;
+    size_t                              video_stream_index          () const;
+    rect                                render_geometry             () const;
 
     // ---------------------------
     // --- Audio setup/control ---

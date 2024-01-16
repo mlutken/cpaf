@@ -136,8 +136,22 @@ void render_platform::calc_subtitle_geometry()
     }
 
     if (current_subtitle_frame_.format() == subtitle_frame::format_t::graphics && current_subtitle_frame_.ff_subtitle_is_valid() ) {
-        const auto scale = player_.video_src_dimensions() / render_geometry().size();
-        const auto subtitle_rect = current_subtitle_frame_.ff_bitmap_rect();
+        const auto scale = (render_geometry().size() / player_.video_src_dimensions_float())*subtitles_scale_;
+        std::cerr << "FIXMENM media src dims: " << player_.video_src_dimensions_float() << "\n";
+        std::cerr << "FIXMENM medi dst dims: " << render_geometry().size() << "\n";
+        std::cerr << "FIXMENM scale: " << scale << "\n";
+        std::cerr << "FIXMENM render subtitle: " << current_subtitle_frame_.dbg_str() << "\n";
+        std::cerr << "pixel_count: " << current_subtitle_frame_.ff_bitmap_pixel_count()
+                  << " num rects: " << current_subtitle_frame_.ff_num_rects()
+                  << "\n"
+                  << " w, h: " << current_subtitle_frame_.ff_rect(0).w << ", " << current_subtitle_frame_.ff_rect(0).h
+                  << " dst rect: " << current_subtitle_frame_.ff_bitmap_rect()
+                  << "\n"
+            ;
+        const auto subtitle_size = current_subtitle_frame_.ff_bitmap_rect().size()*scale;
+        const auto subtitle_rect = rect({x_pos - subtitle_size.width()*0.5f,lowest_y - subtitle_size.height()}, subtitle_size);
+        std::cerr << "FIXMENM subtitle_rect: " << subtitle_rect << "\n";
+
         subtitles_dst_rect_ = to_sdl_rect(subtitle_rect);
     }
 }
@@ -205,13 +219,13 @@ void render_platform::render_subtitle_graphics()
     SDL_SetRenderTarget( get_sdl_renderer(), nullptr );
 
 
-    std::cerr << "FIXMENM render subtitle: " << current_subtitle_frame_.dbg_str() << "\n";
-    std::cerr << "pixel_count: " << current_subtitle_frame_.ff_bitmap_pixel_count()
-              << " num rects: " << current_subtitle_frame_.ff_num_rects()
-              << "\n"
-              << " w, h: " << current_subtitle_frame_.ff_rect(0).w << ", " << current_subtitle_frame_.ff_rect(0).h
-              << " dst rect: " << current_subtitle_frame_.ff_bitmap_rect()
-              << "\n"
+//    std::cerr << "FIXMENM render subtitle: " << current_subtitle_frame_.dbg_str() << "\n";
+//    std::cerr << "pixel_count: " << current_subtitle_frame_.ff_bitmap_pixel_count()
+//              << " num rects: " << current_subtitle_frame_.ff_num_rects()
+//              << "\n"
+//              << " w, h: " << current_subtitle_frame_.ff_rect(0).w << ", " << current_subtitle_frame_.ff_rect(0).h
+//              << " dst rect: " << current_subtitle_frame_.ff_bitmap_rect()
+//              << "\n"
         ;
     AVSubtitle& sub = current_subtitle_frame_.ff_subtitle();
 

@@ -82,6 +82,7 @@ protected:
     color                                   subtitles_text_color_       {1,1,1,1};
     color                                   subtitles_bg_color_         {0,0,0,1};
     uint16_t                                subtitles_font_size_points_ {16};
+    float                                   subtitles_scale_            {1.0f};
     uint16_t                                subtitles_create_dist_      {3}; // Create a new subtitle if dist in pixels is greater then this
     float                                   subtitles_relative_ypos_    {0.95};
     float                                   subtitles_line_dist_        {0.25};
@@ -97,7 +98,7 @@ private:
     cpaf::video::media_stream_time*         current_media_time_ptr_     = nullptr;
     AVPixelFormat                           ff_pixel_format_            = AV_PIX_FMT_YUV420P;
     pos_2df                                 subtitle_relative_pos_      {0.5, 0.9};
-    rect                       render_geometry_            {};
+    rect                                    render_geometry_            {};
 
     void                        create_frame_display                ();
 

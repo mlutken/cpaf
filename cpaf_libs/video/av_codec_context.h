@@ -62,6 +62,7 @@ public:
     int32_t                 width						() const { return ff_codec_context_->width; }
     int32_t                 height						() const { return ff_codec_context_->height; }
     surface_dimensions_t    dimensions                  () const { return {width(), height()}; }
+    cpaf::math::v2f         dimensions_float            () const { return {static_cast<float>(width()), static_cast<float>(height())}; }
     int32_t                 dst_width					() const { return dst_width_ <= 0 ? width() : dst_width_; }
     int32_t                 dst_height					() const { return dst_height_ <= 0 ? height(): dst_height_; }
     surface_dimensions_t    dst_dimensions              () const { return {dst_width(), dst_height()}; }
