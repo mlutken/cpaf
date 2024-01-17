@@ -64,6 +64,31 @@ subtitle_frame::~subtitle_frame()
     }
 }
 
+bool subtitle_frame::ff_subtitle_is_valid() const {
+    if (!ff_subtitle_ptr_) { return false; }
+    if ((ff_subtitle_ptr_->num_rects == 0) ||
+        (ff_subtitle_ptr_->rects == nullptr) ||
+        (ff_subtitle_ptr_->rects[0] == nullptr)
+        ) {
+        return false;
+    }
+    AVSubtitleRect& r0 = *(ff_subtitle_ptr_->rects[0]);
+    if (r0.type == SUBTITLE_NONE) { return false; }
+    if (r0.type == SUBTITLE_BITMAP) {
+        const bool valid_size = (r0.nb_colors > 0) && (r0.w > 0) && (r0.h > 0);
+        const bool valid_data = (r0.data[0] != nullptr) && (r0.data[1] != nullptr) && (r0.linesize[0] > 0);
+        return valid_size && valid_data;
+    }
+    else if (r0.type == SUBTITLE_TEXT) {
+        return r0.text != nullptr;
+    }
+    else if (r0.type == SUBTITLE_ASS) {
+        return r0.ass != nullptr;
+    }
+
+    return false;
+}
+
 subtitle_frame::subtitle_frame(std::string s0, std::string s1)
     : lines{std::move(s0), std::move(s1)}
 {
@@ -77,7 +102,7 @@ subtitle_frame::subtitle_frame(std::string s0, std::string s1, std::string s2)
 }
 
 bool subtitle_frame::is_valid() const {
-    return !lines.empty() || ff_subtitle_ptr_;
+    return !lines.empty() || ff_subtitle_is_valid();
 }
 
 

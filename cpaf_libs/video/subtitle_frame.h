@@ -64,7 +64,7 @@ public:
     ~subtitle_frame();
 
 
-    bool                            ff_subtitle_is_valid        () const { return ff_subtitle_ptr_.get(); }
+    bool                            ff_subtitle_is_valid        () const;
     bool                            is_valid                    () const;
     format_t                        format                      () const { return format_; }
     size_t                          lines_count                 () const {return std::min(lines.size(), max_lines);}
