@@ -42,6 +42,8 @@ public:
     media_type                  primary_media_type      () const { return format_context_.primary_media_type(); }
     const surface_dimensions_t& render_dimensions       () const { return render_dimensions_; }
     std::chrono::microseconds   total_time              () const { return format_context_.total_time(); }
+    const std::atomic<stream_state_t>&
+                                stream_state            () const { return format_context_.stream_state(); }
 
 
     // ---------------------

@@ -61,6 +61,8 @@ public:
     std::chrono::microseconds       current_time            () const { return cur_media_time().current_time_pos(); }
     std::chrono::microseconds       total_time              () const { return primary_stream().total_time(); }
     std::chrono::microseconds       remaining_time          () const { return total_time() - current_time(); }
+    const std::atomic<stream_state_t>&
+    stream_state                                            () const { return primary_stream().stream_state(); }
 
     // ----------------
     // --- Contexts ---
@@ -114,7 +116,7 @@ public:
     audio_play_callback_t       audio_callback_get      ();
     void                        render                  ();
 
-    // TODO: Make thse two private
+    // TODO: Make these two private
     void                        video_frame_update      (cpaf::video::av_frame& current_frame, cpaf::gui::video::render& video_render);
     void                        video_frame_update      (cpaf::video::av_frame& current_frame);
 

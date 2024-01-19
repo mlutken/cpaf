@@ -44,6 +44,7 @@ public:
 
     ~av_format_context();
     void                    open_async                  (const std::string& resource_path);
+    void                    cancel_async_open           ();
     bool                    open                        (const std::string& resource_path);
     void                    close                       ();
     void                    selected_media_index_set    (media_type mt, size_t stream_index);
@@ -155,7 +156,7 @@ private:
     std::mutex                                              packet_queues_mutex_;
     std::unique_ptr<custom_io_base>                         custom_io_ptr_;
     std::atomic<stream_state_t>                             stream_state_           = stream_state_t::inactive;
-    std::unique_ptr<std::thread>                            open_thread_            = nullptr;
+    std::unique_ptr<std::jthread>                           open_thread_            = nullptr;
 
 };
 
