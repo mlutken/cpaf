@@ -31,8 +31,9 @@ public:
 
     player();
     ~player();
-    void                            init                    (const system_window& main_window);
-    void                            start_playing                   (const std::chrono::microseconds& start_time_pos = std::chrono::microseconds(0));
+    void                            set_main_window         (const system_window& main_window);
+    void                            init                    ();
+    void                            start_playing           (const std::chrono::microseconds& start_time_pos = std::chrono::microseconds(0));
     void                            terminate               ();
     bool                            open                    (const std::string& resource_path);
     void                            open_async              (const std::string& resource_path, std::chrono::microseconds start_time_pos = {});
@@ -121,7 +122,7 @@ public:
     // ---------------------------------------------
     const system_window*        main_window_ptr         () const { return main_window_ptr_; }
     audio_play_callback_t       audio_callback_get      ();
-    void                        render                  ();
+    void                        frame_update                  ();
 
     // TODO: Make these two private
     void                        video_frame_update      (cpaf::video::av_frame& current_frame, cpaf::gui::video::render& video_render);

@@ -22,11 +22,16 @@ player::~player()
 {
 }
 
-void player::init(const system_window& main_window)
+void player::set_main_window(const system_window& main_window)
 {
     main_window_ptr_ = &main_window;
+}
+
+void player::init()
+{
+/////    main_window_ptr_ = &main_window;
     if (has_video_stream()) {
-        init_video(main_window);
+        init_video(*main_window_ptr_ );
     }
     if (!video_controls_) {
         set_controls(std::make_unique<video::controls_default>(*this));
@@ -295,15 +300,18 @@ player::audio_play_callback_t player::audio_callback_get()
     return media_pipeline_threads().audio_callback_get();
 }
 
-void player::render()
+void player::frame_update()
 {
-    if (has_video_stream()) {
-        video_frame_update(next_video_frame_);
+    handle_internal_events();
+    if ( is_playing()) {
+        if (has_video_stream()) {
+            video_frame_update(next_video_frame_);
+        }
+        cur_media_time().release_after_reset();
     }
     if (show_controls_ && video_controls_) {
         video_controls_->render();
     }
-    cur_media_time().release_after_reset();
 
 }
 

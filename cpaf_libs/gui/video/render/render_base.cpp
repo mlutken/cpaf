@@ -8,7 +8,7 @@ namespace cpaf::gui::video {
 render_base::render_base(player& owning_player)
     : player_(owning_player)
 {
-
+    std::cerr << "FIXMENM render_base::render_base CONSTRUCTOR\n";
 }
 
 void render_base::render_geometry_set(rect render_geom)
