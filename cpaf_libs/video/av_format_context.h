@@ -77,8 +77,8 @@ public:
     media_type              stream_media_type           (size_t stream_index) const;
     std::set<media_type>    set_of_each_media_type      (const std::set<media_type>& types_to_skip = {media_type::subtitle}) const;
 
-    const std::atomic<stream_state_t>&
-                            stream_state                () const { return stream_state_; }
+    std::atomic<stream_state_t>& stream_state           () { return stream_state_; }
+    const std::atomic<stream_state_t>&  stream_state    () const { return stream_state_; }
 
     // --- Seek Functions ---
     bool                    seek_time_pos               (std::chrono::microseconds stream_pos);

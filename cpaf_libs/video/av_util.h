@@ -82,7 +82,7 @@ enum class stream_state_t : int8_t {
     inactive,
     opening,
     open,
-    streaming,
+    playing,
     waiting_for_data,
     playing_local,
     finished
@@ -114,8 +114,8 @@ inline constexpr int    media_type_size_int     () { return static_cast<int>(med
 inline constexpr size_t media_type_size         () { return static_cast<size_t>(media_type::SIZE);}
 inline constexpr size_t stream_type_index_size  () { return static_cast<size_t>(stream_type_t::SIZE);}
 
-inline constexpr auto	to_int					(media_type mt) -> int					{ return static_cast<int>(mt);	}
-//inline constexpr auto	to_int					(audio_sample_format_t format) -> int	{ return static_cast<int>(format);}
+inline constexpr auto	to_int					(media_type mt) -> int				{ return static_cast<int>(mt);	}
+inline constexpr auto	to_int					(stream_state_t ss) -> int          { return static_cast<int>(ss);  }
 
 
 inline constexpr auto to_size_t(media_type mt) -> size_t

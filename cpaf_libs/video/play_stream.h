@@ -19,6 +19,8 @@ public:
     explicit play_stream(get_torrents_fn get_torrents_function);
      ~play_stream();
     bool                        open                    (const std::string& resource_path);
+    void                        open_async              (const std::string& resource_path)  { format_context().open_async(resource_path); }
+    void                        cancel_async_open       ()                                  { format_context().cancel_async_open();       }
 
     void                        video_index_set         (size_t stream_index) { format_context_.video_index_set(stream_index);}
     void                        audio_index_set         (size_t stream_index) { format_context_.audio_index_set(stream_index);}
@@ -42,8 +44,9 @@ public:
     media_type                  primary_media_type      () const { return format_context_.primary_media_type(); }
     const surface_dimensions_t& render_dimensions       () const { return render_dimensions_; }
     std::chrono::microseconds   total_time              () const { return format_context_.total_time(); }
-    const std::atomic<stream_state_t>&
-                                stream_state            () const { return format_context_.stream_state(); }
+
+    std::atomic<stream_state_t>&        stream_state            ()          { return format_context_.stream_state(); }
+    const std::atomic<stream_state_t>&  stream_state            () const    { return format_context_.stream_state(); }
 
 
     // ---------------------

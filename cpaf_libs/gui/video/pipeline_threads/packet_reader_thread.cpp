@@ -31,8 +31,8 @@ void packet_reader_thread::start()
 
 bool packet_reader_thread::seek_position(const std::chrono::microseconds& stream_pos, cpaf::video::seek_dir dir)
 {
-    auto seek_state = seek_state_t::ready;
-    if (seek_state_.compare_exchange_strong(seek_state, seek_state_t::requested)) {
+    auto seek_state_expected = seek_state_t::ready;
+    if (seek_state_.compare_exchange_strong(seek_state_expected, seek_state_t::requested)) {
         seek_from_position_ = player_.cur_media_time().current_time_pos();
         seek_position_requested_ = stream_pos;
         seek_direction_ = dir;
@@ -43,8 +43,8 @@ bool packet_reader_thread::seek_position(const std::chrono::microseconds& stream
 
 bool packet_reader_thread::seek_position(const std::chrono::microseconds& stream_pos)
 {
-    auto seek_state = seek_state_t::ready;
-    if (seek_state_.compare_exchange_strong(seek_state, seek_state_t::requested)) {
+    auto seek_state_expected = seek_state_t::ready;
+    if (seek_state_.compare_exchange_strong(seek_state_expected, seek_state_t::requested)) {
 
         seek_from_position_ = player_.cur_media_time().current_time_pos();
         seek_position_requested_ = stream_pos;
@@ -69,8 +69,8 @@ void packet_reader_thread::read_packets_thread_fn()
 
 void packet_reader_thread::check_seek_position()
 {
-    auto seek_state = seek_state_t::requested;
-    if (seek_state_.compare_exchange_strong(seek_state, seek_state_t::flushing)) {
+    auto seek_state_expected = seek_state_t::requested;
+    if (seek_state_.compare_exchange_strong(seek_state_expected, seek_state_t::flushing)) {
         const auto mt = player_.format_context().primary_media_type();
         signal_flush_start();
         player_.format_context().read_packets_to_queues(mt, primary_queue_fill_level_ + 1);

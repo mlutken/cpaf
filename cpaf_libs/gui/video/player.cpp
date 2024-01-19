@@ -34,7 +34,7 @@ void player::init(const system_window& main_window)
 }
 
 
-void player::start(const std::chrono::microseconds& start_time_pos)
+void player::start_playing(const std::chrono::microseconds& start_time_pos)
 {
     // source_stream(stream_type_t::video)
     auto&  video_fmt_ctx = primary_stream().format_context(); // TODO: If we use multiple streams we need to get the right format ctx per stream here!
@@ -56,6 +56,7 @@ void player::start(const std::chrono::microseconds& start_time_pos)
     video_fmt_ctx.read_packets_to_queues(video_fmt_ctx.primary_media_type(), 10);
 
     media_pipeline_threads().start();
+    stream_state() = stream_state_t::playing;
 }
 
 void player::terminate()
@@ -72,6 +73,13 @@ void player::terminate()
 bool player::open(const std::string& resource_path)
 {
     return open_primary_stream(resource_path);
+}
+
+void player::open_async(const std::string& resource_path, std::chrono::microseconds start_time_pos)
+{
+    primary_resource_path_ = resource_path;
+    start_time_pos_ = start_time_pos;
+    primary_stream().open_async(resource_path);
 }
 
 bool player::open(const std::string& resource_path, stream_type_t sti)
@@ -120,6 +128,12 @@ play_stream* player::source_stream(stream_type_t sti)
         return &primary_source_stream_;
     }
     return nullptr;
+}
+
+bool player::is_playing() const
+{
+    const auto cur_stream_state_int = to_int(stream_state());
+    return cur_stream_state_int >= to_int(stream_state_t::playing);
 }
 
 // ----------------
@@ -283,15 +297,6 @@ player::audio_play_callback_t player::audio_callback_get()
 
 void player::render()
 {
-    // TODO: Move to some other place!
-//    if (has_subtitle_stream()) {
-//        auto subtitles = subtitle_codec_context().read_subtitles();
-//        for (const auto& sub: subtitles) {
-//            std::cerr << "FIXMENM subtitle time: " << format_h_m_s(sub.presentation_time) << " , " << format_h_m_s(sub.presentation_time_end) <<  "\n";
-//        }
-//    }
-
-
     if (has_video_stream()) {
         video_frame_update(next_video_frame_);
     }
@@ -404,7 +409,7 @@ bool player::open_stream(const std::string& resource_path, stream_type_t sti)
 bool player::open_primary_stream(const std::string& resource_path)
 {
     primary_resource_path_ = resource_path;
-    const auto open_ok = primary_source_stream_.open(resource_path);
+    const auto open_ok = primary_stream().open(resource_path);
     return open_ok;
 }
 
@@ -412,6 +417,19 @@ void player::update_scaling_context() const
 {
     if (video_codec_ctx_.is_valid()) {
         video_codec_ctx_.init_scaling_context(ff_dst_pixel_format_, video_dst_dimensions_requested_, video_scaler_flags_, video_scaler_align_);
+    }
+}
+
+void player::handle_internal_events()
+{
+    handle_stream_state();
+}
+
+void player::handle_stream_state()
+{
+    auto stream_state_expected = stream_state_t::open;
+    if (stream_state().compare_exchange_strong(stream_state_expected, stream_state_t::playing)) {
+        start_playing(start_time_pos_);
     }
 }
 

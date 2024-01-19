@@ -32,9 +32,12 @@ public:
     player();
     ~player();
     void                            init                    (const system_window& main_window);
-    void                            start                   (const std::chrono::microseconds& start_time_pos = std::chrono::microseconds(0));
+    void                            start_playing                   (const std::chrono::microseconds& start_time_pos = std::chrono::microseconds(0));
     void                            terminate               ();
     bool                            open                    (const std::string& resource_path);
+    void                            open_async              (const std::string& resource_path, std::chrono::microseconds start_time_pos = {});
+    void                            cancel_async_open       ()                                  { primary_stream().cancel_async_open();       }
+
     bool                            open                    (const std::string& resource_path, cpaf::video::stream_type_t sti);
 
     bool                            has_video_stream        () const { return has_source_stream(cpaf::video::stream_type_t::video); }
@@ -58,11 +61,15 @@ public:
     std::string                     audio_resource_path     () const { return audio_stream() ? audio_stream()->resource_path() : ""; }
     std::string                     subtitle_resource_path  () const { return subtitle_stream() ? subtitle_stream()->resource_path() : ""; }
 
+    // ----------------------------------
+    // --- Current media playing info ---
+    // ----------------------------------
     std::chrono::microseconds       current_time            () const { return cur_media_time().current_time_pos(); }
     std::chrono::microseconds       total_time              () const { return primary_stream().total_time(); }
     std::chrono::microseconds       remaining_time          () const { return total_time() - current_time(); }
-    const std::atomic<stream_state_t>&
-    stream_state                                            () const { return primary_stream().stream_state(); }
+    bool                            is_playing              () const;
+    std::atomic<stream_state_t>&        stream_state        ()       { return primary_stream().stream_state(); }
+    const std::atomic<stream_state_t>&  stream_state        () const { return primary_stream().stream_state(); }
 
     // ----------------
     // --- Contexts ---
@@ -164,12 +171,15 @@ private:
     bool                            open_primary_stream     (const std::string& resource_path);
     void                            update_scaling_context  () const;
     pipeline_threads&               media_pipeline_threads  () { return media_pipeline_threads_; }
+    void                            handle_internal_events  ();
+    void                            handle_stream_state     ();
 
     // ----------------------------
     // --- PRIVATE: Member vars ---
     // ----------------------------
     using source_streams_array_t = std::array<std::unique_ptr<cpaf::video::play_stream>, cpaf::video::stream_type_index_size()>;
     cpaf::video::play_stream                        primary_source_stream_;
+    std::chrono::microseconds                       start_time_pos_;
     pipeline_threads                                media_pipeline_threads_;
     const system_window*                            main_window_ptr_                = nullptr;
     source_streams_array_t                          source_streams_                 = {nullptr, nullptr, nullptr, nullptr, nullptr};
