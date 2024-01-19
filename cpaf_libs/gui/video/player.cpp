@@ -29,9 +29,8 @@ void player::set_main_window(const system_window& main_window)
 
 void player::init()
 {
-/////    main_window_ptr_ = &main_window;
     if (has_video_stream()) {
-        init_video(*main_window_ptr_ );
+        init_video(*main_window_ptr_);
     }
     if (!video_controls_) {
         set_controls(std::make_unique<video::controls_default>(*this));
@@ -42,6 +41,7 @@ void player::init()
 void player::start_playing(const std::chrono::microseconds& start_time_pos)
 {
     // source_stream(stream_type_t::video)
+    init(); // TODO: We might need to make this more robust to multiple calls !!
     auto&  video_fmt_ctx = primary_stream().format_context(); // TODO: If we use multiple streams we need to get the right format ctx per stream here!
     auto&  audio_fmt_ctx = primary_stream().format_context(); // TODO: If we use multiple streams we need to get the right format ctx per stream here!
     auto&  subtitle_fmt_ctx = primary_stream().format_context(); // TODO: If we use multiple streams we need to get the right format ctx per stream here!
@@ -56,8 +56,6 @@ void player::start_playing(const std::chrono::microseconds& start_time_pos)
     subtitle_codec_context().get_packet_function_set(video_fmt_ctx.get_packet_function(media_type::subtitle));
 
     media_pipeline_threads().audio_resampler_set(audio_resampler_);
-///    media_pipeline_threads().audio_samples_queue_set(audio_samples_queue_);
-
     video_fmt_ctx.read_packets_to_queues(video_fmt_ctx.primary_media_type(), 10);
 
     media_pipeline_threads().start();
