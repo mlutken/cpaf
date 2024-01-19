@@ -26,9 +26,12 @@ namespace cpaf::video {
 class custom_io_base
 {
 public:
-    static std::unique_ptr<custom_io_base>  create              (const std::string& protocol_name, get_torrents_fn get_torrents_function);
+    static std::unique_ptr<custom_io_base>  create (
+                                        std::atomic<stream_state_t>& stream_state,
+                                        const std::string& protocol_name,
+                                        get_torrents_fn get_torrents_function);
 
-    custom_io_base() = default;
+    explicit custom_io_base(std::atomic<stream_state_t>&stream_state);
     virtual ~custom_io_base();
     size_t              buffer_size             () const noexcept { return do_buffer_size(); };
     bool                open                    (const std::string& resource_path);
@@ -40,6 +43,8 @@ public:
 //    AVIOContext*        ff_avio_context         () const { return ff_avio_context_; }
 
 protected:
+    std::atomic<stream_state_t>&   stream_state_;
+
 //    bool                use_blocking_seek_      = true;
 
 private:

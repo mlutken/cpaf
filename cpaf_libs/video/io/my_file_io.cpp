@@ -12,6 +12,12 @@ using namespace std::chrono_literals;
 namespace cpaf::video {
 
 #if 1
+my_file_io::my_file_io(std::atomic<stream_state_t>& stream_state)
+    : custom_io_base(stream_state)
+{
+
+}
+
 bool my_file_io::do_open(const std::string& resource_path)
 {
     resource_file_path_ = cu::substring_between(resource_path, ":", "");

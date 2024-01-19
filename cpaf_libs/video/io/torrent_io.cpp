@@ -12,8 +12,10 @@ using namespace std::chrono_literals;
 
 namespace cpaf::video {
 
-torrent_io::torrent_io(std::shared_ptr<torrent::torrents> torrents_instance) :
-    torrents_instance_(torrents_instance)
+torrent_io::torrent_io(std::atomic<stream_state_t>& stream_state,
+                       std::shared_ptr<torrent::torrents> torrents_instance)
+    : custom_io_base(stream_state)
+    , torrents_instance_(torrents_instance)
 {
 }
 

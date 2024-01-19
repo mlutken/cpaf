@@ -15,6 +15,7 @@ extern "C"
 #include <chrono>
 #include <mutex>
 #include <memory>
+#include <thread>
 
 #include <cpaf_libs/video/av_util.h>
 #include <cpaf_libs/video/av_codec.h>
@@ -42,6 +43,7 @@ public:
 ////    explicit av_format_context(const std::string& resource_path);
 
     ~av_format_context();
+    void                    open_async                  (const std::string& resource_path);
     bool                    open                        (const std::string& resource_path);
     void                    close                       ();
     void                    selected_media_index_set    (media_type mt, size_t stream_index);
@@ -73,6 +75,9 @@ public:
     AVCodecID				codec_id                    (size_t stream_index) const;
     media_type              stream_media_type           (size_t stream_index) const;
     std::set<media_type>    set_of_each_media_type      (const std::set<media_type>& types_to_skip = {media_type::subtitle}) const;
+
+    const std::atomic<stream_state_t>&
+                            stream_state                () const { return stream_state_; }
 
     // --- Seek Functions ---
     bool                    seek_time_pos               (std::chrono::microseconds stream_pos);
@@ -149,6 +154,9 @@ private:
     size_t                                                  primary_stream_index_   = no_stream_index;
     std::mutex                                              packet_queues_mutex_;
     std::unique_ptr<custom_io_base>                         custom_io_ptr_;
+    std::atomic<stream_state_t>                             stream_state_           = stream_state_t::inactive;
+    std::unique_ptr<std::thread>                            open_thread_            = nullptr;
+
 };
 
 

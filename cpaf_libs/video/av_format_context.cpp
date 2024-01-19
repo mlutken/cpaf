@@ -52,10 +52,11 @@ av_format_context::~av_format_context()
 
 bool av_format_context::open(const std::string& resource_path)
 {
+    stream_state_ = stream_state_t::opening;
     resource_path_ = resource_path;
 
     const string protocol_name = protocol_from_uri(resource_path);
-    custom_io_ptr_ = custom_io_base::create(protocol_name, get_torrents_function_);
+    custom_io_ptr_ = custom_io_base::create(stream_state_, protocol_name, get_torrents_function_);
     if (custom_io_ptr_) {
         if (!custom_io_ptr_->open(resource_path)) {
             return false;
@@ -81,6 +82,7 @@ bool av_format_context::open(const std::string& resource_path)
     read_codec_contexts();
     set_default_selected_streams();
     ///subtitle_index_set(5); // FIXMENM
+    stream_state_ = stream_state_t::open;
     return true;
 }
 

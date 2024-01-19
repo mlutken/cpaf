@@ -78,6 +78,16 @@ enum class subtitle_source_t : int8_t {
     text_file
 };
 
+enum class stream_state_t : int8_t {
+    inactive,
+    opening,
+    open,
+    streaming,
+    waiting_for_data,
+    playing_local,
+    finished
+};
+
 
 struct pixel_rgba_t {
     uint8_t r = 0;
