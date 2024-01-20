@@ -457,6 +457,7 @@ void player::handle_stream_state()
     auto stream_state_expected = stream_state_t::open;
     if (stream_state().compare_exchange_strong(stream_state_expected, stream_state_t::playing)) {
         start_playing(start_time_pos_);
+        if (cb_start_playing_) { cb_start_playing_(); }
     }
 }
 

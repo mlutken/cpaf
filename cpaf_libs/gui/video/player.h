@@ -158,10 +158,16 @@ public:
     std::shared_ptr<torrent::torrents>      torrents_get    () const;
     void                                    torrents_set    (std::shared_ptr<torrent::torrents> tors) { torrents_ = tors; }
 
+    // -----------------
+    // --- Callbacks ---
+    // -----------------
+    void                        cb_start_playing            (std::function<void ()>&& cb) { cb_start_playing_ = std::move(cb); }
+
+
     // -----------------------
     // --- Debug functions ---
     // -----------------------
-    std::string                             queues_info             () const;
+    std::string                 queues_info                 () const;
 
 private:
     // ---------------------------------
@@ -209,6 +215,7 @@ private:
     bool                                            show_controls_                  = true;
     bool                                            resume_from_pause_on_seek_      = true;
     subtitle_source_t                               subtitle_source_                = subtitle_source_t::stream;    /// @todo
+    std::function<void ()>                          cb_start_playing_;
 };
 
 } //END namespace cpaf::gui::video
