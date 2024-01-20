@@ -67,6 +67,7 @@ void av_format_context::cancel_async_open()
 
 bool av_format_context::open(const std::string& resource_path)
 {
+    close();
     selected_stream_per_media_type_.fill(no_stream_index);
     stream_state_ = stream_state_t::opening;
     resource_path_ = resource_path;
