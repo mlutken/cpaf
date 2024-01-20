@@ -81,10 +81,21 @@ bool av_format_context::open(const std::string& resource_path)
 
 void av_format_context::close()
 {
+    const std::lock_guard<std::mutex> lock(packet_queues_mutex_);
+    stream_state_ = stream_state_t::inactive;
+    for (media_type mt = media_type::video; mt != media_type::SIZE; ++mt) {
+        auto media_index = to_size_t(mt);
+        selected_stream_per_media_type_[media_index] = illegal_stream_index();
+        stream_indices_per_media_type_[media_index].clear();
+        packet_queue_per_media_type_[media_index].flush();
+    }
+    resource_path_.clear();
+
+    primary_stream_index_ = no_stream_index;
     if (ff_format_context_) {
         avformat_close_input(&ff_format_context_);
-        ff_format_context_ = nullptr;
     }
+    ff_format_context_ = nullptr;
 }
 
 void av_format_context::selected_media_index_set(media_type mt, size_t stream_index)
@@ -99,7 +110,7 @@ void av_format_context::primary_index_set(size_t stream_index)
 
 void av_format_context::set_default_selected_streams()
 {
-    for (media_type mt = media_type::unknown; mt != media_type::SIZE; ++mt) {
+    for (media_type mt = media_type::video; mt != media_type::SIZE; ++mt) {
         selected_stream_per_media_type_[to_size_t(mt)] = first_stream_index(mt);
     }
     set_default_primary_stream();
@@ -307,9 +318,9 @@ av_packet av_format_context::read_packet() const
         pts = time_from_stream_time(stream_index, packet.dts_stream_base());    // Fall back to decode timestamp if pts is invalid!
     }
     packet.presentation_time_set(pts);
-//    if (packet.media_type_get() == media_type::subtitle) {
-//        std::cerr << "FIXMENM packet media type:" << to_string(packet.media_type_get()) << "\n";
-//    }
+///    if (packet.media_type_get() == media_type::subtitle) {
+///        std::cerr << "FIXMENM packet media type:" << to_string(packet.media_type_get()) << "\n";
+///    }
     return packet;
 }
 

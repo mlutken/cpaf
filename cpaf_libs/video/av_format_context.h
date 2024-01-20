@@ -142,19 +142,17 @@ private:
     const AVCodec*          ff_find_decoder             (size_t stream_index) const;
     AVRational              stream_time_base            (size_t stream_index) const { return ff_format_context_->streams[stream_index]->time_base; }
 
-    get_torrents_fn                                         get_torrents_function_;
+    std::atomic<stream_state_t>                             stream_state_           = stream_state_t::inactive;
+    AVFormatContext*                                        ff_format_context_      = nullptr;
     std::array<size_t, media_type_size()>                   selected_stream_per_media_type_;
     std::array<std::vector<size_t>, media_type_size()>      stream_indices_per_media_type_;
     std::array<packet_queue_t, media_type_size()>           packet_queue_per_media_type_;
     std::string                                             resource_path_;
-    AVFormatContext*                                        ff_format_context_      = nullptr;
-    size_t                                                  packet_queue_capacity_  = 200;
     size_t                                                  primary_stream_index_   = no_stream_index;
-    std::mutex                                              packet_queues_mutex_;
+    get_torrents_fn                                         get_torrents_function_;
     std::unique_ptr<custom_io_base>                         custom_io_ptr_;
-    std::atomic<stream_state_t>                             stream_state_           = stream_state_t::inactive;
-//    std::unique_ptr<std::jthread>                           open_thread_            = nullptr;
-
+    size_t                                                  packet_queue_capacity_  = 200;
+    std::mutex                                              packet_queues_mutex_;
 };
 
 

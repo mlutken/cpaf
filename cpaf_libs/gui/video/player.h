@@ -38,6 +38,7 @@ public:
     bool                            open                    (const std::string& resource_path);
     void                            open_async              (const std::string& resource_path, std::chrono::microseconds start_time_pos = {});
     void                            close                   ();
+    void                            close_async             ();
     void                            cancel_async_open       ();
 
     bool                            open_secondary                    (const std::string& resource_path, cpaf::video::stream_type_t sti);

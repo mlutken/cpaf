@@ -98,10 +98,18 @@ void pipeline_threads::resume_playback()
 
 bool pipeline_threads::all_threads_are_paused() const
 {
-    return  packet_reader_thread_.thread_is_paused()    &&
-            audio_resampler_thread_.thread_is_paused()  &&
-            audio_render_thread_.thread_is_paused()     &&
-            subtitle_reader_thread_.thread_is_paused()
+    if (!threads_running_) {
+        return true;
+    }
+    const bool packet_paused = packet_reader_thread_.thread_is_paused();
+    const bool resampler_paused = audio_resampler_thread_.thread_is_paused();
+    const bool audio_render_paused = audio_render_thread_.thread_is_paused();
+    const bool subtitle_paused = subtitle_reader_thread_.thread_is_paused();
+
+    return  packet_paused       &&
+            resampler_paused    &&
+            audio_render_paused &&
+            subtitle_paused
         ;
 }
 

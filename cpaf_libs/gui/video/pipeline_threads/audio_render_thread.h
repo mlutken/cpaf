@@ -44,7 +44,7 @@ private:
     pipeline_threads&                           pipeline_threads_;
     cpaf::video::av_samples_queue&              audio_samples_queue_;
     std::atomic<cpaf::video::seek_state_t>&     seek_state_;
-    std::atomic_bool                            thread_is_paused_ = false;
+    std::atomic_bool                            thread_is_paused_ = true;
     std::chrono::microseconds                   sync_ok_interval                = std::chrono::milliseconds(15);
     int                                         audio_callback_dbg_counter_     = 0;
 };

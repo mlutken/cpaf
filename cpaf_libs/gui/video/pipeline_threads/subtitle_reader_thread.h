@@ -38,7 +38,7 @@ private:
     cpaf::video::subtitles_queue&       subtitles_queue_;
     const std::atomic_bool&             threads_running_;
     const std::atomic_bool&             threads_paused_;
-    std::atomic_bool                    thread_is_paused_ = false;
+    std::atomic_bool                    thread_is_paused_ = true;
     cpaf::video::subtitle_frame         current_subtitle_frame_     {};
 
 

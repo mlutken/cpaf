@@ -99,11 +99,25 @@ void player::open_async(const std::string& resource_path, std::chrono::microseco
 
 void player::close()
 {
-    primary_resource_path_.clear();
     pause_playback();
+    int count = 0;
+    while (!media_pipeline_threads().all_threads_are_paused()) {
+        std::cerr << "FIXMENM waiting for theasds to ṕause: " << ++count << "\n";
+        std::this_thread::sleep_for(100ms);
+    }
+    std::cerr << "FIXMENM DONE for theasds to ṕause!!! : " << ++count << "\n";
+    primary_resource_path_.clear();
+    primary_source_stream_.close();
+    stream_state() = stream_state_t::inactive;
     media_pipeline_threads().flush_queues();
     video_codec_ctx_ = av_codec_context{};
     audio_codec_ctx_ = av_codec_context{};
+}
+
+void player::close_async()
+{
+    open_thread_ = std::make_unique<std::jthread>( [=,this]() { this->close(); } );
+    open_thread_->detach();
 }
 
 void player::cancel_async_open() {

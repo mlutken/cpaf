@@ -45,7 +45,7 @@ private:
     cpaf::video::av_samples_queue&      audio_samples_queue_;
     const std::atomic_bool&             threads_running_;
     const std::atomic_bool&             threads_paused_;
-    std::atomic_bool                    thread_is_paused_ = false;
+    std::atomic_bool                    thread_is_paused_ = true;
 
     cpaf::video::audio_resampler*       audio_resampler_ptr_            = nullptr;
 

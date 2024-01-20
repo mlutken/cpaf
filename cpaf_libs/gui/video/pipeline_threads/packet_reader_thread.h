@@ -50,7 +50,7 @@ private:
     const std::atomic_bool&                 threads_running_;
     const std::atomic_bool&                 threads_paused_;
     std::atomic<cpaf::video::seek_state_t>& seek_state_;
-    std::atomic_bool                        thread_is_paused_ = false;
+    std::atomic_bool                        thread_is_paused_ = true;
 
     std::chrono::microseconds               seek_from_position_;
     std::chrono::microseconds               seek_position_requested_;
