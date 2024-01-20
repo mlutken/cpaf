@@ -16,6 +16,7 @@ player::player()
     :   primary_source_stream_([this]() {return torrents_get();}),
         media_pipeline_threads_(*this)
 {
+///    cur_media_time().video_offset_set(-300ms);
     next_video_frame_ = av_frame::create_alloc();
 }
 
@@ -65,28 +66,31 @@ void player::start_playing(const std::chrono::microseconds& start_time_pos)
 
 void player::terminate()
 {
-    threads_running_ = false;
+    ///threads_running_ = false;
     // Reset codec contexts
     video_codec_ctx_ = av_codec_context{};
     audio_codec_ctx_ = av_codec_context{};
     media_pipeline_threads().terminate();
+    std::this_thread::sleep_for(1ms);
 }
 
 /// @todo need to support reading "hybrid" resources that (potentially) specify different streams
 ///       for video, audio, key_frames etc.. For now we simply open a single primary stream with this.
 bool player::open(const std::string& resource_path)
 {
+///    terminate();
     return open_primary_stream(resource_path);
 }
 
 void player::open_async(const std::string& resource_path, std::chrono::microseconds start_time_pos)
 {
+///    terminate();
     primary_resource_path_ = resource_path;
     start_time_pos_ = start_time_pos;
     primary_stream().open_async(resource_path);
 }
 
-bool player::open(const std::string& resource_path, stream_type_t sti)
+bool player::open_secondary(const std::string& resource_path, stream_type_t sti)
 {
     return open_stream(resource_path, sti);
 }
@@ -366,14 +370,14 @@ void player::seek_relative(const std::chrono::microseconds& delta_time)
 void player::pause_playback()
 {
     cur_media_time_.pause_time();
-    threads_paused_ = true;
+    ////threads_paused_ = true;
     media_pipeline_threads().pause_playback();
 }
 
 void player::resume_playback()
 {
     cur_media_time_.resume_time();
-    threads_paused_ = false;
+    ////threads_paused_ = false;
     media_pipeline_threads().resume_playback();
 }
 
@@ -385,6 +389,10 @@ void player::toggle_pause_playback()
     else {
         pause_playback();
     }
+}
+
+bool player::playback_paused() const {
+    return media_pipeline_threads().playback_paused();
 }
 
 void player::set_controls(std::unique_ptr<controls> controls)

@@ -34,7 +34,6 @@ namespace cpaf::video {
 av_format_context::av_format_context(get_torrents_fn get_torrents_function) :
     get_torrents_function_(get_torrents_function)
 {
-    selected_stream_per_media_type_.fill(no_stream_index);
 }
 
 ////av_format_context::av_format_context(const std::string& resource_path)
@@ -68,6 +67,7 @@ void av_format_context::cancel_async_open()
 
 bool av_format_context::open(const std::string& resource_path)
 {
+    selected_stream_per_media_type_.fill(no_stream_index);
     stream_state_ = stream_state_t::opening;
     resource_path_ = resource_path;
 

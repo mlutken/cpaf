@@ -39,7 +39,7 @@ public:
     void                            open_async              (const std::string& resource_path, std::chrono::microseconds start_time_pos = {});
     void                            cancel_async_open       ()                                  { primary_stream().cancel_async_open();       }
 
-    bool                            open                    (const std::string& resource_path, cpaf::video::stream_type_t sti);
+    bool                            open_secondary                    (const std::string& resource_path, cpaf::video::stream_type_t sti);
 
     bool                            has_video_stream        () const { return has_source_stream(cpaf::video::stream_type_t::video); }
     bool                            has_audio_stream        () const { return has_source_stream(cpaf::video::stream_type_t::audio); }
@@ -140,7 +140,7 @@ public:
     void                        pause_playback          ();
     void                        resume_playback         ();
     void                        toggle_pause_playback   ();
-    bool                        playback_paused         () const { return threads_paused_;  }
+    bool                        playback_paused         () const;
     cpaf::video::seek_state_t   seek_state              () const { return media_pipeline_threads_.seek_state();      }
     std::chrono::microseconds   seek_from_position      () const { return media_pipeline_threads_.seek_from_position(); }
     std::chrono::microseconds   seek_position_requested () const { return media_pipeline_threads_.seek_position_requested(); }
@@ -172,6 +172,7 @@ private:
     bool                            open_primary_stream     (const std::string& resource_path);
     void                            update_scaling_context  () const;
     pipeline_threads&               media_pipeline_threads  () { return media_pipeline_threads_; }
+    const pipeline_threads&         media_pipeline_threads  () const { return media_pipeline_threads_; }
     void                            handle_internal_events  ();
     void                            handle_stream_state     ();
 
@@ -188,8 +189,8 @@ private:
     int32_t                                         video_scaler_flags_             = SWS_BILINEAR;
     int32_t                                         video_scaler_align_             = 32;
     AVPixelFormat                                   ff_dst_pixel_format_            = AV_PIX_FMT_YUV420P;
-    std::atomic_bool                                threads_running_                = true;
-    std::atomic_bool                                threads_paused_                 = false;
+    ///std::atomic_bool                                threads_running_                = true;
+///    std::atomic_bool                                threads_paused_                 = false;
     size_t                                          video_stream_index_             = cpaf::video::no_stream_index;
     size_t                                          audio_stream_index_             = cpaf::video::no_stream_index;
     size_t                                          subtitle_stream_index_          = cpaf::video::no_stream_index;
