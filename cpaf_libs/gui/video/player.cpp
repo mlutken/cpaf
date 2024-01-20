@@ -8,6 +8,7 @@
 
 using namespace cpaf::video;
 using namespace cpaf::time;
+using namespace std::chrono;
 
 namespace cpaf::gui::video {
 
@@ -300,6 +301,14 @@ player::audio_play_callback_t player::audio_callback_get()
 
 void player::frame_update()
 {
+///    static int FIXMENM_count = 0;
+///   if (FIXMENM_count % 500 == 0) {
+///        std::cerr << "FIXMENM " << steady_now_h_m_s_ms()
+///                  << ", playing: " << is_playing()
+///                  << "\n";
+///    }
+///    ++FIXMENM_count;
+
     handle_internal_events();
     if ( is_playing()) {
         if (has_video_stream()) {
@@ -397,9 +406,12 @@ std::string player::queues_info() const
 // ---------------------------------
 void player::init_video(const system_window& main_window)
 {
+    /// std::cerr << "FIXMENM player::init_video 1\n";
     video_render_ = render::create_video_render(*this, main_window, video_dst_dimensions());
     video_render_->video_codec_ctx_set(video_codec_context());
     video_render_->render_geometry_set(rect(main_window.get_size()));
+
+    /// std::cerr << "FIXMENM player::init_video 4\n";
     ////    video_render_->render_geometry_set(render_geometry_t({100,100}, main_window.get_size())); // TEST ONLY!
 }
 

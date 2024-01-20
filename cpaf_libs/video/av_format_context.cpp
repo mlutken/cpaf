@@ -57,6 +57,7 @@ void av_format_context::open_async(const std::string& resource_path)
         std::this_thread::sleep_for(1ms);
     }
     open_thread_ = std::make_unique<jthread>( [=,this]() { this->open(resource_path); } );
+    open_thread_->detach();
 }
 
 void av_format_context::cancel_async_open()
