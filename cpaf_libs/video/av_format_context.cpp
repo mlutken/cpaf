@@ -36,33 +36,9 @@ av_format_context::av_format_context(get_torrents_fn get_torrents_function) :
 {
 }
 
-////av_format_context::av_format_context(const std::string& resource_path)
-////    : av_format_context()
-////{
-////    if (!open(resource_path)) {
-////        throw std::ios_base::failure("Could not open resource '"s + resource_path + "'"s);
-////    }
-////}
-
 av_format_context::~av_format_context()
 {
     close();
-}
-
-void av_format_context::open_async(const std::string& resource_path)
-{
-    if (stream_state_ == stream_state_t::opening) {
-        cancel_async_open();
-        std::this_thread::sleep_for(1ms);
-    }
-    open_thread_ = std::make_unique<jthread>( [=,this]() { this->open(resource_path); } );
-    open_thread_->detach();
-}
-
-void av_format_context::cancel_async_open()
-{
-    stream_state_ = stream_state_t::inactive;
-    open_thread_.reset(nullptr);
 }
 
 bool av_format_context::open(const std::string& resource_path)

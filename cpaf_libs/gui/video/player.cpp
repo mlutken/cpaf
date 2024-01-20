@@ -22,6 +22,7 @@ player::player()
     if (!video_controls_) {
         set_controls(std::make_unique<video::controls_default>(*this));
     }
+    pause_playback();
 }
 
 player::~player()
@@ -38,13 +39,18 @@ void player::init()
     if (has_video_stream()) {
         init_video(*main_window_ptr_);
     }
+    pause_playback();
 }
 
 
 void player::start_playing(const std::chrono::microseconds& start_time_pos)
 {
     // source_stream(stream_type_t::video)
-    init(); // TODO: We might need to make this more robust to multiple calls !!
+    if (has_video_stream()) {
+        init_video(*main_window_ptr_);
+    }
+
+
     auto&  video_fmt_ctx = primary_stream().format_context(); // TODO: If we use multiple streams we need to get the right format ctx per stream here!
     auto&  audio_fmt_ctx = primary_stream().format_context(); // TODO: If we use multiple streams we need to get the right format ctx per stream here!
     auto&  subtitle_fmt_ctx = primary_stream().format_context(); // TODO: If we use multiple streams we need to get the right format ctx per stream here!
@@ -63,14 +69,12 @@ void player::start_playing(const std::chrono::microseconds& start_time_pos)
 
     media_pipeline_threads().start();
     stream_state() = stream_state_t::playing;
+    resume_playback();
 }
 
 void player::terminate()
 {
-    ///threads_running_ = false;
-    // Reset codec contexts
-    video_codec_ctx_ = av_codec_context{};
-    audio_codec_ctx_ = av_codec_context{};
+    close();
     media_pipeline_threads().terminate();
     std::this_thread::sleep_for(1ms);
 }
@@ -79,16 +83,32 @@ void player::terminate()
 ///       for video, audio, key_frames etc.. For now we simply open a single primary stream with this.
 bool player::open(const std::string& resource_path)
 {
-///    terminate();
+    close();
+    pause_playback();
     return open_primary_stream(resource_path);
 }
 
 void player::open_async(const std::string& resource_path, std::chrono::microseconds start_time_pos)
 {
-///    terminate();
     primary_resource_path_ = resource_path;
     start_time_pos_ = start_time_pos;
-    primary_stream().open_async(resource_path);
+
+    open_thread_ = std::make_unique<std::jthread>( [=,this]() { this->open(resource_path); } );
+    open_thread_->detach();
+}
+
+void player::close()
+{
+    primary_resource_path_.clear();
+    pause_playback();
+    media_pipeline_threads().flush_queues();
+    video_codec_ctx_ = av_codec_context{};
+    audio_codec_ctx_ = av_codec_context{};
+}
+
+void player::cancel_async_open() {
+    stream_state() = stream_state_t::inactive;
+    open_thread_.reset(nullptr);
 }
 
 bool player::open_secondary(const std::string& resource_path, stream_type_t sti)
@@ -461,6 +481,4 @@ void player::handle_stream_state()
     }
 }
 
-
-} //END namespace cpaf::gui::video
-
+} // END namespace cpaf::gui::video

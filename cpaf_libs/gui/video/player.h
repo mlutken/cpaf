@@ -37,7 +37,8 @@ public:
     void                            terminate               ();
     bool                            open                    (const std::string& resource_path);
     void                            open_async              (const std::string& resource_path, std::chrono::microseconds start_time_pos = {});
-    void                            cancel_async_open       ()                                  { primary_stream().cancel_async_open();       }
+    void                            close                   ();
+    void                            cancel_async_open       ();
 
     bool                            open_secondary                    (const std::string& resource_path, cpaf::video::stream_type_t sti);
 
@@ -216,6 +217,8 @@ private:
     bool                                            resume_from_pause_on_seek_      = true;
     subtitle_source_t                               subtitle_source_                = subtitle_source_t::stream;    /// @todo
     std::function<void ()>                          cb_start_playing_;
+    std::unique_ptr<std::jthread>                   open_thread_                    = nullptr;
+
 };
 
 } //END namespace cpaf::gui::video
