@@ -55,6 +55,8 @@ public:
     void                        pause_playback          ();
     void                        resume_playback         ();
     bool                        playback_paused         () const { return threads_paused_; }
+    bool                        all_threads_are_paused  () const;
+
     void                        video_frame_update      (cpaf::video::av_frame& current_frame, cpaf::gui::video::render& video_render);
 
     cpaf::video::av_samples_queue& audio_samples_queue() { return audio_samples_queue_; }

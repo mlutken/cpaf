@@ -42,16 +42,18 @@ audio_render_thread::audio_play_callback_t audio_render_thread::audio_callback_g
 }
 
 void audio_render_thread::audio_callback_function(uint8_t* stream, int32_t length)
-{
+{    
     if (seek_state_ == seek_state_t::flushing) {
         render_audio_silence(stream, length);
         return;
     }
 
     if (player_.cur_media_time().time_is_paused()) {
+        thread_is_paused_ = true;
         render_audio_silence(stream, length);
         return;
     }
+    thread_is_paused_ = false;
 
     if (audio_samples_queue().empty()) {
         render_audio_silence(stream, length);

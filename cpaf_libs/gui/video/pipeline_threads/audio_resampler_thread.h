@@ -32,13 +32,12 @@ public:
     void                    samples_queue_flush_done()                          { samples_queue_flush_in_progress_ = false; samples_queue_flushed_ = true; }
 
     void                    start                   ();
+    const std::atomic_bool& thread_is_paused        () const { return thread_is_paused_; }
 
 private:
     void                    thread_function         ();
     void                    resample_frame          (bool& add_samples, const std::chrono::microseconds& cur_media_time_pos);
 
-    const std::atomic_bool&             threads_running         () const { return threads_running_; }
-    const std::atomic_bool&             threads_paused          () const { return threads_paused_; }
     cpaf::video::audio_resampler&       audio_sampler           () { return *audio_resampler_ptr_; }
     cpaf::video::av_samples_queue&      audio_samples_queue     () { return audio_samples_queue_; }
 
@@ -46,6 +45,7 @@ private:
     cpaf::video::av_samples_queue&      audio_samples_queue_;
     const std::atomic_bool&             threads_running_;
     const std::atomic_bool&             threads_paused_;
+    std::atomic_bool                    thread_is_paused_ = false;
 
     cpaf::video::audio_resampler*       audio_resampler_ptr_            = nullptr;
 

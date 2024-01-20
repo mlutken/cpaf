@@ -32,8 +32,12 @@ void audio_resampler_thread::start()
 
 void audio_resampler_thread::thread_function()
 {
-    while(threads_running()) {
-        if (!threads_paused()) {
+    while(threads_running_) {
+        if (threads_paused_) {
+            thread_is_paused_ = true;
+        }
+        else {
+            thread_is_paused_ = false;
             const auto cur_media_time_pos = player_.cur_media_time().current_time_pos();
             bool add_samples = true;
             while (add_samples) {

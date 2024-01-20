@@ -30,8 +30,13 @@ void subtitle_reader_thread::start()
 
 void subtitle_reader_thread::thread_function()
 {
-    while(threads_running()) {
-        if (!threads_paused()) {
+    while(threads_running_) {
+        if (threads_paused_) {
+            thread_is_paused_ = true;
+        }
+        else
+        {
+            thread_is_paused_ = false;
             if (player_.subtitle_source() == subtitle_source_t::stream) {
                 read_from_stream();
             }

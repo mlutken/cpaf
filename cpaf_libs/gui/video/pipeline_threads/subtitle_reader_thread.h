@@ -28,17 +28,17 @@ public:
                            const std::atomic_bool& threads_paused);
 
     void                                start                   ();
+    const std::atomic_bool&             thread_is_paused        () const { return thread_is_paused_; }
 
 private:
     void                                thread_function         ();
     void                                read_from_stream ();
-    const std::atomic_bool&             threads_running         () const { return threads_running_; }
-    const std::atomic_bool&             threads_paused          () const { return threads_paused_; }
 
     player&                             player_;
     cpaf::video::subtitles_queue&       subtitles_queue_;
     const std::atomic_bool&             threads_running_;
     const std::atomic_bool&             threads_paused_;
+    std::atomic_bool                    thread_is_paused_ = false;
     cpaf::video::subtitle_frame         current_subtitle_frame_     {};
 
 

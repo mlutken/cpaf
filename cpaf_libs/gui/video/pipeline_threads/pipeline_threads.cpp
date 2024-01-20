@@ -96,6 +96,15 @@ void pipeline_threads::resume_playback()
     threads_paused_ = false;
 }
 
+bool pipeline_threads::all_threads_are_paused() const
+{
+    return  packet_reader_thread_.thread_is_paused()    &&
+            audio_resampler_thread_.thread_is_paused()  &&
+            audio_render_thread_.thread_is_paused()     &&
+            subtitle_reader_thread_.thread_is_paused()
+        ;
+}
+
 void pipeline_threads::video_frame_update(cpaf::video::av_frame& current_frame, gui::video::render& video_render)
 {
 //    if (seek_state_ != seek_state_t::ready) {

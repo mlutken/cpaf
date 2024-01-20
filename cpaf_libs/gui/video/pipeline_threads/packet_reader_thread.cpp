@@ -57,9 +57,13 @@ bool packet_reader_thread::seek_position(const std::chrono::microseconds& stream
 void packet_reader_thread::read_packets_thread_fn()
 {
     const auto mt = player_.format_context().primary_media_type();
-    while(threads_running()) {
+    while(threads_running_) {
         check_seek_position();
-        if (!threads_paused_) {
+        if (threads_paused_) {
+            thread_is_paused_ = true;
+        }
+        else {
+            thread_is_paused_ = false;
             player_.format_context().read_packets_to_queues(mt, primary_queue_fill_level_);
         }
         std::this_thread::sleep_for(read_packets_yield_time_);
