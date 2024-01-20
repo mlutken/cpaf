@@ -18,6 +18,10 @@ player::player()
 {
 ///    cur_media_time().video_offset_set(-300ms);
     next_video_frame_ = av_frame::create_alloc();
+
+    if (!video_controls_) {
+        set_controls(std::make_unique<video::controls_default>(*this));
+    }
 }
 
 player::~player()
@@ -33,9 +37,6 @@ void player::init()
 {
     if (has_video_stream()) {
         init_video(*main_window_ptr_);
-    }
-    if (!video_controls_) {
-        set_controls(std::make_unique<video::controls_default>(*this));
     }
 }
 
