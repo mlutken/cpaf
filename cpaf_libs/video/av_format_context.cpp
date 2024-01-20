@@ -107,6 +107,7 @@ void av_format_context::close()
 {
     if (ff_format_context_) {
         avformat_close_input(&ff_format_context_);
+        ff_format_context_ = nullptr;
     }
 }
 
