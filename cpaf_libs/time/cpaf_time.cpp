@@ -134,6 +134,16 @@ int64_t unix_timestamp_now_seconds()
     return to_unix_timestamp_seconds(std::chrono::system_clock::now());
 }
 
+std::string steady_now_h_m_s()
+{
+    return format_h_m_s(std::chrono::steady_clock::now().time_since_epoch());
+}
+
+std::string steady_now_h_m_s_ms()
+{
+    return format_h_m_s_ms(std::chrono::steady_clock::now().time_since_epoch());
+}
+
 // --------------------------------------------------------------------------
 // --- Convenience functions. Can freely use platform dependant functions ---
 // --------------------------------------------------------------------------

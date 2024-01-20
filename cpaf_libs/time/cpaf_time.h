@@ -97,6 +97,8 @@ std::string format_utc          (const boost::posix_time::ptime& time,
 std::string format_utc_pretty   (const std::chrono::system_clock::time_point& time_point,
                                  bool append_utc = false);
 std::string now_utc_pretty      (bool append_utc = false);
+std::string steady_now_h_m_s    ();
+std::string steady_now_h_m_s_ms ();
 
 
 // ------------------------------
