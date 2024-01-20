@@ -61,8 +61,8 @@ public:
 
     cpaf::video::av_samples_queue& audio_samples_queue() { return audio_samples_queue_; }
     const cpaf::video::av_samples_queue&       audio_samples_queue () const { return audio_samples_queue_; }
-private:
     void                        flush_queues            ();
+private:
     void                        signal_flush_start      ();
     void                        signal_flush_done       ();
 

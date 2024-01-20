@@ -117,7 +117,8 @@ void pipeline_threads::video_frame_update(cpaf::video::av_frame& current_frame, 
 void pipeline_threads::flush_queues()
 {
     player_.format_context().flush_packet_queues();
-    audio_samples_queue().flush();
+    audio_samples_queue_.flush();
+    subtitles_queue_.flush();
 }
 
 void pipeline_threads::signal_flush_start()
