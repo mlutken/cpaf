@@ -41,6 +41,8 @@ private:
     void                do_close					() override final;
     void                do_play						() override;
     void                do_pause					() override;
+    void                do_lock         			() override;
+    void                do_unlock         			() override;
 
     // --- PRIVATE: Helpers  ---
     static sample_format_t	to_sample_format_t			(SDL_AudioFormat sdl_format);

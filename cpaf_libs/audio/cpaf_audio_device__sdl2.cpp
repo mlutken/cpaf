@@ -181,6 +181,16 @@ void device_platform::do_pause()
     SDL_PauseAudioDevice(native_device_id_, pause_on);
 }
 
+void device_platform::do_lock()
+{
+    SDL_LockAudioDevice(native_device_id_);
+}
+
+void device_platform::do_unlock()
+{
+    SDL_UnlockAudioDevice(native_device_id_);
+}
+
 // -------------------------
 // --- PRIVATE: Helpers  ---
 // -------------------------

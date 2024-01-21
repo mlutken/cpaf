@@ -41,11 +41,13 @@ public:
     audio_format_t		audio_format            () const;
 
 
-    void				play_callback_set		(play_callback_t&& cb) { play_callback_ = std::move(cb);}
+    void				play_callback_set		(play_callback_t&& cb);
     bool				open					() { changed_characteristics_reset(); return do_open(); }
     void				close					() { do_close(); }
     void				play					() { return do_play(); }
     void				pause					() { return do_pause(); }
+    void				lock					() { return do_lock(); }
+    void				unlock					() { return do_unlock(); }
 
     const std::string&	device_name				() const { return device_name_;		}
 
@@ -66,6 +68,8 @@ protected:
     void				samples_count_changed_set	(bool changed) { req_samples_count_changed_ = changed; }
     void				changed_characteristics_reset();
 
+    std::mutex          access_mutex_;
+
 private:
     virtual sample_format_t     do_sample_format            () const = 0;
     virtual void                do_sample_format_set		(sample_format_t format) = 0;
@@ -84,8 +88,10 @@ private:
     virtual void                do_close					() = 0;
     virtual void                do_play						() = 0;
     virtual void                do_pause					() = 0;
+    virtual void                do_lock                     () = 0;
+    virtual void                do_unlock					() = 0;
 
-    play_callback_t         play_callback_              = default_empty_play_callback;
+    play_callback_t     play_callback_                  = default_empty_play_callback;
     std::string			device_name_;
     type_t				type_							= type_t::play;
     bool				req_format_changed_				= false;
