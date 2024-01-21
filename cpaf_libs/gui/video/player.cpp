@@ -18,7 +18,6 @@ player::player(cpaf::audio::device& audio_device)
     : audio_device_(audio_device)
 {
     next_video_frame_ = av_frame::create_alloc();
-    media_pipeline_threads_ = std::make_unique<pipeline_threads>(*this);
 
     if (!video_controls_) {
         set_controls(std::make_unique<video::controls_default>(*this));
@@ -35,21 +34,22 @@ void player::set_main_window(const system_window& main_window)
     main_window_ptr_ = &main_window;
 }
 
-void player::init()
-{
-    if (has_video_stream()) {
-        init_video(*main_window_ptr_);
-    }
-//    pause_playback();
-}
+//void player::init()
+//{
+//    if (has_video_stream()) {
+//        init_video(*main_window_ptr_);
+//    }
+////    pause_playback();
+//}
 
 
 void player::start_playing(const std::chrono::microseconds& start_time_pos)
 {
+    media_pipeline_threads_ = std::make_unique<pipeline_threads>(*this);
 
     audio_device_.play_callback_set(audio_callback_get());
     audio_out_formats_set(to_ff_audio_format(audio_device_.audio_format()));
-//    audio_device_.play();
+    audio_device_.play();
 
     // source_stream(stream_type_t::video)
     if (has_video_stream()) {
@@ -110,20 +110,24 @@ void player::close()
     if (!primary_source_stream_) {
         return;
     }
-    pause_playback();
-    int count = 0;
-    while (!media_pipeline_threads().all_threads_are_paused()) {
-        std::cerr << "FIXMENM waiting for theasds to ṕause: " << ++count << "\n";
-        std::this_thread::sleep_for(100ms);
+    if (media_pipeline_threads_) {
+        stream_state() = stream_state_t::inactive;
+        pause_playback();
+        int count = 0;
+        while (!media_pipeline_threads().all_threads_are_paused()) {
+            std::cerr << "FIXMENM waiting for theasds to ṕause: " << ++count << "\n";
+            std::this_thread::sleep_for(100ms);
+        }
+        std::cerr << "FIXMENM DONE for theasds to ṕause!!! : " << ++count << "\n";
     }
-    std::cerr << "FIXMENM DONE for theasds to ṕause!!! : " << ++count << "\n";
+    audio_device_.pause(); // Pause audio
     primary_resource_path_.clear();
     primary_source_stream_->close();
-    stream_state() = stream_state_t::inactive;
     media_pipeline_threads().flush_queues();
     video_codec_ctx_ = av_codec_context{};
     audio_codec_ctx_ = av_codec_context{};
     primary_source_stream_.reset(nullptr);
+    media_pipeline_threads_.reset(nullptr);
 }
 
 void player::close_async()

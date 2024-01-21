@@ -35,7 +35,7 @@ public:
     explicit player(cpaf::audio::device& audio_device);
     ~player();
     void                            set_main_window         (const system_window& main_window);
-    void                            init                    ();
+///    void                            init                    ();
     void                            start_playing           (const std::chrono::microseconds& start_time_pos = std::chrono::microseconds(0));
     void                            terminate               ();
     bool                            open                    (const std::string& resource_path);
