@@ -1,8 +1,10 @@
 #include "player.h"
 
+#include <cpaf_libs/audio/cpaf_audio_device.h>
 #include <cpaf_libs/time/cpaf_time.h>
 #include <cpaf_libs/torrent/torrents.h>
 #include <cpaf_libs/gui/system_window.h>
+#include <cpaf_libs/audio/cpaf_audio_device.h>
 #include <cpaf_libs/gui/video/render/render.h>
 #include <cpaf_libs/gui/video/ui/controls_default.h>
 
@@ -12,7 +14,8 @@ using namespace std::chrono;
 
 namespace cpaf::gui::video {
 
-player::player()
+player::player(cpaf::audio::device& audio_device)
+    : audio_device_(audio_device)
 {
     next_video_frame_ = av_frame::create_alloc();
     media_pipeline_threads_ = std::make_unique<pipeline_threads>(*this);
@@ -43,6 +46,11 @@ void player::init()
 
 void player::start_playing(const std::chrono::microseconds& start_time_pos)
 {
+
+    audio_device_.play_callback_set(audio_callback_get());
+    audio_out_formats_set(to_ff_audio_format(audio_device_.audio_format()));
+//    audio_device_.play();
+
     // source_stream(stream_type_t::video)
     if (has_video_stream()) {
         init_video(*main_window_ptr_);
@@ -82,6 +90,7 @@ void player::terminate()
 bool player::open(const std::string& resource_path)
 {
     close();
+    // Create media pipeline threads
     pause_playback();
     primary_source_stream_ = std::make_unique<cpaf::video::play_stream>([this]() {return torrents_get();});
     return open_primary_stream(resource_path);

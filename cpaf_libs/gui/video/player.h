@@ -2,12 +2,15 @@
 
 #include <array>
 #include <memory>
-#include <cpaf_libs/audio/cpaf_audio_device_base.h>
 #include <cpaf_libs/gui/gui_types.h>
 #include <cpaf_libs/video/av_util.h>
 #include <cpaf_libs/video/play_stream.h>
 #include <cpaf_libs/video/media_stream_time.h>
 #include <cpaf_libs/gui/video/pipeline_threads/pipeline_threads.h>
+
+namespace cpaf::audio {
+class device;
+}
 
 namespace cpaf::gui {
 class system_window;
@@ -29,7 +32,7 @@ class player
 public:
     using audio_play_callback_t  = cpaf::audio::device_base::play_callback_t;
 
-    player();
+    explicit player(cpaf::audio::device& audio_device);
     ~player();
     void                            set_main_window         (const system_window& main_window);
     void                            init                    ();
@@ -188,6 +191,7 @@ private:
     // --- PRIVATE: Member vars ---
     // ----------------------------
     using source_streams_array_t = std::array<std::unique_ptr<cpaf::video::play_stream>, cpaf::video::stream_type_index_size()>;
+    cpaf::audio::device&                            audio_device_;
     std::unique_ptr<cpaf::video::play_stream>       primary_source_stream_;
     std::chrono::microseconds                       start_time_pos_;
     std::unique_ptr<pipeline_threads>               media_pipeline_threads_;
