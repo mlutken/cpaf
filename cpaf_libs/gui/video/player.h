@@ -57,8 +57,8 @@ public:
     cpaf::video::play_stream*       subtitle_stream         ()       { return source_stream(cpaf::video::stream_type_t::subtitle); }
     const cpaf::video::play_stream* subtitle_stream         () const { return source_stream(cpaf::video::stream_type_t::subtitle); }
 
-    cpaf::video::play_stream&       primary_stream          ()       { return primary_source_stream_; }
-    const cpaf::video::play_stream& primary_stream          () const { return primary_source_stream_; }
+    cpaf::video::play_stream&       primary_stream          ()       { return *primary_source_stream_; }
+    const cpaf::video::play_stream& primary_stream          () const { return *primary_source_stream_; }
     const std::string&              primary_resource_path	() const { return primary_resource_path_; }
     std::string                     video_resource_path     () const { return video_stream() ? video_stream()->resource_path() : ""; }
     std::string                     audio_resource_path     () const { return audio_stream() ? audio_stream()->resource_path() : ""; }
@@ -68,7 +68,7 @@ public:
     // --- Current media playing info ---
     // ----------------------------------
     std::chrono::microseconds       current_time            () const { return cur_media_time().current_time_pos(); }
-    std::chrono::microseconds       total_time              () const { return primary_stream().total_time(); }
+    std::chrono::microseconds       total_time              () const;
     std::chrono::microseconds       remaining_time          () const { return total_time() - current_time(); }
     bool                            is_playing              () const;
     std::atomic<stream_state_t>&        stream_state        ()       { return primary_stream().stream_state(); }
@@ -188,7 +188,7 @@ private:
     // --- PRIVATE: Member vars ---
     // ----------------------------
     using source_streams_array_t = std::array<std::unique_ptr<cpaf::video::play_stream>, cpaf::video::stream_type_index_size()>;
-    cpaf::video::play_stream                        primary_source_stream_;
+    std::unique_ptr<cpaf::video::play_stream>       primary_source_stream_;
     std::chrono::microseconds                       start_time_pos_;
     pipeline_threads                                media_pipeline_threads_;
     const system_window*                            main_window_ptr_                = nullptr;

@@ -13,7 +13,7 @@ using namespace std::chrono;
 namespace cpaf::gui::video {
 
 player::player()
-    :   primary_source_stream_([this]() {return torrents_get();}),
+    :
         media_pipeline_threads_(*this)
 {
 ///    cur_media_time().video_offset_set(-300ms);
@@ -85,6 +85,7 @@ bool player::open(const std::string& resource_path)
 {
     close();
     pause_playback();
+    primary_source_stream_ = std::make_unique<cpaf::video::play_stream>([this]() {return torrents_get();});
     return open_primary_stream(resource_path);
 }
 
@@ -99,6 +100,9 @@ void player::open_async(const std::string& resource_path, std::chrono::microseco
 
 void player::close()
 {
+    if (!primary_source_stream_) {
+        return;
+    }
     pause_playback();
     int count = 0;
     while (!media_pipeline_threads().all_threads_are_paused()) {
@@ -107,11 +111,12 @@ void player::close()
     }
     std::cerr << "FIXMENM DONE for theasds to ṕause!!! : " << ++count << "\n";
     primary_resource_path_.clear();
-    primary_source_stream_.close();
+    primary_source_stream_->close();
     stream_state() = stream_state_t::inactive;
     media_pipeline_threads().flush_queues();
     video_codec_ctx_ = av_codec_context{};
     audio_codec_ctx_ = av_codec_context{};
+    primary_source_stream_.reset(nullptr);
 }
 
 void player::close_async()
@@ -142,14 +147,14 @@ const play_stream* player::source_stream(stream_type_t sti) const
     if (source_streams_[index]) {
         return source_streams_[index].get();
     }
-    if (sti == stream_type_t::video && primary_source_stream_.has_media_type(media_type::video)) {
-        return &primary_source_stream_;
+    if (sti == stream_type_t::video && primary_source_stream_->has_media_type(media_type::video)) {
+        return primary_source_stream_.get();
     }
-    else if (sti == stream_type_t::audio && primary_source_stream_.has_media_type(media_type::audio)) {
-        return &primary_source_stream_;
+    else if (sti == stream_type_t::audio && primary_source_stream_->has_media_type(media_type::audio)) {
+        return primary_source_stream_.get();
     }
-    else if (sti == stream_type_t::subtitle && primary_source_stream_.has_media_type(media_type::subtitle)) {
-        return &primary_source_stream_;
+    else if (sti == stream_type_t::subtitle && primary_source_stream_->has_media_type(media_type::subtitle)) {
+        return primary_source_stream_.get();
     }
     return nullptr;
 }
@@ -161,20 +166,31 @@ play_stream* player::source_stream(stream_type_t sti)
     if (source_streams_[index]) {
         return source_streams_[index].get();
     }
-    if (sti == stream_type_t::video && primary_source_stream_.has_media_type(media_type::video)) {
-        return &primary_source_stream_;
+    if (sti == stream_type_t::video && primary_source_stream_->has_media_type(media_type::video)) {
+        return primary_source_stream_.get();
     }
-    else if (sti == stream_type_t::audio && primary_source_stream_.has_media_type(media_type::audio)) {
-        return &primary_source_stream_;
+    else if (sti == stream_type_t::audio && primary_source_stream_->has_media_type(media_type::audio)) {
+        return primary_source_stream_.get();
     }
-    else if (sti == stream_type_t::subtitle && primary_source_stream_.has_media_type(media_type::subtitle)) {
-        return &primary_source_stream_;
+    else if (sti == stream_type_t::subtitle && primary_source_stream_->has_media_type(media_type::subtitle)) {
+        return primary_source_stream_.get();
     }
     return nullptr;
 }
 
+std::chrono::microseconds player::total_time() const {
+    if (!primary_source_stream_) {
+        return std::chrono::microseconds(0);
+    }
+
+    return primary_stream().total_time();
+}
+
 bool player::is_playing() const
 {
+    if (!primary_source_stream_) {
+        return false;
+    }
     const auto cur_stream_state_int = to_int(stream_state());
     return cur_stream_state_int >= to_int(stream_state_t::playing);
 }
@@ -488,6 +504,9 @@ void player::handle_internal_events()
 
 void player::handle_stream_state()
 {
+    if (!primary_source_stream_) {
+        return;
+    }
     auto stream_state_expected = stream_state_t::open;
     if (stream_state().compare_exchange_strong(stream_state_expected, stream_state_t::playing)) {
         start_playing(start_time_pos_);
