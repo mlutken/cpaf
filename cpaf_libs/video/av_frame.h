@@ -62,7 +62,7 @@ public:
     int64_t                 pts_stream_base     () const { return ff_frame_->pts; }
     int32_t                 video_width         () const { return ff_frame_->width; }
     int32_t                 video_height        () const { return ff_frame_->height; }
-    bool                    key_frame           () const { return ff_frame_->key_frame == 1; }
+    /// DEPRCATED bool                    key_frame           () const { return ff_frame_->key_frame == 1; }
     size_t                  stream_index        () const { return stream_index_; }
     int                     nb_samples          () const { return ff_frame_->nb_samples; }
 

@@ -75,8 +75,8 @@ public:
     AVSampleFormat          sample_format               () const { return ff_codec_context_->sample_fmt; }
     int32_t                 sample_rate                 () const { return ff_codec_context_->sample_rate; }
     int32_t                 audio_sample_rate			() const { return ff_codec_context_->sample_rate; }
-    int32_t                 audio_channels				() const { return ff_codec_context_->channels; }
-    int32_t                 channels                    () const { return ff_codec_context_->channels; }
+    int32_t                 audio_channels				() const { return ff_codec_context_->channels; } // ch_layout.nb_channels
+    int32_t                 channels                    () const { return ff_codec_context_->channels; } // ch_layout.nb_channels
     uint64_t                channel_layout				() const { return ff_codec_context_->channel_layout; }  // TODO: Use AVChannelLayout instead
 
 
