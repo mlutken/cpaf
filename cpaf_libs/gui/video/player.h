@@ -111,7 +111,7 @@ public:
     // --- Audio info functions ---
     // ----------------------------
     size_t                              audio_stream_index		() const;
-    const cpaf::video::av_samples_queue&audio_samples_queue     () const { return media_pipeline_threads_.audio_samples_queue(); }
+    const cpaf::video::av_samples_queue&audio_samples_queue     () const { return media_pipeline_threads_->audio_samples_queue(); }
 
     // -------------------------------
     // --- Subtitles setup/control ---
@@ -143,9 +143,9 @@ public:
     void                        resume_playback         ();
     void                        toggle_pause_playback   ();
     bool                        playback_paused         () const;
-    cpaf::video::seek_state_t   seek_state              () const { return media_pipeline_threads_.seek_state();      }
-    std::chrono::microseconds   seek_from_position      () const { return media_pipeline_threads_.seek_from_position(); }
-    std::chrono::microseconds   seek_position_requested () const { return media_pipeline_threads_.seek_position_requested(); }
+    cpaf::video::seek_state_t   seek_state              () const;
+    std::chrono::microseconds   seek_from_position      () const;
+    std::chrono::microseconds   seek_position_requested () const;
 
     // ----------
     // --- UI ---
@@ -179,8 +179,8 @@ private:
     bool                            open_stream             (const std::string& resource_path, cpaf::video::stream_type_t sti);
     bool                            open_primary_stream     (const std::string& resource_path);
     void                            update_scaling_context  () const;
-    pipeline_threads&               media_pipeline_threads  () { return media_pipeline_threads_; }
-    const pipeline_threads&         media_pipeline_threads  () const { return media_pipeline_threads_; }
+    pipeline_threads&               media_pipeline_threads  () { return *media_pipeline_threads_; }
+    const pipeline_threads&         media_pipeline_threads  () const { return *media_pipeline_threads_; }
     void                            handle_internal_events  ();
     void                            handle_stream_state     ();
 
@@ -190,7 +190,7 @@ private:
     using source_streams_array_t = std::array<std::unique_ptr<cpaf::video::play_stream>, cpaf::video::stream_type_index_size()>;
     std::unique_ptr<cpaf::video::play_stream>       primary_source_stream_;
     std::chrono::microseconds                       start_time_pos_;
-    pipeline_threads                                media_pipeline_threads_;
+    std::unique_ptr<pipeline_threads>               media_pipeline_threads_;
     const system_window*                            main_window_ptr_                = nullptr;
     source_streams_array_t                          source_streams_                 = {nullptr, nullptr, nullptr, nullptr, nullptr};
     cpaf::video::surface_dimensions_t               video_dst_dimensions_requested_ = {cpaf::video::surface_dimension_auto,cpaf::video::surface_dimension_auto};

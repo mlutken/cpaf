@@ -13,16 +13,14 @@ using namespace std::chrono;
 namespace cpaf::gui::video {
 
 player::player()
-    :
-        media_pipeline_threads_(*this)
 {
-///    cur_media_time().video_offset_set(-300ms);
     next_video_frame_ = av_frame::create_alloc();
+    media_pipeline_threads_ = std::make_unique<pipeline_threads>(*this);
 
     if (!video_controls_) {
         set_controls(std::make_unique<video::controls_default>(*this));
     }
-    pause_playback();
+//    pause_playback();
 }
 
 player::~player()
@@ -39,7 +37,7 @@ void player::init()
     if (has_video_stream()) {
         init_video(*main_window_ptr_);
     }
-    pause_playback();
+//    pause_playback();
 }
 
 
@@ -422,14 +420,18 @@ void player::pause_playback()
 {
     cur_media_time_.pause_time();
     ////threads_paused_ = true;
-    media_pipeline_threads().pause_playback();
+    if (media_pipeline_threads_) {
+        media_pipeline_threads_->pause_playback();
+    }
 }
 
 void player::resume_playback()
 {
     cur_media_time_.resume_time();
     ////threads_paused_ = false;
-    media_pipeline_threads().resume_playback();
+    if (media_pipeline_threads_) {
+        media_pipeline_threads_->resume_playback();
+    }
 }
 
 void player::toggle_pause_playback()
@@ -444,6 +446,21 @@ void player::toggle_pause_playback()
 
 bool player::playback_paused() const {
     return media_pipeline_threads().playback_paused();
+}
+
+seek_state_t player::seek_state() const
+{
+    return media_pipeline_threads_->seek_state();
+}
+
+std::chrono::microseconds player::seek_from_position() const
+{
+    return media_pipeline_threads_->seek_from_position();
+}
+
+std::chrono::microseconds player::seek_position_requested() const
+{
+    return media_pipeline_threads_->seek_position_requested();
 }
 
 void player::set_controls(std::unique_ptr<controls> controls)
