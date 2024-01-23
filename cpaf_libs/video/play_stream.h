@@ -19,7 +19,7 @@ public:
     explicit play_stream(get_torrents_fn get_torrents_function);
      ~play_stream();
     bool                        open                    (const std::string& resource_path);
-     void                       close                   ();
+    void                        close                   ();
     void                        video_index_set         (size_t stream_index) { format_context_.video_index_set(stream_index);}
     void                        audio_index_set         (size_t stream_index) { format_context_.audio_index_set(stream_index);}
     void                        subtitle_index_set      (size_t stream_index) { format_context_.subtitle_index_set(stream_index);}

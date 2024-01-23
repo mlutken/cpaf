@@ -22,10 +22,10 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/media_stream_time.h
     ${CMAKE_CURRENT_LIST_DIR}/play_stream.h
     ${CMAKE_CURRENT_LIST_DIR}/subtitle_frame.h
-
     ${CMAKE_CURRENT_LIST_DIR}/io/custom_io_base.h
     ${CMAKE_CURRENT_LIST_DIR}/io/torrent_io.h
     ${CMAKE_CURRENT_LIST_DIR}/io/my_file_io.h
+    ${CMAKE_CURRENT_LIST_DIR}/io/subtitle_container.h
 
     PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/audio_resampler.cpp
@@ -48,6 +48,8 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/io/custom_io_base.cpp
     ${CMAKE_CURRENT_LIST_DIR}/io/torrent_io.cpp
     ${CMAKE_CURRENT_LIST_DIR}/io/my_file_io.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/io/subtitle_container.cpp
+
 
 )
 
@@ -61,6 +63,7 @@ target_link_libraries(${library_name} "cpaf_time")
 target_link_libraries(${library_name} "luepp_concurrent")
 target_link_libraries(${library_name} "luepp_containers")
 target_link_libraries(${library_name} "cpaf_torrent")
+target_link_libraries(${library_name} "cpaf_compression")
 target_link_libraries(${library_name} ffmpeg::ffmpeg )
 
 set_target_properties(${library_name} PROPERTIES LINKER_LANGUAGE CXX)
