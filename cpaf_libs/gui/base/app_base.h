@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include <atomic>
+#include <vector>
 #include <filesystem>
 #include <fmt/format.h>
 #include <cpaf_libs/gui/gui_types.h>

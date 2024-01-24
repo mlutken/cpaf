@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <mutex>
 #include <cpaf_libs/audio/cpaf_audio_types.h>
 
 
