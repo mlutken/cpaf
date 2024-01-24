@@ -24,10 +24,16 @@ u8_const_range parse_substring_between  (std::string::const_iterator& from,
                                          const std::string& end_marker);
 
 std::string     substring_between       (const std::string& search_in,
-                                         const std::string& begin_marker,
-                                         const std::string& end_marker,
-                                         do_trim trim_result = do_trim::yes
-                                         );
+                                        const std::string& begin_marker,
+                                        const std::string& end_marker,
+                                        do_trim trim_result = do_trim::yes
+                                        );
+
+std::string     remove_between_copy (const std::string& search_in,
+                                     const std::string& begin_marker,
+                                     const std::string& end_marker,
+                                     do_trim trim_result = do_trim::yes
+                                    );
 
 
 // -----------------------------------
@@ -68,8 +74,8 @@ void            replace_all                  (std::string& str,
                                              );
 
 std::string replace_all_copy                 (const std::string& str,
-                                                 const std::vector<std::string>& search_for,
-                                                 const std::vector<std::string>& replace_with
+                                              const std::vector<std::string>& search_for,
+                                              const std::vector<std::string>& replace_with
                                              );
 
 std::string  simplify_white_space_copy       (const std::string& str);

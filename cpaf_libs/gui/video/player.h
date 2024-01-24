@@ -2,6 +2,7 @@
 
 #include <array>
 #include <memory>
+#include <thread>
 #include <cpaf_libs/gui/gui_types.h>
 #include <cpaf_libs/video/av_util.h>
 #include <cpaf_libs/video/play_stream.h>

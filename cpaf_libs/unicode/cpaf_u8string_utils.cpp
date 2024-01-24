@@ -221,6 +221,22 @@ std::string substring_between(const std::string& search_in,
         return to_string(subrange);
     }
 }
+
+
+string remove_between_copy(const std::string& search_in,
+                           const std::string& begin_marker,
+                           const std::string& end_marker, do_trim trim_result)
+{
+    auto from = search_in.begin();
+    const auto subrange = parse_substring_between(from, search_in.end(), begin_marker, end_marker);
+
+    std::string res = std::string(search_in.begin(), subrange.begin()) + std::string(subrange.end(), search_in.end());
+    if (trim_result == do_trim::yes) {
+        boost::algorithm::trim(res);
+    }
+    return res;
+}
+
 // -----------------------------------
 // --- String conversion functions ---
 // -----------------------------------
@@ -795,6 +811,7 @@ std::ostream& operator<<(std::ostream& os, const std::vector<std::string>& strin
     return os;
 }
 }
+
 
 
 // END namespace osops
