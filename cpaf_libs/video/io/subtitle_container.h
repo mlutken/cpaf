@@ -16,6 +16,7 @@ public:
     // --- Info functions ---
     // ----------------------
     const std::string&          resource_path			() const { return resource_path_; }
+    std::string                 archive_path			() const;
     const std::string&          language_code			() const { return language_code_; }
     bool                        is_zip_archive			() const;
 
