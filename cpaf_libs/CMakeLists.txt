@@ -1,4 +1,5 @@
 if ( NOT (CMAKE_SYSTEM_NAME MATCHES "Emscripten") )
+    add_subdirectory(locale)
     add_subdirectory(unicode)
     add_subdirectory(crypto)
     add_subdirectory(utils)
