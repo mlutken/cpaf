@@ -6,11 +6,12 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/locale.hpp>
 
-#include <unicode/uchar.h>
-#include <unicode/ustdio.h>
 #include <unicode/ustring.h>
-#include <cpaf_libs/unicode/cpaf_unicode_chars.hpp>
+#include <unicode/ucnv.h>
+#include <unicode/unistr.h>
+#include <unicode/ucsdet.h>
 
+#include <cpaf_libs/unicode/cpaf_unicode_chars.hpp>
 #include "cpaf_u16string_utils.h"
 #include "cpaf_u8string_utils.h"
 
@@ -237,9 +238,103 @@ string remove_between_copy(const std::string& search_in,
     return res;
 }
 
-// -----------------------------------
-// --- String conversion functions ---
-// -----------------------------------
+// ------------------------------------
+// --- Charset conversion functions ---
+// ------------------------------------
+
+std::string detect_charset(const std::string& input) {
+    UErrorCode status = U_ZERO_ERROR;
+    const UCharsetMatch* match;
+    const char* name;
+
+    // Create a charset detector.
+    UCharsetDetector* csd = ucsdet_open(&status);
+    if (U_FAILURE(status)) {
+        return "";
+    }
+
+    // Set the text to be detected.
+    ucsdet_setText(csd, input.c_str(), input.length(), &status);
+    if (U_FAILURE(status)) {
+        ucsdet_close(csd);
+        return "";
+    }
+
+    // Detect the charset.
+    match = ucsdet_detect(csd, &status);
+    if (U_FAILURE(status)) {
+        ucsdet_close(csd);
+        return "";
+    }
+
+    // Get the name of the detected charset.
+    name = ucsdet_getName(match, &status);
+    if (U_FAILURE(status)) {
+        ucsdet_close(csd);
+        return "";
+    }
+
+    std::string detectedCharset(name);
+
+    // Clean up.
+    ucsdet_close(csd);
+
+    return detectedCharset;
+}
+
+
+std::string to_utf8(const std::string& input, const std::string& charset) {
+    UErrorCode status = U_ZERO_ERROR;
+    UConverter *conv = ucnv_open(charset.c_str(), &status);
+    if (U_FAILURE(status)) {
+        return "";
+    }
+
+    // Calculate the length of the target UTF-16 string
+    int32_t unicodeLen = ucnv_toUChars(conv,
+                                       NULL,
+                                       0,
+                                       input.c_str(),
+                                       input.length(),
+                                       &status);
+    if(status != U_BUFFER_OVERFLOW_ERROR && U_FAILURE(status)) {
+        ucnv_close(conv);
+        return "";
+    }
+
+    // Reset the error status
+    status = U_ZERO_ERROR;
+    std::u16string utf16String(unicodeLen, '\0');
+    ucnv_toUChars(conv,
+                  reinterpret_cast<UChar*>(utf16String.data()),
+                  unicodeLen,
+                  input.c_str(),
+                  input.length(),
+                  &status);
+    if (U_FAILURE(status)) {
+        ucnv_close(conv);
+        return "";
+    }
+
+    ucnv_close(conv);
+
+    // Convert UTF-16 string to UTF-8
+    icu::UnicodeString ustr(utf16String.c_str(), unicodeLen);
+    std::string utf8;
+    ustr.toUTF8String(utf8);
+
+    return utf8;
+}
+
+
+std::string to_utf8(const std::string& input) {
+    const auto charset = detect_charset(input);
+    if (charset.empty()) {
+        return input;
+    }
+    return to_utf8(input, charset);
+}
+
 
 
 
@@ -794,6 +889,8 @@ bool empty_or_only_white_space(std::string::const_iterator it, const std::string
     }
     return true;
 }
+
+
 
 // ----------------------------------------------------------
 // --- Ostream ops: Debug containers of strings to stream ---

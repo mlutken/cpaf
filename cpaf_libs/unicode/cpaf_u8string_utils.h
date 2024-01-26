@@ -36,10 +36,13 @@ std::string     remove_between_copy (const std::string& search_in,
                                     );
 
 
-// -----------------------------------
-// --- String conversion functions ---
-// -----------------------------------
+// ------------------------------------
+// --- Charset conversion functions ---
+// ------------------------------------
 
+std::string     detect_charset  (const std::string& input);
+std::string     to_utf8         (const std::string& input, const std::string& charset);
+std::string     to_utf8         (const std::string& input);
 
 
 // -----------------------------------
