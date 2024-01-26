@@ -8,7 +8,7 @@
 #include <span>
 #include <filesystem>
 #include <containers/cpaf_string8.h>
-#include <compression/cpaf_compression_functions.h>
+#include <compression/file.h>
 
 namespace cpaf::streams {
 

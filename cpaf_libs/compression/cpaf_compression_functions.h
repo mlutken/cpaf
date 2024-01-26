@@ -6,11 +6,15 @@
 #include <cstdio>
 #include <filesystem>
 #include <boost/filesystem/convenience.hpp>
+extern "C" {
 #include <zlib.h>
-//#include <bzlib.h>
+}
+
 #include <containers/cpaf_container_utils.h>
 #include <containers/cpaf_dynamic_array.hpp>
 #include <containers/cpaf_string8.h>
+
+//class gzFile;
 
 namespace cpaf { namespace compression {
 
@@ -19,98 +23,7 @@ namespace cpaf { namespace compression {
 \author Martin Lutken 
 */
 
-
-// -----------------------------
-// --- Types and Definitions ---
-// -----------------------------
-enum class type { plain, gz, zip, bz2 };
 typedef std::vector<std::string>	string_vec_t;
-
-// --------------------------------------
-// --- File type conversion functions ---
-// --------------------------------------
-std::string to_extension(type compression_type);
-type    to_compression_type (const std::string& filePath);
-type    to_compression_type (const std::filesystem::path& filePath);
-type    to_compression_type (const char* data, size_t size);
-type    to_compression_type (const unsigned char* data, size_t size);
-
-
-// ---------------------------------------------------------
-// --- Generic file class (handles any compression type) ---
-// ---------------------------------------------------------
-/** File class that can read normal as well as compressed
-    files.
-    The maximum line lenght to read is set with max_readline_size and
-    by default this is set to DEFAULT_MAX_LINE_LENGHT = 8096.
-    It can be changed both via constructor and member function
-    max_readline_size().
- */
-struct file
-{
-    static constexpr int64_t DEFAULT_MAX_LINE_LENGHT = 8096;
-
-    file() = default;
-    explicit file(const std::string& file_path);
-    explicit file(const std::filesystem::path& file_path);
-    file(const std::string& file_path, const std::string& mode);
-    file(const std::filesystem::path&file_path, const std::string& mode);
-    file(const std::string& file_path, const std::string& mode, std::size_t max_readline_size);
-    file(const std::filesystem::path& file_path, const std::string& mode, std::size_t max_readline_size);
-    ~file() noexcept;
-
-    // ------------------------------------------------
-    // --- file: Info functions, setter and getters ---
-    // ------------------------------------------------
-    type                file_type           () const { return file_type_; }
-    void                max_readline_size   (std::size_t max_readline_size) noexcept;
-    std::size_t         max_readline_size   () const noexcept { return max_readline_size_; }
-    std::string_view    file_path           () const noexcept { return file_path_; }
-    std::string_view    mode                () const noexcept { return mode_; }
-
-    // -----------------------------
-    // --- file: state functions ---
-    // -----------------------------
-    bool                open                (const std::string& mode) noexcept;
-    bool                open                (const std::string& file_path, const std::string& mode) noexcept;
-    bool                open                (const std::filesystem::path& file_path, const std::string& mode) noexcept;
-    bool                is_open             () const noexcept {  return is_open_; }
-    bool                close               () noexcept;
-    bool                eof                 () const noexcept;
-
-
-    // ----------------------------
-    // --- file: Read functions ---
-    // ----------------------------
-    char*               gets                (char* buf) const noexcept;
-    char*               gets                () const noexcept;
-    std::string_view    readline            () const noexcept;
-    std::size_t         read                (void* buffer, std::size_t size, std::size_t count);
-
-    // -----------------------------
-    // --- file: Write functions ---
-    // -----------------------------
-    bool                puts                (const char* buf) const noexcept;
-    bool                puts                (const std::string& str) const noexcept;
-    std::size_t         write               (const char* buf, std::size_t bytes_to_write) const noexcept;
-    std::size_t         write               (const std::string& str, std::size_t start_pos, std::size_t bytes_to_write) const noexcept;
-
-private:
-    void                allocate_read_buffer();
-    void                deallocate_read_buffer();
-
-
-    using handle_type = std::variant<std::FILE*, gzFile>;
-    std::string     file_path_;
-    std::string     mode_;
-    std::size_t     max_readline_size_ = DEFAULT_MAX_LINE_LENGHT;
-    handle_type     handle_;
-    type        file_type_;
-    char*           read_buffer_ = nullptr;
-    bool            is_open_ = false;
-};
-
-
 
 // --------------------------------------
 // --- Any compression type functions ---

@@ -9,8 +9,12 @@ add_library(${library_name} STATIC "")
 target_sources(${library_name}
     PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/cpaf_compression_functions.h
+    ${CMAKE_CURRENT_LIST_DIR}/compression_utils.h
+    ${CMAKE_CURRENT_LIST_DIR}/file.h
     PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/cpaf_compression_functions.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/compression_utils.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/file.cpp
 )
 
 
