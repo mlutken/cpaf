@@ -5,10 +5,6 @@
 
 #include "cpaf_u16string_utils.h"
 
-
-
-
-
 namespace cpaf::unicode {
 
 void normalize_locale(std::u16string::iterator begin,
