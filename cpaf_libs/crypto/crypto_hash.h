@@ -1,6 +1,4 @@
-#ifndef CPAF_CRYPTO_HASH_H
-#define CPAF_CRYPTO_HASH_H
-
+#pragma once
 #include <string>
 #include <array>
 
@@ -14,13 +12,6 @@ namespace cpaf::crypto {
 std::string sha1    (const std::string& text);
 std::string md5     (const std::string_view& text);
 
-
-
-
-
 } //END namespace cpaf::crypto
-
-
-#endif //CPAF_CRYPTO_HASH_H
 
 
