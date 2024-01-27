@@ -31,6 +31,7 @@ type            to_compression_type (const std::string& filePath);
 type            to_compression_type (const std::filesystem::path& filePath);
 type            to_compression_type (const char* data, size_t size);
 type            to_compression_type (const unsigned char* data, size_t size);
+bool            detect_is_zip_file  (const std::filesystem::path& file_path);
 
 
 

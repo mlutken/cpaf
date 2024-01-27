@@ -1,17 +1,14 @@
 #include "compression_utils.h"
 
 #include <iostream>
-extern "C" {
-#include <zlib.h>
-}
 #include <filesystem/cpaf_file_directory_functions.h>
 #include <boost/algorithm/string.hpp>
+#include <Zippy.hpp>
 
 namespace fs = std::filesystem;
 namespace al = boost::algorithm;
 
 namespace cpaf { namespace compression {
-
 
 
 // --------------------------------------
@@ -70,6 +67,19 @@ type to_compression_type(const unsigned char* data, size_t size)
 {
     return to_compression_type(reinterpret_cast<const char*>(data), size);
 }
+
+bool detect_is_zip_file(const std::filesystem::path& file_path)
+{
+    try {
+        Zippy::ZipArchive arch;
+        arch.Open(file_path);
+        return arch.GetNumEntries(false, true) != 0;
+
+    } catch (...) {
+    }
+    return false;
+}
+
 
 
 
