@@ -27,6 +27,7 @@ public:
         std::chrono::microseconds       presentation_time       {0};
         std::chrono::microseconds       presentation_time_end   {0};
         uint32_t                        sequence_number         {0};
+        std::string                     to_string() const;
     };
 
 
@@ -49,7 +50,7 @@ public:
     // --- ---
 
 private:
-    enum class state_t {new_frame, seq_num, ps_times, text, frame_done};
+    enum class state_t {new_frame, seq_num, ps_times, text};
     // ------------------------
     // --- PRIVATE: Helpers ---
     // ------------------------

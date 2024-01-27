@@ -1,17 +1,34 @@
 #include "subtitle_container.h"
 #include <algorithm>
 #include <ranges>
+#include <sstream>
 #include <fmt/format.h>
 
+#include <cpaf_libs/time/cpaf_time.h>
 #include <cpaf_libs/unicode/cpaf_u8string_utils.h>
 
 using namespace std;
+using namespace cpaf::time;
 using namespace cpaf::unicode;
 using namespace std::chrono;
 
 
 namespace cpaf::video {
 
+string subtitle_container::frame_t::to_string() const
+{
+    string s = fmt::format("{}\n{} --> {}\n",
+                       sequence_number,
+                       format_h_m_s_ms(presentation_time),
+                       format_h_m_s_ms(presentation_time_end)
+                       );
+
+    for (auto line: lines) {
+        s.append(line);
+        s.append("\n");
+    }
+    return s;
+}
 
 /**
 
@@ -24,25 +41,10 @@ void subtitle_container::parse_srt_file_data(std::string_view data_string_view)
     using std::operator""sv;
     constexpr auto newline{"\n"sv};
 
-//    auto line_beg = data_string_view.begin();
-//    auto line_end = data_string_view.begin();
-//    const auto end = data_string_view.end();
-
-//    while (line_beg < end) {
-//        line_end = std::find(line_beg, end, '\n');
-//        string_view line(line_beg, line_end);
-//    //string_view line(&(*line_beg), static_cast<size_t>(std::distance(line_beg, line_end)));
-//        fmt::println("Line: {}", line);
-
-//        line_beg = ++line_end;
-//    }
-
-
-
     for (const auto word : std::views::split(data_string_view, newline)) {
         // with string_view's C++23 range constructor:
         string_view line(word);
-        fmt::println("LINE {}", line);
+//        fmt::println("LINE {}", line);
         parse_line(line);
     }
     fmt::println("");
@@ -51,7 +53,39 @@ void subtitle_container::parse_srt_file_data(std::string_view data_string_view)
 
 void subtitle_container::parse_line(std::string_view line)
 {
-
+    switch (parse_state_) {
+    case state_t::new_frame:
+    case state_t::seq_num:
+    {
+        if (line.empty()) {
+            return;
+        }
+        else {
+            parse_sequence_number(line);
+            parse_state_ = state_t::ps_times;
+            return;
+        }
+        break;
+    }
+    case state_t::ps_times:
+    {
+        parse_presentation_times(line);
+        parse_state_ = state_t::text;
+        return;
+        break;
+    }
+    case state_t::text:
+    {
+        if (!parse_subtitle_line(line)) {
+            parse_state_ = state_t::new_frame;
+            push_current_frame();
+        }
+        return;
+        break;
+    }
+    default:
+        break;
+    }
 }
 
 bool subtitle_container::parse_sequence_number(std::string_view line)
@@ -69,20 +103,28 @@ bool subtitle_container::parse_sequence_number(std::string_view line)
     return false;
 }
 
+// 00:03:18,856 --> 00:03:20,856
 bool subtitle_container::parse_presentation_times(std::string_view line)
 {
-//    using sys_seconds = std::chrono::time_point<std::chrono::system_clock, std::chrono::seconds>;
-//    sys_seconds tp;
-//    std::chrono::parse("%a, %d %b %Y %T %z", tp);
+    int32_t h1{}, h2{};
+    int32_t m1{}, m2{};
+    int32_t s1{}, s2{};
+    int32_t ms1{}, ms2{};
 
-//    std::chrono::parse();
+    int ret = std::sscanf(line.data(), "%2d:%2d:%2d,%3d --> %2d:%2d:%2d,%3d",
+                          &h1, &m1, &s1, &ms1, &h2, &m2, &s2, &ms2);
+
+    cur_parse_frame_.presentation_time      = hours{h1} + minutes{m1} + seconds{s1} + milliseconds{ms1};
+    cur_parse_frame_.presentation_time_end  = hours{h2} + minutes{m2} + seconds{s2} + milliseconds{ms2};
+
+    return ret == 8;
 }
 
 bool subtitle_container::parse_subtitle_line(std::string_view line)
 {
-    if (line.empty()) {
-        parse_state_ = state_t::frame_done;
-        return true;
+    string trimmed_line = simplify_white_space_copy(std::string(line));
+    if (trimmed_line.empty()) {
+        return false;
     }
     cur_parse_frame_.lines.push_back(std::string(line));
     return true;
@@ -93,6 +135,7 @@ void subtitle_container::push_current_frame()
     subtitles_.push_back(std::move(cur_parse_frame_));
     cur_parse_frame_ = frame_t{};
 }
+
 
 
 
