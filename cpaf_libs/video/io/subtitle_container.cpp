@@ -66,6 +66,14 @@ void subtitle_container::open(const std::string& resource_path)
     }
 }
 
+string subtitle_container::archive_path() const
+{
+    if (is_zip_archive()) {
+        return archive_path_;
+    }
+    return "";
+}
+
 string subtitle_container::archive_srt_file_path() const
 {
     if (archive_srt_file_path_.empty()) {

@@ -35,7 +35,7 @@ public:
     // --- Info functions ---
     // ----------------------
     const std::string&          resource_path			() const { return resource_path_; }
-    std::string                 archive_path			() const { return archive_path_; }
+    std::string                 archive_path			() const;
     std::string                 archive_srt_file_path   () const;
     std::string                 archive_info_file_path  () const;
     void                        language_code_set		(std::string_view lc) { language_code_ = lc; }
