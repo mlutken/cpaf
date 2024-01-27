@@ -68,8 +68,8 @@ public:
     bool                            is_valid                    () const;
     format_t                        format                      () const { return format_; }
     size_t                          lines_count                 () const {return std::min(lines.size(), max_lines);}
-    void                            set_presentaion_times       (std::chrono::microseconds start, std::chrono::microseconds end);
-    void                            set_presentaion_times_ms    (uint32_t start_ms, uint32_t end_ms);
+    void                            set_presentation_times      (std::chrono::microseconds start, std::chrono::microseconds end);
+    void                            set_presentation_times_ms   (uint32_t start_ms, uint32_t end_ms);
     std::chrono::milliseconds       presentation_time_ms        () const { return std::chrono::duration_cast<std::chrono::milliseconds>(presentation_time); }
     std::chrono::milliseconds       presentation_time_end_ms    () const { return std::chrono::duration_cast<std::chrono::milliseconds>(presentation_time_end); }
     bool                            should_show                 () const;
