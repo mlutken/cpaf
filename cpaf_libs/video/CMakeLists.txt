@@ -55,6 +55,9 @@ target_sources(${library_name}
 
 get_filename_component(PARENT_DIR ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
 get_filename_component(PARENT2_DIR ${PARENT_DIR} DIRECTORY)
+target_link_libraries(${library_name} "cpaf_crypto")
+target_link_libraries(${library_name} "cpaf_net")
+target_link_libraries(${library_name} "cpaf_streams")
 target_link_libraries(${library_name} "cpaf_audio")
 target_link_libraries(${library_name} "cpaf_unicode;")
 target_link_libraries(${library_name} "cpaf_utils")
