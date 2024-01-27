@@ -24,6 +24,7 @@ static CURLcode curl_do_http_download_file_impl(const std::string& sSrcUrl, cons
     curl = curl_easy_init();
     if (curl) {
         fp = fopen( sDstFilePath.c_str(), "wb" );
+        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L); // enable redirect following
         curl_easy_setopt(curl, CURLOPT_URL, sSrcUrl.c_str() );
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_write_file_data_helper);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
@@ -50,6 +51,7 @@ std::string curl_do_http_download_to_string_impl(const std::string sSrcUrl)
 
     curl = curl_easy_init();
     if (curl) {
+        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L); // enable redirect following
         curl_easy_setopt(curl, CURLOPT_URL, sSrcUrl.c_str() );
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
     //    curl_easy_setopt(curl, CURLOPT_HEADER, 1L);
