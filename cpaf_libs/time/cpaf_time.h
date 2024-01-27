@@ -47,13 +47,13 @@ format_h_m_s(std::chrono::duration<Rep, Period> dur) {
     return std::format("{}:{:02}:{:02}", h.count(), m.count(), s.count());
 }
 
-/** Format duration as "H:mm:ss.xxx" */
+/** Format duration as "H:mm:ss,xxx" */
 template <class Rep, class Period>
 constexpr std::string
 format_h_m_s_ms(std::chrono::duration<Rep, Period> dur) {
     using namespace std::chrono;
     auto [h,m,s, ms] = duration_split<hours, minutes, seconds, milliseconds>(dur);
-    return std::format("{}:{:02}:{:02}.{:03}", h.count(), m.count(), s.count(), ms.count());
+    return std::format("{}:{:02}:{:02},{:03}", h.count(), m.count(), s.count(), ms.count());
 }
 
 
