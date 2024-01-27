@@ -26,6 +26,7 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/io/torrent_io.h
     ${CMAKE_CURRENT_LIST_DIR}/io/my_file_io.h
     ${CMAKE_CURRENT_LIST_DIR}/io/subtitle_container.h
+    ${CMAKE_CURRENT_LIST_DIR}/io/subtitle_container.h
 
     PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/audio_resampler.cpp
@@ -49,6 +50,7 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/io/torrent_io.cpp
     ${CMAKE_CURRENT_LIST_DIR}/io/my_file_io.cpp
     ${CMAKE_CURRENT_LIST_DIR}/io/subtitle_container.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/io/subtitle_text_file_data.cpp
 
 
 )
