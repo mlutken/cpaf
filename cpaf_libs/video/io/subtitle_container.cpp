@@ -47,8 +47,16 @@ void subtitle_container::parse_srt_file_data(std::string_view data_string_view)
 //        fmt::println("LINE {}", line);
         parse_line(line);
     }
-    fmt::println("");
+}
 
+subtitle_container::const_iterator subtitle_container::find_first_after(std::chrono::microseconds ts) const
+{
+    constexpr auto compare = [](const auto& frm, std::chrono::microseconds ts) -> bool {
+        return frm.presentation_time < ts;
+    };
+
+    const auto it = std::lower_bound(subtitles_.begin(), subtitles_.end(), ts, compare);
+    return it;
 }
 
 void subtitle_container::parse_line(std::string_view line)
