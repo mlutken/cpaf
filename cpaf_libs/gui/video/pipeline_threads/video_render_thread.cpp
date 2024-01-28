@@ -237,7 +237,7 @@ const cpaf::video::packet_queue_t& video_render_thread::video_packet_queue_const
 }
 
 /**
- *  @note. Here only flush the subtitles queue. The vide frames are flushed from pipeline_threads
+ *  @note. Here we only flush the subtitles queue. The video frames are flushed from pipeline_threads
  */
 void video_render_thread::flush_queues()
 {

@@ -3,6 +3,7 @@
 #include <cpaf_libs/video/media_stream_time.h>
 #include <cpaf_libs/video/av_format_context.h>
 #include <cpaf_libs/video/av_codec_context.h>
+#include <cpaf_libs/video/io/subtitle_container.h>
 #include <cpaf_libs/gui/video/player.h>
 
 using namespace std::chrono;
@@ -22,10 +23,21 @@ subtitle_reader_thread::subtitle_reader_thread(
 
 }
 
+subtitle_reader_thread::~subtitle_reader_thread()
+{
+
+}
+
 void subtitle_reader_thread::start()
 {
     thread_object_ = std::make_unique<std::thread>(&subtitle_reader_thread::thread_function, this);
     thread_object_->detach();
+}
+
+void subtitle_reader_thread::subtitle_container_set(std::unique_ptr<subtitle_container> container)
+{
+    std::lock_guard<std::mutex> lock(subtitle_continer_mutex_);
+    subtitle_container_ = std::move(container);
 }
 
 void subtitle_reader_thread::thread_function()
