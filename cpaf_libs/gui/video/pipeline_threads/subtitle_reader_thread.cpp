@@ -36,7 +36,7 @@ void subtitle_reader_thread::start()
 
 void subtitle_reader_thread::subtitle_container_set(std::unique_ptr<subtitle_container> container)
 {
-    std::lock_guard<std::mutex> lock(subtitle_continer_mutex_);
+    std::lock_guard<std::mutex> lock(subtitle_container_mutex_);
     subtitle_container_ = std::move(container);
 }
 
