@@ -51,7 +51,7 @@ private:
 
     std::unique_ptr<std::thread>        thread_object_;
     std::unique_ptr<subtitle_container> subtitle_container_;
-    std::mutex                          subtitle_continer_mutex_;
+    std::mutex                          subtitle_container_mutex_;
 
 };
 
