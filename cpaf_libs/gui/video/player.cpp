@@ -11,6 +11,7 @@
 using namespace cpaf::video;
 using namespace cpaf::time;
 using namespace std::chrono;
+using namespace std::chrono_literals;
 
 namespace cpaf::gui::video {
 
@@ -105,6 +106,10 @@ void player::open_async(const std::string& resource_path, std::chrono::microseco
     open_thread_->detach();
 }
 
+/**
+ *  @todo If threads are taking too long to close, then force close/delete them!
+ *
+*/
 void player::close()
 {
     if (!primary_source_stream_) {
@@ -114,11 +119,13 @@ void player::close()
         stream_state() = stream_state_t::inactive;
         pause_playback();
         int count = 0;
-        while (!media_pipeline_threads().all_threads_are_paused()) {
-            std::cerr << "FIXMENM waiting for theasds to ṕause: " << ++count << "\n";
+        const auto ts_end = std::chrono::steady_clock::now() + 5s;
+        while (!media_pipeline_threads().all_threads_are_paused() &&
+               (std::chrono::steady_clock::now() < ts_end)) {
+            std::cerr << "FIXMENM waiting for threads to ṕause: " << ++count << "\n";
             std::this_thread::sleep_for(100ms);
         }
-        std::cerr << "FIXMENM DONE for theasds to ṕause!!! : " << ++count << "\n";
+        std::cerr << "FIXMENM DONE for threads to ṕause!!! : " << ++count << "\n";
     }
     audio_device_.pause(); // Pause audio
     primary_resource_path_.clear();
