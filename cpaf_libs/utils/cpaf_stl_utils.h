@@ -68,7 +68,7 @@ namespace cpaf
     }
 
     template <template<class,class,class...> class C, typename V, typename K, typename... Args>
-    V map_find(const C<K,V,Args...>& map_container, const V& default_val, K const& key)
+    V map_find(const C<K,V,Args...>& map_container, K const& key, const V& default_val)
     {
         typename C<K,V,Args...>::const_iterator it = map_container.find( key );
         if (it == map_container.end())

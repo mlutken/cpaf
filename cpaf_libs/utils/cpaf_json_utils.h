@@ -101,8 +101,8 @@ std::map<KEY, VALUE> json_to_std_map(const nlohmann::json& jo)
 
 
 inline std::string map_find ( const nlohmann::json& container,
-                            const std::string& default_val,
-                            const std::string& key )
+                            const std::string& key,
+                            const std::string& default_val)
 {
     const auto it = container.find ( key );
     if ( it != container.end() )    return it->get<std::string>();
@@ -110,8 +110,9 @@ inline std::string map_find ( const nlohmann::json& container,
 }
 
 inline float map_find ( const nlohmann::json& container,
-                      float default_val,
-                      const std::string& key )
+                        const std::string& key,
+                        float default_val
+                      )
 {
     return json_value_float(container, key, default_val);
 }
