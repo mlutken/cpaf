@@ -1,12 +1,8 @@
-#ifndef CPAF_HTTP_CONVENIENCE_H
-#define CPAF_HTTP_CONVENIENCE_H
-
+#pragma once
  
 #include <string>
 #include <filesystem>
 #include <curl/curl.h>
-
-//#include <iostream>         // NOTE: ML For debug only
 
 
 namespace cpaf { namespace net {
@@ -42,7 +38,5 @@ int	http_download_wget	( std::string const& sUrl, std::string& sData );
 
 }} //END namespace cpaf::net
 
-
-#endif //CPAF_HTTP_CONVENIENCE_H
 
 

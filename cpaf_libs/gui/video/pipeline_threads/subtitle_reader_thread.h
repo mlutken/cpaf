@@ -48,7 +48,6 @@ private:
 
 
     std::chrono::microseconds           thread_yield_time_              = std::chrono::milliseconds(1);
-//    std::chrono::microseconds       audio_samples_read_ahead_time_  = std::chrono::milliseconds(300);
 
     std::unique_ptr<std::thread>        thread_object_;
     std::unique_ptr<subtitle_container> subtitle_container_;

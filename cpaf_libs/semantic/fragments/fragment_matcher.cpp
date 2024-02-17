@@ -497,7 +497,7 @@ fragment_matcher::match_candidate fragment_matcher::parse_next_candidate(skipped
     const candidates_vector candidates = parse_next_all_candidates(skipped_ranges, parse_from_token, end, pm, restrict_to_attributes);
     const auto it_candidate = find_best_candidate(parse_from_token, candidates, pm);
     if (it_candidate != candidates.end()) {
-        return std::move(*it_candidate);
+        return *it_candidate;
     }
     return match_candidate{};
 }
