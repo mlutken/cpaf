@@ -78,7 +78,8 @@ media_location detect_media_location(const std::string& resource_path)
     using namespace boost::algorithm;
     if ( starts_with(resource_path, "https://") ||
          starts_with(resource_path, "http://")  ||
-         starts_with(resource_path, "ftp://")
+         starts_with(resource_path, "ftp://")   ||
+        starts_with(resource_path, "magnet:?")
        ) {
         return media_location::remote;
     }
