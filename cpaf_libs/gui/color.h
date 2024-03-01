@@ -3,6 +3,8 @@
 #include <cstdint>
 #include <string>
 #include <cpaf_libs/math/base/v4.hpp>
+#include <cpaf_libs/utils/cpaf_json_utils.h>
+
 
 namespace cpaf::gui {
 
@@ -24,6 +26,7 @@ public:
     }
 
     color   (float r, float g, float b, float a) : cpaf::math::v4f(r, g, b, a) {}
+    explicit color   (nlohmann::json jo_color);
 
     float           r               () const        { return x(); }
     float&          r               ()              { return x(); }

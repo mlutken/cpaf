@@ -15,8 +15,8 @@ namespace cpaf::gui::video {
 void controls_default::calc_geometry()
 {
     const auto render_geometry = player_.render_geometry();
-    const int32_t fwd_back_font_size_pixels = font_size::to_pixels(play_buttons_font_size_points_, player_.main_window_ptr());
-    const int32_t slider_font_size_pixels = font_size::to_pixels(slider_font_size_points_, player_.main_window_ptr());
+    const int32_t fwd_back_font_size_pixels = font_size::to_pixels(buttons_size_, player_.main_window_ptr());
+    const int32_t slider_font_size_pixels = font_size::to_pixels(slider_height_, player_.main_window_ptr());
     const int32_t time_font_size_pixels = font_size::to_pixels(time_font_size_points_, player_.main_window_ptr());
 
 //    const ImFont* font = imgui_fonts::instance().get(font_name_, font_size_pixels, subtitles_create_dist_);
@@ -48,8 +48,8 @@ void controls_default::do_render()
 {
     calc_geometry();    // TODO : Only calc new geometry when window or fonts/sizes have changed!
 
-    const int32_t play_buttons_font_size_pixels = font_size::to_pixels(play_buttons_font_size_points_, player_.main_window_ptr());
-    const int32_t slider_font_size_pixels = font_size::to_pixels(slider_font_size_points_, player_.main_window_ptr());
+    const int32_t play_buttons_font_size_pixels = font_size::to_pixels(buttons_size_, player_.main_window_ptr());
+    const int32_t slider_font_size_pixels = font_size::to_pixels(slider_height_, player_.main_window_ptr());
     const int32_t time_font_size_pixels = font_size::to_pixels(time_font_size_points_, player_.main_window_ptr());
     ImFont* font_fwd_back_btns = imgui_fonts::instance().get(font_name_, play_buttons_font_size_pixels);
     ImFont* font_slider = imgui_fonts::instance().get(font_name_, slider_font_size_pixels);
@@ -77,7 +77,7 @@ void controls_default::do_render()
         ImGui::Begin("video_back_btn", &show_controls, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
         ImGui::PushButtonRepeat(true);
         if (ImGui::Button("<<")) {
-            player_.seek_relative(-relative_skip_time_small_);
+            player_.seek_relative(-skip_time_small_);
         }
         ImGui::PopButtonRepeat();
         ImGui::End();
@@ -86,7 +86,7 @@ void controls_default::do_render()
         ImGui::Begin("video_fwd_btn", &show_controls, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
         ImGui::PushButtonRepeat(true);
         if (ImGui::Button(">>")) {
-            player_.seek_relative(relative_skip_time_small_);
+            player_.seek_relative(skip_time_small_);
         }
         ImGui::PopButtonRepeat();
         ImGui::End();
