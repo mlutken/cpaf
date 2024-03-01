@@ -1,5 +1,4 @@
-#ifndef _GMATH_V4_
-#define _GMATH_V4_
+#pragma once
 // ****************************************************************************
 // CREATED_ON	: 17-06-03 17:00:19
 // CREATED_BY	: Martin Lutken
@@ -68,23 +67,23 @@ public:
 	// --------------------
 
     /** Default constructor with no initialization. */
-    v4() = default;
+    constexpr v4() = default;
 
-    v4 (const v4& other) = default;
+    constexpr v4 (const v4& other) = default;
 
 	/** Copy constructor. Initializtion with general (v4<>) vector.
 		Also work as casting operator from general v4<>.*/
 	template <typename T1>
-	v4(const v4<T1>& v)	
+    constexpr v4(const v4<T1>& v)
 	:	m_x(static_cast<T>(v.x())), m_y(static_cast<T>(v.y())), 
 		m_z(static_cast<T>(v.z())), m_w(static_cast<T>(v.w())) {}
 
 	/** Constructor with single value initialization. */
-	explicit v4(const T fVal)						///< [in] Both x, y, z, w are set to this value
+    constexpr explicit v4(const T fVal)						///< [in] Both x, y, z, w are set to this value
 		: m_x(fVal), m_y(fVal), m_z(fVal), m_w(fVal) {}	
 
 	/** Constructor with 4 value initialization. */
-	v4(	const T fx,									///< [in] x value.
+    constexpr v4(	const T fx,									///< [in] x value.
 		const T fy, 								///< [in] y value.
 		const T fz, 								///< [in] z value.
 		const T fw) 								///< [in] w value.
@@ -97,23 +96,23 @@ public:
 
 	/** Reference to x-coordinate.
 		\return Reference to x-coordinate of vector. */
-	T&			x()			{return m_x;}
-	const T&	x() const	{return m_x;}
+    constexpr T&			x()			{return m_x;}
+    constexpr const T&      x() const	{return m_x;}
 
 	/** Reference to y-coordinate.
 		\return Reference to y-coordinate of vector. */
-	T&			y()			{return m_y;}
-	const T&	y() const	{return m_y;}
+    constexpr T&			y()			{return m_y;}
+    constexpr const T&      y() const	{return m_y;}
 
 	/** Reference to z-coordinate.
 		\return Reference to z-coordinate of vector. */
-	T&			z()			{return m_z;}
-	const T&	z() const	{return m_z;}
+    constexpr T&			z()			{return m_z;}
+    constexpr const T&      z() const	{return m_z;}
 
 	/** Reference to w-coordinate.
 		\return Reference to w-coordinate of vector. */
-	T&			w()			{return m_w;}
-	const T&	w() const	{return m_w;}
+    constexpr T&			w()			{return m_w;}
+    constexpr const T&      w() const	{return m_w;}
 
 
     /** Set x-coordinate. */
@@ -575,13 +574,13 @@ inline std::ostream&	operator <<(std::ostream& os,		///< [out] Output stream to 
 }
 
 /** '>>' operator, Read input from stream. 
-	\return Reference to (modified) istream. */
+    \return Reference to (modified) istream. */
 template <typename T>
 inline std::istream&		operator >>(std::istream& is,		///< [in]  Input stream to read from.	
 										v4<T>& v)				///< [out] Vector recieve the data from the stream.
 {
-	is >> v.x() >> v.y() >> v.z() >> v.w();
-	return is;
+    is >> v.x() >> v.y() >> v.z() >> v.w();
+    return is;
 }
 
 using v4f = v4<float>;
@@ -590,8 +589,6 @@ using v4i32 = v4<std::int32_t>;
 using v4i64 = v4<std::int64_t>;
 
 _GMATH_END_NAMESPACE
-
-#endif	// _GMATH_V4_
 
 
 

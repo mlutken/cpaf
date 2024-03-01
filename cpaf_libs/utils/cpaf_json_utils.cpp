@@ -172,6 +172,19 @@ nlohmann::json json_value_object(const nlohmann::json& jo_object,
     return default_value;
 }
 
+nlohmann::json json_value_array(const nlohmann::json& jo_object,
+                                const std::string& key,
+                                const nlohmann::json& default_value)
+{
+    if (jo_object.is_object()) {
+        const auto elem = jo_object.value(key, nlohmann::json::object());
+        if (elem.is_null()) return default_value;
+        if (!elem.is_array()) return default_value;
+        return elem;
+    }
+    return default_value;
+}
+
 
 /** Remove specified fields from json object.
 */

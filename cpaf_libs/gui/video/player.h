@@ -8,6 +8,7 @@
 #include <cpaf_libs/video/play_stream.h>
 #include <cpaf_libs/video/media_stream_time.h>
 #include <cpaf_libs/gui/video/pipeline_threads/pipeline_threads.h>
+#include <cpaf_libs/gui/video/config.h>
 
 namespace cpaf::audio {
 class device;
@@ -45,7 +46,7 @@ public:
     void                            close_async             ();
     void                            cancel_async_open       ();
 
-    bool                            open_secondary                    (const std::string& resource_path, cpaf::video::stream_type_t sti);
+    bool                            open_secondary          (const std::string& resource_path, cpaf::video::stream_type_t sti);
 
     bool                            has_video_stream        () const { return has_source_stream(cpaf::video::stream_type_t::video); }
     bool                            has_audio_stream        () const { return has_source_stream(cpaf::video::stream_type_t::audio); }
@@ -174,6 +175,11 @@ public:
     // --- Debug functions ---
     // -----------------------
     std::string                 queues_info                 () const;
+
+    // ----------------------
+    // --- Public members ---
+    // ----------------------
+    cpaf::gui::video::config    configuration;
 
 private:
     // ---------------------------------

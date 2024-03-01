@@ -19,13 +19,15 @@ class u8color;
 class color : public cpaf::math::v4f
 {
 public:
+
+    constexpr static color default_val() { return color(0,0,0,0); }
     using cpaf::math::v4f::v4f; // "Import" constructors to scope
 
     static color   rgba(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
         return color(r/255.0f, g/255.0f, b/255.0f, a/255.0f);
     }
 
-    color   (float r, float g, float b, float a) : cpaf::math::v4f(r, g, b, a) {}
+    constexpr color   (float r, float g, float b, float a) : cpaf::math::v4f(r, g, b, a) {}
     explicit color   (nlohmann::json jo_color);
 
     float           r               () const        { return x(); }
@@ -47,7 +49,7 @@ class u8color : public v4u8
 public:
     using v4u8::v4u8; // "Import" constructors to scope
 
-    u8color   (uint8_t r, uint8_t g, uint8_t b, uint8_t a) : v4u8(r, g, b, a) {}
+    constexpr u8color   (uint8_t r, uint8_t g, uint8_t b, uint8_t a) : v4u8(r, g, b, a) {}
 
     uint8_t         r               () const        { return x(); }
     uint8_t&        r               ()              { return x(); }

@@ -21,7 +21,7 @@ player::player(cpaf::audio::device& audio_device)
     next_video_frame_ = av_frame::create_alloc();
 
     if (!video_controls_) {
-        set_controls(std::make_unique<video::controls_default>(*this));
+        set_controls(std::make_unique<video::controls_default>(*this, configuration));
     }
 //    pause_playback();
 }
@@ -35,15 +35,6 @@ void player::set_main_window(const system_window& main_window)
     main_window_ptr_ = &main_window;
 }
 
-//void player::init()
-//{
-//    if (has_video_stream()) {
-//        init_video(*main_window_ptr_);
-//    }
-////    pause_playback();
-//}
-
-
 void player::start_playing(const std::chrono::microseconds& start_time_pos)
 {
     media_pipeline_threads_ = std::make_unique<pipeline_threads>(*this);
@@ -56,7 +47,6 @@ void player::start_playing(const std::chrono::microseconds& start_time_pos)
     if (has_video_stream()) {
         init_video(*main_window_ptr_);
     }
-
 
     auto&  video_fmt_ctx = primary_stream().format_context(); // TODO: If we use multiple streams we need to get the right format ctx per stream here!
     auto&  audio_fmt_ctx = primary_stream().format_context(); // TODO: If we use multiple streams we need to get the right format ctx per stream here!

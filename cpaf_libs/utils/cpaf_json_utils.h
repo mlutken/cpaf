@@ -25,6 +25,7 @@ int32_t         json_value_int32        (const nlohmann::json& jo_object, const 
 std::string     json_value_str          (const nlohmann::json& jo, const std::string&  default_value);
 std::string     json_value_str          (const nlohmann::json& jo_object, const std::string& key, const std::string& default_value);
 nlohmann::json  json_value_object       (const nlohmann::json& jo_object, const std::string& key, const nlohmann::json& default_value = nlohmann::json::object());
+nlohmann::json  json_value_array        (const nlohmann::json& jo_object, const std::string& key, const nlohmann::json& default_value = nlohmann::json::array());
 void            json_remove_fields      (nlohmann::json& jo, const std::vector<std::string>& fields_to_remove);
 nlohmann::json  json_copy_fields        (const nlohmann::json& jo, const std::vector<std::string>& fields_to_copy);
 nlohmann::json  json_copy_fields        (const nlohmann::json& jo, const nlohmann::json& fields_to_copy);

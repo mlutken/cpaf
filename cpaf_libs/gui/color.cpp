@@ -15,11 +15,15 @@ color::color(nlohmann::json jo_color)
 {
     if (jo_color.is_array()) {
         unsigned i = 0;
-        for (auto jo : jo_color.items()) {
+        for (auto el : jo_color.items()) {
             if (i > 3) {
                 break;
             }
-            (*this)[i] = cpaf::json_value_float(jo, 0);
+            const float val = cpaf::json_value_float(el.value(), 0);
+            // std::cerr << "FIXMENM jo: " << el.value() << "\n";
+            // std::cerr << "FIXMENM val: " << val << "\n";
+            (*this)[i] = val;
+            ++i;
         }
     }
 }

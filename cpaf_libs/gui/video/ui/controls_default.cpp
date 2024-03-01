@@ -15,13 +15,13 @@ namespace cpaf::gui::video {
 void controls_default::calc_geometry()
 {
     const auto render_geometry = player_.render_geometry();
-    const int32_t fwd_back_font_size_pixels = font_size::to_pixels(buttons_size_, player_.main_window_ptr());
-    const int32_t slider_font_size_pixels = font_size::to_pixels(slider_height_, player_.main_window_ptr());
-    const int32_t time_font_size_pixels = font_size::to_pixels(time_font_size_points_, player_.main_window_ptr());
+    const int32_t fwd_back_font_size_pixels = font_size::to_pixels(buttons_size(), player_.main_window_ptr());
+    const int32_t slider_font_size_pixels = font_size::to_pixels(slider_height(), player_.main_window_ptr());
+    const int32_t time_font_size_pixels = font_size::to_pixels(time_font_size(), player_.main_window_ptr());
 
 //    const ImFont* font = imgui_fonts::instance().get(font_name_, font_size_pixels, subtitles_create_dist_);
 
-    const float y_pos = relative_ypos_* render_geometry.size().height();
+    const float y_pos = relative_ypos()* render_geometry.size().height();
 
     play_pause_btn_pos_.x = render_geometry.size().width() / 2;
     play_pause_btn_pos_.y = y_pos;
@@ -38,7 +38,7 @@ void controls_default::calc_geometry()
     video_slider_grab_width_ = fwd_back_font_size_pixels / 2;
 
     elapsed_time_pos_.x = (render_geometry.size().width() - video_slider_size_.x);
-    elapsed_time_pos_.y = video_slider_pos_.y + slider_font_size_pixels + time_font_size_pixels;
+    elapsed_time_pos_.y = video_slider_pos_.y - slider_font_size_pixels*1 - time_font_size_pixels*1;
 
     remaining_time_pos_.x = video_fwd_btn_pos_.x;
     remaining_time_pos_.y = elapsed_time_pos_.y;
@@ -48,12 +48,12 @@ void controls_default::do_render()
 {
     calc_geometry();    // TODO : Only calc new geometry when window or fonts/sizes have changed!
 
-    const int32_t play_buttons_font_size_pixels = font_size::to_pixels(buttons_size_, player_.main_window_ptr());
-    const int32_t slider_font_size_pixels = font_size::to_pixels(slider_height_, player_.main_window_ptr());
-    const int32_t time_font_size_pixels = font_size::to_pixels(time_font_size_points_, player_.main_window_ptr());
-    ImFont* font_fwd_back_btns = imgui_fonts::instance().get(font_name_, play_buttons_font_size_pixels);
-    ImFont* font_slider = imgui_fonts::instance().get(font_name_, slider_font_size_pixels);
-    ImFont* font_time = imgui_fonts::instance().get(font_name_, time_font_size_pixels);
+    const int32_t play_buttons_font_size_pixels = font_size::to_pixels(buttons_size(), player_.main_window_ptr());
+    const int32_t slider_font_size_pixels = font_size::to_pixels(slider_height(), player_.main_window_ptr());
+    const int32_t time_font_size_pixels = font_size::to_pixels(time_font_size(), player_.main_window_ptr());
+    ImFont* font_fwd_back_btns = imgui_fonts::instance().get(font_name(), play_buttons_font_size_pixels);
+    ImFont* font_slider = imgui_fonts::instance().get(font_name(), slider_font_size_pixels);
+    ImFont* font_time = imgui_fonts::instance().get(font_name(), time_font_size_pixels);
 
     ///if (!font_fwd_back_btns) { return; }
     bool show_controls = true;
@@ -77,7 +77,7 @@ void controls_default::do_render()
         ImGui::Begin("video_back_btn", &show_controls, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
         ImGui::PushButtonRepeat(true);
         if (ImGui::Button("<<")) {
-            player_.seek_relative(-skip_time_small_);
+            player_.seek_relative(-config_.controls_seconds("skip_time_small"));
         }
         ImGui::PopButtonRepeat();
         ImGui::End();
@@ -86,7 +86,7 @@ void controls_default::do_render()
         ImGui::Begin("video_fwd_btn", &show_controls, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
         ImGui::PushButtonRepeat(true);
         if (ImGui::Button(">>")) {
-            player_.seek_relative(skip_time_small_);
+            player_.seek_relative(config_.controls_seconds("skip_time_small"));
         }
         ImGui::PopButtonRepeat();
         ImGui::End();

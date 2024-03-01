@@ -5,13 +5,15 @@
 
 namespace cpaf::gui::video {
 
+class config;
+
 class player;
 
 class controls
 {
 public:
     controls() = delete;
-    explicit controls(player& parent_player);
+    explicit controls(player& parent_player, config& cfg);
     virtual ~controls() = default;
 
     void            render      ();
@@ -20,18 +22,15 @@ public:
 
 protected:
     player&                 player_;
-    std::string             font_name_                      {"manrope"};
-    color                   text_color_                     {1,1,1,1};
-    color                   border_color_                   {0,0,0,1};
-    color                   background_color_               {0,0,0,1};
-    uint16_t                time_font_size_points_          {13};
-    uint16_t                slider_height_                  {18};
-    uint16_t                buttons_size_                   {38};
-    float                   relative_ypos_                  {0.80};
-
-    std::chrono::seconds    skip_time_small_                {15};
-//    float           btns_rel_size_              {0.1};
-
+    config&                 config_;
+    std::string             font_name               () const;
+    color                   text_color              () const;
+    color                   border_color            () const;
+    color                   background_color        () const;
+    uint16_t                time_font_size   () const;
+    uint16_t                slider_height           () const;
+    uint16_t                buttons_size            () const;
+    float                   relative_ypos           () const;
 
 private:
 
