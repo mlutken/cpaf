@@ -1,11 +1,6 @@
 
 set (library_name cpaf_gui)
 add_library(${library_name} STATIC ""
-    gui-overview.qmodel
-    events/keyboard_events.h
-    events/keyboard_events.cpp
-    events/mouse_events.h
-    events/mouse_events.cpp
 )
 
 find_package(fmt REQUIRED)
@@ -36,6 +31,7 @@ endif()
 
 target_sources(${library_name}
     PUBLIC
+    gui-overview.qmodel
 
     ${CMAKE_CURRENT_LIST_DIR}/color.h
     ${CMAKE_CURRENT_LIST_DIR}/gui_types.h
@@ -77,6 +73,8 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/fonts/font_size.h
 
     ${CMAKE_CURRENT_LIST_DIR}/video/config.h
+    ${CMAKE_CURRENT_LIST_DIR}/video/data_definitions/playable.h
+    ${CMAKE_CURRENT_LIST_DIR}/video/data_definitions/playlist.h
     ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/pipeline_threads_types.h
     ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/pipeline_threads.h
     ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/audio_render_thread.h
@@ -144,6 +142,8 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/fonts/font_size__${CPAF_PLATFORM_TYPE_NAME}.cpp
 
     ${CMAKE_CURRENT_LIST_DIR}/video/config.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/video/data_definitions/playable.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/video/data_definitions/playlist.cpp
     ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/pipeline_threads.cpp
     ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/audio_render_thread.cpp
     ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/audio_resampler_thread.cpp
