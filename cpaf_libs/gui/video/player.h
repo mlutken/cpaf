@@ -229,7 +229,7 @@ private:
     bool                                            resume_from_pause_on_seek_      = true;
     subtitle_source_t                               subtitle_source_                = subtitle_source_t::stream;    /// @todo
     std::function<void ()>                          cb_start_playing_;
-    std::unique_ptr<std::jthread>                   open_thread_                    = nullptr;
+    std::unique_ptr<std::thread>                    open_thread_                    = nullptr;
 
 };
 

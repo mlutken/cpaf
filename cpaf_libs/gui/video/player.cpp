@@ -92,7 +92,7 @@ void player::open_async(const std::string& resource_path, std::chrono::microseco
     primary_resource_path_ = resource_path;
     start_time_pos_ = start_time_pos;
 
-    open_thread_ = std::make_unique<std::jthread>( [=,this]() { this->open(resource_path); } );
+    open_thread_ = std::make_unique<std::thread>( [=,this]() { this->open(resource_path); } );
     open_thread_->detach();
 }
 
@@ -129,7 +129,7 @@ void player::close()
 
 void player::close_async()
 {
-    open_thread_ = std::make_unique<std::jthread>( [=,this]() { this->close(); } );
+    open_thread_ = std::make_unique<std::thread>( [=,this]() { this->close(); } );
     open_thread_->detach();
 }
 

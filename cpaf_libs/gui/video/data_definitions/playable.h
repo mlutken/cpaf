@@ -1,4 +1,5 @@
 #pragma once
+#include <chrono>
 #include <cpaf_libs/utils/cpaf_json_utils.h>
 
 namespace cpaf::gui::video {
@@ -9,10 +10,30 @@ public:
     static nlohmann::json create_json();
     static nlohmann::json create_json(std::string path);
     static nlohmann::json create_json(std::string path, std::string subtitle_path);
-    static nlohmann::json create_json(std::string path, std::string subtitle_path, std::string language_code);
-    static void set_location_type(nlohmann::json& jo);
+    static nlohmann::json create_json(std::string path, std::string subtitle_path, const std::string& language_code);
+    static void auto_set_location_type(nlohmann::json& jo);
+
+    playable();
+    explicit playable(std::string path);
+    explicit playable(nlohmann::json playable);
+    playable(std::string path, std::string subtitle_path);
+    playable(std::string path, std::string subtitle_path, const std::string& language_code);
+
+
+    const nlohmann::json&       json                    () const { return jo_;  }
+
+    void                        auto_set_location_type  ();
+
+    std::string                 path                    () const;
+    std::chrono::microseconds   start_time              () const;
+    std::string                 start_time_str          () const;
+
+
+    bool                        is_valid                () const;
+
 
 private:
+    nlohmann::json jo_;
 };
 
 } // namespace cpaf::gui::video

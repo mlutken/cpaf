@@ -126,7 +126,20 @@ parse_duration(const std::string& duration)
 
 std::chrono::nanoseconds parse_duration (const std::string& duration, std::chrono::nanoseconds default_value)
 {
+    auto it = duration.begin();
+    long value = 0;
+    if (!cpaf::unicode::parse_find_long(value, it, duration.end(), 0)) {
+        return default_value;
+    }
+    auto tu = parse_unit(it, duration.end());
 
+    switch (tu) {
+    case unit::seconds:
+        return std::chrono::seconds(value); break;
+    default:
+        break;
+    }
+    return default_value;
 }
 
 // NOTE: Not at all an optimal implementation or the way to go when
