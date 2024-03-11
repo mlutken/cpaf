@@ -22,6 +22,7 @@ nlohmann::json playable::create_json()
         "rating": -1,
         "imdb_rating": -1,
         "source_location_type": "",
+        "start_time": "0",
         "subtitles": {
             "default": ""
         },

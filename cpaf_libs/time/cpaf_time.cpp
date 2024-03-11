@@ -4,7 +4,7 @@
 #include <iomanip>
 #include <chrono>
 #include <boost/date_time/posix_time/conversion.hpp>
-
+#include <cpaf_libs/unicode/cpaf_u8string_parse_numbers.h>
 
 namespace cpaf::time {
 
@@ -105,6 +105,51 @@ std::chrono::system_clock::time_point parse_iso_pretty(const std::string& date_t
     return tp;
 }
 
+std::optional<std::chrono::nanoseconds>
+parse_duration(const std::string& duration)
+{
+    auto it = duration.begin();
+    long value = 0;
+    if (!cpaf::unicode::parse_find_long(value, it, duration.end(), 0)) {
+        return std::optional<std::chrono::nanoseconds>();
+    }
+    auto tu = parse_unit(it, duration.end());
+
+    switch (tu) {
+    case unit::seconds:
+        return std::chrono::seconds(value); break;
+    default:
+        break;
+    }
+    return std::optional<std::chrono::nanoseconds>();
+}
+
+std::chrono::nanoseconds parse_duration (const std::string& duration, std::chrono::nanoseconds default_value)
+{
+
+}
+
+// NOTE: Not at all an optimal implementation or the way to go when
+//       implementing support for parsing all the units!
+unit parse_unit(std::string::const_iterator& begin,
+                const std::string::const_iterator& end)
+{
+    static constexpr char s_str[] = "s";
+    static constexpr char seconds_str[] = "seconds";
+    if (begin >= end) { return unit::unknown; }
+    std::string s(begin, end);
+    if (s.starts_with(seconds_str) ) {
+            begin += sizeof(seconds_str);
+            return unit::seconds;
+    }
+    else if (s.starts_with(s_str) ) {
+            begin += sizeof(s_str);
+            return unit::seconds;
+    }
+
+    return unit::unknown;
+}
+
 // -------------------
 // --- Converting ----
 // -------------------
@@ -119,8 +164,6 @@ std::chrono::system_clock::time_point unix_epoch()
     }
     return epoch;
 }
-
-
 
 /** Convert to a standard unix timestamp with seconds resolution. */
 int64_t to_unix_timestamp_seconds(const std::chrono::system_clock::time_point& time_point)

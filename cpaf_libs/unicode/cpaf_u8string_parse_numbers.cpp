@@ -3,11 +3,6 @@
 #include <algorithm>
 #include <boost/algorithm/string.hpp>
 
-// #include <utils/cpaf_string_utils.hpp>
-
-/// #include "cpaf_u8string_utils.h"
-
-
 namespace cpaf::unicode {
 
 void normalize_locale(std::string::iterator begin,

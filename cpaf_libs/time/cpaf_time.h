@@ -1,14 +1,17 @@
-#ifndef CPAF_TIME_H
-#define CPAF_TIME_H
+#pragma once
 
 #include <string>
 #include <ctime>
 #include <chrono>
 #include <format>
+#include <optional>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 
 namespace cpaf::time {
+
+enum class unit {unknown, years, months, weeks, days, hours, minutes, seconds, milliseconds, microseconds, nanoseconds};
+
 
 /** \unit cpaf_time.h
 ! Functions formatting ad parsing time.
@@ -105,7 +108,26 @@ std::string steady_now_h_m_s_ms ();
 // ------------------------------
 // --- Time parsing functions ---
 // ------------------------------
-std::chrono::system_clock::time_point parse_iso_pretty  (const std::string& date_time_string);
+std::chrono::system_clock::time_point   parse_iso_pretty    (const std::string& date_time_string);
+
+/** Get duration from string with unit.
+ *  Parses string like: '3d', '3h', '23m', '2s', '2 s', '450 ms', '50us', '23ns'
+ *  @todo Only seconds supported in current version!
+*/
+std::optional<std::chrono::nanoseconds> parse_duration               (const std::string& duration);
+
+/** Get duration from string with unit.
+ *  Parses string like: '3d', '3h', '23m', '2s', '2 s', '450 ms', '50us', '23ns'
+ *  @todo Only seconds supported in current version!
+*/
+std::chrono::nanoseconds                parse_duration               (const std::string& duration, std::chrono::nanoseconds default_value);
+
+/** Parse time unit from string .
+ *  Parses string like: 'd', 'days', 'h', 'hours', 's', 'seconds', 'milliseconds', 'ms', 'us', ns'
+ *  @todo Only seconds supported in current version!
+*/
+unit                                    parse_unit          (std::string::const_iterator& begin
+                                                            ,const std::string::const_iterator& end);
 
 namespace test {
     std::string format_utc(const time_t& raw_time, const std::string_view format_string, bool append_utc = false);
@@ -149,8 +171,4 @@ auto measure_function_call(std::size_t iter, Function&& f)
 
 
 } //END namespace cpaf::time
-
-
-#endif //CPAF_TIME_H
-
 
