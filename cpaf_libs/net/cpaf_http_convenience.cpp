@@ -2,6 +2,7 @@
 
 ////#include <boost/process.hpp>
 
+using namespace std::chrono;
       
 namespace cpaf { namespace net {
 
@@ -15,7 +16,9 @@ size_t curl_write_file_data_helper(void *ptr, size_t size, size_t nmemb, FILE *s
     return written;
 }
 
-static CURLcode curl_do_http_download_file_impl(const std::string& sSrcUrl, const std::string& sDstFilePath )
+static CURLcode curl_do_http_download_file_impl(const std::string& sSrcUrl,
+                                                const std::string& sDstFilePath,
+                                                std::chrono::milliseconds timeout)
 {
     CURLcode    res = CURLE_FAILED_INIT;
     CURL*       curl;
@@ -24,6 +27,7 @@ static CURLcode curl_do_http_download_file_impl(const std::string& sSrcUrl, cons
     curl = curl_easy_init();
     if (curl) {
         fp = fopen( sDstFilePath.c_str(), "wb" );
+        curl_easy_setopt(curl, CURLOPT_TIMEOUT, duration_cast<seconds>(timeout).count());
         curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L); // enable redirect following
         curl_easy_setopt(curl, CURLOPT_URL, sSrcUrl.c_str() );
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_write_file_data_helper);
@@ -43,7 +47,8 @@ static size_t curl_write_string_data_helper(void *contents, size_t size, size_t 
     return size * nmemb;
 }
 
-std::string curl_do_http_download_to_string_impl(const std::string sSrcUrl)
+std::string curl_do_http_download_to_string_impl(const std::string sSrcUrl,
+                                                std::chrono::milliseconds timeout)
 {
     CURLcode    res = CURLE_FAILED_INIT;
     CURL*       curl;
@@ -54,6 +59,7 @@ std::string curl_do_http_download_to_string_impl(const std::string sSrcUrl)
         curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L); // enable redirect following
         curl_easy_setopt(curl, CURLOPT_URL, sSrcUrl.c_str() );
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+        curl_easy_setopt(curl, CURLOPT_TIMEOUT, duration_cast<seconds>(timeout).count());
     //    curl_easy_setopt(curl, CURLOPT_HEADER, 1L);
 
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_write_string_data_helper);
@@ -74,22 +80,20 @@ std::string curl_do_http_download_to_string_impl(const std::string sSrcUrl)
 
 /** Download file via HTTP protocol. Typically from a webserver.
 \todo Implement ftp download function using curl too. */
-CURLcode curl_http_download_file (
-          const std::string sSrcUrl         ///< [in] Full path to source URL
-        , const std::string sDstFilePath    ///< [in] Full path to destination file
-        )
+CURLcode curl_http_download_file (const std::string sSrcUrl         ///< [in] Full path to source URL
+                                 , const std::string sDstFilePath    ///< [in] Full path to destination file
+                                 , std::chrono::milliseconds timeout)
 {
-    return curl_do_http_download_file_impl( sSrcUrl, sDstFilePath );
+    return curl_do_http_download_file_impl( sSrcUrl, sDstFilePath, timeout);
 }
 
 /** Download file via HTTP protocol. Typically from a webserver.
  * File contents is returned as a string.
 \todo Implement ftp download function using curl too. */
-std::string curl_http_download_to_string (
-          const std::string sSrcUrl         ///< [in] Full path to source URL
-        )
+std::string curl_http_download_to_string (const std::string sSrcUrl         ///< [in] Full path to source URL
+                                         , std::chrono::milliseconds timeout)
 {
-    return curl_do_http_download_to_string_impl(sSrcUrl);
+    return curl_do_http_download_to_string_impl(sSrcUrl, timeout);
 }
 
 /**
@@ -98,11 +102,10 @@ Upload a single file using HTTP POST, no pasword, user only the file.
 \see http://linux.die.net/man/3/libcurl-tutorial
 \return Curl result code: http://curl.haxx.se/libcurl/c/libcurl-errors.html E.g: CURLE_OK, CURLE_UPLOAD_FAILED, CURLE_READ_ERROR
 */
-CURLcode curl_post_upload_file_simple   (
-          const std::string& sURL
-        , const std::string& sFieldName
-        , const std::filesystem::path& filePath
-        )
+CURLcode curl_post_upload_file_simple   (const std::string& sURL
+                                      , const std::string& sFieldName
+                                      , const std::filesystem::path& filePath
+                                      , std::chrono::milliseconds timeout)
 {
     if ( sURL == "" ) return CURLE_READ_ERROR;
     using namespace std;
@@ -129,6 +132,7 @@ CURLcode curl_post_upload_file_simple   (
                     CURLFORM_END);
 
         curl_easy_setopt(curl, CURLOPT_URL, sURL.c_str() );
+        curl_easy_setopt(curl, CURLOPT_TIMEOUT, duration_cast<seconds>(timeout).count());
 
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headerlist);
         curl_easy_setopt(curl, CURLOPT_HTTPPOST, post );
@@ -148,7 +152,10 @@ Upload a single file using HTTP POST, no pasword, user only the file.
 \see http://linux.die.net/man/3/libcurl-tutorial
 \return Curl result code: http://curl.haxx.se/libcurl/c/libcurl-errors.html E.g: CURLE_OK, CURLE_UPLOAD_FAILED, CURLE_READ_ERROR 
 */
-CURLcode curlPostUploadFileSimple( const std::string& sURL, const std::string& sFieldName, const std::filesystem::path& filePath ) 
+CURLcode curlPostUploadFileSimple(const std::string& sURL,
+                                  const std::string& sFieldName,
+                                  const std::filesystem::path& filePath,
+                                  std::chrono::milliseconds timeout)
 {
     if ( sURL == "" ) return CURLE_READ_ERROR;
 	using namespace std;
@@ -162,8 +169,6 @@ CURLcode curlPostUploadFileSimple( const std::string& sURL, const std::string& s
 	struct curl_httppost* post=NULL;
 	struct curl_httppost* last=NULL;
 	static const char buf[] = "Expect:";
-
-	
 	
 	curl = curl_easy_init();
 	if(curl) {
@@ -178,6 +183,7 @@ CURLcode curlPostUploadFileSimple( const std::string& sURL, const std::string& s
 		
 // 		curl_easy_setopt ( curl, CURLOPT_VERBOSE, 1L );
 		curl_easy_setopt(curl, CURLOPT_URL, sURL.c_str() );
+        curl_easy_setopt(curl, CURLOPT_TIMEOUT, duration_cast<seconds>(timeout).count());
 		
  		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headerlist);
   		curl_easy_setopt(curl, CURLOPT_HTTPPOST, post );
@@ -212,7 +218,9 @@ Upload a single file using HTTP POST, no pasword, user only the file.
 \see http://linux.die.net/man/3/libcurl-tutorial
 \return Curl result code: http://curl.haxx.se/libcurl/c/libcurl-errors.html E.g: CURLE_OK, CURLE_UPLOAD_FAILED, CURLE_READ_ERROR
 */
-CURLcode curlPostUploadFileSimple( const std::string& sURL, const std::string& sFieldName, const std::filesystem::path& filePath )
+CURLcode curlPostUploadFileSimple( const std::string& sURL,
+                                   const std::string& sFieldName,
+                                   const std::filesystem::path& filePath )
 {
     if ( sURL == "" ) return CURLE_READ_ERROR;
     using namespace std;
