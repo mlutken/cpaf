@@ -37,10 +37,9 @@ string subtitle_text_file_data::get_archive_srt_path(const std::string& resource
     return cpaf::unicode::substring_between(resource_path, "#", "");
 }
 
-
-subtitle_text_file_data::subtitle_text_file_data(const std::string& resource_path)
+subtitle_text_file_data::subtitle_text_file_data(const std::string& resource_path, std::chrono::milliseconds timeout)
 {
-    open(resource_path);
+    open(resource_path, timeout);
 }
 
 subtitle_text_file_data::~subtitle_text_file_data()
@@ -48,7 +47,7 @@ subtitle_text_file_data::~subtitle_text_file_data()
     close();
 }
 
-void subtitle_text_file_data::open(const std::string& resource_path)
+bool subtitle_text_file_data::open(const std::string& resource_path, std::chrono::milliseconds timeout)
 {
     close();
     resource_path_ = resource_path;
@@ -56,14 +55,16 @@ void subtitle_text_file_data::open(const std::string& resource_path)
     archive_path_ = get_archive_path(resource_path);
 
     if (is_network_url(resource_path)) {
-        download_and_open_file(resource_path);
+        return download_and_open_file(resource_path, timeout);
     }
     else if ( std::filesystem::exists(archive_path_) ) {
         if (cpaf::compression::detect_is_zip_file(archive_path_)) {
             zip_archive_ = std::make_unique<Zippy::ZipArchive>();
             zip_archive_->Open(archive_path_);
         }
+        return true;
     }
+    return false;
 }
 
 string subtitle_text_file_data::archive_path() const
@@ -187,22 +188,26 @@ bool subtitle_text_file_data::is_network_url(const string& path) const
 // --- PRIVATE: Helpers ---
 // ------------------------
 
-void subtitle_text_file_data::download_and_open_file(const std::string& resource_path)
+bool subtitle_text_file_data::download_and_open_file(
+    const std::string& resource_path,
+    std::chrono::milliseconds timeout)
 {
     local_download_path_ = special_dirs::temp() / sha1(resource_path);
     const auto download_url = get_archive_path(resource_path);
 
-    const auto res = cpaf::net::curl_http_download_file(download_url, local_download_path_.string());
+    const auto res = cpaf::net::curl_http_download_file(download_url, local_download_path_.string(), timeout);
     if (res == CURLE_OK) {
         if (cpaf::compression::detect_is_zip_file(local_download_path_)) {
             zip_archive_ = std::make_unique<Zippy::ZipArchive>();
             zip_archive_->Open(local_download_path_);
         }
+        return true;
     }
     else {
         cpaf::filesystem::remove_safe(local_download_path_);
         local_download_path_.clear();
     }
+    return false;
 }
 
 string subtitle_text_file_data::read_srt_data() const

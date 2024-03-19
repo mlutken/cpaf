@@ -4,8 +4,10 @@
 #include <sstream>
 #include <fmt/format.h>
 
+#include <Zippy.hpp>
 #include <cpaf_libs/time/cpaf_time.h>
 #include <cpaf_libs/unicode/cpaf_u8string_utils.h>
+#include <cpaf_libs/video/io/subtitle_text_file_data.h>
 
 using namespace std;
 using namespace cpaf::time;
@@ -36,6 +38,35 @@ string subtitle_container::frame_t::to_string() const
 @see https://stackoverflow.com/questions/68756784/cannot-use-stdchronoparse-even-with-std-c2a-and-g-11
 @see https://github.com/HowardHinnant/date
 */
+
+std::unique_ptr<subtitle_container> subtitle_container::create_from_path(
+    const std::string& resource_path,
+    std::chrono::milliseconds timeout)
+{
+    auto container = std::make_unique<subtitle_container>();
+    subtitle_text_file_data stfd;
+    if (stfd.open(resource_path, timeout)) {
+        container->parse_srt_file_data(stfd.srt_file_data());
+    }
+
+    return container;
+}
+
+/// @todo Implement subtitle_text_format_t detection!
+subtitle_text_format_t subtitle_container::detect_format(std::string_view data_string_view)
+{
+    return subtitle_text_format_t::srt;
+}
+
+void subtitle_container::parse_file_data(std::string_view data_string_view)
+{
+    const auto format = subtitle_container::detect_format(data_string_view);
+
+    if (format == subtitle_text_format_t::srt) {
+        parse_srt_file_data(data_string_view);
+    }
+}
+
 void subtitle_container::parse_srt_file_data(std::string_view data_string_view)
 {
     using std::operator""sv;

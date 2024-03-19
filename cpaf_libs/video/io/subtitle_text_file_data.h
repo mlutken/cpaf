@@ -27,8 +27,10 @@ public:
 
     subtitle_text_file_data() = default;
     ~subtitle_text_file_data();
-    explicit                    subtitle_text_file_data      (const std::string& resource_path);
-    void                        open                    (const std::string& resource_path);
+    explicit                    subtitle_text_file_data (const std::string& resource_path,
+                                                         std::chrono::milliseconds timeout = std::chrono::minutes(1));
+    bool                        open                    (const std::string& resource_path,
+                                                         std::chrono::milliseconds timeout = std::chrono::minutes(1));
 
 
     // ----------------------
@@ -64,7 +66,8 @@ private:
     void                        close                   ();
     bool                        is_network_url          (const std::string& path) const;
 
-    void                        download_and_open_file  (const std::string& resource_path);
+    bool                        download_and_open_file  (const std::string& resource_path,
+                                                         std::chrono::milliseconds timeout = std::chrono::minutes(1));
     std::string                 read_srt_data           () const;
     std::string                 read_info_data          () const;
     std::string                 read_text_file_from_zip (const std::string& file_path_in_archive) const;

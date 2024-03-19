@@ -78,6 +78,11 @@ enum class subtitle_source_t : int8_t {
     text_file
 };
 
+enum class subtitle_text_format_t : int8_t {
+    unknown,
+    srt
+};
+
 enum class stream_state_t : int8_t {
     inactive,
     opening,
