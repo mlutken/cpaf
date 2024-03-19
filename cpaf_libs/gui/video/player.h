@@ -37,7 +37,6 @@ public:
     explicit player(cpaf::audio::device& audio_device);
     ~player();
     void                            set_main_window         (const system_window& main_window);
-///    void                            init                    ();
     void                            start_playing           (const std::chrono::microseconds& start_time_pos = std::chrono::microseconds(0));
     void                            terminate               ();
     bool                            open                    (const std::string& resource_path);
@@ -123,6 +122,8 @@ public:
     // -------------------------------
     subtitle_source_t                   subtitle_source         () const { return subtitle_source_; }
     size_t                              subtitle_stream_index	() const;
+    void                                subtitle_file_set       (const std::string& resource_path);
+    void                                subtitle_container_set  (std::unique_ptr<subtitle_container> container);
 
     // ---------------------------------------------
     // --- Interfacing to surrounding app/system ---

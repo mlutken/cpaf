@@ -56,6 +56,7 @@ public:
     void                        resume_playback         ();
     bool                        playback_paused         () const { return threads_paused_; }
     bool                        all_threads_are_paused  () const;
+    void                        subtitle_container_set  (std::unique_ptr<subtitle_container> container);
 
     void                        video_frame_update      (cpaf::video::av_frame& current_frame, cpaf::gui::video::render& video_render);
 

@@ -3,6 +3,7 @@
 #include <cpaf_libs/audio/cpaf_audio_device.h>
 #include <cpaf_libs/time/cpaf_time.h>
 #include <cpaf_libs/torrent/torrents.h>
+#include <cpaf_libs/video/io/subtitle_container.h>
 #include <cpaf_libs/gui/system_window.h>
 #include <cpaf_libs/audio/cpaf_audio_device.h>
 #include <cpaf_libs/gui/video/render/render.h>
@@ -347,6 +348,18 @@ size_t player::audio_stream_index() const
 size_t player::subtitle_stream_index() const
 {
     return subtitle_stream_index_ != no_stream_index ? subtitle_stream_index_ : source_stream(stream_type_t::subtitle)->first_subtitle_index();
+}
+
+void player::subtitle_file_set(const std::string& resource_path)
+{
+
+}
+
+
+void player::subtitle_container_set(std::unique_ptr<subtitle_container> container)
+{
+    subtitle_source_ = subtitle_source_t::text_file;
+    media_pipeline_threads().subtitle_container_set(std::move(container));
 }
 
 // -------------------------------

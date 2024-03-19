@@ -7,6 +7,7 @@
 #include <cpaf_libs/video/audio_resampler.h>
 #include <cpaf_libs/video/media_stream_time.h>
 #include <cpaf_libs/video/av_samples_queue.h>
+#include <cpaf_libs/video/io/subtitle_container.h>
 #include <cpaf_libs/gui/video/player.h>
 
 using namespace std;
@@ -111,6 +112,11 @@ bool pipeline_threads::all_threads_are_paused() const
             audio_render_paused &&
             subtitle_paused
         ;
+}
+
+void pipeline_threads::subtitle_container_set(std::unique_ptr<subtitle_container> container)
+{
+    subtitle_reader_thread_.subtitle_container_set(std::move(container));
 }
 
 void pipeline_threads::video_frame_update(cpaf::video::av_frame& current_frame, gui::video::render& video_render)

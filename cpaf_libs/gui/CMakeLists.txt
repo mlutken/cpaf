@@ -86,6 +86,7 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/video/render/render_base.h
     ${CMAKE_CURRENT_LIST_DIR}/video/render/render__sdl2.h
     ${CMAKE_CURRENT_LIST_DIR}/video/player.h
+    ${CMAKE_CURRENT_LIST_DIR}/video/playlist_control.h
     ${CMAKE_CURRENT_LIST_DIR}/video/ui/controls.h
     ${CMAKE_CURRENT_LIST_DIR}/video/ui/controls_default.h
 
@@ -154,6 +155,7 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/video/render/render_base.cpp
     ${CMAKE_CURRENT_LIST_DIR}/video/render/render__sdl2.cpp
     ${CMAKE_CURRENT_LIST_DIR}/video/player.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/video/playlist_control.cpp
     ${CMAKE_CURRENT_LIST_DIR}/video/ui/controls.cpp
     ${CMAKE_CURRENT_LIST_DIR}/video/ui/controls_default.cpp
 

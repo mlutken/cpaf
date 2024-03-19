@@ -56,7 +56,7 @@ void subtitle_text_file_data::open(const std::string& resource_path)
     archive_path_ = get_archive_path(resource_path);
 
     if (is_network_url(resource_path)) {
-        download_file(resource_path);
+        download_and_open_file(resource_path);
     }
     else if ( std::filesystem::exists(archive_path_) ) {
         if (cpaf::compression::detect_is_zip_file(archive_path_)) {
@@ -187,7 +187,7 @@ bool subtitle_text_file_data::is_network_url(const string& path) const
 // --- PRIVATE: Helpers ---
 // ------------------------
 
-void subtitle_text_file_data::download_file(const std::string& resource_path)
+void subtitle_text_file_data::download_and_open_file(const std::string& resource_path)
 {
     local_download_path_ = special_dirs::temp() / sha1(resource_path);
     const auto download_url = get_archive_path(resource_path);

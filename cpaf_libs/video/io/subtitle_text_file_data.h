@@ -64,7 +64,7 @@ private:
     void                        close                   ();
     bool                        is_network_url          (const std::string& path) const;
 
-    void                        download_file           (const std::string& resource_path);
+    void                        download_and_open_file  (const std::string& resource_path);
     std::string                 read_srt_data           () const;
     std::string                 read_info_data          () const;
     std::string                 read_text_file_from_zip (const std::string& file_path_in_archive) const;
