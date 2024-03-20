@@ -92,6 +92,29 @@ std::string playable::start_time_str() const
     return cpaf::json_value_str(jo_["start_time"], "");
 }
 
+std::string playable::default_subtitle_path(const std::string& language_code) const
+{
+    auto path = cpaf::json_value_str(jo_["subtitles"][language_code], "");
+    if (path.empty()) {
+        path = cpaf::json_value_str(jo_["subtitles"]["default"], "");
+    }
+    return path;
+}
+
+/// @todo Implement has_subtitle()
+bool playable::has_subtitle(const std::string& language_code) const
+{
+    return false;
+}
+
+/// @todo Implement subtitle_language_codes()
+std::vector<std::string> playable::subtitle_language_codes() const
+{
+    std::vector<std::string> language_codes;
+
+    return language_codes;
+}
+
 bool playable::is_valid() const
 {
     return !cpaf::json_value_str(jo_["path"], "").empty();

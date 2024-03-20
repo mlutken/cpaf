@@ -17,6 +17,10 @@ static const auto default_config = nlohmann::json::parse(
             "buttons_size": 38,
             "relative_ypos": 0.7,
             "skip_time_small": 15
+        },
+        "user": {
+            "ui_language_code": "en",
+            "subtitle_language_code": "en"
         }
     }
     )");
@@ -62,6 +66,11 @@ int32_t config::controls_int32(const std::string& id) const
 std::chrono::seconds config::controls_seconds(const std::string& id) const
 {
     return std::chrono::seconds(cpaf::json_value_int32(jo_["controls"], id, 0));
+}
+
+std::string config::str(const std::string& group, const std::string& id) const
+{
+    return cpaf::json_value_str(jo_[group], id, "");
 }
 
 void config::connect_for_changes(changed_cb callback)

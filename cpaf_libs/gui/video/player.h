@@ -28,6 +28,7 @@ namespace cpaf::gui::video {
 
 class render;
 class controls;
+class playable;
 
 class player
 {
@@ -40,6 +41,8 @@ public:
     void                            start_playing           (const std::chrono::microseconds& start_time_pos = std::chrono::microseconds(0));
     void                            terminate               ();
     bool                            open                    (const std::string& resource_path);
+    bool                            open                    (const playable& playab);
+    void                            open_async              (const playable& playab);
     void                            open_async              (const std::string& resource_path, std::chrono::microseconds start_time_pos = {});
     void                            close                   ();
     void                            close_async             ();
@@ -188,7 +191,7 @@ private:
     // ---------------------------------
     void                            init_video              (const system_window& main_window);
     bool                            open_stream             (const std::string& resource_path, cpaf::video::stream_type_t sti);
-    bool                            open_primary_stream     (const std::string& resource_path);
+    bool                            open_primary_stream     (const std::string& resource_path, const std::string& subtitle_path);
     void                            update_scaling_context  () const;
     pipeline_threads&               media_pipeline_threads  () { return *media_pipeline_threads_; }
     const pipeline_threads&         media_pipeline_threads  () const { return *media_pipeline_threads_; }

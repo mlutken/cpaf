@@ -22,12 +22,12 @@ extern "C"
 #include <cpaf_libs/video/av_codec_context.h>
 #include <cpaf_libs/video/av_codec_parameters.h>
 #include <cpaf_libs/video/av_packet.h>
+#include <cpaf_libs/video/io/subtitle_container.h>
 
 
 namespace cpaf::video {
 
 class custom_io_base;
-
 
 /**
  *
@@ -38,11 +38,13 @@ class av_format_context
 public:
     using get_packet_fun = std::function<av_packet()>;
 
+    std::unique_ptr<subtitle_container>     subtitles_from_open = nullptr;
+
     // --- Constructors etc. ---
     explicit av_format_context(get_torrents_fn get_torrents_function);
 
     ~av_format_context();
-    bool                    open                        (const std::string& resource_path);
+    bool                    open                        (const std::string& resource_path, const std::string& subtitle_path);
     void                    close                       ();
     void                    selected_media_index_set    (media_type mt, size_t stream_index);
     size_t                  media_type_to_index         (media_type mt) const { return selected_stream_per_media_type_[to_size_t(mt)]; }
@@ -82,8 +84,6 @@ public:
     bool                    seek_time_pos               (std::chrono::microseconds stream_pos, seek_dir dir);
     bool                    seek_time_pos               (size_t stream_index, std::chrono::microseconds stream_pos, seek_dir dir);
     bool                    seek_time_pos               (media_type mt, std::chrono::microseconds stream_pos, seek_dir dir);
-
-
 
     // --- Codec Functions ---
     av_codec_parameters     codec_parameters            (size_t stream_index) const;
@@ -135,12 +135,12 @@ private:
     // --- Helper functions ---
     packet_queue_t&             packet_queue_get        (media_type mt) { return packet_queue_per_media_type_[to_size_t(mt)]; }
 
-    void                    read_codec_contexts         ();
-    size_t                  default_primary_stream_index() const;
-    AVStream*               ff_stream                   (size_t stream_index) const;
-    AVCodecParameters*      ff_codec_parameters         (size_t stream_index) const;
-    const AVCodec*          ff_find_decoder             (size_t stream_index) const;
-    AVRational              stream_time_base            (size_t stream_index) const { return ff_format_context_->streams[stream_index]->time_base; }
+    void                        read_codec_contexts         ();
+    size_t                      default_primary_stream_index() const;
+    AVStream*                   ff_stream                   (size_t stream_index) const;
+    AVCodecParameters*          ff_codec_parameters         (size_t stream_index) const;
+    const AVCodec*              ff_find_decoder             (size_t stream_index) const;
+    AVRational                  stream_time_base            (size_t stream_index) const { return ff_format_context_->streams[stream_index]->time_base; }
 
     std::atomic<stream_state_t>                             stream_state_           = stream_state_t::inactive;
     AVFormatContext*                                        ff_format_context_      = nullptr;

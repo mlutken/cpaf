@@ -1,5 +1,6 @@
 #include "player.h"
 
+#include <fmt/format.h>
 #include <cpaf_libs/audio/cpaf_audio_device.h>
 #include <cpaf_libs/time/cpaf_time.h>
 #include <cpaf_libs/torrent/torrents.h>
@@ -8,6 +9,8 @@
 #include <cpaf_libs/audio/cpaf_audio_device.h>
 #include <cpaf_libs/gui/video/render/render.h>
 #include <cpaf_libs/gui/video/ui/controls_default.h>
+#include <cpaf_libs/gui/video/data_definitions/playable.h>
+
 
 using namespace cpaf::video;
 using namespace cpaf::time;
@@ -82,10 +85,31 @@ void player::terminate()
 bool player::open(const std::string& resource_path)
 {
     close();
+    primary_resource_path_ = resource_path;
     // Create media pipeline threads
     pause_playback();
     primary_source_stream_ = std::make_unique<cpaf::video::play_stream>([this]() {return torrents_get();});
-    return open_primary_stream(resource_path);
+    return open_primary_stream(resource_path, "");
+}
+
+bool player::open(const playable& playab)
+{
+    close();
+    primary_resource_path_ = playab.path();
+    // Create media pipeline threads
+    pause_playback();
+    start_time_pos_ = playab.start_time();
+    primary_source_stream_ = std::make_unique<cpaf::video::play_stream>([this]() {return torrents_get();});
+    const auto subtitle_path = playab.default_subtitle_path(configuration.str("user", "subtitle_language_code"));
+    fmt::println("FIXMENM open playable subtitle path: {}", subtitle_path);
+    const bool ok = open_primary_stream(playab.path(), subtitle_path);
+    return ok;
+}
+
+void player::open_async(const playable& playab)
+{
+    open_thread_ = std::make_unique<std::thread>( [=,this]() { this->open(playab); } );
+    open_thread_->detach();
 }
 
 void player::open_async(const std::string& resource_path, std::chrono::microseconds start_time_pos)
@@ -518,15 +542,15 @@ bool player::open_stream(const std::string& resource_path, stream_type_t sti)
 {
     const auto index = to_size_t(sti);
     source_streams_[index] = std::make_unique<play_stream>([this]() {return torrents_get();});
-    const auto open_ok = source_streams_[index]->open(resource_path);
+    const auto open_ok = source_streams_[index]->open(resource_path, "");
 
     return open_ok;
 }
 
-bool player::open_primary_stream(const std::string& resource_path)
+bool player::open_primary_stream(const std::string& resource_path, const std::string& subtitle_path)
 {
     primary_resource_path_ = resource_path;
-    const auto open_ok = primary_stream().open(resource_path);
+    const auto open_ok = primary_stream().open(resource_path, subtitle_path);
     return open_ok;
 }
 

@@ -21,9 +21,9 @@ play_stream::~play_stream()
     format_context_.close();
 }
 
-bool play_stream::open(const std::string& resource_path)
+bool play_stream::open(const std::string& resource_path, const string& subtitle_path)
 {
-    return format_context_.open(resource_path);
+    return format_context_.open(resource_path, subtitle_path);
 }
 
 void play_stream::close()
