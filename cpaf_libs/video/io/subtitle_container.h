@@ -51,6 +51,9 @@ public:
     // ----------------------
     void                                language_code_set		(std::string_view lc) { language_code_ = lc; }
     const std::string&                  language_code			() const { return language_code_; }
+    size_t                              size                    () const { return subtitles_.size(); }
+    bool                                empty                   () const { return size() == 0u; }
+    bool                                is_valid                () const;
 
     // ----------------------
     // --- Data functions ---

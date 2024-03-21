@@ -80,6 +80,12 @@ void subtitle_container::parse_srt_file_data(std::string_view data_string_view)
     }
 }
 
+/// @todo Better implementation. Ie. detect more potential errors in parsing the srt file et.
+bool subtitle_container::is_valid() const
+{
+    return !empty();
+}
+
 subtitle_container::const_iterator subtitle_container::find_first_after(std::chrono::microseconds ts) const
 {
     constexpr auto compare = [](const auto& frm, std::chrono::microseconds ts) -> bool {
