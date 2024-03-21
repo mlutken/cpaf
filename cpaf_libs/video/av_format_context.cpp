@@ -48,10 +48,10 @@ bool av_format_context::open(const std::string& resource_path, const std::string
     close();
     selected_stream_per_media_type_.fill(no_stream_index);
     if (!subtitle_path.empty()) {
+        fmt::println("FIXMENM Subtitle resource path: {}", subtitle_path); std::cout << std::endl;
         stream_state_ = stream_state_t::downloading_subtitle;
         subtitles_from_open = subtitle_container::create_from_path(resource_path, std::chrono::seconds(30));
 
-        fmt::println("FIXMENM Subtitle resource path: {}", subtitle_path);
 
         fmt::println("---------------------------- START");
         for (auto frame: subtitles_from_open->subtitles()) {

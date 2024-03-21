@@ -47,6 +47,7 @@ subtitle_text_file_data::~subtitle_text_file_data()
     close();
 }
 
+/// @todo Handle simple unzipped srt files in open
 bool subtitle_text_file_data::open(const std::string& resource_path, std::chrono::milliseconds timeout)
 {
     close();

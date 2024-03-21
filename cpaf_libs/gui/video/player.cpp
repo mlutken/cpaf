@@ -98,11 +98,16 @@ bool player::open(const playable& playab)
     primary_resource_path_ = playab.path();
     // Create media pipeline threads
     pause_playback();
+
+    std::cerr << "\n---FIXMENM ---\n" << playab.json().dump(4) << "\n FIXMENM\n";
+    const auto language_code = configuration.str("user", "subtitle_language_code");
+    fmt::println("FIXMENM open playable language_code: '{}'", language_code); std::cout << std::endl;
+    const auto subtitle_path = playab.default_subtitle_path(language_code);
+    fmt::println("FIXMENM open playable subtitle path: {}", subtitle_path); std::cout << std::endl;
+
     start_time_pos_ = playab.start_time();
     primary_source_stream_ = std::make_unique<cpaf::video::play_stream>([this]() {return torrents_get();});
-    const auto subtitle_path = playab.default_subtitle_path(configuration.str("user", "subtitle_language_code"));
-    fmt::println("FIXMENM open playable subtitle path: {}", subtitle_path);
-    const bool ok = open_primary_stream(playab.path(), subtitle_path);
+     const bool ok = open_primary_stream(playab.path(), subtitle_path);
     return ok;
 }
 

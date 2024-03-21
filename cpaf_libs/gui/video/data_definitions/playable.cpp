@@ -94,7 +94,7 @@ std::string playable::start_time_str() const
 
 std::string playable::default_subtitle_path(const std::string& language_code) const
 {
-    auto path = cpaf::json_value_str(jo_["subtitles"][language_code], "");
+    auto path = cpaf::json_value_str(jo_, language_code, "");
     if (path.empty()) {
         path = cpaf::json_value_str(jo_["subtitles"]["default"], "");
     }
