@@ -19,6 +19,20 @@ namespace cpaf { namespace system {
 // -------------------------------------------------------------
 // --- Functions that needs platform specific implementation ---
 // -------------------------------------------------------------
+
+/// @see https://stackoverflow.com/questions/12207684/how-do-i-terminate-a-thread-in-c11
+void kill_thread(std::jthread& thread)
+{
+    pthread_cancel(thread.native_handle());
+}
+
+/// @see https://stackoverflow.com/questions/12207684/how-do-i-terminate-a-thread-in-c11
+void kill_thread(std::thread& thread)
+{
+    pthread_cancel(thread.native_handle());
+}
+
+
 std::string username()
 {
     struct passwd *pw;

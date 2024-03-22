@@ -85,6 +85,17 @@ bool shutdown_reboot_helper( UINT iAction, bool bForce )
 // -------------------------------------------------------------
 // --- Functions that needs platform specific implementation ---
 // -------------------------------------------------------------
+/// @see https://stackoverflow.com/questions/12207684/how-do-i-terminate-a-thread-in-c11
+void kill_thread(std::jthread& thread)
+{
+    TerminateThread(thread.native_handle(), 1);
+}
+
+/// @see https://stackoverflow.com/questions/12207684/how-do-i-terminate-a-thread-in-c11
+void kill_thread(std::thread& thread)
+{
+    TerminateThread(thread.native_handle(), 1);
+}
 
 bool shutdown ( bool force )
 {

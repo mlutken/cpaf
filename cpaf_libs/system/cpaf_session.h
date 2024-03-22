@@ -2,12 +2,13 @@
  
 #include <string>
 #include <cstdint>
+#include <thread>
 
 
 namespace cpaf { namespace system {
 
 /** \unit session.h
-! Functions for session management and related to current session.
+! Functions for session management and related to current session and threads.
 \author Martin Lutken 
 */
 
@@ -20,6 +21,9 @@ namespace cpaf { namespace system {
 // -------------------------------------------------------------
 // --- Functions that needs platform specific implementation ---
 // -------------------------------------------------------------
+
+void kill_thread(std::jthread& thread);
+void kill_thread(std::thread& thread);
 
 /**
 Get the current user name.
