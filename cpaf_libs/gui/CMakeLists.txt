@@ -80,6 +80,7 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/audio_render_thread.h
     ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/audio_resampler_thread.h
     ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/packet_reader_thread.h
+    ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/subtitle_downloader_thread.h
     ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/subtitle_reader_thread.h
     ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/video_render_thread.h
     ${CMAKE_CURRENT_LIST_DIR}/video/render/render.h
@@ -149,6 +150,7 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/audio_render_thread.cpp
     ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/audio_resampler_thread.cpp
     ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/packet_reader_thread.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/subtitle_downloader_thread.cpp
     ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/subtitle_reader_thread.cpp
     ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/video_render_thread.cpp
     ${CMAKE_CURRENT_LIST_DIR}/video/render/render.cpp
@@ -175,6 +177,7 @@ get_filename_component(PARENT2_DIR ${PARENT_DIR} DIRECTORY)
 set_target_properties(${library_name} PROPERTIES LINKER_LANGUAGE CXX)
 target_link_libraries(${library_name} cpaf_config )
 target_link_libraries(${library_name} cpaf_math )
+target_link_libraries(${library_name} cpaf_system )
 target_link_libraries(${library_name} cpaf_filesystem )
 target_link_libraries(${library_name} imguipp )
 target_link_libraries(${library_name} cpaf_video )

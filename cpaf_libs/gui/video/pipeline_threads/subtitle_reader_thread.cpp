@@ -15,7 +15,8 @@ subtitle_reader_thread::subtitle_reader_thread(
     cpaf::video::subtitles_queue& subtitles_queue,
     const std::atomic_bool& threads_running,
     const std::atomic_bool& threads_paused)
-    : player_(owning_player)
+    : subtitle_container_mutex_{}
+    , player_(owning_player)
     , subtitles_queue_(subtitles_queue)
     , threads_running_(threads_running)
     , threads_paused_(threads_paused)
@@ -36,7 +37,7 @@ void subtitle_reader_thread::start()
 
 void subtitle_reader_thread::subtitle_container_set(std::unique_ptr<subtitle_container> container)
 {
-    std::lock_guard<std::mutex> lock(subtitle_container_mutex_);
+    std::lock_guard<std::mutex> lg{ subtitle_container_mutex_ };
     subtitle_container_ = std::move(container);
 }
 

@@ -42,29 +42,8 @@ av_format_context::~av_format_context()
     close();
 }
 
-bool av_format_context::open(const std::string& resource_path, const std::string& subtitle_path)
+bool av_format_context::open(const std::string& resource_path)
 {
-    subtitles_from_open.release();
-    close();
-    selected_stream_per_media_type_.fill(no_stream_index);
-    if (!subtitle_path.empty()) {
-        fmt::println("FIXMENM Subtitle resource path: {}", subtitle_path); std::cout << std::endl;
-        stream_state_ = stream_state_t::downloading_subtitle;
-        subtitles_from_open = subtitle_container::create_from_path(subtitle_path, std::chrono::seconds(30));
-
-
-        fmt::println("---------------------------- START");
-        for (auto frame: subtitles_from_open->subtitles()) {
-            fmt::println("{}", frame.to_string());
-        }
-        fmt::println("---------------------------- DONE");
-
-        auto it = subtitles_from_open->find_first_after(10min);
-        if (it != subtitles_from_open->end()) {
-            fmt::println("--------\n{}\n", it->to_string());
-        }
-    }
-
     stream_state_ = stream_state_t::opening;
     resource_path_ = resource_path;
 

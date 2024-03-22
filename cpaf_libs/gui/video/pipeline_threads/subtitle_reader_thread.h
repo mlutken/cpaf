@@ -21,9 +21,12 @@ using namespace cpaf::video;
 namespace cpaf::gui::video {
 class player;
 
+/// @todo make non copyable etc...
 class subtitle_reader_thread
 {
 public:
+
+    subtitle_reader_thread() = delete;
     subtitle_reader_thread(player& owning_player,
                            cpaf::video::subtitles_queue& subtitles_queue,
                            const std::atomic_bool& threads_running,
@@ -39,6 +42,7 @@ private:
     void                                thread_function         ();
     void                                read_from_stream        ();
 
+    std::mutex                          subtitle_container_mutex_;
     player&                             player_;
     cpaf::video::subtitles_queue&       subtitles_queue_;
     const std::atomic_bool&             threads_running_;
@@ -51,7 +55,6 @@ private:
 
     std::unique_ptr<std::thread>        thread_object_;
     std::unique_ptr<subtitle_container> subtitle_container_;
-    std::mutex                          subtitle_container_mutex_;
 
 };
 

@@ -57,6 +57,7 @@ enum class seek_dir : int8_t {
 };
 
 enum class seek_state_t : int8_t {
+    unknown,
     ready,
     requested,
     flushing,
@@ -85,13 +86,19 @@ enum class subtitle_text_format_t : int8_t {
 
 enum class stream_state_t : int8_t {
     inactive,
-    downloading_subtitle,
     opening,
     open,
     playing,
     waiting_for_data,
     playing_local,
     finished
+};
+
+enum class subtitle_file_state_t : int8_t {
+    inactive,
+    error_downloading,
+    downloading,
+    playing
 };
 
 

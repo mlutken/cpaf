@@ -4,6 +4,7 @@
 #include <memory>
 #include <filesystem>
 
+#include <cpaf_libs/net/cpaf_http_convenience.h>
 #include <cpaf_libs/video/av_util.h>
 
 namespace Zippy {
@@ -82,7 +83,7 @@ private:
     mutable std::string                         srt_file_data_;
     mutable std::string                         info_file_data_;
     std::unique_ptr<Zippy::ZipArchive>          zip_archive_;
-
+    cpaf::net::curl                             curl_;
 };
 
 } // namespace cpaf::video

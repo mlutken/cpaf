@@ -6,7 +6,6 @@
 #include <cpaf_libs/unicode/cpaf_u8string_utils.h>
 #include <cpaf_libs/crypto/crypto_hash.h>
 #include <cpaf_libs/filesystem/cpaf_special_dirs.h>
-#include <cpaf_libs/net/cpaf_http_convenience.h>
 #include <cpaf_libs/streams/cpaf_streams.h>
 #include <cpaf_libs/filesystem/cpaf_file_directory_functions.h>
 
@@ -196,7 +195,15 @@ bool subtitle_text_file_data::download_and_open_file(
     local_download_path_ = special_dirs::temp() / sha1(resource_path);
     const auto download_url = get_archive_path(resource_path);
 
-    const auto res = cpaf::net::curl_http_download_file(download_url, local_download_path_.string(), timeout);
+    auto cb = [](float progress) -> bool {
+        std::cerr << "Progress " << progress * 100 << " %\n";
+        return false;
+    };
+
+//    const auto res = curl_.timeout(timeout).download_file(download_url, local_download_path_);
+//    const auto res = curl_.timeout(timeout).init_url(download_url).file_path(local_download_path_).opt(CURLOPT_FOLLOWLOCATION, 1L).download_file();
+    const auto res = curl_.timeout(timeout).init_url(download_url).file_path(local_download_path_).progress_callback(std::move(cb)).download_file();
+//    const auto res = cpaf::net::curl_http_download_file(download_url, local_download_path_.string(), timeout);
     if (res == CURLE_OK) {
         if (cpaf::compression::detect_is_zip_file(local_download_path_)) {
             zip_archive_ = std::make_unique<Zippy::ZipArchive>();

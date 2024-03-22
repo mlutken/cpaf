@@ -44,6 +44,8 @@ public:
     bool                            open                    (const playable& playab);
     void                            open_async              (const playable& playab);
     void                            open_async              (const std::string& resource_path, std::chrono::microseconds start_time_pos = {});
+    bool                            open_subtitle_file      (const std::string& subtitle_path);
+    void                            open_subtitle_file_async(const std::string& subtitle_path);
     void                            close                   ();
     void                            close_async             ();
     void                            cancel_async_open       ();
@@ -125,7 +127,6 @@ public:
     // -------------------------------
     subtitle_source_t                   subtitle_source         () const { return subtitle_source_; }
     size_t                              subtitle_stream_index	() const;
-    void                                subtitle_file_set       (const std::string& resource_path);
     void                                subtitle_container_set  (std::unique_ptr<subtitle_container> container);
 
     // ---------------------------------------------
@@ -151,6 +152,7 @@ public:
     void                        pause_playback          ();
     void                        resume_playback         ();
     void                        toggle_pause_playback   ();
+    void                        playback_paused_set     (bool is_paused);
     bool                        playback_paused         () const;
     cpaf::video::seek_state_t   seek_state              () const;
     std::chrono::microseconds   seek_from_position      () const;
@@ -234,6 +236,7 @@ private:
     subtitle_source_t                               subtitle_source_                = subtitle_source_t::stream;    /// @todo
     std::function<void ()>                          cb_start_playing_;
     std::unique_ptr<std::thread>                    open_thread_                    = nullptr;
+    std::unique_ptr<std::thread>                    open_subtitle_thread_           = nullptr;
 
 };
 
