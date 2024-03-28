@@ -133,18 +133,21 @@ void pipeline_threads::flush_queues()
     player_.format_context().flush_packet_queues();
     audio_samples_queue_.flush();
     subtitles_queue_.flush();
+    subtitle_reader_thread_.flush();
 }
 
 void pipeline_threads::signal_flush_start()
 {
     video_render_thread_.video_queue_flush_start();
     audio_resampler_thread_.samples_queue_flush_start();
+    subtitle_reader_thread_.flush_start();
 }
 
 void pipeline_threads::signal_flush_done()
 {
     video_render_thread_.video_queue_flush_done();
     audio_resampler_thread_.samples_queue_flush_done();
+    subtitle_reader_thread_.flush_done();
 }
 
 

@@ -51,6 +51,24 @@ void subtitle_reader_thread::subtitle_container_set(std::unique_ptr<subtitle_con
 {
     std::lock_guard<std::mutex> lg{ subtitle_container_mutex_ };
     subtitle_container_ = std::move(container);
+    if (subtitle_container_) {
+        current_subtitle_iter_ = subtitle_container_->end();
+    }
+}
+
+void subtitle_reader_thread::flush()
+{
+
+}
+
+void subtitle_reader_thread::flush_start()
+{
+
+}
+
+void subtitle_reader_thread::flush_done()
+{
+    reset_subtitle_iterator();
 }
 
 void subtitle_reader_thread::thread_function()
@@ -97,15 +115,16 @@ void subtitle_reader_thread::read_from_container()
     }
 
     if (subtitles_queue_.empty()) {
-        push_from_container(player_.current_time());
+        push_from_container();
     }
 
 }
 
-// Assume mutex is already locked
-void subtitle_reader_thread::push_from_container(std::chrono::microseconds presentation_time)
+// Assumes mutex is already locked and subtitle_container_ valid
+void subtitle_reader_thread::push_from_container()
 {
-    const auto it = subtitle_container_->find_first_after(presentation_time);
+
+    const auto it = subtitle_container_->find_first_after(player_.current_time());
     if (it != subtitle_container_->end()) {
         fmt::println("--- FIXMENM subtitle_reader_thread::push_from_container -----\n{}\n", it->to_string()); std::cout << std::endl;
 
@@ -115,6 +134,30 @@ void subtitle_reader_thread::push_from_container(std::chrono::microseconds prese
         }
 
     }
+
+}
+
+void subtitle_reader_thread::reset_subtitle_iterator()
+{
+    std::lock_guard<std::mutex> lg{ subtitle_container_mutex_ };
+    std::cerr << "FIXMENM reset_subtitle_iterator()\n";
+    if (subtitle_container_) {
+        current_subtitle_iter_ = subtitle_container_->end();
+    }
+}
+
+// Assumes mutex is already locked and subtitle_container_ valid
+void subtitle_reader_thread::inc_cur_subtitle_iter()
+{
+    if (!subtitle_container_) {
+        return;
+    }
+
+    if (current_subtitle_iter_ >= subtitle_container_->end()) {
+        current_subtitle_iter_ = subtitle_container_->find_first_after(player_.current_time());
+        return;
+    }
+    ++current_subtitle_iter_;
 
 }
 

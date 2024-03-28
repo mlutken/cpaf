@@ -8,12 +8,12 @@
 
 #include <cpaf_libs/video/av_util.h>
 #include <cpaf_libs/video/subtitle_frame.h>
+#include <cpaf_libs/video/io/subtitle_container.h>
 
 namespace cpaf::video {
 class av_format_context;
 class av_codec_context;
 class media_stream_time;
-class subtitle_container;
 };
 
 using namespace cpaf::video;
@@ -38,12 +38,17 @@ public:
     const std::atomic_bool&             thread_is_paused        () const { return thread_is_paused_; }
     void                                subtitle_container_set  (std::unique_ptr<subtitle_container> container);
 
-private:
+    void                                flush                   ();
+    void                                flush_start             ();
+    void                                flush_done              ();
 
+private:
     void                                thread_function         ();
     void                                read_from_stream        ();
     void                                read_from_container     ();
-    void                                push_from_container     (std::chrono::microseconds presentation_time);
+    void                                push_from_container     ();
+    void                                reset_subtitle_iterator ();
+    void                                inc_cur_subtitle_iter   ();
 
     std::mutex                          subtitle_container_mutex_;
     player&                             player_;
@@ -58,7 +63,7 @@ private:
 
     std::unique_ptr<std::thread>        thread_object_;
     std::unique_ptr<subtitle_container> subtitle_container_;
-
+    subtitle_container::const_iterator  current_subtitle_iter_;
 };
 
 } // namespace cpaf::gui::video
