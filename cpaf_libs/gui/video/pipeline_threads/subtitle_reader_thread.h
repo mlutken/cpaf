@@ -43,12 +43,13 @@ public:
     void                                flush_done              ();
 
 private:
+    static constexpr int32_t            subtitles_read_ahead_size = 3;
+
     void                                thread_function         ();
     void                                read_from_stream        ();
     void                                read_from_container     ();
-    void                                push_from_container     ();
-    void                                reset_subtitle_iterator ();
-    void                                inc_cur_subtitle_iter   ();
+    void                                enqueue_current_subtitle();
+    void                                set_cur_subtitle_iter ();
 
     std::mutex                          subtitle_container_mutex_;
     player&                             player_;

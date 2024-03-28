@@ -68,7 +68,9 @@ void subtitle_reader_thread::flush_start()
 
 void subtitle_reader_thread::flush_done()
 {
-    reset_subtitle_iterator();
+    std::lock_guard<std::mutex> lg{ subtitle_container_mutex_ };
+    if (!subtitle_container_) { return; }
+    current_subtitle_iter_ = subtitle_container_->end();
 }
 
 void subtitle_reader_thread::thread_function()
@@ -114,51 +116,37 @@ void subtitle_reader_thread::read_from_container()
         return;
     }
 
-    if (subtitles_queue_.empty()) {
-        push_from_container();
+    const auto container_end = subtitle_container_->end();
+    set_cur_subtitle_iter();
+
+    int32_t subtitles_to_read = subtitles_read_ahead_size - subtitles_queue_.size();
+    // std::cerr << "FIXMENM subtitles_read_ahead_size: " << subtitles_read_ahead_size << "\n";
+    if (subtitles_read_ahead_size <= 0) { return ; }
+
+    while ((current_subtitle_iter_ < container_end) &&  subtitles_to_read > 0 ) {
+        enqueue_current_subtitle();
+        ++current_subtitle_iter_;
+        --subtitles_to_read;
     }
 
 }
 
-// Assumes mutex is already locked and subtitle_container_ valid
-void subtitle_reader_thread::push_from_container()
+// Assumes mutex is already locked and subtitle_container_ and current iterator valid
+void subtitle_reader_thread::enqueue_current_subtitle()
 {
+    fmt::println("--- FIXMENM subtitle_reader_thread::push_from_container -----\n{}\n", current_subtitle_iter_->to_string()); std::cout << std::endl;
 
-    const auto it = subtitle_container_->find_first_after(player_.current_time());
-    if (it != subtitle_container_->end()) {
-        fmt::println("--- FIXMENM subtitle_reader_thread::push_from_container -----\n{}\n", it->to_string()); std::cout << std::endl;
-
-        auto sub = create_from_container_frame(*it);
-        if (!subtitles_queue_.push(std::move(sub)) ) {
-            std::cerr << "LOG_ERR: Can't push conainer subtitle to queue!\n";
-        }
-
-    }
-
-}
-
-void subtitle_reader_thread::reset_subtitle_iterator()
-{
-    std::lock_guard<std::mutex> lg{ subtitle_container_mutex_ };
-    std::cerr << "FIXMENM reset_subtitle_iterator()\n";
-    if (subtitle_container_) {
-        current_subtitle_iter_ = subtitle_container_->end();
+    auto sub = create_from_container_frame(*current_subtitle_iter_);
+    if (!subtitles_queue_.push(std::move(sub)) ) {
+        std::cerr << "LOG_ERR: Can't push container subtitle to queue!\n";
     }
 }
 
 // Assumes mutex is already locked and subtitle_container_ valid
-void subtitle_reader_thread::inc_cur_subtitle_iter()
+void subtitle_reader_thread::set_cur_subtitle_iter()
 {
-    if (!subtitle_container_) {
-        return;
-    }
-
-    if (current_subtitle_iter_ >= subtitle_container_->end()) {
-        current_subtitle_iter_ = subtitle_container_->find_first_after(player_.current_time());
-        return;
-    }
-    ++current_subtitle_iter_;
-
+    current_subtitle_iter_ = subtitle_container_->find_first_after(player_.current_time());
+    fmt::println("****FIXMENM subtitle_reader_thread::set_cur_subtitle_iter -----\n{}\n", current_subtitle_iter_->to_string()); std::cout << std::endl;
 }
 
 } // namespace cpaf::gui::video
