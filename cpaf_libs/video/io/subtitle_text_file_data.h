@@ -26,13 +26,13 @@ public:
     static std::string          get_archive_path        (const std::string& resource_path);
     static std::string          get_archive_srt_path    (const std::string& resource_path);
 
-    subtitle_text_file_data() = default;
+    subtitle_text_file_data();
     ~subtitle_text_file_data();
     explicit                    subtitle_text_file_data (const std::string& resource_path,
                                                          std::chrono::milliseconds timeout = std::chrono::minutes(1));
     bool                        open                    (const std::string& resource_path,
                                                          std::chrono::milliseconds timeout = std::chrono::minutes(1));
-
+    void                        cancel_open             ();
 
     // ----------------------
     // --- Info functions ---
@@ -48,8 +48,11 @@ public:
     std::vector<std::string>    zip_entry_names         () const;
     std::string                 find_first_srt_in_zip   () const;
     std::string                 find_first_info_in_zip  () const;
-    bool                        has_file_in_zip          (const std::string& file_path_in_archive) const;
+    bool                        has_file_in_zip         (const std::string& file_path_in_archive) const;
     bool                        resource_is_remote      () const { return !local_download_path_.empty(); }
+    cpaf::net::curl::state_t    download_state          () const;
+    const cpaf::net::curl&      curl                    () const { return curl_; }
+
 
     // ----------------------
     // --- Data functions ---
@@ -65,6 +68,7 @@ private:
     // --- PRIVATE: Helpers ---
     // ------------------------
     void                        close                   ();
+    void                        wait_for_curl_ready     ();
     bool                        is_network_url          (const std::string& path) const;
 
     bool                        download_and_open_file  (const std::string& resource_path,

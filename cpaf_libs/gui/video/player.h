@@ -8,6 +8,7 @@
 #include <cpaf_libs/video/play_stream.h>
 #include <cpaf_libs/video/media_stream_time.h>
 #include <cpaf_libs/gui/video/pipeline_threads/pipeline_threads.h>
+#include <cpaf_libs/gui/video/pipeline_threads/subtitle_downloader_thread.h>
 #include <cpaf_libs/gui/video/config.h>
 
 namespace cpaf::audio {
@@ -44,8 +45,7 @@ public:
     bool                            open                    (const playable& playab);
     void                            open_async              (const playable& playab);
     void                            open_async              (const std::string& resource_path, std::chrono::microseconds start_time_pos = {});
-    bool                            open_subtitle_file      (const std::string& subtitle_path);
-    void                            open_subtitle_file_async(const std::string& subtitle_path);
+    void                            open_subtitle           (const std::string& subtitle_path, const std::string& language_code);
     void                            close                   ();
     void                            close_async             ();
     void                            cancel_async_open       ();
@@ -134,7 +134,7 @@ public:
     // ---------------------------------------------
     const system_window*        main_window_ptr         () const { return main_window_ptr_; }
     audio_play_callback_t       audio_callback_get      ();
-    void                        frame_update                  ();
+    void                        frame_update            ();
 
     // TODO: Make these two private
     void                        video_frame_update      (cpaf::video::av_frame& current_frame, cpaf::gui::video::render& video_render);
@@ -191,9 +191,11 @@ private:
     // ---------------------------------
     // --- PRIVATE: Helper functions ---
     // ---------------------------------
+    bool                            all_initialized         () const;
     void                            init_video              (const system_window& main_window);
     bool                            open_stream             (const std::string& resource_path, cpaf::video::stream_type_t sti);
     bool                            open_primary_stream     (const std::string& resource_path, const std::string& subtitle_path);
+    void                            check_activate_subtitle ();
     void                            update_scaling_context  () const;
     pipeline_threads&               media_pipeline_threads  () { return *media_pipeline_threads_; }
     const pipeline_threads&         media_pipeline_threads  () const { return *media_pipeline_threads_; }
@@ -205,6 +207,7 @@ private:
     // ----------------------------
     using source_streams_array_t = std::array<std::unique_ptr<cpaf::video::play_stream>, cpaf::video::stream_type_index_size()>;
     cpaf::audio::device&                            audio_device_;
+    subtitle_downloader_thread                      subtitle_downloader_thread_;
     std::unique_ptr<cpaf::video::play_stream>       primary_source_stream_;
     std::chrono::microseconds                       start_time_pos_;
     std::unique_ptr<pipeline_threads>               media_pipeline_threads_;

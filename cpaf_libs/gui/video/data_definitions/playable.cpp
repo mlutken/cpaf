@@ -38,8 +38,10 @@ nlohmann::json playable::create_json()
 
 
 void playable::auto_set_location_type(nlohmann::json& jo) {
-    const auto path = jo["path"];
-    if (fs::exists(path)){
+    const auto path = jo["path"].get<std::string>();
+    fs::path p(path);
+    std::error_code ec;
+    if (fs::exists(path, ec)){
         jo["source_location_type"] = "local";
     }
     else if (detect_media_location(path) == media_location::remote) {
@@ -101,10 +103,24 @@ std::string playable::default_subtitle_path(const std::string& language_code) co
     return path;
 }
 
-/// @todo Implement has_subtitle()
+std::string playable::get_best_subtitle_path(std::string& language_code) const
+{
+    std::string path;
+    if (!language_code.empty()) {
+        path = cpaf::json_value_str(jo_, language_code, "");
+        if (!path.empty()) {
+            return path;
+        }
+    }
+    language_code = "default";
+    path = cpaf::json_value_str(jo_["subtitles"]["default"], "");
+    return path;
+
+}
+
 bool playable::has_subtitle(const std::string& language_code) const
 {
-    return false;
+    return jo_["subtitles"].contains(language_code);
 }
 
 /// @todo Implement subtitle_language_codes()

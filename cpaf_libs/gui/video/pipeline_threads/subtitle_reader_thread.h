@@ -39,8 +39,11 @@ public:
     void                                subtitle_container_set  (std::unique_ptr<subtitle_container> container);
 
 private:
+
     void                                thread_function         ();
     void                                read_from_stream        ();
+    void                                read_from_container     ();
+    void                                push_from_container     (std::chrono::microseconds presentation_time);
 
     std::mutex                          subtitle_container_mutex_;
     player&                             player_;

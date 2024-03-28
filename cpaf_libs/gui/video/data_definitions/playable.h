@@ -28,6 +28,7 @@ public:
     std::chrono::microseconds   start_time              () const;
     std::string                 start_time_str          () const;
     std::string                 default_subtitle_path   (const std::string& language_code = "default") const;
+    std::string                 get_best_subtitle_path  (std::string& language_code) const;
     bool                        has_subtitle            (const std::string& language_code = "default") const;
     std::vector<std::string>    subtitle_language_codes () const;
 
@@ -37,7 +38,7 @@ public:
 
 
 private:
-    nlohmann::json jo_;
+    mutable nlohmann::json jo_;
 };
 
 } // namespace cpaf::gui::video

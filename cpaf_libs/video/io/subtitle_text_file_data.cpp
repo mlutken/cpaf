@@ -1,5 +1,6 @@
 #include "subtitle_text_file_data.h"
 #include <filesystem>
+#include <thread>
 #include <Zippy.hpp>
 #include <fmt/format.h>
 
@@ -14,6 +15,7 @@ using namespace cpaf::crypto;
 using namespace cpaf::unicode;
 using namespace cpaf::filesystem;
 using namespace std::chrono;
+using namespace std::chrono_literals;
 
 // Some CURL command line commands:
 // Download to detected filename from server: curl -O -J -L https://www.opensubtitles.org/en/subtitleserve/sub/3421248
@@ -34,6 +36,11 @@ string subtitle_text_file_data::get_archive_path(const std::string& resource_pat
 string subtitle_text_file_data::get_archive_srt_path(const std::string& resource_path)
 {
     return cpaf::unicode::substring_between(resource_path, "#", "");
+}
+
+subtitle_text_file_data::subtitle_text_file_data()
+{
+
 }
 
 subtitle_text_file_data::subtitle_text_file_data(const std::string& resource_path, std::chrono::milliseconds timeout)
@@ -65,6 +72,11 @@ bool subtitle_text_file_data::open(const std::string& resource_path, std::chrono
         return true;
     }
     return false;
+}
+
+void subtitle_text_file_data::cancel_open()
+{
+    curl_.cancel_transfer();
 }
 
 string subtitle_text_file_data::archive_path() const
@@ -147,6 +159,11 @@ bool subtitle_text_file_data::has_file_in_zip(const std::string& file_path_in_ar
     return zip_archive_->HasEntry(file_path_in_archive);
 }
 
+net::curl::state_t subtitle_text_file_data::download_state() const
+{
+    return curl_.state();
+}
+
 const string& subtitle_text_file_data::srt_file_data() const
 {
     if (srt_file_data_.empty()) {
@@ -163,9 +180,13 @@ const string& subtitle_text_file_data::info_file_data() const
     return info_file_data_;
 }
 
+// ------------------------
+// --- PRIVATE: Helpers ---
+// ------------------------
+
 void subtitle_text_file_data::close()
 {
-
+    cancel_open();
     cpaf::filesystem::remove_safe(local_download_path_);
 
     resource_path_.clear();
@@ -179,14 +200,22 @@ void subtitle_text_file_data::close()
     zip_archive_.reset(nullptr);
 }
 
+void subtitle_text_file_data::wait_for_curl_ready()
+{
+    curl_.cancel_transfer();
+    for (auto i = 1000u; i > 0; --i) {
+        if (curl_.can_start_new()) {
+            break;
+        }
+        std::this_thread::sleep_for(10ms);
+    }
+}
+
 bool subtitle_text_file_data::is_network_url(const string& path) const
 {
     return path.starts_with("https://") || path.starts_with("http://") || path.starts_with("ftp://");
 }
 
-// ------------------------
-// --- PRIVATE: Helpers ---
-// ------------------------
 
 bool subtitle_text_file_data::download_and_open_file(
     const std::string& resource_path,
@@ -201,9 +230,7 @@ bool subtitle_text_file_data::download_and_open_file(
     };
 
 //    const auto res = curl_.timeout(timeout).download_file(download_url, local_download_path_);
-//    const auto res = curl_.timeout(timeout).init_url(download_url).file_path(local_download_path_).opt(CURLOPT_FOLLOWLOCATION, 1L).download_file();
     const auto res = curl_.timeout(timeout).init_url(download_url).file_path(local_download_path_).progress_callback(std::move(cb)).download_file();
-//    const auto res = cpaf::net::curl_http_download_file(download_url, local_download_path_.string(), timeout);
     if (res == CURLE_OK) {
         if (cpaf::compression::detect_is_zip_file(local_download_path_)) {
             zip_archive_ = std::make_unique<Zippy::ZipArchive>();

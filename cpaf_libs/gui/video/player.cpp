@@ -22,6 +22,7 @@ namespace cpaf::gui::video {
 
 player::player(cpaf::audio::device& audio_device)
     : audio_device_(audio_device)
+    , subtitle_downloader_thread_(*this)
 {
     next_video_frame_ = av_frame::create_alloc();
 
@@ -38,6 +39,7 @@ player::~player()
 void player::set_main_window(const system_window& main_window)
 {
     main_window_ptr_ = &main_window;
+    subtitle_downloader_thread_.start();
 }
 
 void player::start_playing(const std::chrono::microseconds& start_time_pos)
@@ -71,6 +73,7 @@ void player::start_playing(const std::chrono::microseconds& start_time_pos)
 
     media_pipeline_threads().start();
     stream_state() = stream_state_t::playing;
+    // FIXMENM check_activate_subtitle();
     resume_playback();
 }
 
@@ -101,18 +104,17 @@ bool player::open(const playable& playab)
     pause_playback();
 
     std::cerr << "\n---FIXMENM ---\n" << playab.json().dump(4) << "\n FIXMENM\n";
-    const auto language_code = configuration.str("user", "subtitle_language_code");
+    auto language_code = configuration.str("user", "subtitle_language_code");
     fmt::println("FIXMENM open playable language_code: '{}'", language_code); std::cout << std::endl;
-    const auto subtitle_path = playab.default_subtitle_path(language_code);
-    fmt::println("FIXMENM open playable subtitle path: {}", subtitle_path); std::cout << std::endl;
+    const auto subtitle_path = playab.get_best_subtitle_path(language_code);
+    fmt::println("FIXMENM open playable subtitle path: {},  language_code: '{}'", subtitle_path, language_code); std::cout << std::endl;
 
     start_time_pos_ = playab.start_time();
     primary_source_stream_ = std::make_unique<cpaf::video::play_stream>([this]() {return torrents_get();});
     const bool ok = open_primary_stream(playab.path(), subtitle_path);
 
     if (!subtitle_path.empty()) {
-//        open_subtitle_file_async(subtitle_path);
-        open_subtitle_file(subtitle_path);
+        open_subtitle(subtitle_path, language_code);
     }
 
     return ok;
@@ -134,64 +136,74 @@ void player::open_async(const std::string& resource_path, std::chrono::microseco
 
 }
 
-bool player::open_subtitle_file(const std::string& subtitle_path)
+void player::open_subtitle(const std::string& subtitle_path, const std::string& language_code)
 {
-    if (!subtitle_path.empty()) {
-        fmt::println("FIXMENM Subtitle resource path: {}", subtitle_path); std::cout << std::endl;
-        auto sc = subtitle_container::create_from_path(subtitle_path, std::chrono::seconds(30));
-
-        if (!sc->is_valid()) {
-            return false;
-        }
-
-//        fmt::println("---------------------------- START");
-//        for (auto frame: sc->subtitles()) {
-//            fmt::println("{}", frame.to_string());
-//        }
-//        fmt::println("---------------------------- DONE");
-
-        auto it = sc->find_first_after(10min);
-        if (it != sc->end()) {
-            fmt::println("--------\n{}\n", it->to_string());
-        }
-        std::cerr << "FIXMENM Need to set subtitle container only after we start playying! Since the pipelie_threads are not created before !!!\n";
-        std::cerr << "FIXMENM Need to set subtitle container only after we start playying! Since the pipelie_threads are not created before !!!\n";
-        std::cerr << "FIXMENM Need to set subtitle container only after we start playying! Since the pipelie_threads are not created before !!!\n";
-        std::cerr << "FIXMENM Need to set subtitle container only after we start playying! Since the pipelie_threads are not created before !!!\n";
-        std::cerr << "FIXMENM Need to set subtitle container only after we start playying! Since the pipelie_threads are not created before !!!\n";
-        std::cerr << "FIXMENM Need to set subtitle container only after we start playying! Since the pipelie_threads are not created before !!!\n";
-        std::cerr << "FIXMENM Need to set subtitle container only after we start playying! Since the pipelie_threads are not created before !!!\n";
-        std::cerr << "FIXMENM Need to set subtitle container only after we start playying! Since the pipelie_threads are not created before !!!\n";
-        /// subtitle_container_set(std::move(sc));
-    }
-
-    return true;
+    subtitle_downloader_thread_.enqueue_subtitle(subtitle_path, language_code);
 }
 
+// bool player::open_subtitle_file(const std::string& subtitle_path, const std::string& language_code)
+// {
+//     // fmt::println("FIXMENM player::open_subtitle_file {} , {}", subtitle_path, language_code);
+// }
+
+// bool player::open_subtitle_file(const std::string& subtitle_path)
+// {
+//     if (!subtitle_path.empty()) {
+//         fmt::println("FIXMENM Subtitle resource path: {}", subtitle_path); std::cout << std::endl;
+//         auto sc = subtitle_container::create_from_path(subtitle_path, std::chrono::seconds(30));
+
+//         if (!sc->is_valid()) {
+//             return false;
+//         }
+
+// //        fmt::println("---------------------------- START");
+// //        for (auto frame: sc->subtitles()) {
+// //            fmt::println("{}", frame.to_string());
+// //        }
+// //        fmt::println("---------------------------- DONE");
+
+//         auto it = sc->find_first_after(10min);
+//         if (it != sc->end()) {
+//             fmt::println("--------\n{}\n", it->to_string());
+//         }
+//         std::cerr << "FIXMENM Need to set subtitle container only after we start playying! Since the pipelie_threads are not created before !!!\n";
+//         std::cerr << "FIXMENM Need to set subtitle container only after we start playying! Since the pipelie_threads are not created before !!!\n";
+//         std::cerr << "FIXMENM Need to set subtitle container only after we start playying! Since the pipelie_threads are not created before !!!\n";
+//         std::cerr << "FIXMENM Need to set subtitle container only after we start playying! Since the pipelie_threads are not created before !!!\n";
+//         std::cerr << "FIXMENM Need to set subtitle container only after we start playying! Since the pipelie_threads are not created before !!!\n";
+//         std::cerr << "FIXMENM Need to set subtitle container only after we start playying! Since the pipelie_threads are not created before !!!\n";
+//         std::cerr << "FIXMENM Need to set subtitle container only after we start playying! Since the pipelie_threads are not created before !!!\n";
+//         std::cerr << "FIXMENM Need to set subtitle container only after we start playying! Since the pipelie_threads are not created before !!!\n";
+//         /// subtitle_container_set(std::move(sc));
+//     }
+
+//     return true;
+// }
 
 
 
 
-void player::open_subtitle_file_async(const std::string& subtitle_path)
-{
-    std::cerr << "FIXMENM open_subtitle_file_async\n";
-//    open_subtitle_thread_ = std::make_unique<std::thread>( [=,this]()
-//                                                          {
-//                                                              while(1) {
-//                                                                  std::this_thread::sleep_for(1s);
-//                                                                  std::cerr << "Subtitle test thread ...\n";
-//                                                              }
-//                                                          } );
 
-    //    if (open_subtitle_thread_) {
-//        cpaf::system::kill_thread(*open_subtitle_thread_);
-//    }
-    open_subtitle_thread_ = std::make_unique<std::thread>( [=,this]() { this->open_subtitle_file(subtitle_path); } );
+// void player::open_subtitle_file_async(const std::string& subtitle_path)
+// {
+//     std::cerr << "FIXMENM open_subtitle_file_async\n";
+// //    open_subtitle_thread_ = std::make_unique<std::thread>( [=,this]()
+// //                                                          {
+// //                                                              while(1) {
+// //                                                                  std::this_thread::sleep_for(1s);
+// //                                                                  std::cerr << "Subtitle test thread ...\n";
+// //                                                              }
+// //                                                          } );
+
+//     //    if (open_subtitle_thread_) {
+// //        cpaf::system::kill_thread(*open_subtitle_thread_);
+// //    }
+//     open_subtitle_thread_ = std::make_unique<std::thread>( [=,this]() { this->open_subtitle_file(subtitle_path); } );
 
 
-    open_subtitle_thread_->detach();
+//     open_subtitle_thread_->detach();
 
-}
+// }
 
 /**
  *  @todo If threads are taking too long to close, then force close/delete them!
@@ -207,8 +219,9 @@ void player::close()
         pause_playback();
         int count = 0;
         const auto ts_end = std::chrono::steady_clock::now() + 5s;
-        while (!media_pipeline_threads().all_threads_are_paused() &&
-               (std::chrono::steady_clock::now() < ts_end)) {
+        while (!media_pipeline_threads().all_threads_are_paused()
+               &&(std::chrono::steady_clock::now() < ts_end))
+        {
             std::cerr << "FIXMENM waiting for threads to ṕause: " << ++count << "\n";
             std::this_thread::sleep_for(100ms);
         }
@@ -449,6 +462,9 @@ size_t player::subtitle_stream_index() const
 
 void player::subtitle_container_set(std::unique_ptr<subtitle_container> container)
 {
+    if (!all_initialized()) {
+        return;
+    }
 //    const auto is_paused = playback_paused();
 //    pause_playback();
     subtitle_source_ = subtitle_source_t::text_file;
@@ -483,6 +499,7 @@ void player::frame_update()
     if ( is_playing()) {
         if (has_video_stream()) {
             video_frame_update(next_video_frame_);
+            check_activate_subtitle();
         }
         cur_media_time().release_after_reset();
     }
@@ -612,6 +629,10 @@ std::string player::queues_info() const
     return primary_stream().format_context().queues_info();
 }
 
+bool player::all_initialized() const
+{
+    return media_pipeline_threads_ != nullptr;
+}
 
 // ---------------------------------
 // --- PRIVATE: Helper functions ---
@@ -642,6 +663,14 @@ bool player::open_primary_stream(const std::string& resource_path, const std::st
     primary_resource_path_ = resource_path;
     const auto open_ok = primary_stream().open(resource_path);
     return open_ok;
+}
+
+void player::check_activate_subtitle()
+{
+    if (subtitle_downloader_thread_.has_subtitle()) {
+        auto container = subtitle_downloader_thread_.dequeue_subtitle();
+        subtitle_container_set(std::move(container));
+    }
 }
 
 void player::update_scaling_context() const

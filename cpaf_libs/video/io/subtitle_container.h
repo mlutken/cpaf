@@ -42,6 +42,8 @@ public:
                                                                  std::chrono::milliseconds timeout);
     static subtitle_text_format_t       detect_format           (std::string_view data_string_view);
 
+
+
     subtitle_container() = default;
     void                                parse_file_data         (std::string_view data_string_view);
     void                                parse_srt_file_data     (std::string_view data_string_view);

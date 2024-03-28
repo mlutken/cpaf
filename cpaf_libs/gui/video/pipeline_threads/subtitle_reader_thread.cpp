@@ -1,5 +1,5 @@
 #include "subtitle_reader_thread.h"
-
+#include <fmt/format.h>
 #include <cpaf_libs/video/media_stream_time.h>
 #include <cpaf_libs/video/av_format_context.h>
 #include <cpaf_libs/video/av_codec_context.h>
@@ -9,6 +9,18 @@
 using namespace std::chrono;
 
 namespace cpaf::gui::video {
+
+static cpaf::video::subtitle_frame  create_from_container_frame(const subtitle_container::frame_t& frame_in)
+{
+    cpaf::video::subtitle_frame frame_out;
+    frame_out.lines                   = frame_in.lines;
+    frame_out.presentation_time       = frame_in.presentation_time;
+    frame_out.presentation_time_end   = frame_in.presentation_time_end;
+    frame_out.sequence_number         = frame_in.sequence_number;
+
+    return frame_out;
+}
+
 
 subtitle_reader_thread::subtitle_reader_thread(
     player& owning_player,
@@ -54,7 +66,8 @@ void subtitle_reader_thread::thread_function()
                 read_from_stream();
             }
             else if (player_.subtitle_source() == subtitle_source_t::text_file) {
-                std::cerr << "TODO subtitle reader thread subtitle_source_t::text_file support!\n";
+                // std::cerr << "TODO subtitle reader thread subtitle_source_t::text_file support!\n";
+                read_from_container();
             }
 
 //            std::cerr << "FIXMENM subtitle reader thread ....\n";
@@ -70,11 +83,39 @@ void subtitle_reader_thread::read_from_stream()
         auto subtitles = player_.subtitle_codec_context().read_subtitles();
         for (auto& sub: subtitles) {
             if (!subtitles_queue_.push(std::move(sub)) ) {
-                std::cerr << "ERROR: Can't push subtitle to queue!\n";
+                std::cerr << "LOG_ERR: Can't push subtitle to queue!\n";
             }
         }
     }
 }
 
+void subtitle_reader_thread::read_from_container()
+{
+    std::lock_guard<std::mutex> lg{ subtitle_container_mutex_ };
+    if (!subtitle_container_) {
+        return;
+    }
+
+    if (subtitles_queue_.empty()) {
+        push_from_container(player_.current_time());
+    }
+
+}
+
+// Assume mutex is already locked
+void subtitle_reader_thread::push_from_container(std::chrono::microseconds presentation_time)
+{
+    const auto it = subtitle_container_->find_first_after(presentation_time);
+    if (it != subtitle_container_->end()) {
+        fmt::println("--- FIXMENM subtitle_reader_thread::push_from_container -----\n{}\n", it->to_string()); std::cout << std::endl;
+
+        auto sub = create_from_container_frame(*it);
+        if (!subtitles_queue_.push(std::move(sub)) ) {
+            std::cerr << "LOG_ERR: Can't push conainer subtitle to queue!\n";
+        }
+
+    }
+
+}
 
 } // namespace cpaf::gui::video

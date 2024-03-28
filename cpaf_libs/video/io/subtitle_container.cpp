@@ -53,7 +53,7 @@ std::unique_ptr<subtitle_container> subtitle_container::create_from_path(
 }
 
 /// @todo Implement subtitle_text_format_t detection!
-subtitle_text_format_t subtitle_container::detect_format(std::string_view data_string_view)
+subtitle_text_format_t subtitle_container::detect_format(std::string_view /*data_string_view*/)
 {
     return subtitle_text_format_t::srt;
 }

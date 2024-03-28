@@ -59,7 +59,7 @@ public:
     std::chrono::milliseconds       timeout             () const { return timeout_; }
     std::chrono::seconds            timeout_seconds     () const { return std::chrono::duration_cast<std::chrono::seconds>(timeout_); }
     state_t                         state               () const { return state_; }
-    bool                            is_transferring     () const;
+    bool                            transfer_in_progress     () const;
     bool                            can_start_new       () const;
     CURLcode                        last_curlcode       () const { return last_curlcode_; }
 

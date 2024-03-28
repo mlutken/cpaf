@@ -64,10 +64,10 @@ curl::~curl()
     cleanup();
 }
 
-bool curl::is_transferring() const
+bool curl::transfer_in_progress() const
 {
     const auto progr = state();
-    return progr == state_t::transferring;
+    return progr == state_t::transferring || progr == state_t::cancel_requested;
 }
 
 bool curl::can_start_new() const
@@ -173,7 +173,9 @@ curl& curl::init_url(const std::string& url)
 
 void curl::cancel_transfer()
 {
-    state_ = state_t::cancel_requested;
+    if (state_ == state_t::transferring) {
+        state_ = state_t::cancel_requested;
+    }
 }
 
 int64_t curl::total_size_bytes() const
