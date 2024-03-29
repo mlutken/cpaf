@@ -165,13 +165,14 @@ bool subtitle_container::parse_presentation_times(std::string_view line)
     return ret == 8;
 }
 
+/// @todo Enable html tags in subtitles again when subtitle render supports it!
 bool subtitle_container::parse_subtitle_line(std::string_view line)
 {
-    string trimmed_line = simplify_white_space_copy(std::string(line));
+    string trimmed_line = clean_html_tags_copy(std::string(line), post_op::simplify_ws);
     if (trimmed_line.empty()) {
         return false;
     }
-    cur_parse_frame_.lines.push_back(std::string(line));
+    cur_parse_frame_.lines.push_back(std::move(trimmed_line));
     return true;
 }
 
