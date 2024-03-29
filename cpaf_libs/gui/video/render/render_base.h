@@ -25,8 +25,10 @@ struct platform_surface_t;
 
 namespace cpaf::gui::video {
 class player;
+class config;
 struct platform_render_t;
 struct platform_texture_t;
+
 
 enum class subtitle_pos_t { buttom, top };
 
@@ -35,15 +37,13 @@ class render_base
 public:
     using subtitle_frame = cpaf::video::subtitle_frame;
     using surface_dimensions_t = cpaf::video::surface_dimensions_t;
-    explicit render_base(player& owning_player);
+    explicit render_base(player& owning_player, config& cfg);
     rect                        render_geometry             () const { return render_geometry_; }
     void                        render_geometry_set         (rect render_geom);
     void                        format_context_set          (cpaf::video::av_format_context* ctx)        { format_context_ptr_ = ctx; }
     void                        format_context_set          (cpaf::video::av_format_context& ctx)        { format_context_ptr_ = &ctx; }
     void                        video_codec_ctx_set         (cpaf::video::av_codec_context* ctx);
     void                        video_codec_ctx_set         (cpaf::video::av_codec_context& ctx);
-    void                        subtitle_color_set          (const color& text_color, const color& bg_color);
-    void                        subtitle_font_set           (std::string font_name, uint16_t font_size_points);
 
     void                        init                        (const system_window& win,
                                                              const cpaf::video::surface_dimensions_t& dimensions );
@@ -60,13 +60,17 @@ public:
     void                        clear_current_subtitle      ();
     void                        set_current_subtitle        (cpaf::video::subtitle_frame&& subtitle);
 
-    bool                        show_subtitles              () const                        { return show_subtitles_;   }
-    void                        show_subtitles_set          (bool show)                     { show_subtitles_ = show;   }
-    bool                        subtitles_has_background    () const                        { return subtitles_has_background_;   }
-    void                        subtitles_has_background_set(bool has_bgr)                  { subtitles_has_background_ = has_bgr;   }
-
     /// @todo Currently unused, See render_geometry_set()
     void                        render_dimensions_set       (const cpaf::video::surface_dimensions_t& dimensions );
+
+    std::string                 subtitles_font_name         () const;
+    int32_t                     subtitles_font_size         () const;
+    color                       subtitles_font_color        () const;
+    color                       subtitles_bg_color          () const;
+    float                       subtitles_font_scale        () const;
+    float                       subtitles_relative_ypos     () const;
+    bool                        subtitles_has_background    () const;
+    bool                        subtitles_show              () const;
 
 protected:
     cpaf::video::av_format_context&         format_context              () { return *format_context_ptr_; }
@@ -75,20 +79,13 @@ protected:
     cpaf::video::av_frame&                  frame_display               () { return frame_display_; }
     cpaf::video::av_frame                   frame_display_;
     cpaf::video::surface_dimensions_t       render_dimensions_;
-    pos_2df                                 subtitle_pos                () const;
+///    pos_2df                                 subtitle_pos                () const;
+    void                                    on_configuration_changed           ();
 
     player&                                 player_;
-    std::string                             subtitles_font_name_        {"manrope"};
-    color                                   subtitles_text_color_       {1,1,1,1};
-    color                                   subtitles_bg_color_         {0,0,0,1};
-    uint16_t                                subtitles_font_size_points_ {16};
-    float                                   subtitles_scale_            {1.0f};
+    config&                                 config_;
     uint16_t                                subtitles_create_dist_      {3}; // Create a new subtitle if dist in pixels is greater then this
-    float                                   subtitles_relative_ypos_    {0.95};
     float                                   subtitles_line_dist_        {0.25};
-    bool                                    show_subtitles_             {true};
-    bool                                    subtitles_has_background_   {true};
-
 
     cpaf::video::subtitle_frame             current_subtitle_frame_     {};
     const system_window*                    main_window_ptr_            = nullptr;
@@ -97,7 +94,7 @@ private:
     cpaf::video::av_codec_context*          video_codec_ctx_ptr_        = nullptr;
     cpaf::video::media_stream_time*         current_media_time_ptr_     = nullptr;
     AVPixelFormat                           ff_pixel_format_            = AV_PIX_FMT_YUV420P;
-    pos_2df                                 subtitle_relative_pos_      {0.5, 0.9};
+///    pos_2df                                 subtitle_relative_pos_      {0.5, 0.9};
     rect                                    render_geometry_            {};
 
     void                        create_frame_display                ();

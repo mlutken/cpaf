@@ -10,9 +10,17 @@ struct ImFont;
 
 namespace cpaf::gui {
 
+/**
 
+## Convert ttf files to c array use xxd to get started
+ $ xxd -i myfont.ttf > myfont.h
+
+*/
 struct imgui_fonts {
-    static  std::span<const unsigned char> manrope();
+    static  std::span<const unsigned char> manrope              ();
+    static  std::span<const unsigned char> abeezee_regular      ();
+    static  std::span<const unsigned char> abeezee_italic       ();
+    static  std::span<const unsigned char> icons_fa_regular_400 ();
 
     static const std::span<const unsigned char>     font_data   (const std::string&  font_name);
 

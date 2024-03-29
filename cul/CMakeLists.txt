@@ -1,5 +1,6 @@
 add_subdirectory(luepp)
 add_subdirectory(imguipp)
+add_subdirectory(IconFontCppHeaders)
 #add_subdirectory(date)
 if ( NOT (CMAKE_SYSTEM_NAME MATCHES "Emscripten") )
 

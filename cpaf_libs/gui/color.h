@@ -30,6 +30,8 @@ public:
     constexpr color   (float r, float g, float b, float a) : cpaf::math::v4f(r, g, b, a) {}
     explicit color   (nlohmann::json jo_color);
 
+   nlohmann::json   to_json         () const        { return nlohmann::json::array({r(),g(),b(),a()}); }
+
     float           r               () const        { return x(); }
     float&          r               ()              { return x(); }
     float           g               () const        { return y(); }

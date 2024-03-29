@@ -22,6 +22,8 @@ float           json_value_float        (const nlohmann::json& jo, float default
 float           json_value_float        (const nlohmann::json& jo_object, const std::string& key, float default_value);
 int32_t         json_value_int32        (const nlohmann::json& jo, int32_t default_value);
 int32_t         json_value_int32        (const nlohmann::json& jo_object, const std::string& key, int32_t default_value);
+bool            json_value_bool         (const nlohmann::json& jo, bool default_value);
+bool            json_value_bool         (const nlohmann::json& jo_object, const std::string& key, bool default_value);
 std::string     json_value_str          (const nlohmann::json& jo, const std::string&  default_value);
 std::string     json_value_str          (const nlohmann::json& jo_object, const std::string& key, const std::string& default_value);
 nlohmann::json  json_value_object       (const nlohmann::json& jo_object, const std::string& key, const nlohmann::json& default_value = nlohmann::json::object());

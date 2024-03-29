@@ -1,13 +1,16 @@
 #include "render_base.h"
 #include <cpaf_libs/video/av_format_context.h>
 #include <cpaf_libs/time/cpaf_time.h>
+#include <cpaf_libs/gui/video/config.h>
 
 namespace cpaf::gui::video {
 
 
-render_base::render_base(player& owning_player)
+render_base::render_base(player& owning_player, config& cfg)
     : player_(owning_player)
+    , config_(cfg)
 {
+    config_.connect_for_changes([this]() {on_configuration_changed();});
     std::cerr << "FIXMENM render_base::render_base CONSTRUCTOR\n";
 }
 
@@ -27,19 +30,6 @@ void render_base::video_codec_ctx_set(cpaf::video::av_codec_context& ctx)
 {
     video_codec_ctx_ptr_ = &ctx;
     create_frame_display();
-}
-
-void render_base::subtitle_color_set(const color& text_color, const color& bg_color)
-{
-    subtitles_text_color_ = text_color;
-    subtitles_bg_color_ = bg_color;
-}
-
-void render_base::subtitle_font_set(std::string font_name, uint16_t font_size_points)
-{
-    subtitles_font_name_ = std::move(font_name);
-    subtitles_font_size_points_ = font_size_points;
-    on_render_geometry_changed();
 }
 
 void render_base::init(const system_window& win, const cpaf::video::surface_dimensions_t& dimensions)
@@ -100,15 +90,60 @@ void render_base::render_dimensions_set(const surface_dimensions_t& dimensions) 
     render_dimensions_ = dimensions;
 }
 
-pos_2df render_base::subtitle_pos() const
+std::string render_base::subtitles_font_name() const
 {
-    return subtitle_relative_pos_ * render_geometry_.size();
+    return config_.str("user", "subtitles_font_name");
 }
 
+int32_t render_base::subtitles_font_size() const
+{
+    const auto size = config_.float_val("user", "subtitles_font_size") * subtitles_font_scale();
+    return static_cast<int32_t>(size);
+}
+
+color render_base::subtitles_font_color() const
+{
+    return config_.color("user", "subtitles_font_color");
+}
+
+color render_base::subtitles_bg_color() const
+{
+    return config_.color("user", "subtitles_bg_color");
+}
+
+float render_base::subtitles_font_scale() const
+{
+    return config_.float_val("user", "subtitles_font_scale");
+}
+
+float render_base::subtitles_relative_ypos() const
+{
+    return config_.float_val("user", "subtitles_relative_ypos");
+}
+
+bool render_base::subtitles_has_background() const
+{
+    return config_.bool_val("user", "subtitles_has_background");
+}
+
+bool render_base::subtitles_show() const
+{
+    return config_.bool_val("user", "subtitles_show");
+}
+
+//pos_2df render_base::subtitle_pos() const
+//{
+//    return subtitle_relative_pos_ * render_geometry_.size();
+//}
 
 void render_base::create_frame_display()
 {
     frame_display_ = video_codec_ctx().create_scaling_dst_frame();
+}
+
+void render_base::on_configuration_changed()
+{
+    on_render_geometry_changed();
 }
 
 } //END namespace cpaf::gui::video

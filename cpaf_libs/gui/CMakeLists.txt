@@ -168,6 +168,10 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/window.cpp
 
     ${CMAKE_CURRENT_LIST_DIR}/assets/fonts/imgui_fonts.cpp
+
+    ${CMAKE_CURRENT_LIST_DIR}/assets/icons/fa_regular_400.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/assets/fonts/abeezee_regular.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/assets/fonts/abeezee_italic.cpp
     ${CMAKE_CURRENT_LIST_DIR}/assets/fonts/manrope_ttf.cpp
 )
 
@@ -183,6 +187,7 @@ target_link_libraries(${library_name} imguipp )
 target_link_libraries(${library_name} cpaf_video )
 target_link_libraries(${library_name} ${CPAF_GUI_LINK_LIBS} )
 target_link_libraries(${library_name} imgui::imgui )
+target_link_libraries(${library_name} IconFontCppHeaders )
 target_link_libraries(${library_name} fmt::fmt)
 target_include_directories(${library_name} INTERFACE  ${PARENT2_DIR} ${PARENT_DIR})
 target_include_directories(${library_name} PRIVATE ${CPAF_GUI_INCLUDE_DIRS})

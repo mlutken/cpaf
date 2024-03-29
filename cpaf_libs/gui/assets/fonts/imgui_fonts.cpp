@@ -5,6 +5,7 @@
 #include <map>
 #include <string>
 #include <imgui.h>
+#include <IconFontCppHeaders/IconsFontAwesome6.h>
 
 using namespace std;
 
@@ -12,9 +13,9 @@ namespace cpaf::gui {
 
 const std::span<const unsigned char> imgui_fonts::font_data(const string& font_name)
 {
-    if (font_name == "manrope") {
-        return imgui_fonts::manrope();
-    }
+    if      (font_name == "manrope")                {   return imgui_fonts::manrope();          }
+    else if (font_name == "abeezee_regular")        {   return imgui_fonts::abeezee_regular();  }
+    else if (font_name == "abeezee_italic")         {   return imgui_fonts::abeezee_italic();   }
 
     return std::span<const unsigned char>{};
 }

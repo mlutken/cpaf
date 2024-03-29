@@ -33,8 +33,6 @@ protected:
     float                   relative_ypos           () const;
 
 private:
-
-
     virtual void    do_render() = 0;
 
     bool            visible_ = true;

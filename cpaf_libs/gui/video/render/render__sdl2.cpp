@@ -8,6 +8,7 @@
 #include <cpaf_libs/gui/assets/fonts/imgui_fonts.h>
 #include <cpaf_libs/gui/platform_utils/sdl_convert.h>
 #include <cpaf_libs/gui/video/player.h>
+#include <cpaf_libs/gui/video/config.h>
 
 using namespace std;
 using namespace cpaf::video;
@@ -16,10 +17,11 @@ namespace cpaf::gui::video {
 
 std::unique_ptr<render> render_platform::create_video_render(
     player& owning_player,
+    config& cfg,
     const cpaf::gui::system_window& win,
     const cpaf::video::surface_dimensions_t& dimensions)
 {
-    auto video_renderer = std::make_unique<render>(owning_player);
+    auto video_renderer = std::make_unique<render>(owning_player, cfg);
     video_renderer->init(win, dimensions);
 
     return video_renderer;
@@ -35,8 +37,8 @@ render_platform::~render_platform()
     }
 }
 
-render_platform::render_platform(player& owning_player)
-    : render_base(owning_player)
+render_platform::render_platform(player& owning_player, config& cfg)
+    : render_base(owning_player, cfg)
 {
 
 }
@@ -133,17 +135,17 @@ void render_platform::ensure_valid_subtitles_graphics_texture(const subtitle_fra
 
 void render_platform::calc_subtitle_geometry()
 {
-    if ( !(current_subtitle_frame_.is_valid() && show_subtitles_) ) {
+    if ( !(current_subtitle_frame_.is_valid() && subtitles_show()) ) {
         return;
     }
 
-    const int32_t font_size_pixels = font_size::to_pixels(subtitles_font_size_points_, main_window_ptr_);
-    const ImFont* font = imgui_fonts::instance().get(subtitles_font_name_, font_size_pixels, subtitles_create_dist_);
+    const int32_t font_size_pixels = font_size::to_pixels(subtitles_font_size(), main_window_ptr_);
+    const ImFont* font = imgui_fonts::instance().get(subtitles_font_name(), font_size_pixels, subtitles_create_dist_);
     if (!font) { return; }
 
     const float line_dist = subtitles_line_dist_*font_size_pixels;
     const float x_pos = render_geometry().size().width() / 2;
-    const float lowest_y = subtitles_relative_ypos_* render_geometry().size().height();
+    const float lowest_y = subtitles_relative_ypos() * render_geometry().size().height();
     const float max_width = render_geometry().size().width();
     const size_t lines_count = current_subtitle_frame_.lines_count();
     const size_t max_line_index = lines_count -1;
@@ -159,7 +161,7 @@ void render_platform::calc_subtitle_geometry()
     }
 
     if (current_subtitle_frame_.format() == subtitle_frame::format_t::graphics && current_subtitle_frame_.ff_subtitle_is_valid() ) {
-        const auto scale = (render_geometry().size() / player_.video_src_dimensions_float())*subtitles_scale_;
+        const auto scale = (render_geometry().size() / player_.video_src_dimensions_float())*subtitles_font_scale();
         const auto subtitle_size = current_subtitle_frame_.ff_bitmap_rect().size()*scale;
         const auto subtitle_rect = rect({x_pos - subtitle_size.width()*0.5f,lowest_y - subtitle_size.height()}, subtitle_size);
         subtitles_dst_rect_ = to_sdl_rect(subtitle_rect);
@@ -173,8 +175,13 @@ SDL_Renderer* render_platform::get_sdl_renderer() {
 
 void render_platform::render_subtitle_text()
 {
-    const int32_t font_size_pixels = font_size::to_pixels(subtitles_font_size_points_, main_window_ptr_);
-    ImFont* font = imgui_fonts::instance().get(subtitles_font_name_, font_size_pixels, subtitles_create_dist_);
+    bool show_subtitles = subtitles_show();
+    if (!show_subtitles) {
+        return;
+    }
+
+    const int32_t font_size_pixels = font_size::to_pixels(subtitles_font_size(), main_window_ptr_);
+    ImFont* font = imgui_fonts::instance().get(subtitles_font_name(), font_size_pixels, subtitles_create_dist_);
     if (!font) { return; }
 
     auto window_flags = ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings|ImGuiWindowFlags_NoInputs;
@@ -182,11 +189,13 @@ void render_platform::render_subtitle_text()
         window_flags |= ImGuiWindowFlags_NoBackground;
     }
 
+    const color subtitles_bg_col = subtitles_bg_color();
+    const color subtitles_font_col = subtitles_font_color();
     ImGui::Rai imrai;
     imrai.Font(font)
-        .StyleColor(ImGuiCol_Border, reinterpret_cast<const ImVec4&>(subtitles_bg_color_))
-        .StyleColor(ImGuiCol_WindowBg, reinterpret_cast<const ImVec4&>(subtitles_bg_color_))
-        .StyleColor(ImGuiCol_Text, reinterpret_cast<const ImVec4&>(subtitles_text_color_))
+        .StyleColor(ImGuiCol_Border, reinterpret_cast<const ImVec4&>(subtitles_bg_col))
+        .StyleColor(ImGuiCol_WindowBg, reinterpret_cast<const ImVec4&>(subtitles_bg_col))
+        .StyleColor(ImGuiCol_Text, reinterpret_cast<const ImVec4&>(subtitles_font_col))
         .StyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(4, 4))
         ;
 
@@ -199,7 +208,7 @@ void render_platform::render_subtitle_text()
 
         ImGui::SetNextWindowPos({geom.top_left().x(), geom.top_left().y()}, ImGuiCond_::ImGuiCond_Always, {0.5, 0.5} );
         ImGui::SetNextWindowSize({geom.size().width(), geom.size().height()}, ImGuiCond_::ImGuiCond_Always);
-        ImGui::Begin(window_name.c_str(), &show_subtitles_, window_flags);
+        ImGui::Begin(window_name.c_str(), &show_subtitles, window_flags);
         ImGui::SetCursorPosY(0);
         ImGui::TextUnformatted(line.c_str());
         ImGui::End();

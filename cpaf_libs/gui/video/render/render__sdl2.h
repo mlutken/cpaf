@@ -25,11 +25,12 @@ class render_platform : public render_base
 public:
     static std::unique_ptr<render>   create_video_render(
         player& owning_player,
+        config& cfg,
         const system_window& win,
         const cpaf::video::surface_dimensions_t& dimensions);
 
     ~render_platform();
-    explicit render_platform(player& owning_player);
+    explicit render_platform(player& owning_player, config& cfg);
 
 protected:
 

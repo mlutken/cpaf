@@ -143,6 +143,37 @@ int32_t json_value_int32(const nlohmann::json& jo_object,
 }
 
 
+bool json_value_bool(const nlohmann::json& jo, bool default_value)
+{
+    if (jo.is_boolean()) {
+        return jo.get<bool>();
+    }
+    else if (jo.is_number_integer()) {
+        return static_cast<bool>(jo.get<int32_t>());
+    }
+    else if (jo.is_number()) {
+        return static_cast<bool>(jo.get<float>());
+    }
+    else if (jo.is_string()) {
+        const auto str = jo.get<std::string>();
+        if (str == "true") {
+            return true;
+        }
+        return static_cast<bool>(cpaf::to_int_default(str, 0));
+    }
+    return default_value;
+}
+
+bool json_value_bool(const nlohmann::json& jo_object, const std::string& key, bool default_value)
+{
+    if (jo_object.is_object()) {
+        const auto elem = jo_object.value(key, nlohmann::json());
+        return json_value_bool(elem, default_value);
+    }
+    return default_value;
+}
+
+
 std::string json_value_str(const nlohmann::json& jo, const std::string& default_value)
 {
     return to_string(jo, default_value);
