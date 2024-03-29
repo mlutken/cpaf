@@ -39,8 +39,6 @@ if ( NOT (CMAKE_SYSTEM_NAME MATCHES "Emscripten") )
     configure_file( "${CMAKE_CURRENT_LIST_DIR}/webcc/webcc/view.h" "${CMAKE_BINARY_DIR}/install/include/webcc/" )
 
     add_subdirectory(sparsehash)
-    ##add_subdirectory(fifo_map)
-    ##add_subdirectory(json)
     add_subdirectory(loki)
     add_subdirectory(utf8)
 endif()
