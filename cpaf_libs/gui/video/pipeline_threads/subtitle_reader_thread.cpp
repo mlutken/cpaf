@@ -21,17 +21,17 @@ static cpaf::video::subtitle_frame  create_from_container_frame(const subtitle_c
     return frame_out;
 }
 
-
-subtitle_reader_thread::subtitle_reader_thread(
-    player& owning_player,
-    cpaf::video::subtitles_queue& subtitles_queue,
-    const std::atomic_bool& threads_running,
-    const std::atomic_bool& threads_paused)
-    : subtitle_container_mutex_{}
-    , player_(owning_player)
-    , subtitles_queue_(subtitles_queue)
-    , threads_running_(threads_running)
-    , threads_paused_(threads_paused)
+subtitle_reader_thread::subtitle_reader_thread(player& owning_player,
+                                               cpaf::video::subtitles_queue& subtitles_queue,
+                                               const std::atomic_bool& threads_running,
+                                               const std::atomic_bool& threads_paused,
+                                               std::atomic<seek_state_t>& seek_state)
+    : subtitle_container_mutex_{},
+      player_(owning_player),
+      subtitles_queue_(subtitles_queue),
+      threads_running_(threads_running),
+      threads_paused_(threads_paused),
+      seek_state_(seek_state)
 {
 
 }
@@ -86,15 +86,12 @@ void subtitle_reader_thread::thread_function()
                 read_from_stream();
             }
             else if (player_.subtitle_source() == subtitle_source_t::text_file) {
-                // std::cerr << "TODO subtitle reader thread subtitle_source_t::text_file support!\n";
                 read_from_container();
             }
-
-//            std::cerr << "FIXMENM subtitle reader thread ....\n";
         }
         std::this_thread::sleep_for(thread_yield_time_);
     }
-    std::cerr << "\n!!! EXIT subtitle_reader_thread::audio_samples_thread_fn() !!!\n";
+    std::cerr << "LOG_INFO: EXIT subtitle_reader_thread::thread_function()!!!\n";
 }
 
 void subtitle_reader_thread::read_from_stream()
@@ -111,6 +108,10 @@ void subtitle_reader_thread::read_from_stream()
 
 void subtitle_reader_thread::read_from_container()
 {
+    if (seek_state_ != seek_state_t::ready) {
+        return;
+    }
+
     std::lock_guard<std::mutex> lg{ subtitle_container_mutex_ };
     if (!subtitle_container_) {
         return;
@@ -120,21 +121,28 @@ void subtitle_reader_thread::read_from_container()
     set_cur_subtitle_iter();
 
     int32_t subtitles_to_read = subtitles_read_ahead_size - subtitles_queue_.size();
-    // std::cerr << "FIXMENM subtitles_read_ahead_size: " << subtitles_read_ahead_size << "\n";
-    if (subtitles_read_ahead_size <= 0) { return ; }
+    if (subtitles_to_read <= 0) { return ; }
+    // if (subtitles_to_read > 0) std::cerr << "FIXMENM subtitles_to_read: " << subtitles_to_read << "\n";
+
+    if (static_cast<int32_t>(subtitles_queue_.size()) < subtitles_to_read) {
+        std::cerr << "FIXMENM subtitles_queue_.size(): " << subtitles_queue_.size()
+                  << " seek_state: " << to_string(seek_state_)
+                  << "\n";
+    }
 
     while ((current_subtitle_iter_ < container_end) &&  subtitles_to_read > 0 ) {
         enqueue_current_subtitle();
         ++current_subtitle_iter_;
         --subtitles_to_read;
     }
+    // if (seek_state_ != seek_state_t::ready) std::cerr << "FIXMENM seek_state: " << to_string(seek_state_) << "\n";
 
 }
 
 // Assumes mutex is already locked and subtitle_container_ and current iterator valid
 void subtitle_reader_thread::enqueue_current_subtitle()
 {
-    fmt::println("--- FIXMENM subtitle_reader_thread::push_from_container -----\n{}\n", current_subtitle_iter_->to_string()); std::cout << std::endl;
+    // fmt::println("--- FIXMENM enqueue_current_subtitle() -----\n{}\n", current_subtitle_iter_->to_string()); std::cout << std::endl;
 
     auto sub = create_from_container_frame(*current_subtitle_iter_);
     if (!subtitles_queue_.push(std::move(sub)) ) {
@@ -146,7 +154,7 @@ void subtitle_reader_thread::enqueue_current_subtitle()
 void subtitle_reader_thread::set_cur_subtitle_iter()
 {
     current_subtitle_iter_ = subtitle_container_->find_first_after(player_.current_time());
-    fmt::println("****FIXMENM subtitle_reader_thread::set_cur_subtitle_iter -----\n{}\n", current_subtitle_iter_->to_string()); std::cout << std::endl;
+    // fmt::println("****FIXMENM subtitle_reader_thread::set_cur_subtitle_iter -----\n{}\n", current_subtitle_iter_->to_string()); std::cout << std::endl;
 }
 
 } // namespace cpaf::gui::video

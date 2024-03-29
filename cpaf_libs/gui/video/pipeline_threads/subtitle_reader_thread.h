@@ -30,7 +30,8 @@ public:
     subtitle_reader_thread(player& owning_player,
                            cpaf::video::subtitles_queue& subtitles_queue,
                            const std::atomic_bool& threads_running,
-                           const std::atomic_bool& threads_paused);
+                           const std::atomic_bool& threads_paused,
+                           std::atomic<cpaf::video::seek_state_t>& seek_state);
 
     ~subtitle_reader_thread();
 
@@ -56,6 +57,7 @@ private:
     cpaf::video::subtitles_queue&       subtitles_queue_;
     const std::atomic_bool&             threads_running_;
     const std::atomic_bool&             threads_paused_;
+    std::atomic<cpaf::video::seek_state_t>& seek_state_;
     std::atomic_bool                    thread_is_paused_ = true;
     cpaf::video::subtitle_frame         current_subtitle_frame_     {};
 
