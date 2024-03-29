@@ -6,9 +6,9 @@ namespace cpaf::gui {
 
 std::span<const unsigned char> imgui_fonts::manrope()
 {
-    static constexpr size_t manrope_ttf_len = 96412;
+    static constexpr size_t font_len = 96412;
 
-    static const std::array<unsigned char, manrope_ttf_len> manrope_ttf = {
+    static const std::array<unsigned char, font_len> font_data = {
         0x00, 0x01, 0x00, 0x00, 0x00, 0x0f, 0x00, 0x80, 0x00, 0x03, 0x00, 0x70,
         0x47, 0x50, 0x4f, 0x53, 0xa5, 0x5f, 0xfb, 0x25, 0x00, 0x01, 0x33, 0xb8,
         0x00, 0x00, 0x35, 0x62, 0x47, 0x53, 0x55, 0x42, 0x5b, 0xf8, 0x7d, 0x2e,
@@ -8046,7 +8046,7 @@ std::span<const unsigned char> imgui_fonts::manrope()
         0x00, 0x00, 0x00, 0x00
     };
 
-    return std::span<const unsigned char>(manrope_ttf.begin(), manrope_ttf.end());
+    return std::span<const unsigned char>(font_data.begin(), font_data.end());
 }
 
 
