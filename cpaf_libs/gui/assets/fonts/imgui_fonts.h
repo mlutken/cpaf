@@ -4,9 +4,8 @@
 #include <vector>
 #include <map>
 #include <cstdint>
+#include <imgui.h>
 
-struct ImGuiIO;
-struct ImFont;
 
 namespace cpaf::gui {
 
@@ -21,12 +20,14 @@ struct imgui_fonts {
     static  std::span<const unsigned char> abeezee_regular      ();
     static  std::span<const unsigned char> abeezee_italic       ();
     static  std::span<const unsigned char> icons_fa_regular_400 ();
+    static  std::span<const unsigned char> icons_fa_solid_900   ();
 
     static const std::span<const unsigned char>     font_data   (const std::string&  font_name);
 
     static imgui_fonts& instance();
 
     ImFont*     add                 (const std::string& font_name, int32_t size_pixels);
+    ImFont*     merge_with_previous (const std::string& font_name, int32_t size_pixels, float render_size_pixels, ImWchar range_min, ImWchar range_max);
     bool        add                 (const std::string& font_name, const std::vector<int32_t>& size_pixels);
     void        set_default         (const std::string& font_name, int32_t size_pixels);
 

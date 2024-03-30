@@ -153,7 +153,7 @@ public:
     void                        resume_playback         ();
     void                        toggle_pause_playback   ();
     void                        playback_paused_set     (bool is_paused);
-    bool                        playback_paused         () const;
+    bool                        playback_is_paused         () const;
     cpaf::video::seek_state_t   seek_state              () const;
     std::chrono::microseconds   seek_from_position      () const;
     std::chrono::microseconds   seek_position_requested () const;

@@ -1,6 +1,5 @@
 #include "controls.h"
 #include <cpaf_libs/gui/video/player.h>
-#include <cpaf_libs/gui/video/config.h>
 
 namespace cpaf::gui::video {
 
@@ -18,37 +17,37 @@ void controls::render()
 
 }
 
-std::string controls::font_name() const {
-    return config_.controls_str("font_name");
-}
+//std::string controls::font_name() const {
+//    return config_.str("controls", "font_name");
+//}
 
-color controls::text_color() const {
-    return config_.controls_color("text_color");
-}
+//color controls::time_text_color() const {
+//    return config_.color("controls", "time_text_color");
+//}
 
-color controls::border_color() const {
-    return config_.controls_color("border_color");
-}
+//color controls::border_color() const {
+//    return config_.color("controls", "border_color");
+//}
 
-color controls::background_color() const {
-    return config_.controls_color("background_color");
-}
+//color controls::bg_color() const {
+//    return config_.color("controls", "bg_color");
+//}
 
-uint16_t controls::time_font_size() const {
-    return config_.controls_int32("time_font_size");
-}
+//int32_t controls::time_font_size() const {
+//    return config_.int32("controls", "time_font_size");
+//}
 
-uint16_t controls::slider_height() const {
-    return config_.controls_int32("slider_height");
-}
+//int32_t controls::slider_height() const {
+//    return config_.int32("controls", "slider_height");
+//}
 
-uint16_t controls::buttons_size() const {
-    return config_.controls_int32("buttons_size");
-}
+//int16_t controls::buttons_size() const {
+//    return config_.int32("controls", "buttons_size");
+//}
 
-float controls::relative_ypos() const {
-    return config_.controls_float("relative_ypos");
-}
+//float controls::relative_ypos() const {
+//    return config_.float_val("controls", "relative_ypos");
+//}
 
 } // namespace cpaf::gui::video
 

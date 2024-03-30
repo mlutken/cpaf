@@ -570,7 +570,7 @@ void player::resume_playback()
 
 void player::toggle_pause_playback()
 {
-    if (playback_paused()) {
+    if (playback_is_paused()) {
         resume_playback();
     }
     else {
@@ -588,7 +588,7 @@ void player::playback_paused_set(bool is_paused)
     }
 }
 
-bool player::playback_paused() const {
+bool player::playback_is_paused() const {
     return media_pipeline_threads().playback_paused();
 }
 

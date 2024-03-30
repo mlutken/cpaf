@@ -4,6 +4,8 @@
 #include <cpaf_libs/gui/fonts/font_size.h>
 #include <cpaf_libs/gui/assets/fonts/imgui_fonts.h>
 #include <cpaf_libs/gui/video/player.h>
+#include <IconFontCppHeaders/IconsFontAwesome6.h>
+
 
 using namespace cpaf::time;
 using namespace std::chrono;
@@ -48,19 +50,29 @@ void controls_default::do_render()
 {
     calc_geometry();    // TODO : Only calc new geometry when window or fonts/sizes have changed!
 
+
+//    const color menu_text_col = menu_text_color();
+    const color buttons_text_col = buttons_text_color();
+    const color buttons_bg_col = buttons_bg_color();
+    const color buttons_hover_bg_col = buttons_bg_col*0.8f;
+    const color buttons_active_bg_col = buttons_bg_col*1.2f;
+    const color time_text_col = time_text_color();
     const int32_t play_buttons_font_size_pixels = font_size::to_pixels(buttons_size(), player_.main_window_ptr());
     const int32_t slider_font_size_pixels = font_size::to_pixels(slider_height(), player_.main_window_ptr());
     const int32_t time_font_size_pixels = font_size::to_pixels(time_font_size(), player_.main_window_ptr());
-    ImFont* font_fwd_back_btns = imgui_fonts::instance().get(font_name(), play_buttons_font_size_pixels);
-    ImFont* font_slider = imgui_fonts::instance().get(font_name(), slider_font_size_pixels);
-    ImFont* font_time = imgui_fonts::instance().get(font_name(), time_font_size_pixels);
+    ImFont* font_fwd_back_btns = imgui_fonts::instance().get(buttons_font_name(), play_buttons_font_size_pixels);
+    ImFont* font_slider = imgui_fonts::instance().get(slider_font_name(), slider_font_size_pixels);
+    ImFont* font_time = imgui_fonts::instance().get(time_font_name(), time_font_size_pixels);
 
-    ///if (!font_fwd_back_btns) { return; }
     bool show_controls = true;
 
     {
         ImGui::Rai imrai;
         imrai.Font(font_fwd_back_btns)
+            .StyleColor(ImGuiCol_Text, reinterpret_cast<const ImVec4&>(buttons_text_col))
+            .StyleColor(ImGuiCol_Button, reinterpret_cast<const ImVec4&>(buttons_bg_col))
+            .StyleColor(ImGuiCol_ButtonActive, reinterpret_cast<const ImVec4&>(buttons_active_bg_col))
+            .StyleColor(ImGuiCol_ButtonHovered, reinterpret_cast<const ImVec4&>(buttons_hover_bg_col))
             .StyleVar(ImGuiStyleVar_WindowPadding, {0,0})
             .StyleVar(ImGuiStyleVar_WindowRounding, play_buttons_font_size_pixels/2)
             .StyleVar(ImGuiStyleVar_FrameRounding, play_buttons_font_size_pixels/2)
@@ -68,7 +80,8 @@ void controls_default::do_render()
 
         ImGui::SetNextWindowPos(play_pause_btn_pos_, ImGuiCond_::ImGuiCond_Always, {0.5, 0.5} );
         ImGui::Begin("play_pause_btn", &show_controls, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
-        if (ImGui::ArrowButton("##play_pause", ImGuiDir_Right)) {
+        const char* const btn = player_.playback_is_paused() ? ICON_FA_CIRCLE_PAUSE : ICON_FA_CIRCLE_PLAY;
+        if (ImGui::Button(btn)) {
             player_.toggle_pause_playback();
         }
         ImGui::End();
@@ -76,7 +89,7 @@ void controls_default::do_render()
         ImGui::SetNextWindowPos(video_back_btn_pos_, ImGuiCond_::ImGuiCond_Always, {0.5, 0.5} );
         ImGui::Begin("video_back_btn", &show_controls, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
         ImGui::PushButtonRepeat(true);
-        if (ImGui::Button("<<")) {
+        if (ImGui::Button(ICON_FA_ARROW_ROTATE_LEFT)) {
             player_.seek_relative(-config_.controls_seconds("skip_time_small"));
         }
         ImGui::PopButtonRepeat();
@@ -85,7 +98,7 @@ void controls_default::do_render()
         ImGui::SetNextWindowPos(video_fwd_btn_pos_, ImGuiCond_::ImGuiCond_Always, {0.5, 0.5} );
         ImGui::Begin("video_fwd_btn", &show_controls, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
         ImGui::PushButtonRepeat(true);
-        if (ImGui::Button(">>")) {
+        if (ImGui::Button(ICON_FA_ARROW_ROTATE_RIGHT)) {
             player_.seek_relative(config_.controls_seconds("skip_time_small"));
         }
         ImGui::PopButtonRepeat();

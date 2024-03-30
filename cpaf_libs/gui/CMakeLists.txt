@@ -170,6 +170,7 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/assets/fonts/imgui_fonts.cpp
 
     ${CMAKE_CURRENT_LIST_DIR}/assets/icons/fa_regular_400.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/assets/icons/fa_solid_900.cpp
     ${CMAKE_CURRENT_LIST_DIR}/assets/fonts/abeezee_regular.cpp
     ${CMAKE_CURRENT_LIST_DIR}/assets/fonts/abeezee_italic.cpp
     ${CMAKE_CURRENT_LIST_DIR}/assets/fonts/manrope_ttf.cpp

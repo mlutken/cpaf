@@ -8,13 +8,31 @@ static const auto default_config = nlohmann::json::parse(
     R"(
     {
         "controls": {
-            "font_name": "abeezee_regular",
-            "text_color": [1,1,1,1],
-            "background_color": [0,0,0,1],
-            "border_color": [0,0,0,1],
-            "time_font_size": 13,
-            "slider_height": 8,
+            "buttons_font_name": "abeezee_regular",
             "buttons_size": 38,
+            "buttons_text_color": [1,1,1,1],
+            "buttons_bg_color": [0.75,0.1,0.1,1],
+            "buttons_border_color": [1,0,0,1],
+
+            "menu_font_name": "abeezee_regular",
+            "menu_font_size": 13,
+            "menu_text_color": [0,1,1,1],
+            "menu_bg_color": [0,0,0,1],
+            "menu_border_color": [0,0,0,1],
+
+            "slider_height": 8,
+            "slider_font_name": "abeezee_regular",
+            "slider_font_size": 13,
+            "slider_text_color": [0,1,1,1],
+            "slider_bg_color": [0,0,0,1],
+            "slider_border_color": [0,0,0,1],
+
+            "time_font_name": "abeezee_regular",
+            "time_font_size": 13,
+            "time_text_color": [0,1,1,1],
+            "time_bg_color": [0,0,0,1],
+            "time_border_color": [0,0,0,1],
+
             "relative_ypos": 0.7,
             "skip_time_small": 15
         },
