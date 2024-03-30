@@ -617,12 +617,15 @@ template <typename T>
 inline std::ostream&	operator <<(std::ostream& os,		///< [out] Output stream to write to.
                                     const v2<T>& v)			///< [in] Vector to write.
 {
-    os << "[" << v.x() << "," << v.y() << "]";
+    os << "[" << v.x() << ", " << v.y() << "]";
     return os;
 }
 
 /** '>>' operator, Read input from stream.
-    \return Reference to (modified) istream. */
+@todo math::v4 Handle commas and brackets when reading
+@see https://codereview.stackexchange.com/questions/216343/overloading-istream-to-read-comma-separated-input
+@return Reference to (modified) istream.
+*/
 template <typename T>
 inline std::istream&		operator >>(std::istream& is,		///< [in]  Input stream to read from.
                                         v2<T>& v)				///< [out] Vector recieve the data from the stream.
