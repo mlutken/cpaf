@@ -27,7 +27,7 @@ struct imgui_fonts {
     static imgui_fonts& instance();
 
     ImFont*     add                 (const std::string& font_name, int32_t size_pixels);
-    ImFont*     merge_with_previous (const std::string& font_name, int32_t size_pixels, float render_size_pixels, ImWchar range_min, ImWchar range_max);
+    ImFont*     merge_with_previous (const std::string& font_name, int32_t size_pixels, float merge_size_adjust_factor, uint32_t range_min, uint32_t range_max);
     bool        add                 (const std::string& font_name, const std::vector<int32_t>& size_pixels);
     void        set_default         (const std::string& font_name, int32_t size_pixels);
 

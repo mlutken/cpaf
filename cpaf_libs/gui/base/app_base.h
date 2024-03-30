@@ -33,6 +33,12 @@ public:
     system_window&                  main_window                 ()          { return do_main_window(); }
     std::shared_ptr<system_window>  main_window_shared          () const    { return do_main_window_shared(); }
     void                            add_fonts                   (const std::string& font_name, const std::vector<uint32_t>& sizes_in_points);
+    void                            add_fonts                   (const std::string& font_name,
+                                                                 const std::string& merge_font_name,
+                                                                 float merge_size_adjust_factor,
+                                                                 uint32_t range_min,
+                                                                 uint32_t range_max,
+                                                                 const std::vector<uint32_t>& sizes_in_points);
     void                            set_default_font            (const std::string& font_name, uint32_t size_points);
     void                            clear_before_frame_update   (bool do_clear) { clear_window_before_frame_update_ = do_clear; }
     std::unique_ptr<system_window_base>  create_system_window   (size_2d size, std::string_view title) const {
@@ -84,6 +90,12 @@ private:
     virtual std::shared_ptr<system_window>  do_main_window_shared           () const = 0;
 
     virtual void                            do_add_fonts                    (const std::string& font_name, const std::vector<uint32_t>& sizes_in_points) = 0;
+    virtual void                            do_add_fonts                    (const std::string& font_name,
+                                                                             const std::string& merge_font_name,
+                                                                             float merge_size_adjust_factor,
+                                                                             uint32_t range_min,
+                                                                             uint32_t range_max,
+                                                                             const std::vector<uint32_t>& sizes_in_points) = 0;
     virtual void                            do_set_default_font             (const std::string& font_name, uint32_t size_points) = 0;
 
     virtual std::unique_ptr<system_window>  do_create_system_window        (size_2d size, std::string_view title) const = 0;

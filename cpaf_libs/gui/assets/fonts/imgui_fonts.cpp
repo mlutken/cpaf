@@ -52,19 +52,7 @@ ImFont* imgui_fonts::add(const string& font_name, int32_t size_pixels)
     unsigned char* data = const_cast<unsigned char*>(font_data.data());
     const int size = font_data.size();
     font_ptr = ImGui::GetIO().Fonts->AddFontFromMemoryTTF(data, size, size_pixels, &fnt_cfg);
-    std::cerr << "FIXMENM BEFORE MERGE font_ptr: " << font_ptr << "\n";
-
     all_fonts_[string(font_name)][size_pixels] = font_ptr;
-
-    /////// FIXMENM DEBUG ONLY BEGIN
-    const float render_size_pixels = static_cast<float>(size_pixels) * 2.0f / 3.0f; // FontAwesome fonts need to have their sizes reduced by 2.0f/3.0f in order to align correctly
-
-    font_ptr = merge_with_previous("icons_fa_solid_900", size_pixels, render_size_pixels, ICON_MIN_FA, ICON_MAX_16_FA);
-    std::cerr << "FIXMENM AFTER MERGE font_ptr: " << font_ptr << "\n";
-//    all_fonts_[string(font_name)][size_pixels] = font_ptr;
-
-    /////// FIXMENM DEBUG ONLY END
-
     return font_ptr;
 }
 
@@ -73,9 +61,9 @@ ImFont* imgui_fonts::add(const string& font_name, int32_t size_pixels)
 ImFont* imgui_fonts::merge_with_previous(
     const std::string& font_name,
     int32_t size_pixels,
-    float render_size_pixels,
-    ImWchar range_min,
-    ImWchar range_max )
+    float merge_size_adjust_factor,
+    uint32_t range_min,
+    uint32_t range_max )
 {
     const auto font_data = imgui_fonts::font_data (font_name);
     if (font_data.empty()) {
@@ -86,7 +74,9 @@ ImFont* imgui_fonts::merge_with_previous(
         return nullptr;
     }
 
-    static const ImWchar icons_ranges[] = { range_min, range_max, 0 };
+    const float render_size_pixels = merge_size_adjust_factor * static_cast<float>(size_pixels);
+
+    static const ImWchar icons_ranges[] = { static_cast<ImWchar>(range_min), static_cast<ImWchar>(range_max), 0 };
     ImFontConfig fnt_cfg;
     fnt_cfg.FontDataOwnedByAtlas = false;
     fnt_cfg.MergeMode = true;
@@ -97,12 +87,9 @@ ImFont* imgui_fonts::merge_with_previous(
     const int size = font_data.size();
     ImFont* font_ptr = ImGui::GetIO().Fonts->AddFontFromMemoryTTF(data, size, render_size_pixels, &fnt_cfg, icons_ranges);
 
-    if (font_ptr != all_fonts_[string(font_name)][size_pixels]) {
-        std::cerr << "LOG_ERR imgui_fonts::merge_with_previous() poiner not the same!!\n";
-    }
-
-
-//    all_fonts_[string(font_name)][size_pixels] = font_ptr;
+//    if (font_ptr != all_fonts_[string(font_name)][size_pixels]) {
+//        std::cerr << "LOG_ERR imgui_fonts::merge_with_previous() poiner not the same!!\n";
+//    }
 
     return font_ptr;
 }
