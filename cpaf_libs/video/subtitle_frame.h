@@ -67,6 +67,7 @@ public:
     bool                            ff_subtitle_is_valid        () const;
     bool                            is_valid                    () const;
     format_t                        format                      () const { return format_; }
+    bool                            is_text_format              () const { return format_ == format_t::text; }
     size_t                          lines_count                 () const {return std::min(lines.size(), max_lines);}
     void                            set_presentation_times      (std::chrono::microseconds start, std::chrono::microseconds end);
     void                            set_presentation_times_ms   (uint32_t start_ms, uint32_t end_ms);
