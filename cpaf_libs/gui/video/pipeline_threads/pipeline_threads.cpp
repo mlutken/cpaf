@@ -55,6 +55,7 @@ pipeline_threads::audio_play_callback_t pipeline_threads::audio_callback_get()
 
 void pipeline_threads::start()
 {
+    seek_state_ = seek_state_t::ready;
     audio_render_thread_.start();
     audio_resampler_thread_.start();
     packet_reader_thread_.start();
