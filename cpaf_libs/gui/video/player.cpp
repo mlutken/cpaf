@@ -511,12 +511,16 @@ void player::frame_update()
 
 void player::video_frame_update(av_frame& current_frame, cpaf::gui::video::render& video_render)
 {
-    media_pipeline_threads().video_frame_update(current_frame, video_render);
+    if (media_pipeline_threads_) {
+        media_pipeline_threads().video_frame_update(current_frame, video_render);
+    }
 }
 
 void player::video_frame_update(av_frame& current_frame)
 {
-    video_frame_update(current_frame, *video_render_);
+    if (media_pipeline_threads_) {
+        video_frame_update(current_frame, *video_render_);
+    }
 }
 
 std::shared_ptr<torrent::torrents> player::torrents_get() const
@@ -535,19 +539,25 @@ std::shared_ptr<torrent::torrents> player::torrents_get() const
 void player::seek_position(const std::chrono::microseconds& stream_pos, seek_dir dir)
 {
     if (resume_from_pause_on_seek_) { resume_playback(); }
-    media_pipeline_threads().seek_position(stream_pos, dir);
+    if (media_pipeline_threads_) {
+        media_pipeline_threads().seek_position(stream_pos, dir);
+    }
 }
 
 void player::seek_position(const std::chrono::microseconds& stream_pos)
 {
     if (resume_from_pause_on_seek_) { resume_playback(); }
-    media_pipeline_threads().seek_position(stream_pos);
+    if (media_pipeline_threads_) {
+        media_pipeline_threads().seek_position(stream_pos);
+    }
 }
 
 void player::seek_relative(const std::chrono::microseconds& delta_time)
 {
     if (resume_from_pause_on_seek_) { resume_playback(); }
-    media_pipeline_threads().seek_relative(delta_time);
+    if (media_pipeline_threads_) {
+        media_pipeline_threads().seek_relative(delta_time);
+    }
 }
 
 void player::pause_playback()
@@ -589,7 +599,10 @@ void player::playback_paused_set(bool is_paused)
 }
 
 bool player::playback_is_paused() const {
-    return media_pipeline_threads().playback_paused();
+    if (media_pipeline_threads_) {
+        return media_pipeline_threads().playback_paused();
+    }
+    return true;
 }
 
 seek_state_t player::seek_state() const
