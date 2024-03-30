@@ -1,4 +1,5 @@
 #include "packet_reader_thread.h"
+#include <cpaf_libs/time/cpaf_time.h>
 #include <cpaf_libs/video/av_format_context.h>
 #include <cpaf_libs/video/media_stream_time.h>
 #include <cpaf_libs/gui/video/pipeline_threads/pipeline_threads.h>
@@ -34,7 +35,7 @@ bool packet_reader_thread::seek_position(const std::chrono::microseconds& stream
     auto seek_state_expected = seek_state_t::ready;
     if (seek_state_.compare_exchange_strong(seek_state_expected, seek_state_t::requested)) {
         seek_from_position_ = player_.cur_media_time().current_time_pos();
-        seek_position_requested_ = stream_pos;
+        seek_time_pos_requested_ = stream_pos;
         seek_direction_ = dir;
         return true;
     }
@@ -47,11 +48,18 @@ bool packet_reader_thread::seek_position(const std::chrono::microseconds& stream
     if (seek_state_.compare_exchange_strong(seek_state_expected, seek_state_t::requested)) {
 
         seek_from_position_ = player_.cur_media_time().current_time_pos();
-        seek_position_requested_ = stream_pos;
+        seek_time_pos_requested_ = stream_pos;
         seek_direction_ = cpaf::video::seek_dir::forward;
         return true;
     }
     return false;
+}
+
+void packet_reader_thread::debug_print_info() const
+{
+    std::cerr << "FIXMENM packet reader  seek req time: " << cpaf::time::format_h_m_s(seek_time_pos_requested_)
+              << " player time: " << cpaf::time::format_h_m_s(player_.current_time())
+              << "\n";
 }
 
 void packet_reader_thread::read_packets_thread_fn()
@@ -59,6 +67,7 @@ void packet_reader_thread::read_packets_thread_fn()
     const auto mt = player_.format_context().primary_media_type();
     while(threads_running_) {
         check_seek_position();
+        check_seek_completed();
         if (threads_paused_) {
             thread_is_paused_ = true;
         }
@@ -78,14 +87,26 @@ void packet_reader_thread::check_seek_position()
         const auto mt = player_.format_context().primary_media_type();
         signal_flush_start();
         player_.format_context().read_packets_to_queues(mt, primary_queue_fill_level_ + 1);
-        player_.format_context().seek_time_pos(mt, seek_position_requested_, seek_direction_);
+        player_.format_context().seek_time_pos(mt, seek_time_pos_requested_, seek_direction_);
         flush_queues();
         player_.format_context().read_packets_to_queues(mt, primary_queue_fill_level_);
         signal_flush_done();
         seek_state_ = seek_state_t::flush_done;
+        flush_done_time_point_ = std::chrono::steady_clock::now();
         std::this_thread::sleep_for(5ms);
         seek_state_ = seek_state_t::ready;
     }
+}
+
+void cpaf::gui::video::packet_reader_thread::check_seek_completed()
+{
+
+    //    if (seek_state_.compare_exchange_strong(seek_state_expected, seek_state_t::flushing)) {
+
+    // A timeout fallback in case the normal test fails due to thread getting exausted!
+//    if ( std::chrono::steady_clock::now() - flush_done_time_point_ > 2ms) {
+//        seek_state_ = seek_state_t::ready;
+//    }
 }
 
 void packet_reader_thread::flush_queues()
@@ -108,6 +129,8 @@ void packet_reader_thread::signal_flush_done()
         pipeline_threads_ptr_->signal_flush_done();
     }
 }
+
+
 
 
 } // namespace cpaf::gui::video
