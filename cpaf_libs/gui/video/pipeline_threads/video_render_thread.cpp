@@ -250,8 +250,10 @@ void video_render_thread::debug_gui()
 {
     std::string subtitle = "";
     if (!subtitles_queue_.empty()) {
-        subtitle += cpaf::time::format_h_m_s_ms(subtitles_queue_.front().presentation_time) + " ";
-        subtitle += subtitles_queue_.front().lines[0];
+        if (subtitles_queue_.front().is_text_format()) {
+            subtitle += cpaf::time::format_h_m_s_ms(subtitles_queue_.front().presentation_time) + " ";
+            subtitle += subtitles_queue_.front().lines[0];
+        }
     }
 
     ImGui::Rai imrai;
