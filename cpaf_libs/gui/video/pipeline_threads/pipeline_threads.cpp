@@ -121,10 +121,6 @@ void pipeline_threads::subtitle_container_set(std::unique_ptr<subtitle_container
 
 void pipeline_threads::video_frame_update(cpaf::video::av_frame& current_frame, gui::video::render& video_render)
 {
-//    if (seek_state_ != seek_state_t::ready) {
-//        cerr << "FIXMENM seek_state: " << to_string(seek_state_) << "\n";
-//    }
-
     video_render_thread_.video_frame_update(current_frame, video_render);
 }
 
