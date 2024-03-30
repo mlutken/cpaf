@@ -61,6 +61,7 @@ private:
     const cpaf::video::packet_queue_t&      video_packet_queue_const    () const;
     const cpaf::video::av_samples_queue&    audio_samples_queue         () const { return audio_samples_queue_; }
     void                                    flush_queues                ();
+    void                                    debug_gui                   ();
 
     player&                                 player_;
     cpaf::video::av_samples_queue&          audio_samples_queue_;

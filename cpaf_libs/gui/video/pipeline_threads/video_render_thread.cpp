@@ -9,6 +9,9 @@
 #include <cpaf_libs/gui/video/render/render.h>
 #include <cpaf_libs/gui/video/player.h>
 
+#include <imguipp/imgui_rai.h>  // FIXMENM DEBUG ONLY !
+
+
 using namespace std::chrono_literals;
 using namespace std::chrono;
 using namespace cpaf::video;
@@ -47,7 +50,7 @@ void video_render_thread::terminate()
 void video_render_thread::video_frame_update(cpaf::video::av_frame& current_frame, cpaf::gui::video::render& video_render)
 {
     [[maybe_unused]] bool new_frame_was_read = video_frame_do_render(current_frame, video_render);
-
+    debug_gui();
     // debug_video_frame_update(current_frame, video_render);
 }
 
@@ -85,6 +88,10 @@ bool video_render_thread::video_frame_do_render(
     cpaf::video::av_frame& current_frame,
     cpaf::gui::video::render& video_render)
 {
+    update_current_subtitle(video_render);
+    if (flush_requested_) {
+        flush_queues();
+    }
 
     // --- Special case when we are flushing (seeking) ---
     if (seek_state_ == seek_state_t::flushing) {
@@ -97,11 +104,7 @@ bool video_render_thread::video_frame_do_render(
         return true;
     }
 
-    if (flush_requested_) {
-        flush_queues();
-    }
 
-    update_current_subtitle(video_render);
 
     bool new_frame_was_read = false;
     if (time_to_current_frame(current_frame) > 1s ) {
@@ -129,9 +132,6 @@ void video_render_thread::update_current_subtitle(render& video_render)
         video_render.clear_current_subtitle();
     }
 
-//    video_render.set_current_subtitle(test_subtitle());
-//    return; // FIXMENM
-
     while (!subtitles_queue_.empty() && subtitle_too_old(subtitles_queue_.front())) {
         subtitles_queue_.pop();
     }
@@ -142,7 +142,8 @@ void video_render_thread::update_current_subtitle(render& video_render)
 //    if (!subtitles_queue_.empty()) {
 //        std::cerr << "FIXMENM show current subtitle: " << subtitles_queue_.front().dbg_str()
 //                  << " cur time: " << cpaf::time::format_h_m_s(player_.cur_media_time().video_time_pos())
-//                  << "  wintin time: '" << subtitle_within_display_time(subtitles_queue_.front()) << "'"
+//                  << "  within time: '" << subtitle_within_display_time(subtitles_queue_.front()) << "'"
+//                  << "  queue size: '" << subtitles_queue_.size() << "'"
 //                  << "\n";
 //    }
 
@@ -241,8 +242,37 @@ const cpaf::video::packet_queue_t& video_render_thread::video_packet_queue_const
  */
 void video_render_thread::flush_queues()
 {
-    subtitles_queue_.flush();
+//    std::cerr << ">>>>>>>>>> FIXMENM FLUSH subtitles <<<<<<<<<<<<<<<<\n";
     flush_requested_ = false;
+}
+
+void video_render_thread::debug_gui()
+{
+    std::string subtitle = "";
+    if (!subtitles_queue_.empty()) {
+        subtitle += cpaf::time::format_h_m_s_ms(subtitles_queue_.front().presentation_time) + " ";
+        subtitle += subtitles_queue_.front().lines[0];
+    }
+
+    ImGui::Rai imrai;
+//    imrai.Font(font)
+//        .StyleColor(ImGuiCol_Border, reinterpret_cast<const ImVec4&>(subtitles_bg_col))
+//        .StyleColor(ImGuiCol_WindowBg, reinterpret_cast<const ImVec4&>(subtitles_bg_col))
+//        .StyleColor(ImGuiCol_Text, reinterpret_cast<const ImVec4&>(subtitles_font_col))
+//        .StyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(4, 4))
+//        ;
+
+
+    auto window_flags = ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings|ImGuiWindowFlags_NoInputs;
+    bool show_debug = true;
+
+    ImGui::SetNextWindowPos({100, 100}, ImGuiCond_::ImGuiCond_Always, {0, 0} );
+    ImGui::SetNextWindowSize({700, 120}, ImGuiCond_::ImGuiCond_Always);
+    ImGui::Begin("DEBUG_WINDOW", &show_debug, window_flags);
+    ImGui::SetCursorPosY(0);
+    ImGui::TextUnformatted(subtitle.c_str());
+    ImGui::End();
+
 }
 
 } // namespace cpaf::gui::video
