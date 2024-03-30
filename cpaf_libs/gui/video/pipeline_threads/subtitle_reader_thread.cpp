@@ -124,25 +124,24 @@ void subtitle_reader_thread::read_from_container()
     if (subtitles_to_read <= 0) { return ; }
     // if (subtitles_to_read > 0) std::cerr << "FIXMENM subtitles_to_read: " << subtitles_to_read << "\n";
 
-    if (static_cast<int32_t>(subtitles_queue_.size()) < subtitles_to_read) {
-        std::cerr << "FIXMENM subtitles_queue_.size(): " << subtitles_queue_.size()
-                  << " seek_state: " << to_string(seek_state_)
-                  << "\n";
-    }
+//    if (static_cast<int32_t>(subtitles_queue_.size()) < subtitles_to_read) {
+//        std::cerr << "FIXMENM subtitles_queue_.size(): " << subtitles_queue_.size()
+//                  << " seek_state: " << to_string(seek_state_)
+//                  << "\n";
+//    }
 
     while ((current_subtitle_iter_ < container_end) &&  subtitles_to_read > 0 ) {
         enqueue_current_subtitle();
         ++current_subtitle_iter_;
         --subtitles_to_read;
     }
-    // if (seek_state_ != seek_state_t::ready) std::cerr << "FIXMENM seek_state: " << to_string(seek_state_) << "\n";
 
 }
 
 // Assumes mutex is already locked and subtitle_container_ and current iterator valid
 void subtitle_reader_thread::enqueue_current_subtitle()
 {
-    // fmt::println("--- FIXMENM enqueue_current_subtitle() -----\n{}\n", current_subtitle_iter_->to_string()); std::cout << std::endl;
+//    fmt::println("--- FIXMENM enqueue_current_subtitle() -----\n{}\n", current_subtitle_iter_->to_string()); std::cout << std::endl;
 
     auto sub = create_from_container_frame(*current_subtitle_iter_);
     if (!subtitles_queue_.push(std::move(sub)) ) {
@@ -153,7 +152,7 @@ void subtitle_reader_thread::enqueue_current_subtitle()
 // Assumes mutex is already locked and subtitle_container_ valid
 void subtitle_reader_thread::set_cur_subtitle_iter()
 {
-    current_subtitle_iter_ = subtitle_container_->find_first_after(player_.current_time());
+    current_subtitle_iter_ = subtitle_container_->find_last_before(player_.current_time());
     // fmt::println("****FIXMENM subtitle_reader_thread::set_cur_subtitle_iter -----\n{}\n", current_subtitle_iter_->to_string()); std::cout << std::endl;
 }
 
