@@ -63,12 +63,13 @@ string protocol_from_uri(const std::string& uri)
 string to_string(seek_state_t ss)
 {
     switch (ss) {
-    case seek_state_t::ready:           return "ready"; break;
-    case seek_state_t::requested:       return "requested"; break;
-    case seek_state_t::flushing:        return "flushing"; break;
-    case seek_state_t::flush_done:      return "flush_done"; break;
+        case seek_state_t::ready:               return "ready"; break;
+        case seek_state_t::requested:           return "requested"; break;
+        case seek_state_t::flushing:            return "flushing"; break;
+        case seek_state_t::flush_done:          return "flush_done"; break;
+        case seek_state_t::waiting_for_sync:    return "waiting_for_sync"; break;
     }
-    return "";
+    return "unknown";
 }
 
 

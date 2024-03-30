@@ -61,7 +61,8 @@ enum class seek_state_t : int8_t {
     ready,
     requested,
     flushing,
-    flush_done
+    flush_done,
+    waiting_for_sync
 };
 
 enum class stream_type_t : size_t {
