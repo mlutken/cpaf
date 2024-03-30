@@ -30,7 +30,11 @@ public:
     constexpr color   (float r, float g, float b, float a) : cpaf::math::v4f(r, g, b, a) {}
     explicit color   (nlohmann::json jo_color);
 
-   nlohmann::json   to_json         () const        { return nlohmann::json::array({r(),g(),b(),a()}); }
+    /// Implicit conversion from v4f to color!
+    /// @todo Do we really want this?
+    color   (cpaf::math::v4f v) : cpaf::math::v4f(v) {}
+
+    nlohmann::json  to_json         () const        { return nlohmann::json::array({r(),g(),b(),a()}); }
 
     float           r               () const        { return x(); }
     float&          r               ()              { return x(); }
