@@ -61,6 +61,7 @@ public:
     // --- Data functions ---
     // ----------------------
     const std::vector<frame_t>&         subtitles               () const { return subtitles_; }
+    const_iterator                      find_last_before       (std::chrono::microseconds ts) const;
     const_iterator                      find_first_after        (std::chrono::microseconds ts) const;
 
     iterator                            begin                   ()          { return subtitles_.begin();}

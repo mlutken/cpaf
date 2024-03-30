@@ -86,6 +86,15 @@ bool subtitle_container::is_valid() const
     return !empty();
 }
 
+subtitle_container::const_iterator subtitle_container::find_last_before(std::chrono::microseconds ts) const
+{
+    auto iter = find_first_after(ts);
+    if (iter > begin()) { --iter; }
+///    if (iter > begin()) { --iter; }
+///    if (iter > begin()) { --iter; }
+    return iter;
+}
+
 subtitle_container::const_iterator subtitle_container::find_first_after(std::chrono::microseconds ts) const
 {
     constexpr auto compare = [](const auto& frm, std::chrono::microseconds ts) -> bool {
