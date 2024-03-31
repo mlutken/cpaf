@@ -32,8 +32,12 @@ void packet_reader_thread::start()
 
 bool packet_reader_thread::seek_position(const std::chrono::microseconds& stream_pos, cpaf::video::seek_dir dir)
 {
-    auto seek_state_expected = seek_state_t::ready;
-    if (seek_state_.compare_exchange_strong(seek_state_expected, seek_state_t::requested)) {
+    auto seek_state_expected1 = seek_state_t::ready;
+    auto seek_state_expected2 = seek_state_t::waiting_for_sync;
+    if (seek_state_.compare_exchange_strong(seek_state_expected1, seek_state_t::requested) ||
+        seek_state_.compare_exchange_strong(seek_state_expected2, seek_state_t::requested)
+        )
+    {
         seek_from_position_ = player_.cur_media_time().current_time_pos();
         seek_time_pos_requested_ = stream_pos;
         seek_direction_ = dir;
@@ -44,22 +48,14 @@ bool packet_reader_thread::seek_position(const std::chrono::microseconds& stream
 
 bool packet_reader_thread::seek_position(const std::chrono::microseconds& stream_pos)
 {
-    auto seek_state_expected = seek_state_t::ready;
-    if (seek_state_.compare_exchange_strong(seek_state_expected, seek_state_t::requested)) {
-
-        seek_from_position_ = player_.cur_media_time().current_time_pos();
-        seek_time_pos_requested_ = stream_pos;
-        seek_direction_ = cpaf::video::seek_dir::forward;
-        return true;
-    }
-    return false;
+    return seek_position(stream_pos, cpaf::video::seek_dir::forward);
 }
 
 void packet_reader_thread::debug_print_info() const
 {
-    std::cerr << "FIXMENM packet reader  seek req time: " << cpaf::time::format_h_m_s(seek_time_pos_requested_)
+    std::cerr << "\n!!! FIXMENM packet reader  seek req time: " << cpaf::time::format_h_m_s(seek_time_pos_requested_)
               << " player time: " << cpaf::time::format_h_m_s(player_.current_time())
-              << "\n";
+              << " !!!\n\n";
 }
 
 void packet_reader_thread::read_packets_thread_fn()
@@ -93,20 +89,25 @@ void packet_reader_thread::check_seek_position()
         signal_flush_done();
         seek_state_ = seek_state_t::flush_done;
         flush_done_time_point_ = std::chrono::steady_clock::now();
-        std::this_thread::sleep_for(5ms);
-        seek_state_ = seek_state_t::ready;
+//        std::this_thread::sleep_for(5ms);   // @todo Should we have a delay at all perhaps 0ms or 1ms! ?? FIXMENM
+        seek_state_ = seek_state_t::waiting_for_sync;
     }
 }
 
 void cpaf::gui::video::packet_reader_thread::check_seek_completed()
 {
-
-    //    if (seek_state_.compare_exchange_strong(seek_state_expected, seek_state_t::flushing)) {
-
+    if (seek_state_ != seek_state_t::waiting_for_sync) {
+        return;
+    }
     // A timeout fallback in case the normal test fails due to thread getting exausted!
-//    if ( std::chrono::steady_clock::now() - flush_done_time_point_ > 2ms) {
-//        seek_state_ = seek_state_t::ready;
-//    }
+    if ( std::chrono::steady_clock::now() - flush_done_time_point_ > 2s) {
+        seek_state_ = seek_state_t::ready;
+        if (pipeline_threads_ptr_) {
+            std::cerr << "LOG_WARNING FALL back in sync!\n";
+            // [[maybe_unused]] pipeline_threads_ptr_->check_set_seek_in_sync(); // QtCreator still complains as it still does not understand C++20/C++23 too well!
+            pipeline_threads_ptr_->check_set_seek_in_sync();
+        }
+    }
 }
 
 void packet_reader_thread::flush_queues()

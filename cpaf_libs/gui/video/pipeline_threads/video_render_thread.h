@@ -48,7 +48,6 @@ private:
     bool                                    video_frame_do_render       (cpaf::video::av_frame& current_frame,
                                                                          cpaf::gui::video::render& video_render);
     void                                    update_current_subtitle     (cpaf::gui::video::render& video_render);
-    cpaf::video::subtitle_frame             test_subtitle            () const;
     bool                                    subtitle_within_display_time(const cpaf::video::subtitle_frame& subtitle) const;
     bool                                    subtitle_too_old            (const cpaf::video::subtitle_frame& subtitle) const;
 
@@ -74,6 +73,7 @@ private:
     std::atomic_bool                        video_queue_flush_in_progress_  = false;
     std::atomic_bool                        video_queue_flushed_            = false;
     std::atomic_bool                        flush_requested_                = false;
+    std::chrono::microseconds               time_to_current_frame_;
 };
 
 } // namespace cpaf::gui::video

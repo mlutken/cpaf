@@ -50,8 +50,8 @@ void video_render_thread::terminate()
 void video_render_thread::video_frame_update(cpaf::video::av_frame& current_frame, cpaf::gui::video::render& video_render)
 {
     [[maybe_unused]] bool new_frame_was_read = video_frame_do_render(current_frame, video_render);
-    debug_gui();
-    // debug_video_frame_update(current_frame, video_render);
+//    debug_gui();
+//    debug_video_frame_update(current_frame, video_render);
 }
 
 void video_render_thread::video_queue_flush_start() {
@@ -73,13 +73,6 @@ std::chrono::microseconds video_render_thread::time_to_current_frame_abs(cpaf::v
 {
     return cpaf::time::abs(time_to_current_frame(current_frame));
 }
-
-///bool video_render_thread::is_seek_currently_possible() const {
-///    if (video_queue_flush_in_progress_ || video_queue_flushed_) {
-///        return false;
-///    }
-///    return is_seek_currently_possible_;
-///}
 
 /**
 @todo Do we in case on non valid frame want to call video_render.clear_screen() ?
@@ -107,8 +100,9 @@ bool video_render_thread::video_frame_do_render(
 
 
     bool new_frame_was_read = false;
-    if (time_to_current_frame(current_frame) > 1s ) {
-        std::cerr << "******* ERROR long time to current video frame " << duration_cast<seconds>(time_to_current_frame(current_frame)) << "\n";
+    time_to_current_frame_ = time_to_current_frame(current_frame);
+    if (time_to_current_frame_ > 1s) {
+        std::cerr << "******* ERROR long time to current video frame: " << duration_cast<seconds>(time_to_current_frame(current_frame)) << "\n";
         current_frame = player_.video_codec_context().read_frame();
         new_frame_was_read = true;
     }
@@ -138,40 +132,17 @@ void video_render_thread::update_current_subtitle(render& video_render)
     if (subtitles_queue_.empty()) {
         return;
     }
-
-//    if (!subtitles_queue_.empty()) {
-//        std::cerr << "FIXMENM show current subtitle: " << subtitles_queue_.front().dbg_str()
-//                  << " cur time: " << cpaf::time::format_h_m_s(player_.cur_media_time().video_time_pos())
-//                  << "  within time: '" << subtitle_within_display_time(subtitles_queue_.front()) << "'"
-//                  << "  queue size: '" << subtitles_queue_.size() << "'"
-//                  << "\n";
-//    }
-
     if (subtitle_within_display_time(subtitles_queue_.front())) {
-//        std::cerr << "FIXMENM SET current subtitle 1: " << subtitles_queue_.front().dbg_str()
-//                  << " cur time: " << cpaf::time::format_h_m_s(player_.cur_media_time().video_time_pos())
-//                  << "  within time: '" << subtitle_within_display_time(subtitles_queue_.front()) << "'"
-//                  << "\n";
-
         video_render.set_current_subtitle(std::move(subtitles_queue_.front()));
         subtitles_queue_.pop();
-        std::cerr << "FIXMENM SET current subtitle 2: " << video_render.current_subtitle().dbg_str()
-                  << " cur time: " << cpaf::time::format_h_m_s(player_.cur_media_time().video_time_pos())
-                  << "  within time: '" << subtitle_within_display_time(video_render.current_subtitle()) << "'"
-                  << "\n";
+//        std::cerr << "FIXMENM SET current subtitle: " << video_render.current_subtitle().dbg_str()
+//                  << " cur time: " << cpaf::time::format_h_m_s(player_.cur_media_time().video_time_pos())
+//                  << "  within time: '" << subtitle_within_display_time(video_render.current_subtitle()) << "'"
+//                  << "\n";
 
     }
 }
 
-
-cpaf::video::subtitle_frame video_render_thread::test_subtitle() const
-{
-    // FIXMENM
-    subtitle_frame sf("ëËïÏÿŸæÆäÄüÜøØöÖåÅ -> ß", "on the same team together in Nam.");
-//    subtitle_frame sf("My name is John Rambo. We served", "on the same team together in Nam.");
-//    subtitle_frame sf("My name is John Rambo. We served");
-    return sf;
-}
 
 bool video_render_thread::subtitle_within_display_time(const cpaf::video::subtitle_frame& subtitle) const
 {
@@ -248,11 +219,14 @@ void video_render_thread::flush_queues()
 
 void video_render_thread::debug_gui()
 {
-    std::string subtitle = "";
+    std::string subtitle = "seek: " +  to_string(player_.seek_state()) + " ";
+//    std::string subtitle = "time to frame: " + cpaf::time::format_h_m_s_ms(cpaf::time::abs(time_to_current_frame_))  + " ";
     if (!subtitles_queue_.empty()) {
-        if (subtitles_queue_.front().is_text_format()) {
+        if (subtitles_queue_.front().is_valid() && subtitles_queue_.front().is_text_format()) {
             subtitle += cpaf::time::format_h_m_s_ms(subtitles_queue_.front().presentation_time) + " ";
-            subtitle += subtitles_queue_.front().lines[0];
+            if (!subtitles_queue_.front().lines.empty()) {
+                subtitle += subtitles_queue_.front().lines[0];
+            }
         }
     }
 
