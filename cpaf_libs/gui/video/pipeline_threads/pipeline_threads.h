@@ -50,6 +50,7 @@ public:
     void                        seek_position           (const std::chrono::microseconds& stream_pos);
     void                        seek_relative           (const std::chrono::microseconds& delta_time);
     cpaf::video::seek_state_t   seek_state              () const { return seek_state_;      }
+    bool                        check_set_seek_in_sync  ();
     std::chrono::microseconds   seek_from_position      () const { return packet_reader_thread_.seek_from_position(); }
     std::chrono::microseconds   seek_position_requested () const { return packet_reader_thread_.seek_position_requested(); }
     void                        pause_playback          ();
@@ -59,15 +60,15 @@ public:
     void                        subtitle_container_set  (std::unique_ptr<subtitle_container> container);
 
     void                        video_frame_update      (cpaf::video::av_frame& current_frame, cpaf::gui::video::render& video_render);
-
-    cpaf::video::av_samples_queue& audio_samples_queue() { return audio_samples_queue_; }
-    const cpaf::video::av_samples_queue&       audio_samples_queue () const { return audio_samples_queue_; }
     void                        flush_queues            ();
+
+    cpaf::video::av_samples_queue&          audio_samples_queue () { return audio_samples_queue_; }
+    const cpaf::video::av_samples_queue&    audio_samples_queue () const { return audio_samples_queue_; }
 private:
     void                        signal_flush_start      ();
     void                        signal_flush_done       ();
 
-    cpaf::video::audio_resampler&        audio_sampler           () { return *audio_resampler_ptr_; }
+    cpaf::video::audio_resampler&           audio_sampler       () { return *audio_resampler_ptr_; }
 
     player&                                     player_;
     cpaf::video::av_samples_queue               audio_samples_queue_;

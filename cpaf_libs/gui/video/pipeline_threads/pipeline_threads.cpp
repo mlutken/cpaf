@@ -88,6 +88,25 @@ void pipeline_threads::seek_relative(const std::chrono::microseconds& delta_time
     seek_position(new_pos, dir);
 }
 
+/** Atomically check and set seek status to ready.
+
+If current seek state is seek_state_t::waiting_for_sync then
+next state will be seek_state_t::ready and we return true. Otherwise no change
+in seek state and false will be returned
+@return True id seek_state_ was changed from seek_state_t::waiting_for_sync to seek_state_t::ready, false otherwise.
+*/
+bool pipeline_threads::check_set_seek_in_sync()
+{
+    auto seek_state_expected = seek_state_t::waiting_for_sync;
+    if (seek_state_.compare_exchange_strong(seek_state_expected, seek_state_t::ready)) {
+        std::cerr << "FIXMENM pipeline_threads::check_set_seek_in_sync(): Back in sync!\n";
+        packet_reader_thread_.debug_print_info(); // FIXMENM
+//        seek_state_ = seek_state_t::ready;
+        return true;
+    }
+    return false;
+}
+
 void pipeline_threads::pause_playback()
 {
     threads_paused_ = true;
