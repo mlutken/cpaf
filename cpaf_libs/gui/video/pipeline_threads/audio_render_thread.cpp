@@ -62,6 +62,7 @@ void audio_render_thread::audio_callback_function(uint8_t* stream, int32_t lengt
 
 
     player_.cur_media_time().adjust_time(audio_samples_queue().front().presentation_time());
+    pipeline_threads_.check_set_seek_in_sync();
 
     // Check adjust time on audio samples queue pop()
     auto queue_pop_callback = [](const cpaf::video::av_samples_buffer& /*samples_buf*/) {
