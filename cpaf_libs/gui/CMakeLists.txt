@@ -60,6 +60,9 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/base/system_render_base.h
     ${CMAKE_CURRENT_LIST_DIR}/base/system_render__${CPAF_GUI_SYSTEM_NAME}.h
 
+    ${CMAKE_CURRENT_LIST_DIR}/texture.h
+    ${CMAKE_CURRENT_LIST_DIR}/base/texture_base.h
+    ${CMAKE_CURRENT_LIST_DIR}/base/texture__${CPAF_GUI_SYSTEM_NAME}.h
 
     ${CMAKE_CURRENT_LIST_DIR}/events/base_events.h
     ${CMAKE_CURRENT_LIST_DIR}/events/display_events.h
@@ -129,6 +132,10 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/system_render.cpp
     ${CMAKE_CURRENT_LIST_DIR}/base/system_render_base.cpp
     ${CMAKE_CURRENT_LIST_DIR}/base/system_render__${CPAF_GUI_SYSTEM_NAME}.cpp
+
+    ${CMAKE_CURRENT_LIST_DIR}/texture.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/base/texture_base.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/base/texture__${CPAF_GUI_SYSTEM_NAME}.cpp
 
     ${CMAKE_CURRENT_LIST_DIR}/events/event.cpp
     ${CMAKE_CURRENT_LIST_DIR}/events/base_events.cpp

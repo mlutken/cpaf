@@ -14,6 +14,7 @@
 
 namespace cpaf::gui {
 
+class system_render;
 
 
 class app_base {
@@ -32,6 +33,9 @@ public:
     size_2d                         main_window_size            () const    { return do_platform_main_window_size(); }
     system_window&                  main_window                 ()          { return do_main_window(); }
     std::shared_ptr<system_window>  main_window_shared          () const    { return do_main_window_shared(); }
+    system_render&                  renderer                    ()          { return main_window().renderer(); }
+    std::shared_ptr<system_render>  renderer_shared             () const    { return main_window_shared()->renderer_shared(); }
+
     void                            add_fonts                   (const std::string& font_name, const std::vector<uint32_t>& sizes_in_points);
     void                            add_fonts                   (const std::string& font_name,
                                                                  const std::string& merge_font_name,
@@ -42,7 +46,6 @@ public:
     void                            set_default_font            (const std::string& font_name, uint32_t size_points);
     void                            clear_before_frame_update   (bool do_clear) { clear_window_before_frame_update_ = do_clear; }
     std::unique_ptr<system_window_base>  create_system_window   (size_2d size, std::string_view title) const {
-        fmt::println("FIXMENM create_system_window () ");
         return do_create_system_window(size, title);
     };
 
