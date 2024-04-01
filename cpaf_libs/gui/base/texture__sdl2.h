@@ -30,6 +30,7 @@ private:
     bool                            do_load_from_file           (const std::filesystem::path& local_path) override;
     bool                            do_start_surface_pixel_access  (size_2d size) override;
     bool                            do_end_surface_pixel_access() override;
+    virtual uint32_t*               do_pixel_data_raw_ptr       () override;
     void                            do_set_pixel                (int32_t x, int32_t y, color pixel_color) override;
     void                            do_set_pixel                (int32_t x, int32_t y, uint32_t pixel_color) override;
     void                            do_set_pixel                (int32_t x, int32_t y, uint8_t r, uint8_t g, uint8_t b, uint8_t a) override;

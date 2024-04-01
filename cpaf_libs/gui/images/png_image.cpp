@@ -231,6 +231,20 @@ uint32_t png_image::pixel(int32_t x, int32_t y) const
     return *rgba_pixel_ptr;
 }
 
+void png_image::copy_pixels_out(uint32_t* dst_buffer)
+{
+    const auto r = rect_i32({{0,0}, size()});
+    const auto x_end = r.lower_right().x();
+    const auto y_end = r.lower_right().y();
+    for (auto y = r.top_left().y(); y < y_end; ++y) {
+        for (auto x = r.top_left().x(); x < x_end; ++x) {
+            const uint32_t col = pixel(x, y);
+            *dst_buffer = col;
+            ++dst_buffer;
+        }
+    }
+}
+
 void png_image::alloc_row_pointers()
 {
     free_row_pointers();

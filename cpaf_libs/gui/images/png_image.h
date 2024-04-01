@@ -26,6 +26,7 @@ public:
     std::string                 png_color_type_str  () const                            { return png_color_type_to_string(png_color_type()); }
     uint8_t                     bit_depth           () const;
     uint32_t                    pixel               (int32_t x, int32_t y) const;
+    void                        copy_pixels_out     (uint32_t* dst_buffer);
 
 private:
 

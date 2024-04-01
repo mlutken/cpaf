@@ -104,6 +104,14 @@ bool texture_platform::do_end_surface_pixel_access()
     return sdl_texture_ != nullptr;
 }
 
+uint32_t* texture_platform::do_pixel_data_raw_ptr()
+{
+    if (!sdl_surface_) {
+        return nullptr;
+    }
+    return static_cast<uint32_t*>(sdl_surface_->pixels);
+}
+
 /// @todo This can most likely be optimized!
 void texture_platform::do_set_pixel(int32_t x, int32_t y, color pixel_color)
 {

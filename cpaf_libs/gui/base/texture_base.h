@@ -23,10 +23,12 @@ public:
     void                            set_blendmode               (blendmode_t blendmode)                         { blendmode_ = blendmode; }
     blendmode_t                     blendmode                   () const                                        { return blendmode_; }
 
-    size_2d                         size                        () const                                        { return do_get_size(); }
-    bool                            load_from_file              (const std::filesystem::path& local_path)       { return do_load_from_file(local_path); }
-    bool                            start_surface_pixel_access  (size_2d size)                                  { return do_start_surface_pixel_access(size); }
-    bool                            end_surface_pixel_access    ()                                              { return do_end_surface_pixel_access(); }
+    size_2d                         size                        () const                                        { return do_get_size();                         }
+    bool                            load_from_file              (const std::filesystem::path& local_path)       { return do_load_from_file(local_path);         }
+    bool                            start_surface_pixel_access  (size_2d size)                                  { return do_start_surface_pixel_access(size);   }
+    bool                            end_surface_pixel_access    ()                                              { return do_end_surface_pixel_access();         }
+    uint32_t*                       pixel_data_raw_ptr          ()                                              { return do_pixel_data_raw_ptr();               }
+    uint32_t                        pixel_data_raw_size_bytes   () const;
 
     void                            set_pixel                   (int32_t x, int32_t y, color pixel_color)       { do_set_pixel(x, y, pixel_color); }
     void                            set_pixel                   (int32_t x, int32_t y, uint32_t pixel_color)    { do_set_pixel(x, y, pixel_color); }
@@ -47,6 +49,7 @@ private:
     virtual bool                            do_load_from_file               (const std::filesystem::path& local_path) = 0;
     virtual bool                            do_start_surface_pixel_access   (size_2d size) = 0;
     virtual bool                            do_end_surface_pixel_access     () = 0;
+    virtual uint32_t*                       do_pixel_data_raw_ptr           () = 0;
     virtual void                            do_set_pixel                    (int32_t x, int32_t y, color pixel_color) = 0;
     virtual void                            do_set_pixel                    (int32_t x, int32_t y, uint32_t pixel_color) = 0;
     virtual void                            do_set_pixel                    (int32_t x, int32_t y, uint8_t r, uint8_t g, uint8_t b, uint8_t a) = 0;
