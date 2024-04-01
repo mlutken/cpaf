@@ -13,6 +13,11 @@ std::string system_render_base::dbg_characteristics() const
     return s;
 }
 
+bool system_render_base::render_texture(const texture& texture, rect src_rect, rect dst_rect)
+{
+    return do_render_texture(texture, src_rect, dst_rect);
+}
+
 // -------------------------------------------------------
 // --- PROTECTED: Helper functions for derived classes ---
 // -------------------------------------------------------

@@ -5,6 +5,7 @@ add_library(${library_name} STATIC ""
 
 find_package(fmt REQUIRED)
 find_package(imgui REQUIRED)
+find_package(PNG REQUIRED)
 
 set (IMGUI_BACKEND_DIR "${CMAKE_CURRENT_LIST_DIR}/imgui_backends/backends")
 
@@ -75,6 +76,8 @@ target_sources(${library_name}
 
     ${CMAKE_CURRENT_LIST_DIR}/fonts/font_size.h
 
+    ${CMAKE_CURRENT_LIST_DIR}/images/png_image.h
+
     ${CMAKE_CURRENT_LIST_DIR}/video/config.h
     ${CMAKE_CURRENT_LIST_DIR}/video/data_definitions/playable.h
     ${CMAKE_CURRENT_LIST_DIR}/video/data_definitions/playlist.h
@@ -93,7 +96,6 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/video/playlist_control.h
     ${CMAKE_CURRENT_LIST_DIR}/video/ui/controls.h
     ${CMAKE_CURRENT_LIST_DIR}/video/ui/controls_default.h
-
 
     ${CMAKE_CURRENT_LIST_DIR}/application.h
     ${CMAKE_CURRENT_LIST_DIR}/dpi_handler.h
@@ -150,6 +152,8 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/fonts/font_size.cpp
     ${CMAKE_CURRENT_LIST_DIR}/fonts/font_size__${CPAF_PLATFORM_TYPE_NAME}.cpp
 
+    ${CMAKE_CURRENT_LIST_DIR}/images/png_image.cpp
+
     ${CMAKE_CURRENT_LIST_DIR}/video/config.cpp
     ${CMAKE_CURRENT_LIST_DIR}/video/data_definitions/playable.cpp
     ${CMAKE_CURRENT_LIST_DIR}/video/data_definitions/playlist.cpp
@@ -194,6 +198,7 @@ target_link_libraries(${library_name} cpaf_filesystem )
 target_link_libraries(${library_name} imguipp )
 target_link_libraries(${library_name} cpaf_video )
 target_link_libraries(${library_name} ${CPAF_GUI_LINK_LIBS} )
+target_link_libraries(${library_name} PNG::PNG )
 target_link_libraries(${library_name} imgui::imgui )
 target_link_libraries(${library_name} IconFontCppHeaders )
 target_link_libraries(${library_name} fmt::fmt)

@@ -269,16 +269,17 @@ bool render_platform::do_render_video_frame(const cpaf::video::av_frame& frame)
     }
 
 
-    // FIXMENM DEBUG ONLY BEGIN
+//    // FIXMENM DEBUG ONLY BEGIN
 //    SDL_SetRenderDrawBlendMode( get_sdl_renderer(), SDL_BLENDMODE_BLEND );
 //    SDL_SetRenderDrawColor( get_sdl_renderer(), 255, 255, 255, 255 ); // Set color to solid white
 //    SDL_RenderDrawLine( get_sdl_renderer(), 0, 0, 300, 300 );
 //    system_renderer_->set_color(color(0, 1, 0, 0.5));
-//    system_renderer_->fill_rect(render_geometry_t(100,100,200,300));
-    // FIXMENM DEBUG ONLY END
+//    system_renderer_->fill_rect(rect(100,100,200,300));
+//    // FIXMENM DEBUG ONLY END
 
     return true;
 }
+
 
 void render_platform::on_render_geometry_changed()
 {

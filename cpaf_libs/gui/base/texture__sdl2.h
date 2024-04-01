@@ -15,6 +15,7 @@ namespace cpaf::gui {
 
 class texture_platform : public texture_base {
 public:
+    using texture_base::texture_base;	// "Import" constructors to scope
     ~texture_platform();
 
 protected:
@@ -24,20 +25,22 @@ private:
     void                            destroy                     ();
 
     // --- Platform overrides ---
+    void*                           do_get_native_texture       () const override;
     size_2d                         do_get_size					() const override;
-    bool                            do_load_from_file           (const std::filesystem::path& local_path);
-//    std::string                     do_get_title    			() const override;
-//    int32_t                         do_display_index   			() const override;
-//    void*                           do_get_native_window    	() override;
-//    void*                           do_get_native_renderer    	() override;
-//    system_render&                  do_renderer                 () override;
-//    std::shared_ptr<system_render>  do_renderer_shared          () const override;
+    bool                            do_load_from_file           (const std::filesystem::path& local_path) override;
+    bool                            do_start_surface_pixel_access  (size_2d size) override;
+    bool                            do_end_surface_pixel_access() override;
+    void                            do_set_pixel                (int32_t x, int32_t y, color pixel_color) override;
+    void                            do_set_pixel                (int32_t x, int32_t y, uint32_t pixel_color) override;
+    void                            do_set_pixel                (int32_t x, int32_t y, uint8_t r, uint8_t g, uint8_t b, uint8_t a) override;
+    void                            do_draw_rect                (const rect& dst_rect, const color& rect_color) override;
 
     // --- PRIVATE: Helpers  ---
+    void                            update_blend_mode           ();
 
     // --- PRIVATE: Members  ---
-//    SDL_Window*                     sdl_window_             {nullptr};
     SDL_Texture*                       sdl_texture_         {nullptr};
+    SDL_Surface*                       sdl_surface_         {nullptr};
 
 };
 

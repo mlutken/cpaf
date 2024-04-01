@@ -26,8 +26,9 @@ struct platform_surface_t;
 namespace cpaf::gui::video {
 class player;
 class config;
-struct platform_render_t;
-struct platform_texture_t;
+
+//struct platform_render_t;
+//struct platform_texture_t;
 
 
 enum class subtitle_pos_t { buttom, top };
@@ -79,7 +80,6 @@ protected:
     cpaf::video::av_frame&                  frame_display               () { return frame_display_; }
     cpaf::video::av_frame                   frame_display_;
     cpaf::video::surface_dimensions_t       render_dimensions_;
-///    pos_2df                                 subtitle_pos                () const;
     void                                    on_configuration_changed           ();
 
     player&                                 player_;
@@ -94,7 +94,6 @@ private:
     cpaf::video::av_codec_context*          video_codec_ctx_ptr_        = nullptr;
     cpaf::video::media_stream_time*         current_media_time_ptr_     = nullptr;
     AVPixelFormat                           ff_pixel_format_            = AV_PIX_FMT_YUV420P;
-///    pos_2df                                 subtitle_relative_pos_      {0.5, 0.9};
     rect                                    render_geometry_            {};
 
     void                        create_frame_display                ();

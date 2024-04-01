@@ -19,11 +19,11 @@ using pos_2d = cpaf::math::v2<std::int32_t>;
 using size_2df = cpaf::math::v2<float>;
 using pos_2df = cpaf::math::v2<float>;
 using rect = cpaf::math::rectangle<float>;
+using rect_i32 = cpaf::math::rectangle<int32_t>;
 
 enum class exit_status_t : int { success = 0, failure = 1 };
 
-
-
+enum class blendmode_t { none, alpha, additive, color_modulate, color_multiply };
 
 //std::string to_string   (audio_format_t audio_format);
 

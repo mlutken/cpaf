@@ -121,6 +121,9 @@ int32_t av_samples_buffer::add_samples (const std::chrono::microseconds& us_to_a
 
 int32_t av_samples_buffer::copy_out(uint8_t* dest_buf)
 {
+    if (!resampled_data_) {
+        return 0;
+    }
     const uint8_t* src_ptr = out_buffer();
     const auto bytes_to_copy = size();
     memcpy(dest_buf, src_ptr, static_cast<uint32_t>(bytes_to_copy));

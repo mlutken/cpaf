@@ -31,7 +31,8 @@ private:
     void*               do_get_native_renderer          () override;
     void                do_set_color                    (color col) override;
     void                do_fill_rect                    (rect rect) const override;
-    cpaf::math::v2i32   do_maximum_texture_dimensions   () const;
+    bool                do_render_texture               (const cpaf::gui::texture& tex, rect src_rect, rect dst_rect) override;
+    cpaf::math::v2i32   do_maximum_texture_dimensions   () const override;
 
     // --- PRIVATE: Helpers  ---
 

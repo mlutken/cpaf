@@ -11,11 +11,12 @@ class texture : public texture_platform {
 public:
     using texture_platform::texture_platform;	// "Import" constructors to scope
 
-//    template <typename NATIVE_WINDOW>
-//    NATIVE_WINDOW*      native_window       ()      { return static_cast<NATIVE_WINDOW*>(get_native_window());   }
 
-//    template <typename NATIVE_RENDER>
-//    NATIVE_RENDER*      native_renderer     ()      { return static_cast<NATIVE_RENDER*>(get_native_renderer()); }
+    template <typename NATIVE_TEXTURE>
+    NATIVE_TEXTURE*     native_texture    ()  const    { return static_cast<NATIVE_TEXTURE*>(get_native_texture()); }
+
+//    template <typename NATIVE_TEXTURE>
+//    const NATIVE_TEXTURE*     native_texture    () const{ return static_cast<NATIVE_TEXTURE*>(get_native_texture()); }
 
 };
 
