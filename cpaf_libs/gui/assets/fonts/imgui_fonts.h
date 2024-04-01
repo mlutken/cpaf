@@ -28,6 +28,7 @@ struct imgui_fonts {
     void        init                (cpaf::math::v2i32 maximum_texture_dimensions);
 
     ImFont*     add                 (const std::string& font_name, int32_t size_pixels);
+    ImFont*     add                 (const std::string& font_name, int32_t size_pixels, float size_adjust_factor, uint32_t range_min, uint32_t range_max);
     ImFont*     merge_with_previous (const std::string& font_name, int32_t size_pixels, float merge_size_adjust_factor, uint32_t range_min, uint32_t range_max);
     bool        add                 (const std::string& font_name, const std::vector<int32_t>& size_pixels);
     void        set_default         (const std::string& font_name, int32_t size_pixels);

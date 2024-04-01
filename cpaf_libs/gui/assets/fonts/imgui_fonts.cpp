@@ -61,6 +61,38 @@ ImFont* imgui_fonts::add(const string& font_name, int32_t size_pixels)
     return font_ptr;
 }
 
+ImFont* imgui_fonts::add(const std::string& font_name,
+                         int32_t size_pixels,
+                         float size_adjust_factor,
+                         uint32_t range_min,
+                         uint32_t range_max)
+{
+    const auto font_data = imgui_fonts::font_data (font_name);
+    if (font_data.empty()) {
+        return nullptr;
+    }
+
+    if (ImGui::GetIO().Fonts->Locked) {
+        return nullptr;
+    }
+
+    const float render_size_pixels = size_adjust_factor * static_cast<float>(size_pixels);
+
+    static const ImWchar icons_ranges[] = { static_cast<ImWchar>(range_min), static_cast<ImWchar>(range_max), 0 };
+    ImFontConfig fnt_cfg;
+    fnt_cfg.FontDataOwnedByAtlas = false;
+    fnt_cfg.MergeMode = false;
+    fnt_cfg.PixelSnapH = true;
+    fnt_cfg.GlyphMinAdvanceX = render_size_pixels;
+
+    unsigned char* data = const_cast<unsigned char*>(font_data.data());
+    const int size = font_data.size();
+    ImFont* font_ptr = ImGui::GetIO().Fonts->AddFontFromMemoryTTF(data, size, render_size_pixels, &fnt_cfg, icons_ranges);
+    all_fonts_[string(font_name)][size_pixels] = font_ptr;
+
+    return font_ptr;
+}
+
 /// @see https://github.com/juliettef/IconFontCppHeaders?tab=readme-ov-file
 ///
 ImFont* imgui_fonts::merge_with_previous(

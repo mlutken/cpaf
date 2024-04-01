@@ -152,6 +152,18 @@ void app_platform::do_add_fonts(const std::string& font_name, const std::vector<
 }
 
 void app_platform::do_add_fonts(const std::string& font_name,
+                                float size_adjust_factor,
+                                uint32_t range_min,
+                                uint32_t range_max,
+                                const std::vector<uint32_t>& sizes_in_points)
+{
+    for (auto size_points: sizes_in_points) {
+        const auto size_pixels = font_size::to_pixels_display(size_points, main_window().display_index());
+        imgui_fonts::instance().add(font_name, size_pixels, size_adjust_factor, range_min, range_max);
+    }
+}
+
+void app_platform::do_add_fonts(const std::string& font_name,
                                 const std::string& merge_font_name,
                                 float merge_size_adjust_factor,
                                 uint32_t range_min,

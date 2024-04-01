@@ -38,6 +38,11 @@ public:
 
     void                            add_fonts                   (const std::string& font_name, const std::vector<uint32_t>& sizes_in_points);
     void                            add_fonts                   (const std::string& font_name,
+                                                                 float size_adjust_factor,
+                                                                 uint32_t range_min,
+                                                                 uint32_t range_max,
+                                                                 const std::vector<uint32_t>& sizes_in_points);
+    void                            add_fonts                   (const std::string& font_name,
                                                                  const std::string& merge_font_name,
                                                                  float merge_size_adjust_factor,
                                                                  uint32_t range_min,
@@ -94,8 +99,13 @@ private:
 
     virtual void                            do_add_fonts                    (const std::string& font_name, const std::vector<uint32_t>& sizes_in_points) = 0;
     virtual void                            do_add_fonts                    (const std::string& font_name,
-                                                                             const std::string& merge_font_name,
                                                                              float merge_size_adjust_factor,
+                                                                             uint32_t range_min,
+                                                                             uint32_t range_max,
+                                                                             const std::vector<uint32_t>& sizes_in_points) = 0;
+    virtual void                            do_add_fonts                    (const std::string& font_name,
+                                                                             const std::string& merge_font_name,
+                                                                             float size_adjust_factor,
                                                                              uint32_t range_min,
                                                                              uint32_t range_max,
                                                                              const std::vector<uint32_t>& sizes_in_points) = 0;
