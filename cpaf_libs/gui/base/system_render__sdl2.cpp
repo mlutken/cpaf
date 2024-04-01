@@ -40,6 +40,14 @@ void system_render_platform::do_fill_rect(rect rect) const
     SDL_RenderFillRectF(sdl_renderer_, reinterpret_cast<SDL_FRect*>(&rect));
 }
 
+math::v2i32 system_render_platform::do_maximum_texture_dimensions() const
+{
+    SDL_RendererInfo info;
+    if (SDL_GetRendererInfo(sdl_renderer_, &info) == 0) {
+        return {info.max_texture_width, info.max_texture_height};
+    }
+    return {-1, -1};
+}
 
 // -------------------------
 // --- PRIVATE: Helpers  ---

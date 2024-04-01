@@ -19,6 +19,7 @@ public:
     std::string                 dbg_characteristics         () const;
     void                        set_color                   (color col) { do_set_color(col); }
     void                        fill_rect                   (rect rect) const { do_fill_rect(rect); }
+    cpaf::math::v2i32           maximum_texture_dimensions  () const { return do_maximum_texture_dimensions(); }
 
 protected:
     void*                       get_native_renderer         ()       { return do_get_native_renderer(); }
@@ -27,9 +28,10 @@ protected:
     // --- PROTECTED: Helper functions for derived classes ---
 
 private:
-    virtual void*               do_get_native_renderer      () = 0;
-    virtual void                do_set_color                (color col) = 0;
-    virtual void                do_fill_rect                (rect rect) const = 0;
+    virtual void*               do_get_native_renderer          () = 0;
+    virtual void                do_set_color                    (color col) = 0;
+    virtual void                do_fill_rect                    (rect rect) const = 0;
+    virtual cpaf::math::v2i32   do_maximum_texture_dimensions   () const = 0;
 };
 
 } //END namespace cpaf::gui

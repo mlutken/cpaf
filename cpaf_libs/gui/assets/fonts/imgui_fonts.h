@@ -5,7 +5,7 @@
 #include <map>
 #include <cstdint>
 #include <imgui.h>
-
+#include <cpaf_libs/math/base/v2.hpp>
 
 namespace cpaf::gui {
 
@@ -25,6 +25,7 @@ struct imgui_fonts {
     static const std::span<const unsigned char>     font_data   (const std::string&  font_name);
 
     static imgui_fonts& instance();
+    void        init                (cpaf::math::v2i32 maximum_texture_dimensions);
 
     ImFont*     add                 (const std::string& font_name, int32_t size_pixels);
     ImFont*     merge_with_previous (const std::string& font_name, int32_t size_pixels, float merge_size_adjust_factor, uint32_t range_min, uint32_t range_max);

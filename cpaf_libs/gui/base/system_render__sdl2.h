@@ -28,9 +28,10 @@ private:
 
 
     // --- Platform overrides ---
-    void*               do_get_native_renderer    	() override;
-    void                do_set_color                (color col) override;
-    void                do_fill_rect                (rect rect) const override;
+    void*               do_get_native_renderer          () override;
+    void                do_set_color                    (color col) override;
+    void                do_fill_rect                    (rect rect) const override;
+    cpaf::math::v2i32   do_maximum_texture_dimensions   () const;
 
     // --- PRIVATE: Helpers  ---
 

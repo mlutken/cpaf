@@ -50,7 +50,7 @@ void video_render_thread::terminate()
 void video_render_thread::video_frame_update(cpaf::video::av_frame& current_frame, cpaf::gui::video::render& video_render)
 {
     [[maybe_unused]] bool new_frame_was_read = video_frame_do_render(current_frame, video_render);
-//    debug_gui();
+   debug_gui();
 //    debug_video_frame_update(current_frame, video_render);
 }
 

@@ -11,6 +11,7 @@
 #include <cpaf_libs/gui/base/system_window__sdl2.h>
 #include <cpaf_libs/gui/fonts/font_size.h>
 #include <cpaf_libs/gui/assets/fonts/imgui_fonts.h>
+#include <cpaf_libs/gui/system_render.h>
 
 using namespace std;
 
@@ -58,6 +59,7 @@ void app_platform::do_platform_start_run()
     fmt::println("app_platform::do_platform_start_run()");
     initialize();
     is_running_ = true;
+    imgui_fonts::instance().init(main_window().renderer().maximum_texture_dimensions());
 }
 
 events::event app_platform::do_platform_get_event() const

@@ -29,6 +29,11 @@ imgui_fonts& imgui_fonts::instance()
     return inst;
 }
 
+void imgui_fonts::init(math::v2i32 maximum_texture_dimensions)
+{
+    ImGui::GetIO().Fonts->TexDesiredWidth = maximum_texture_dimensions.width();
+}
+
 ImFont* imgui_fonts::add(const string& font_name, int32_t size_pixels)
 {
     ImFont* font_ptr = find(font_name, size_pixels);
