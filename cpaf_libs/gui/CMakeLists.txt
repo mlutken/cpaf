@@ -104,6 +104,7 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/window.h
 
     ${CMAKE_CURRENT_LIST_DIR}/assets/fonts/imgui_fonts.h
+    ${CMAKE_CURRENT_LIST_DIR}/assets/icons/icons_data.h
 
     PRIVATE
     ${CPAF_GUI_IMGUI_BACKEND_CPP_FILES}
@@ -179,12 +180,15 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/window.cpp
 
     ${CMAKE_CURRENT_LIST_DIR}/assets/fonts/imgui_fonts.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/assets/icons/icons_data.cpp
 
     ${CMAKE_CURRENT_LIST_DIR}/assets/icons/fa_regular_400.cpp
     ${CMAKE_CURRENT_LIST_DIR}/assets/icons/fa_solid_900.cpp
     ${CMAKE_CURRENT_LIST_DIR}/assets/fonts/abeezee_regular.cpp
     ${CMAKE_CURRENT_LIST_DIR}/assets/fonts/abeezee_italic.cpp
     ${CMAKE_CURRENT_LIST_DIR}/assets/fonts/manrope_ttf.cpp
+
+    ${CMAKE_CURRENT_LIST_DIR}/assets/icons/256/circle_pause_256.cpp
 )
 
 

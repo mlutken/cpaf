@@ -1,6 +1,8 @@
 #pragma once
 
 #include <filesystem>
+#include <span>
+
 #include <png.h>
 #include <cpaf_libs/gui/gui_types.h>
 
@@ -16,6 +18,8 @@ public:
     explicit png_image(std::filesystem::path local_path);
     ~png_image();
 
+    bool                        open_from_memory    (const unsigned char* const png_data, size_t data_size);
+    bool                        open_from_memory    (const std::span<const unsigned char>& data);
     bool                        open_local          (std::filesystem::path local_path);
     bool                        read_to_memory      ();
 
@@ -29,6 +33,12 @@ public:
     void                        copy_pixels_out     (uint32_t* dst_buffer);
 
 private:
+    struct memory_file_t {
+        const unsigned char* data;
+        size_t size;
+        size_t offset;
+    };
+    static void read_data(png_structp png_ptr, png_bytep data, png_size_t length);
 
     void                        alloc_row_pointers  ();
     void                        destroy             ();
@@ -40,6 +50,7 @@ private:
     png_infop                   png_info_ptr_       {nullptr};
     png_bytep*                  row_pointers_       {nullptr};
     FILE*                       file_ptr_           {nullptr};
+    memory_file_t               memory_file_        {nullptr, 0, 0};
 };
 
 } // namespace cpaf::gui

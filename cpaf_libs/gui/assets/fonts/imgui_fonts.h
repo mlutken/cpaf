@@ -12,7 +12,7 @@ namespace cpaf::gui {
 /**
 
 ## Convert ttf files to c array use xxd to get started
- $ xxd -i myfont.ttf > myfont.h
+ $ xxd -i myfont.ttf > myfont.cpp
 
 */
 struct imgui_fonts {

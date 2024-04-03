@@ -63,7 +63,6 @@ private:
     SDL_Texture*                        sdl_frame_render_texture_       {nullptr};
     SDL_Texture*                        sdl_subtitles_render_texture_   {nullptr};
     subtitle_render_geometries_t        subtitle_render_geometries_;
-    rect                                controls_render_geometry_;
     SDL_Rect                            subtitles_dst_rect_;
 };
 

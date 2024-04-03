@@ -9,7 +9,7 @@ std::string system_render_base::dbg_characteristics() const
 {
     auto texture_dims = maximum_texture_dimensions();
     auto s = fmt::format("--- Render characteristics ---\n");
-    s += fmt::format("Texture max dimensions: [{}, {}]\n", texture_dims.width(), texture_dims.height());
+    s += fmt::format("Texture max dimensions: [{}, {}]", texture_dims.width(), texture_dims.height());
     return s;
 }
 

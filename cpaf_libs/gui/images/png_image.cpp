@@ -2,10 +2,21 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <iostream>
 
 namespace cpaf::gui {
 
+
+void png_image::read_data(png_structp png_ptr, png_bytep data, png_size_t length) {
+    memory_file_t *mem = (memory_file_t *)png_get_io_ptr(png_ptr);
+    if (mem->offset + length <= mem->size) {
+        memcpy(data, mem->data + mem->offset, length);
+        mem->offset += length;
+    } else {
+        png_error(png_ptr, "Read error: reached end of memory");
+    }
+}
 
 std::string png_color_type_to_string(uint8_t png_color_type)
 {
@@ -22,7 +33,7 @@ std::string png_color_type_to_string(uint8_t png_color_type)
 }
 
 
-void read_png(const char* filename) {
+void read_png_FIXMENM(const char* filename) {
     FILE* file_ptr_ = fopen(filename, "rb");
     if (!file_ptr_) {
         printf("Error: Couldn't open %s for reading\n", filename);
@@ -122,6 +133,44 @@ png_image::png_image(std::filesystem::path local_path)
 png_image::~png_image()
 {
     destroy();
+}
+
+bool png_image::open_from_memory(const unsigned char* const png_data, size_t data_size)
+{
+    destroy();
+    png_struct_ptr_ = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+    if (!png_struct_ptr_) {
+        destroy();
+        std::cerr << "LOG_ERR png_create_read_struct failed\n";
+        return false;
+    }
+
+    png_info_ptr_ = png_create_info_struct(png_struct_ptr_);
+    if (!png_info_ptr_) {
+        destroy();
+        std::cerr << "LOG_ERR png_create_info_struct failed\n";
+        return false;
+    }
+
+
+    if (setjmp(png_jmpbuf(png_struct_ptr_))) {
+        png_destroy_read_struct(&png_struct_ptr_, &png_info_ptr_, NULL);
+        destroy();
+        std::cerr << "LOG_ERR Error during init_io\n";
+        return false;
+    }
+
+    memory_file_ = {png_data, data_size, 0};
+
+    png_set_read_fn(png_struct_ptr_, &memory_file_, png_image::read_data);
+    png_read_info(png_struct_ptr_, png_info_ptr_);
+
+    return true;
+}
+
+bool png_image::open_from_memory(const std::span<const unsigned char>& data)
+{
+    return open_from_memory(data.data(), data.size_bytes());
 }
 
 bool png_image::open_local(std::filesystem::path local_path)
