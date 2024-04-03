@@ -1,6 +1,7 @@
 #pragma once
 #include <imguipp/imgui_rai.h>
 #include <cpaf_libs/gui/video/ui/controls.h>
+#include <cpaf_libs/gui/texture.h>
 
 namespace cpaf::gui::video {
 
@@ -15,15 +16,16 @@ private:
 
     static constexpr float slider_illegal_pos   {-1};
 
-    ImVec2      play_pause_btn_pos_         {};
-    ImVec2      video_back_btn_pos_         {};
-    ImVec2      video_fwd_btn_pos_          {};
-    ImVec2      video_slider_pos_           {};
-    ImVec2      video_slider_size_          {};
-    ImVec2      elapsed_time_pos_           {};
-    ImVec2      remaining_time_pos_         {};
-    float       video_slider_grab_width_    {20};
-    float       slider_last_user_pos_seconds_       {slider_illegal_pos};
+    std::unique_ptr<cpaf::gui::texture> control_icons_texture_   {};
+    ImVec2      play_pause_btn_pos_             {};
+    ImVec2      video_back_btn_pos_             {};
+    ImVec2      video_fwd_btn_pos_              {};
+    ImVec2      video_slider_pos_               {};
+    ImVec2      video_slider_size_              {};
+    ImVec2      elapsed_time_pos_               {};
+    ImVec2      remaining_time_pos_             {};
+    float       video_slider_grab_width_        {20};
+    float       slider_last_user_pos_seconds_   {slider_illegal_pos};
 };
 
 } // namespace cpaf::gui::video

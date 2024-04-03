@@ -97,6 +97,8 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/video/ui/controls.h
     ${CMAKE_CURRENT_LIST_DIR}/video/ui/controls_default.h
 
+    ${CMAKE_CURRENT_LIST_DIR}/video/ui/assets/video_player_data.h
+
     ${CMAKE_CURRENT_LIST_DIR}/application.h
     ${CMAKE_CURRENT_LIST_DIR}/dpi_handler.h
     ${CMAKE_CURRENT_LIST_DIR}/resources.h
@@ -172,6 +174,8 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/video/playlist_control.cpp
     ${CMAKE_CURRENT_LIST_DIR}/video/ui/controls.cpp
     ${CMAKE_CURRENT_LIST_DIR}/video/ui/controls_default.cpp
+
+    ${CMAKE_CURRENT_LIST_DIR}/video/ui/assets/video_player_control_icons.cpp
 
     ${CMAKE_CURRENT_LIST_DIR}/application.cpp
     ${CMAKE_CURRENT_LIST_DIR}/${CMAKE_SYSTEM_NAME}/dpi_handler.cpp

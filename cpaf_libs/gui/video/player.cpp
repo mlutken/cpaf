@@ -26,9 +26,6 @@ player::player(cpaf::audio::device& audio_device)
 {
     next_video_frame_ = av_frame::create_alloc();
 
-    if (!video_controls_) {
-        set_controls(std::make_unique<video::controls_default>(*this, configuration));
-    }
 //    pause_playback();
 }
 
@@ -40,6 +37,10 @@ void player::set_main_window(const system_window& main_window)
 {
     main_window_ptr_ = &main_window;
     subtitle_downloader_thread_.start();
+
+    if (!video_controls_) {
+        set_controls(std::make_unique<video::controls_default>(*this, configuration));
+    }
 }
 
 void player::start_playing(const std::chrono::microseconds& start_time_pos)

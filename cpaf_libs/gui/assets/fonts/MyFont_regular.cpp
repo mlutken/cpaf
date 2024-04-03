@@ -6,12 +6,12 @@ namespace cpaf::gui {
 
 std::span<const unsigned char> imgui_fonts::myfont_regular()
 {
-    static constexpr size_t font_len = XX;
+    static constexpr size_t len = XX;
 
-    static const std::array<unsigned char, font_len> font_data =
+    static constexpr std::array<unsigned char, len> data =
     {
     };
-    return std::span<const unsigned char>(font_data.begin(), font_data.end());
+    return std::span<const unsigned char>(data.begin(), data.end());
 
 }
 

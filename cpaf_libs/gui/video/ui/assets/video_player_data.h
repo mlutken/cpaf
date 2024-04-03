@@ -14,14 +14,8 @@ namespace cpaf::gui {
 @see Color codes: https://html-color.codes/
 @see Color codes: https://github.com/astraw/svg_stack [crawler/cpaf/tools/bin/svg_stack.py]
 */
-struct icons_data {
-    static std::span<const unsigned char> circle_pause_256     ();
-    static std::span<const unsigned char> circle_play_256      ();
-
-    static std::span<const unsigned char> png_data              (std::string_view icon_name);
-
-
-private:
+struct video_player_data {
+    static std::span<const unsigned char> video_player_control_icons     ();
 };
 
 } // namespace capf::gui

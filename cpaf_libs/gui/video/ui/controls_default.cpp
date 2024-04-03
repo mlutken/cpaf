@@ -12,7 +12,8 @@ using namespace std::chrono;
 
 namespace cpaf::gui::video {
 
-
+/// @see https://github.com/ocornut/imgui/issues/4216
+/// @see https://html-color.codes/
 
 void controls_default::calc_geometry()
 {
