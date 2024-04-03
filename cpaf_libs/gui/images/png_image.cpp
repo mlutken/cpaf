@@ -33,101 +33,14 @@ std::string png_color_type_to_string(uint8_t png_color_type)
 }
 
 
-void read_png_FIXMENM(const char* filename) {
-    FILE* file_ptr_ = fopen(filename, "rb");
-    if (!file_ptr_) {
-        printf("Error: Couldn't open %s for reading\n", filename);
-        return;
-    }
-
-    png_structp png_struct_ptr_ = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-    if (!png_struct_ptr_) {
-        fclose(file_ptr_);
-        printf("Error: png_create_read_struct failed\n");
-        return;
-    }
-
-    png_infop png_info_ptr_ = png_create_info_struct(png_struct_ptr_);
-    if (!png_info_ptr_) {
-        png_destroy_read_struct(&png_struct_ptr_, NULL, NULL);
-        fclose(file_ptr_);
-        printf("Error: png_create_info_struct failed\n");
-        return;
-    }
-
-    if (setjmp(png_jmpbuf(png_struct_ptr_))) {
-        png_destroy_read_struct(&png_struct_ptr_, &png_info_ptr_, NULL);
-        fclose(file_ptr_);
-        printf("Error: Error during init_io\n");
-        return;
-    }
-
-    png_init_io(png_struct_ptr_, file_ptr_);
-    png_read_info(png_struct_ptr_, png_info_ptr_);
-
-    const auto width = png_get_image_width(png_struct_ptr_, png_info_ptr_);
-    const auto height = png_get_image_height(png_struct_ptr_, png_info_ptr_);
-    png_byte color_type = png_get_color_type(png_struct_ptr_, png_info_ptr_);
-    png_byte bit_depth = png_get_bit_depth(png_struct_ptr_, png_info_ptr_);
-
-    if (bit_depth == 16)
-        png_set_strip_16(png_struct_ptr_);
-
-    if (color_type == PNG_COLOR_TYPE_PALETTE)
-        png_set_palette_to_rgb(png_struct_ptr_);
-
-    if (color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8)
-        png_set_expand_gray_1_2_4_to_8(png_struct_ptr_);
-
-    if (png_get_valid(png_struct_ptr_, png_info_ptr_, PNG_INFO_tRNS))
-        png_set_tRNS_to_alpha(png_struct_ptr_);
-
-    if (color_type == PNG_COLOR_TYPE_RGB || color_type == PNG_COLOR_TYPE_GRAY || color_type == PNG_COLOR_TYPE_PALETTE)
-        png_set_filler(png_struct_ptr_, 0xFF, PNG_FILLER_AFTER);
-
-    if (color_type == PNG_COLOR_TYPE_GRAY || color_type == PNG_COLOR_TYPE_GRAY_ALPHA)
-        png_set_gray_to_rgb(png_struct_ptr_);
-
-    png_read_update_info(png_struct_ptr_, png_info_ptr_);
-
-    const auto h = sizeof(png_bytep) * static_cast<uint32_t>(height);
-    const auto w = png_get_rowbytes(png_struct_ptr_, png_info_ptr_);
-
-    png_bytep* row_pointers_ = (png_bytep*)malloc(h);
-    for (auto y = 0u; y < height; y++) {
-        row_pointers_[y] = (png_byte*)malloc(w);
-    }
-
-    png_read_image(png_struct_ptr_, row_pointers_);
-
-    fclose(file_ptr_);
-
-    // Extract pixel data
-    for (auto y = 0u; y < height; y++) {
-        png_bytep row = row_pointers_[y];
-        for (auto x = 0u; x < width; x++) {
-            png_bytep px = &(row[x * 4]); // RGBA format
-//            printf("Pixel at (%d, %d): R:%d, G:%d, B:%d, A:%d\n", x, y, px[0], px[1], px[2], px[3]);
-        }
-    }
-
-    // Clean up
-    for (auto y = 0u; y < height; y++) {
-        free(row_pointers_[y]);
-    }
-    free(row_pointers_);
-}
-
-
-
 png_image::png_image()
 {
 
 }
 
-png_image::png_image(std::filesystem::path local_path)
+png_image::png_image(std::filesystem::path local_path, open_mode_t open_mode)
 {
-    open_local(std::move(local_path));
+    open_local(std::move(local_path), open_mode);
 }
 
 png_image::~png_image()
@@ -135,7 +48,7 @@ png_image::~png_image()
     destroy();
 }
 
-bool png_image::open_from_memory(const unsigned char* const png_data, size_t data_size)
+bool png_image::open_from_memory(const unsigned char* const png_data, size_t data_size, open_mode_t open_mode)
 {
     destroy();
     png_struct_ptr_ = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
@@ -165,15 +78,19 @@ bool png_image::open_from_memory(const unsigned char* const png_data, size_t dat
     png_set_read_fn(png_struct_ptr_, &memory_file_, png_image::read_data);
     png_read_info(png_struct_ptr_, png_info_ptr_);
 
+    if (open_mode == open_mode_t::read_all) {
+        return read_to_memory();
+    }
+
     return true;
 }
 
-bool png_image::open_from_memory(const std::span<const unsigned char>& data)
+bool png_image::open_from_memory(const std::span<const unsigned char> data, open_mode_t open_mode)
 {
-    return open_from_memory(data.data(), data.size_bytes());
+    return open_from_memory(data.data(), data.size_bytes(), open_mode);
 }
 
-bool png_image::open_local(std::filesystem::path local_path)
+bool png_image::open_local(std::filesystem::path local_path, open_mode_t open_mode)
 {
     destroy();
     local_path_ = (std::move(local_path));
@@ -206,6 +123,10 @@ bool png_image::open_local(std::filesystem::path local_path)
 
     png_init_io(png_struct_ptr_, file_ptr_);
     png_read_info(png_struct_ptr_, png_info_ptr_);
+
+    if (open_mode == open_mode_t::read_all) {
+        return read_to_memory();
+    }
 
     return true;
 }

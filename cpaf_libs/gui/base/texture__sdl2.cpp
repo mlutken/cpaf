@@ -4,6 +4,8 @@
 
 #include <cpaf_libs/gui/system_render.h>
 #include <cpaf_libs/gui/platform_utils/sdl_convert.h>
+#include <cpaf_libs/gui/images/png_image.h>
+
 
 namespace cpaf::gui {
 
@@ -33,6 +35,13 @@ void texture_platform::destroy()
     if (sdl_surface_) {
         SDL_FreeSurface(sdl_surface_);
         sdl_surface_ = nullptr;
+    }
+}
+
+void texture_platform::do_update_blendmode()
+{
+    if (sdl_texture_) {
+        SDL_SetTextureBlendMode(sdl_texture_, to_sdl_blendmode(blendmode_));
     }
 }
 
@@ -67,23 +76,47 @@ size_2d texture_platform::do_get_size() const
 bool texture_platform::do_load_from_file(const std::filesystem::path& local_path)
 {
     if (!render_) { return false; }
-    auto bitmap_surface = SDL_LoadBMP(local_path.string().c_str());
-    sdl_texture_ = SDL_CreateTextureFromSurface(render_->native_renderer<SDL_Renderer>(), bitmap_surface);
-    SDL_FreeSurface(bitmap_surface);
-    update_blend_mode();
+    if (sdl_surface_) { SDL_FreeSurface(sdl_surface_);  sdl_surface_ = nullptr; }
 
-//    if (sdl_texture_) { // FIXMENM
-//        SDL_SetTextureBlendMode(sdl_texture_, SDL_BLENDMODE_ADD);
-//    }
+    const auto file_ext = local_path.extension();
+    if (file_ext == ".png") {
+        png_image png;
+        png.open_local(local_path);
+        start_surface_pixel_access(png.size());
+        png.copy_pixels_out(pixel_data_raw_ptr());
+        end_surface_pixel_access();
+    }
+    else if (file_ext == ".bmp") {
+        auto surface = SDL_LoadBMP(local_path.string().c_str());
+        sdl_texture_ = SDL_CreateTextureFromSurface(render_->native_renderer<SDL_Renderer>(), surface);
+        SDL_FreeSurface(surface);
+    }
+    else {
+        std::cerr << "LOG_ERR Unknown texture::load_from_file unsupported format '" << file_ext << "'\n";
+    }
+    do_update_blendmode();
 
-//    SDL_Texture * IMG_LoadTextureTyped_RW(SDL_Renderer *renderer, SDL_RWops *src, int freesrc, const char *type);
-//    sdl_texture_  = IMG_LoadTexture(render_->native_renderer<SDL_Renderer>(), local_path.string().c_str());
+    return sdl_texture_ != nullptr;
+}
+
+bool texture_platform::do_png_from_memory(const unsigned char* const data_ptr, size_t data_size)
+{
+    if (!render_) { return false; }
+    png_image png;
+    png.open_from_memory(data_ptr, data_size);
+    start_surface_pixel_access(png.size());
+    png.copy_pixels_out(pixel_data_raw_ptr());
+    end_surface_pixel_access();
+
+    do_update_blendmode();
+
     return sdl_texture_ != nullptr;
 }
 
 // @see https://wiki.libsdl.org/SDL2/SDL_CreateRGBSurface
 bool texture_platform::do_start_surface_pixel_access(size_2d size)
 {
+    if (sdl_surface_) { SDL_FreeSurface(sdl_surface_);  sdl_surface_ = nullptr; }
     constexpr uint32_t flags = 0; // Must be zero accordning to docs
     constexpr int32_t depth = 32; // For now we support 32 bit only!
     sdl_surface_ = SDL_CreateRGBSurface(flags, size.width(), size.height(), depth,  bitmasks::rmask, bitmasks::gmask, bitmasks::bmask, bitmasks::amask);
@@ -99,7 +132,7 @@ bool texture_platform::do_end_surface_pixel_access()
     sdl_texture_ = SDL_CreateTextureFromSurface(render_->native_renderer<SDL_Renderer>(), sdl_surface_);
     SDL_FreeSurface(sdl_surface_);
     sdl_surface_ = nullptr;
-    update_blend_mode();
+    do_update_blendmode();
 
     return sdl_texture_ != nullptr;
 }
@@ -148,14 +181,6 @@ void texture_platform::do_draw_rect(const rect& dst_rect, const color& rect_colo
     }
 }
 
-
-/// @todo implement texture_platform::update_blend_mode()
-void texture_platform::update_blend_mode()
-{
-    if (sdl_texture_) {
-        SDL_SetTextureBlendMode(sdl_texture_, to_sdl_blendmode(blendmode_));
-    }
-}
 
 
 // -------------------------

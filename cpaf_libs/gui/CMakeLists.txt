@@ -189,6 +189,7 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/assets/fonts/manrope_ttf.cpp
 
     ${CMAKE_CURRENT_LIST_DIR}/assets/icons/256/circle_pause_256.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/assets/icons/256/circle_play_256.cpp
 )
 
 

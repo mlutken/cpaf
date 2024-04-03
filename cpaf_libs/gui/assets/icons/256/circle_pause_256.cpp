@@ -1,5 +1,6 @@
 #include "../icons_data.h"
 #include <array>
+#include <span>
 
 namespace cpaf::gui {
 
@@ -8,7 +9,7 @@ std::span<const unsigned char> icons_data::circle_pause_256()
 {
     static constexpr size_t len = 5991;
 
-    static constexpr std::array<unsigned char, len> data =
+    static constexpr std::array<const unsigned char, len> data =
     {
         0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d,
         0x49, 0x48, 0x44, 0x52, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x00,

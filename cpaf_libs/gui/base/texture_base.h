@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <span>
 #include <filesystem>
 #include <cpaf_libs/gui/gui_types.h>
 #include <cpaf_libs/gui/color.h>
@@ -20,11 +21,14 @@ public:
     texture_base& operator=(const texture_base& other) = delete;
 
     void                            set_render                  (std::shared_ptr<system_render> render);
-    void                            set_blendmode               (blendmode_t blendmode)                         { blendmode_ = blendmode; }
+    void                            set_blendmode               (blendmode_t blendmode)                         { blendmode_ = blendmode; do_update_blendmode(); }
     blendmode_t                     blendmode                   () const                                        { return blendmode_; }
 
     size_2d                         size                        () const                                        { return do_get_size();                         }
     bool                            load_from_file              (const std::filesystem::path& local_path)       { return do_load_from_file(local_path);         }
+    bool                            load_png_from_memory        (const unsigned char* const data_ptr,
+                                                                 size_t data_size)                              { return do_png_from_memory(data_ptr, data_size); }
+    bool                            load_png_from_memory        (const std::span<const unsigned char> data)     { return do_png_from_memory(data.data(), data.size()); }
     bool                            start_surface_pixel_access  (size_2d size)                                  { return do_start_surface_pixel_access(size);   }
     bool                            end_surface_pixel_access    ()                                              { return do_end_surface_pixel_access();         }
     uint32_t*                       pixel_data_raw_ptr          ()                                              { return do_pixel_data_raw_ptr();               }
@@ -41,12 +45,14 @@ protected:
 
     // --- PROTECTED: Helper functions for derived classes ---
     std::shared_ptr<system_render>  render_                 {nullptr};
-    blendmode_t                     blendmode_              {blendmode_t::none};
+    blendmode_t                     blendmode_              {blendmode_t::alpha};
 
 private:
+    virtual void                            do_update_blendmode             () = 0;
     virtual void*                           do_get_native_texture           () const = 0;
     virtual size_2d                         do_get_size                     () const = 0;
     virtual bool                            do_load_from_file               (const std::filesystem::path& local_path) = 0;
+    virtual bool                            do_png_from_memory              (const unsigned char* const data_ptr, size_t data_size) = 0;
     virtual bool                            do_start_surface_pixel_access   (size_2d size) = 0;
     virtual bool                            do_end_surface_pixel_access     () = 0;
     virtual uint32_t*                       do_pixel_data_raw_ptr           () = 0;

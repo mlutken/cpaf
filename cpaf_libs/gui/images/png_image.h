@@ -14,13 +14,16 @@ class png_image
 {
 public:
 //    enum color_type_t { };
+    enum open_mode_t { read_header, read_all, write };
     png_image();
-    explicit png_image(std::filesystem::path local_path);
+    explicit png_image(std::filesystem::path local_path, open_mode_t open_mode = open_mode_t::read_all);
     ~png_image();
 
-    bool                        open_from_memory    (const unsigned char* const png_data, size_t data_size);
-    bool                        open_from_memory    (const std::span<const unsigned char>& data);
-    bool                        open_local          (std::filesystem::path local_path);
+    bool                        open_from_memory    (const unsigned char* const png_data, size_t data_size,
+                                                     open_mode_t open_mode = open_mode_t::read_all);
+    bool                        open_from_memory    (const std::span<const unsigned char> data,
+                                                     open_mode_t open_mode = open_mode_t::read_all);
+    bool                        open_local          (std::filesystem::path local_path, open_mode_t open_mode = open_mode_t::read_all);
     bool                        read_to_memory      ();
 
     int32_t                     width               () const;

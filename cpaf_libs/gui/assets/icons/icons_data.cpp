@@ -12,7 +12,7 @@ using namespace std;
 
 namespace cpaf::gui {
 
-const std::span<const unsigned char> icons_data::png_data_256(const string& icon_name)
+std::span<const unsigned char> icons_data::png_data(std::string_view icon_name)
 {
     if      (icon_name == "circle_pause_256")       {   return icons_data::circle_pause_256();     }
     else if (icon_name == "circle_play_256")        {   return icons_data::circle_play_256();      }
