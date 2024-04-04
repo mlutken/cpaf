@@ -6,8 +6,6 @@
 #include <string>
 #include <iostream>
 
-#include <IconFontCppHeaders/IconsFontAwesome6.h>
-
 using namespace std;
 
 namespace cpaf::gui {

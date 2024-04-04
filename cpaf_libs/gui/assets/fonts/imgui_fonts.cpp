@@ -6,8 +6,6 @@
 #include <string>
 #include <iostream>
 
-#include <IconFontCppHeaders/IconsFontAwesome6.h>
-
 using namespace std;
 
 namespace cpaf::gui {
@@ -48,7 +46,6 @@ ImFont* imgui_fonts::add(const string& font_name, int32_t size_pixels)
     }
 
     if (ImGui::GetIO().Fonts->Locked) {
-        requested_fonts_.push_back({font_name, size_pixels});
         return nullptr;
     }
 
@@ -191,6 +188,7 @@ void imgui_fonts::add_pending_requested_fonts()
     for (const auto& requested_font : requested_fonts_) {
         add(requested_font.font, requested_font.size_pixels);
     }
+    requested_fonts_.clear();
 }
 
 
@@ -218,8 +216,19 @@ ImFont* imgui_fonts::find_create_closest(const string& font_name, int32_t size_p
         }
     }
 
+    std::cerr << "FIXMENM Want to adding font '" << font_name
+              << "' , size : " << size_pixels
+              << "  create_dist_pixels: " << create_dist_pixels
+              << "\n";
+
+    if (ImGui::GetIO().Fonts->Locked) {
+        requested_fonts_.push_back({font_name, size_pixels});
+    }
+    else {
+//        add(font_name, size_pixels);   // @todo Can cause crash!
+    }
+
     // Create new as we are too far from
-    add(font_name, static_cast<uint32_t>(size_pixels));
     return closest_size_font_ptr;
 }
 

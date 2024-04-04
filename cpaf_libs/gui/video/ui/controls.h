@@ -18,13 +18,16 @@ public:
 
     void            render                  ();
     void            on_player_size_changed  ();
-    bool            visible                 () const { return visible_; }
-    void            show                    (bool do_show) { visible_ = do_show; }
+    bool            visible                 () const                    { return visible_; }
+    void            show                    (bool do_show)              { visible_ = do_show; }
+    void            show                    ()                          { visible_ = true; }
+    void            hide                    ()                          { visible_ = false; }
 
 
 protected:
     player&                 player_;
     config&                 config_;
+    bool                    visible_ = true;
 
     std::string             buttons_font_name       () const { return config_.str       ("controls", "buttons_font_name");      }
     float                   buttons_size            () const { return config_.float_val ("controls", "buttons_size");           }
@@ -58,7 +61,6 @@ private:
     virtual void    do_calc_geometry    () = 0;
     virtual void    do_render           () = 0;
 
-    bool            visible_ = true;
 
 
 };

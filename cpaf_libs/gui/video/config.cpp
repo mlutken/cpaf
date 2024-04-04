@@ -9,7 +9,7 @@ static const auto default_config = nlohmann::json::parse(
     {
         "controls": {
             "buttons_font_name": "abeezee_regular",
-            "buttons_size": 38,
+            "buttons_size": 128,
             "buttons_text_color": [1,1,1,1],
             "buttons_color": [0.282353, 0.239216, 0.545098, 0.5],
             "buttons_border_color": [0,0,0,0],

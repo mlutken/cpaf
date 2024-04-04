@@ -12,13 +12,20 @@ public:
     controls_default(player& parent_player, config& cfg);
 
 private:
-    void    do_calc_geometry() override;
-    void    do_render       () override;
+    void    do_calc_geometry                () override;
+    void    do_render                       () override;
+
+    void    render_player_controls          ();
+    void    render_slider                   ();
+    void    render_player_time               ();
+    void    set_cursor_pos_image_buttons    ();
 
     static constexpr float slider_illegal_pos   {-1};
+    static constexpr float image_buttons_window_size_extra   {2};
 
     std::unique_ptr<cpaf::gui::texture> control_icons_texture_   {};
     ImVec2      play_buttons_size_              {};
+    ImVec2      play_buttons_window_size_       {};
     ImVec2      subtitles_button_size_          {};
     ImVec2      play_pause_btn_pos_             {};
     ImVec2      video_back_btn_pos_             {};
@@ -33,6 +40,10 @@ private:
     color       buttons_col_                    {};
     color       buttons_hover_col_              {};
     color       buttons_active_col_             {};
+    color       time_text_col_                  {};
+
+    ImFont*     font_slider_                    = nullptr;
+    ImFont*     font_time_                      = nullptr;
 
 };
 

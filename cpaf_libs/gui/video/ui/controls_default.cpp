@@ -7,9 +7,6 @@
 #include <cpaf_libs/gui/video/player.h>
 #include <cpaf_libs/gui/video/ui/assets/video_player_data.h>
 
-// FIXMENM REMOVE this again!!
-#include <IconFontCppHeaders/IconsFontAwesome6.h>
-
 
 using namespace cpaf::time;
 using namespace std::chrono;
@@ -29,6 +26,9 @@ constexpr pos_2df backward_uv0      = {0*icon_width, 3*icon_width};  constexpr p
 /// @see https://github.com/ocornut/imgui/issues/4216
 /// @see https://html-color.codes/
 
+
+
+
 controls_default::controls_default(player& parent_player, config& cfg)
     : controls(parent_player, cfg)
 {
@@ -39,7 +39,8 @@ controls_default::controls_default(player& parent_player, config& cfg)
 void controls_default::do_calc_geometry()
 {
     const auto render_geometry = player_.render_geometry();
-    const int32_t fwd_back_font_size_pixels = font_size::to_pixels(buttons_size(), player_.main_window_ptr());
+    const auto play_buttons_size = buttons_size()*player_.player_to_screen_size_factor().height();
+
     const int32_t slider_font_size_pixels = font_size::to_pixels(slider_height(), player_.main_window_ptr());
     const int32_t time_font_size_pixels = font_size::to_pixels(time_font_size(), player_.main_window_ptr());
 
@@ -47,19 +48,23 @@ void controls_default::do_calc_geometry()
 
     const float y_pos = relative_ypos()* render_geometry.size().height();
 
+    play_buttons_size_ = ImVec2{play_buttons_size, play_buttons_size};
+    play_buttons_window_size_.x = play_buttons_size_.x + image_buttons_window_size_extra*2;
+    play_buttons_window_size_.y = play_buttons_size_.y + image_buttons_window_size_extra*2;
+
     play_pause_btn_pos_.x = render_geometry.size().width() / 2;
     play_pause_btn_pos_.y = y_pos;
 
-    video_back_btn_pos_.x = fwd_back_font_size_pixels;
+    video_back_btn_pos_.x = play_buttons_size;
     video_back_btn_pos_.y = y_pos;
-    video_fwd_btn_pos_.x = render_geometry.size().width() - 1*fwd_back_font_size_pixels;
+    video_fwd_btn_pos_.x = render_geometry.size().width() - 1*play_buttons_size;
     video_fwd_btn_pos_.y = y_pos;
 
     video_slider_pos_.x = render_geometry.size().width() / 2;
-    video_slider_pos_.y = y_pos + 1.5*fwd_back_font_size_pixels;
+    video_slider_pos_.y = y_pos + 1.5*play_buttons_size;
 
-    video_slider_size_.x = render_geometry.size().width() - 0.8*fwd_back_font_size_pixels;
-    video_slider_grab_width_ = fwd_back_font_size_pixels / 2;
+    video_slider_size_.x = render_geometry.size().width() - 0.8*play_buttons_size;
+    video_slider_grab_width_ = play_buttons_size / 2;
 
     elapsed_time_pos_.x = (render_geometry.size().width() - video_slider_size_.x);
     elapsed_time_pos_.y = video_slider_pos_.y - slider_font_size_pixels*1 - time_font_size_pixels*1;
@@ -68,8 +73,6 @@ void controls_default::do_calc_geometry()
     remaining_time_pos_.y = elapsed_time_pos_.y;
 
 
-    const auto play_buttons_size = buttons_size();
-    play_buttons_size_ = ImVec2{play_buttons_size, play_buttons_size};
 
     buttons_text_col_ = buttons_text_color();
     buttons_col_ = buttons_color();
@@ -77,94 +80,90 @@ void controls_default::do_calc_geometry()
     buttons_hover_col_ = buttons_col_*0.8f;
     buttons_active_col_ = buttons_col_*1.0f;
 
+    time_text_col_ = time_text_color();
+    font_slider_ = imgui_fonts::instance().get(slider_font_name(), slider_font_size_pixels);
+    font_time_ = imgui_fonts::instance().get(time_font_name(), time_font_size_pixels);
 }
 
 void controls_default::do_render()
 {
-//    do_calc_geometry();    // TODO : Only calc new geometry when window or fonts/sizes have changed!
-
-    const color time_text_col = time_text_color();
-    const int32_t play_buttons_font_size_pixels = font_size::to_pixels(buttons_size(), player_.main_window_ptr());
-    const int32_t slider_font_size_pixels = font_size::to_pixels(slider_height(), player_.main_window_ptr());
-    const int32_t time_font_size_pixels = font_size::to_pixels(time_font_size(), player_.main_window_ptr());
-    ImFont* font_fwd_back_btns = imgui_fonts::instance().get(buttons_font_name(), play_buttons_font_size_pixels);
-    ImFont* font_slider = imgui_fonts::instance().get(slider_font_name(), slider_font_size_pixels);
-    ImFont* font_time = imgui_fonts::instance().get(time_font_name(), time_font_size_pixels);
-
-    auto buttons_texture_ptr = control_icons_texture_->native_texture<void>();
-
-    bool show_controls = true;
-
-    {
-        ImGui::Rai imrai;
-        imrai.Font(font_fwd_back_btns)
-            .StyleColor(ImGuiCol_Text, reinterpret_cast<const ImVec4&>(buttons_text_col_))
-            .StyleColor(ImGuiCol_WindowBg, {0,0,0,0})
-            .StyleColor(ImGuiCol_Border, {0,0,0,0})
-            .StyleColor(ImGuiCol_Button, {0,0,0,0})
-            .StyleColor(ImGuiCol_ButtonActive, reinterpret_cast<const ImVec4&>(buttons_active_col_))
-            .StyleColor(ImGuiCol_ButtonHovered, reinterpret_cast<const ImVec4&>(buttons_hover_col_))
-            ;
-
-        ImGui::SetNextWindowPos(play_pause_btn_pos_, ImGuiCond_::ImGuiCond_Always, {0.5, 0.5} );
-        ImGui::Begin("play_pause_btn", &show_controls, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
-
-        const char* const btn = player_.playback_is_paused() ? ICON_FA_CIRCLE_PAUSE : ICON_FA_CIRCLE_PLAY;
-        if (player_.playback_is_paused()) {
-            if (ImGui::ImageButton("pause", buttons_texture_ptr, play_buttons_size_, pause_uv0.to_struct<ImVec2>(), pause_uv1.to_struct<ImVec2>(), {0,0,0,0}, {1,1,1,1})) {
-                player_.resume_playback();
-            }
-        }
-        else {
-            if (ImGui::ImageButton("play", buttons_texture_ptr, play_buttons_size_, play_uv0.to_struct<ImVec2>(), play_uv1.to_struct<ImVec2>(), {0,0,0,0}, {1,1,1,1})) {
-                player_.pause_playback();
-            }
-        }
-//        if (ImGui::Button(btn)) {
-//            player_.toggle_pause_playback();
-//        }
-
-//        const char* const btn = player_.playback_is_paused() ? ICON_FA_CIRCLE_PAUSE : ICON_FA_CIRCLE_PLAY;
-//        if (ImGui::Button(btn)) {
-//            player_.toggle_pause_playback();
-//        }
-        ImGui::End();
-
-        ImGui::SetNextWindowPos(video_back_btn_pos_, ImGuiCond_::ImGuiCond_Always, {0.5, 0.5} );
-        ImGui::Begin("video_back_btn", &show_controls, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
-        ImGui::PushButtonRepeat(true);
-        if (ImGui::ImageButton("backward", buttons_texture_ptr, play_buttons_size_, backward_uv0.to_struct<ImVec2>(), backward_uv1.to_struct<ImVec2>(), {0,0,0,0}, {1,1,1,1})) {
-            player_.seek_relative(-config_.controls_seconds("skip_time_small"));
-        }
-        ImGui::PopButtonRepeat();
-        ImGui::End();
-
-        ImGui::SetNextWindowPos(video_fwd_btn_pos_, ImGuiCond_::ImGuiCond_Always, {0.5, 0.5} );
-        ImGui::Begin("video_fwd_btn", &show_controls, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
-        ImGui::PushButtonRepeat(true);
-        if (ImGui::ImageButton("forward", buttons_texture_ptr, play_buttons_size_, forward_uv0.to_struct<ImVec2>(), forward_uv1.to_struct<ImVec2>(), {0,0,0,0}, {1,1,1,1})) {
-            player_.seek_relative(config_.controls_seconds("skip_time_small"));
-        }
-//        if (ImGui::Button(ICON_FA_ARROW_ROTATE_RIGHT)) {
-//            player_.seek_relative(config_.controls_seconds("skip_time_small"));
-//        }
-        ImGui::PopButtonRepeat();
-        ImGui::End();
+    // @todo Fix: Just a safeguard, should not be needed!
+    if (!font_slider_) {
+        do_calc_geometry();
     }
 
+    render_player_controls();
+    render_slider();
+    render_player_time();
+}
+
+void controls_default::render_player_controls()
+{
+    auto buttons_texture_ptr = control_icons_texture_->native_texture<void>();
+
+    ImGui::Rai imrai;
+    imrai.StyleVar(ImGuiStyleVar_WindowPadding, {0,0})
+        .StyleColor(ImGuiCol_WindowBg, {1,1,1,1}) // FIXMENM
+        //            .StyleColor(ImGuiCol_WindowBg, {0,0,0,0})
+        .StyleColor(ImGuiCol_Border, {0,0,0,0})
+        .StyleColor(ImGuiCol_Button, {0,0,0,0})
+        .StyleColor(ImGuiCol_ButtonActive, reinterpret_cast<const ImVec4&>(buttons_active_col_))
+        .StyleColor(ImGuiCol_ButtonHovered, reinterpret_cast<const ImVec4&>(buttons_hover_col_))
+        ;
+
+    ImGui::SetNextWindowPos(play_pause_btn_pos_, ImGuiCond_::ImGuiCond_Always, {0.5, 0.5} );
+    ImGui::SetNextWindowSize(play_buttons_window_size_, ImGuiCond_::ImGuiCond_Always);
+
+
+    ImGui::Begin("play_pause_btn", &visible_, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
+    set_cursor_pos_image_buttons();
+
+    if (player_.playback_is_paused()) {
+        if (ImGui::ImageButton("pause", buttons_texture_ptr, play_buttons_size_, pause_uv0.to_struct<ImVec2>(), pause_uv1.to_struct<ImVec2>(), {0,0,0,0}, {1,1,1,1})) {
+            player_.resume_playback();
+        }
+    }
+    else {
+        if (ImGui::ImageButton("play", buttons_texture_ptr, play_buttons_size_, play_uv0.to_struct<ImVec2>(), play_uv1.to_struct<ImVec2>(), {0,0,0,0}, {1,1,1,1})) {
+            player_.pause_playback();
+        }
+    }
+    ImGui::End();
+
+    ImGui::SetNextWindowPos(video_back_btn_pos_, ImGuiCond_::ImGuiCond_Always, {0.5, 0.5} );
+    ImGui::SetNextWindowSize(play_buttons_window_size_, ImGuiCond_::ImGuiCond_Always);
+    ImGui::Begin("video_back_btn", &visible_, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
+    set_cursor_pos_image_buttons();
+
+    ImGui::PushButtonRepeat(true);
+    if (ImGui::ImageButton("backward", buttons_texture_ptr, play_buttons_size_, backward_uv0.to_struct<ImVec2>(), backward_uv1.to_struct<ImVec2>(), {0,0,0,0}, {1,1,1,1})) {
+        player_.seek_relative(-config_.controls_seconds("skip_time_small"));
+    }
+    ImGui::PopButtonRepeat();
+    ImGui::End();
+
+    ImGui::SetNextWindowPos(video_fwd_btn_pos_, ImGuiCond_::ImGuiCond_Always, {0.5, 0.5} );
+    ImGui::SetNextWindowSize(play_buttons_window_size_, ImGuiCond_::ImGuiCond_Always);
+    ImGui::Begin("video_fwd_btn", &visible_, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
+    set_cursor_pos_image_buttons();
+
+    ImGui::PushButtonRepeat(true);
+    if (ImGui::ImageButton("forward", buttons_texture_ptr, play_buttons_size_, forward_uv0.to_struct<ImVec2>(), forward_uv1.to_struct<ImVec2>(), {0,0,0,0}, {1,1,1,1})) {
+        player_.seek_relative(config_.controls_seconds("skip_time_small"));
+    }
+    ImGui::PopButtonRepeat();
+    ImGui::End();
+}
+
+void controls_default::render_slider()
+{
     {
         const float total_time_seconds = player_.total_time().count() / 1'000'000;
         const float save_current_postion_seconds = player_.current_time().count() / 1'000'000;
         float current_postion_seconds = save_current_postion_seconds;
-//        if (player_.playback_paused()) {
-//            current_postion_seconds = slider_last_user_pos_seconds_;
-//        }
 
         ImGui::Rai imrai{};
-        imrai.Font(font_slider)
-//  Test/Debug only
-//            .StyleColor(ImGuiCol_Border, {1,1,1,1})
-//            .StyleColor(ImGuiCol_WindowBg, {0,1,0,0.5})
+        imrai.Font(font_slider_)
             .StyleVar(ImGuiStyleVar_WindowPadding, {0,0})
             .StyleVar(ImGuiStyleVar_GrabMinSize, video_slider_grab_width_)
             .StyleVar(ImGuiStyleVar_GrabRounding, video_slider_grab_width_/4)
@@ -173,18 +172,17 @@ void controls_default::do_render()
 
         ImGui::SetNextWindowPos(video_slider_pos_, ImGuiCond_::ImGuiCond_Always, {0.5, 0.5} );
         ImGui::SetNextWindowSize(video_slider_size_, ImGuiCond_::ImGuiCond_Always);
-        ImGui::Begin("video_slider_win", &show_controls, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
+        ImGui::Begin("video_slider_win", &visible_, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
         ImGui::PushItemWidth(-1);   // Force control to fill width with no label
 
         if (ImGui::SliderFloat("video_slider", &current_postion_seconds, 0, total_time_seconds, ""))
         {
-//            std::cerr << "Moving slider....\n";
             slider_last_user_pos_seconds_ = current_postion_seconds;
         }
         else {
-//            if (std::abs(slider_last_user_pos_seconds_ - current_postion_seconds) > 5) {
-//                slider_last_user_pos_seconds_ = current_postion_seconds;
-//            }
+            //            if (std::abs(slider_last_user_pos_seconds_ - current_postion_seconds) > 5) {
+            //                slider_last_user_pos_seconds_ = current_postion_seconds;
+            //            }
 
         }
         ImGui::PopItemWidth();
@@ -197,30 +195,40 @@ void controls_default::do_render()
         }
 
     }
+}
 
+void controls_default::render_player_time()
+{
+    const auto elapsed_time = format_h_m_s(player_.current_time());
+    const auto remaining_time = format_h_m_s(player_.remaining_time());
 
-    {
+    ImGui::Rai imrai{};
+    imrai.Font(font_time_)
+        .StyleColor(ImGuiCol_Text, reinterpret_cast<const ImVec4&>(time_text_col_))
+        .StyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(4, 4))
+        ;
 
-        const auto elapsed_time = format_h_m_s(player_.current_time());
-        const auto remaining_time = format_h_m_s(player_.remaining_time());
+    ImGui::SetNextWindowPos(elapsed_time_pos_, ImGuiCond_::ImGuiCond_Always, {0.35, 0.5} );
+    //        ImGui::Begin("elapsed_time", &show_controls, ImGuiWindowFlags_NoBackground |ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
+    ImGui::Begin("elapsed_time", &visible_, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
+    ImGui::TextUnformatted(elapsed_time);
+    ImGui::End();
 
-        ImGui::Rai imrai{};
-        imrai.Font(font_time)
-             .StyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(4, 4))
-            ;
+    ImGui::SetNextWindowPos(remaining_time_pos_, ImGuiCond_::ImGuiCond_Always, {0.45, 0.5} );
+    ImGui::Begin("remaining_time", &visible_, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
+    ImGui::TextUnformatted(remaining_time);
+    ImGui::End();
+}
 
-        ImGui::SetNextWindowPos(elapsed_time_pos_, ImGuiCond_::ImGuiCond_Always, {0.35, 0.5} );
-//        ImGui::Begin("elapsed_time", &show_controls, ImGuiWindowFlags_NoBackground |ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
-        ImGui::Begin("elapsed_time", &show_controls, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
-        ImGui::TextUnformatted(elapsed_time);
-        ImGui::End();
+void controls_default::set_cursor_pos_image_buttons()
+{
+    auto cursor_pos_x = -ImGui::GetStyle().ItemSpacing.x/2 + image_buttons_window_size_extra;
+    auto cursor_pos_y = -ImGui::GetStyle().ItemSpacing.y/2 + image_buttons_window_size_extra;
+    //        std::cerr << "FIXMENM cursor_pos_x: " << cursor_pos_x << "\n";
+    //        std::cerr << "FIXMENM ImGui::GetStyle().ItemSpacing.x: " << ImGui::GetStyle().ItemSpacing.x << "\n";
 
-        ImGui::SetNextWindowPos(remaining_time_pos_, ImGuiCond_::ImGuiCond_Always, {0.45, 0.5} );
-        ImGui::Begin("remaining_time", &show_controls, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
-        ImGui::TextUnformatted(remaining_time);
-        ImGui::End();
-    }
-
+    ImGui::SetCursorPosX(cursor_pos_x);
+    ImGui::SetCursorPosY(cursor_pos_y);
 }
 
 
