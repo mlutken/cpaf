@@ -24,7 +24,8 @@ private:
 
 
     // --- Platform overrides ---
-    size_2d                         do_get_size					() const override;
+    size_2d                         do_size                     () const override;
+    size_2d                         do_display_size             () const override;
     std::string                     do_get_title    			() const override;
     int32_t                         do_display_index   			() const override;
     void*                           do_get_native_window    	() override;

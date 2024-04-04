@@ -48,12 +48,24 @@ system_window_platform::system_window_platform(const size_2d& size, std::string_
     render_ = std::shared_ptr<system_render>(new system_render(sdl_window_));
 }
 
-size_2d system_window_platform::do_get_size() const
+size_2d system_window_platform::do_size() const
 {
     if (!sdl_window_) {return {-1,-1}; }
     size_2d size;
     SDL_GetWindowSize(sdl_window_, &size[0], &size[1]);
     return size;
+}
+
+size_2d system_window_platform::do_display_size() const
+{
+    if (!sdl_window_) {return {-1,-1}; }
+
+    SDL_DisplayMode mode;
+
+    if (SDL_GetCurrentDisplayMode(do_display_index(), &mode) == 0) {
+        return {mode.w, mode.h};
+    }
+    return {-1,-1};
 }
 
 std::string system_window_platform::do_get_title() const

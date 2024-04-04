@@ -365,6 +365,14 @@ void player::video_dimensions_set(const surface_dimensions_t& dimensions)
     if (video_render_) {
         video_render_->render_geometry_set(rect(dimensions));
     }
+    if (main_window_ptr_) {
+        const auto play_dims = cpaf::math::v2f(dimensions);
+        const auto screen_dims = cpaf::math::v2f(main_window_ptr_->display_size());
+        player_to_screen_size_factor_ = play_dims / screen_dims;
+    }
+
+//    player_to_screen_size_factor_
+
 //    video_dst_dimensions_requested_ = dimensions; // TODO: This is currently not working as intended!
 //    update_scaling_context(); // TODO: This is currently not working as intended!
 }
@@ -424,7 +432,7 @@ rect player::render_geometry() const
         return video_render_->render_geometry();
     }
     else if (main_window_ptr_) {
-        const auto size = main_window_ptr_->get_size();
+        const auto size = main_window_ptr_->size();
         return rect(0, 0, size.width(), size.height());
     }
     
@@ -656,7 +664,7 @@ void player::init_video(const system_window& main_window)
     /// std::cerr << "FIXMENM player::init_video 1\n";
     video_render_ = render::create_video_render(*this, configuration, main_window, video_dst_dimensions());
     video_render_->video_codec_ctx_set(video_codec_context());
-    video_render_->render_geometry_set(rect(main_window.get_size()));
+    video_render_->render_geometry_set(rect(main_window.size()));
 
     /// std::cerr << "FIXMENM player::init_video 4\n";
     ////    video_render_->render_geometry_set(render_geometry_t({100,100}, main_window.get_size())); // TEST ONLY!

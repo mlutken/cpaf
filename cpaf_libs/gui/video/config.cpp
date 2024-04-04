@@ -2,7 +2,7 @@
 
 namespace cpaf::gui::video {
 
-
+//483d8b
 
 static const auto default_config = nlohmann::json::parse(
     R"(
@@ -11,8 +11,8 @@ static const auto default_config = nlohmann::json::parse(
             "buttons_font_name": "abeezee_regular",
             "buttons_size": 38,
             "buttons_text_color": [1,1,1,1],
-            "buttons_bg_color": [0.75,0.1,0.1,1],
-            "buttons_border_color": [1,0,0,1],
+            "buttons_color": [0.282353, 0.239216, 0.545098, 0.5],
+            "buttons_border_color": [0,0,0,0],
 
             "menu_font_name": "abeezee_regular",
             "menu_font_size": 13,
@@ -117,6 +117,12 @@ color config::color(const std::string& group, const std::string& id) const
 {
     const auto jo_arr = cpaf::json_value_array(jo_[group], id, nlohmann::json::array({0,0,0,0}));
     return cpaf::gui::color(jo_arr);
+}
+
+color config::color_rgba(const std::string& group, const std::string& id) const
+{
+    const auto jo_arr = cpaf::json_value_array(jo_[group], id, nlohmann::json::array({0,0,0,0}));
+    return cpaf::gui::color::rgba(jo_arr[0],jo_arr[1],jo_arr[2],jo_arr[3]);
 }
 
 std::chrono::seconds config::seconds(const std::string& group, const std::string& id) const

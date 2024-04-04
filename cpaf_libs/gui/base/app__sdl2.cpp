@@ -130,7 +130,7 @@ void app_platform::do_platform_post_frame_update()
 size_2d app_platform::do_platform_main_window_size() const
 {
     if (!main_window_ptr_) { return {-1,-1}; }
-    return main_window_ptr_->get_size();
+    return main_window_ptr_->size();
 }
 
 system_window& app_platform::do_main_window()

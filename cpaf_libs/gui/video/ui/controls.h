@@ -13,7 +13,7 @@ class controls
 {
 public:
     controls() = delete;
-    explicit controls(player& parent_player, config& cfg);
+    controls(player& parent_player, config& cfg);
     virtual ~controls() = default;
 
     void            render      ();
@@ -24,40 +24,34 @@ public:
 protected:
     player&                 player_;
     config&                 config_;
-/*
-    std::string              () const { return config_.str("controls", ""); }
-    int32_t                  () const { return config_.int32("controls", ""); }
-    float                   () const { return config_.float_val("controls", ""); }
-    color                   () const { return config_.color("controls", ""); }
-    std::chrono::seconds    () const { return config_.seconds("controls", ""); }
-*/
-    std::string             buttons_font_name       () const { return config_.str   ("controls", "buttons_font_name");      }
-    int32_t                 buttons_size            () const { return config_.int32 ("controls", "buttons_size");           }
-    color                   buttons_text_color      () const { return config_.color ("controls", "buttons_text_color");     }
-    color                   buttons_bg_color        () const { return config_.color ("controls", "buttons_bg_color");       }
-    color                   buttons_border_color    () const { return config_.color ("controls", "buttons_border_color");   }
 
-    std::string             menu_font_name          () const { return config_.str   ("controls", "menu_font_name");         }
-    int32_t                 menu_font_size          () const { return config_.int32 ("controls", "menu_font_size");         }
-    color                   menu_text_color         () const { return config_.color ("controls", "menu_text_color");        }
-    color                   menu_bg_color           () const { return config_.color ("controls", "menu_bg_color");          }
-    color                   menu_border_color       () const { return config_.color ("controls", "menu_border_color");      }
+    std::string             buttons_font_name       () const { return config_.str       ("controls", "buttons_font_name");      }
+    float                   buttons_size            () const { return config_.float_val ("controls", "buttons_size");           }
+    color                   buttons_text_color      () const { return config_.color     ("controls", "buttons_text_color");     }
+    color                   buttons_color           () const { return config_.color     ("controls", "buttons_color");          }
+    color                   buttons_border_color    () const { return config_.color     ("controls", "buttons_border_color");   }
 
-    int32_t                 slider_height           () const { return config_.int32 ("controls", "slider_height");          }
-    std::string             slider_font_name        () const { return config_.str   ("controls", "slider_font_name");       }
-    int32_t                 slider_font_size        () const { return config_.int32 ("controls", "slider_font_size");       }
-    color                   slider_color            () const { return config_.color ("controls", "slider_color");           }
-    color                   slider_bg_color         () const { return config_.color ("controls", "slider_bg_color");        }
-    color                   slider_border_color     () const { return config_.color ("controls", "slider_border_color");    }
+    std::string             menu_font_name          () const { return config_.str       ("controls", "menu_font_name");         }
+    int32_t                 menu_font_size          () const { return config_.int32     ("controls", "menu_font_size");         }
+    color                   menu_text_color         () const { return config_.color     ("controls", "menu_text_color");        }
+    color                   menu_bg_color           () const { return config_.color     ("controls", "menu_bg_color");          }
+    color                   menu_border_color       () const { return config_.color     ("controls", "menu_border_color");      }
 
-    std::string             time_font_name          () const { return config_.str   ("controls", "time_font_name");         }
-    int32_t                 time_font_size          () const { return config_.int32 ("controls", "time_font_size");         }
-    color                   time_text_color         () const { return config_.color ("controls", "time_text_color");        }
-    color                   time_bg_color           () const { return config_.color ("controls", "time_bg_color");          }
-    color                   time_border_color       () const { return config_.color ("controls", "time_border_color");      }
+    int32_t                 slider_height           () const { return config_.int32     ("controls", "slider_height");          }
+    std::string             slider_font_name        () const { return config_.str       ("controls", "slider_font_name");       }
+    int32_t                 slider_font_size        () const { return config_.int32     ("controls", "slider_font_size");       }
+    color                   slider_color            () const { return config_.color     ("controls", "slider_color");           }
+    color                   slider_bg_color         () const { return config_.color     ("controls", "slider_bg_color");        }
+    color                   slider_border_color     () const { return config_.color     ("controls", "slider_border_color");    }
 
-    float                   relative_ypos           () const { return config_.float_val("controls", "relative_ypos");       }
-    std::chrono::seconds    skip_time_small         () const { return config_.seconds("controls", "skip_time_small");       }
+    std::string             time_font_name          () const { return config_.str       ("controls", "time_font_name");         }
+    int32_t                 time_font_size          () const { return config_.int32     ("controls", "time_font_size");         }
+    color                   time_text_color         () const { return config_.color     ("controls", "time_text_color");        }
+    color                   time_bg_color           () const { return config_.color     ("controls", "time_bg_color");          }
+    color                   time_border_color       () const { return config_.color     ("controls", "time_border_color");      }
+
+    float                   relative_ypos           () const { return config_.float_val ("controls", "relative_ypos");          }
+    std::chrono::seconds    skip_time_small         () const { return config_.seconds   ("controls", "skip_time_small");        }
 
 //    std::string             font_name               () const;
 //    color                   time_text_color         () const;

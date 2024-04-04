@@ -9,6 +9,7 @@ class controls_default : public controls
 {
 public:
     using controls::controls;	// "Import" constructors to scope
+    controls_default(player& parent_player, config& cfg);
 
 private:
     void    calc_geometry   ();
@@ -17,6 +18,8 @@ private:
     static constexpr float slider_illegal_pos   {-1};
 
     std::unique_ptr<cpaf::gui::texture> control_icons_texture_   {};
+    ImVec2      play_buttons_size_              {};
+    ImVec2      subtitles_button_size_          {};
     ImVec2      play_pause_btn_pos_             {};
     ImVec2      video_back_btn_pos_             {};
     ImVec2      video_fwd_btn_pos_              {};
@@ -26,6 +29,11 @@ private:
     ImVec2      remaining_time_pos_             {};
     float       video_slider_grab_width_        {20};
     float       slider_last_user_pos_seconds_   {slider_illegal_pos};
+    color       buttons_text_col_               {};
+    color       buttons_col_                    {};
+    color       buttons_hover_col_              {};
+    color       buttons_active_col_             {};
+
 };
 
 } // namespace cpaf::gui::video

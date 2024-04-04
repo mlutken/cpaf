@@ -100,6 +100,7 @@ public:
     void                                video_scaler_flags_set  (int32_t flags);
     void                                video_scaler_align_set  (int32_t align);
     void                                ff_dst_pixel_format_set (AVPixelFormat pixel_format);
+    cpaf::math::v2f                     player_to_screen_size_factor    () const { return player_to_screen_size_factor_; }
 
     // ----------------------------
     // --- Video info functions ---
@@ -240,6 +241,7 @@ private:
     std::function<void ()>                          cb_start_playing_;
     std::unique_ptr<std::thread>                    open_thread_                    = nullptr;
     std::unique_ptr<std::thread>                    open_subtitle_thread_           = nullptr;
+    cpaf::math::v2f                                 player_to_screen_size_factor_   {1,1};
 
 };
 

@@ -16,7 +16,8 @@ public:
     system_window_base& operator=(const system_window_base& other) = delete;
 
     std::string                     dbg_characteristics         () const;
-    size_2d                         get_size                    () const { return do_get_size(); }
+    size_2d                         size                        () const { return do_size(); }
+    size_2d                         display_size                () const { return do_display_size(); }
     std::string                     get_title                   () const { return do_get_title(); }
     int32_t                         display_index               () const { return do_display_index(); }
 
@@ -32,7 +33,8 @@ protected:
     // --- PROTECTED: Helper functions for derived classes ---
 
 private:
-    virtual size_2d                         do_get_size                 () const = 0;
+    virtual size_2d                         do_size                     () const = 0;
+    virtual size_2d                         do_display_size             () const = 0;
     virtual std::string                     do_get_title                () const = 0;
     virtual int32_t                         do_display_index            () const = 0;
     virtual void*                           do_get_native_window        () = 0;

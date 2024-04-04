@@ -30,6 +30,7 @@ public:
     bool                        bool_val                (const std::string& group, const std::string& id) const;
     float                       float_val               (const std::string& group, const std::string& id) const;
     cpaf::gui::color            color                   (const std::string& group, const std::string& id) const;
+    cpaf::gui::color            color_rgba              (const std::string& group, const std::string& id) const;
     std::chrono::seconds        seconds                 (const std::string& group, const std::string& id) const;
 
     void                        str_set                 (const std::string& group, const std::string& id, const std::string& val);
