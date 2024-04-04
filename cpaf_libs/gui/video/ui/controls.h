@@ -29,6 +29,7 @@ protected:
     config&                 config_;
     bool                    visible_ = true;
 
+    float                   buttons_relative_ypos   () const { return config_.float_val ("controls", "buttons_relative_ypos");  }
     std::string             buttons_font_name       () const { return config_.str       ("controls", "buttons_font_name");      }
     float                   buttons_size            () const { return config_.float_val ("controls", "buttons_size");           }
     color                   buttons_text_color      () const { return config_.color     ("controls", "buttons_text_color");     }
@@ -41,6 +42,7 @@ protected:
     color                   menu_bg_color           () const { return config_.color     ("controls", "menu_bg_color");          }
     color                   menu_border_color       () const { return config_.color     ("controls", "menu_border_color");      }
 
+    float                   slider_relative_ypos    () const { return config_.float_val ("controls", "slider_relative_ypos");   }
     int32_t                 slider_height           () const { return config_.int32     ("controls", "slider_height");          }
     std::string             slider_font_name        () const { return config_.str       ("controls", "slider_font_name");       }
     int32_t                 slider_font_size        () const { return config_.int32     ("controls", "slider_font_size");       }
@@ -54,7 +56,6 @@ protected:
     color                   time_bg_color           () const { return config_.color     ("controls", "time_bg_color");          }
     color                   time_border_color       () const { return config_.color     ("controls", "time_border_color");      }
 
-    float                   relative_ypos           () const { return config_.float_val ("controls", "relative_ypos");          }
     std::chrono::seconds    skip_time_small         () const { return config_.seconds   ("controls", "skip_time_small");        }
 
 private:

@@ -135,7 +135,7 @@ public:
     constexpr T&			x()			{return m_d[X];}
     constexpr const T&	x() const	{return m_d[X];}
 
-    constexpr T&			width()			{return m_d[X];}
+    constexpr T&		width()			{return m_d[X];}
     constexpr const T&	width() const	{return m_d[X];}
 
     /** Reference to y-coordinate.

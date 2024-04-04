@@ -95,13 +95,13 @@ public:
 
     /// Access x-coordinate of rectangle. This is the same as rectangle::top_left().x().
     /// \return Reference to x-coordinate of rectangle (upper left corner x-coordinate).
-    T&					x()			{ return size_.x(); }
-    T					x()	const	{ return size_.x(); }
+    T&					x()			{ return top_left_.x(); }
+    T					x()	const	{ return top_left_.x(); }
 
     /// Access y-coordinate of rectangle. This is the same as rectangle::top_left().y().
     /// \return Reference to x-coordinate of rectangle (upper left corner y-coordinate).
-    T&					y()			{ return size_.y(); }
-    T					y()	const	{ return size_.y(); }
+    T&					y()			{ return top_left_.y(); }
+    T					y()	const	{ return top_left_.y(); }
 
     /// Access width of rectangle. This is the same as rectangle::size().x().
     /// \return Reference to width of rectangle (lower right corner x-coordinate).

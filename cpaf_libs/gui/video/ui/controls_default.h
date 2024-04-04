@@ -17,10 +17,13 @@ private:
 
     void    render_player_controls          ();
     void    render_slider                   ();
-    void    render_player_time               ();
+    void    render_player_time              ();
+    void    render_debug_window             ();
+
     void    set_cursor_pos_image_buttons    ();
 
     static constexpr float slider_illegal_pos   {-1};
+    static constexpr float general_margin       {4};
     static constexpr float image_buttons_window_size_extra   {2};
 
     std::unique_ptr<cpaf::gui::texture> control_icons_texture_   {};
@@ -36,7 +39,6 @@ private:
     ImVec2      remaining_time_pos_             {};
     float       video_slider_grab_width_        {20};
     float       slider_last_user_pos_seconds_   {slider_illegal_pos};
-    color       buttons_text_col_               {};
     color       buttons_col_                    {};
     color       buttons_hover_col_              {};
     color       buttons_active_col_             {};

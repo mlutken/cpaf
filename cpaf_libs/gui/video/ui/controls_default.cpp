@@ -38,43 +38,58 @@ controls_default::controls_default(player& parent_player, config& cfg)
 
 void controls_default::do_calc_geometry()
 {
+    const auto margin_factor = 1.1f;
     const auto render_geometry = player_.render_geometry();
-    const auto play_buttons_size = buttons_size()*player_.player_to_screen_size_factor().height();
 
-    const int32_t slider_font_size_pixels = font_size::to_pixels(slider_height(), player_.main_window_ptr());
     const int32_t time_font_size_pixels = font_size::to_pixels(time_font_size(), player_.main_window_ptr());
 
 //    const ImFont* font = imgui_fonts::instance().get(font_name_, font_size_pixels, subtitles_create_dist_);
 
-    const float y_pos = relative_ypos()* render_geometry.size().height();
-
+    // -----------------------
+    // --- Calculate sizes ---
+    // -----------------------
+    const auto play_buttons_size = buttons_size()*player_.player_to_screen_size_factor().height();
     play_buttons_size_ = ImVec2{play_buttons_size, play_buttons_size};
     play_buttons_window_size_.x = play_buttons_size_.x + image_buttons_window_size_extra*2;
     play_buttons_window_size_.y = play_buttons_size_.y + image_buttons_window_size_extra*2;
 
-    play_pause_btn_pos_.x = render_geometry.size().width() / 2;
-    play_pause_btn_pos_.y = y_pos;
+    const int32_t slider_font_size_pixels = font_size::to_pixels(slider_height(), player_.main_window_ptr());
+    video_slider_size_.x = render_geometry.size().width() - 2*general_margin;
+    video_slider_size_.y = slider_font_size_pixels + 2*general_margin;
 
-    video_back_btn_pos_.x = play_buttons_size;
-    video_back_btn_pos_.y = y_pos;
-    video_fwd_btn_pos_.x = render_geometry.size().width() - 1*play_buttons_size;
-    video_fwd_btn_pos_.y = y_pos;
 
     video_slider_pos_.x = render_geometry.size().width() / 2;
-    video_slider_pos_.y = y_pos + 1.5*play_buttons_size;
+    video_slider_pos_.y = slider_relative_ypos() * (render_geometry.size().height() - 2*slider_font_size_pixels*margin_factor)  + render_geometry.y();
 
-    video_slider_size_.x = render_geometry.size().width() - 0.8*play_buttons_size;
+    // ---------------------------
+    // --- Calculate positions ---
+    // ---------------------------
+    const float control_buttons_y_pos = buttons_relative_ypos()* render_geometry.size().height() + render_geometry.y();
+
+
+    play_pause_btn_pos_.x = render_geometry.size().width() / 2;
+    play_pause_btn_pos_.y = control_buttons_y_pos;
+
+    video_back_btn_pos_.x = play_buttons_size;
+    video_back_btn_pos_.y = control_buttons_y_pos;
+    video_fwd_btn_pos_.x = render_geometry.size().width() - 1*play_buttons_size;
+    video_fwd_btn_pos_.y = control_buttons_y_pos;
+
+
+//    video_slider_size_.x = render_geometry.size().width() - 0.8*play_buttons_size;
     video_slider_grab_width_ = play_buttons_size / 2;
 
-    elapsed_time_pos_.x = (render_geometry.size().width() - video_slider_size_.x);
+    elapsed_time_pos_.x = {render_geometry.size().width() - video_slider_size_.x};
     elapsed_time_pos_.y = video_slider_pos_.y - slider_font_size_pixels*1 - time_font_size_pixels*1;
 
     remaining_time_pos_.x = video_fwd_btn_pos_.x;
     remaining_time_pos_.y = elapsed_time_pos_.y;
 
 
+    // ------------------------
+    // --- Calculate colors ---
+    // ------------------------
 
-    buttons_text_col_ = buttons_text_color();
     buttons_col_ = buttons_color();
 
     buttons_hover_col_ = buttons_col_*0.8f;
@@ -95,6 +110,7 @@ void controls_default::do_render()
     render_player_controls();
     render_slider();
     render_player_time();
+    render_debug_window();
 }
 
 void controls_default::render_player_controls()
@@ -220,13 +236,31 @@ void controls_default::render_player_time()
     ImGui::End();
 }
 
+void controls_default::render_debug_window()
+{
+    ImGui::Rai imrai;
+    imrai.StyleColor(ImGuiCol_Text, {0, 1, 0, 1})
+        .StyleColor(ImGuiCol_Button, {0, 0, 0, 0})
+        .StyleColor(ImGuiCol_ButtonActive, {0, 0, 0, 0})
+        .StyleColor(ImGuiCol_ButtonHovered, {0, 0, 0, 0})
+        ;
+
+//    auto display_size = player_.main_window_ptr()->display_size();
+    auto render_size = player_.render_geometry().size();
+    auto screen_size_fac = player_.player_to_screen_size_factor();
+    ImGui::Begin("Video player default_controls debug");
+    ImGui::Text("screen_size_fac = %f x %f", screen_size_fac.width(), screen_size_fac.height());
+    ImGui::Text("render_size = %f x %f", render_size.width(), render_size.height());
+    ImGui::Text("video_slider_pos_ [ %f , %f ]", video_slider_pos_.x, video_slider_pos_.y);
+    ImGui::Text("video_slider_size_ ( %f x %f )", video_slider_size_.x, video_slider_size_.y);
+    ImGui::End();
+
+}
+
 void controls_default::set_cursor_pos_image_buttons()
 {
     auto cursor_pos_x = -ImGui::GetStyle().ItemSpacing.x/2 + image_buttons_window_size_extra;
     auto cursor_pos_y = -ImGui::GetStyle().ItemSpacing.y/2 + image_buttons_window_size_extra;
-    //        std::cerr << "FIXMENM cursor_pos_x: " << cursor_pos_x << "\n";
-    //        std::cerr << "FIXMENM ImGui::GetStyle().ItemSpacing.x: " << ImGui::GetStyle().ItemSpacing.x << "\n";
-
     ImGui::SetCursorPosX(cursor_pos_x);
     ImGui::SetCursorPosY(cursor_pos_y);
 }
