@@ -53,7 +53,7 @@ public:
     void                        ff_pixel_format_set         (AVPixelFormat pf)              { ff_pixel_format_ = pf;        }
     AVPixelFormat               ff_pixel_format             () const                        { return ff_pixel_format_;      }
 
-    const surface_dimensions_t& render_dimensions           () const                        { return render_dimensions_;      }
+    const surface_dimensions_t& texture_render_dimensions   () const                        { return texture_render_dimensions_;      }
 
     void                        clear_screen                ()                              { do_clear_screen();  }
     bool                        render_video_frame          (const cpaf::video::av_frame& frame);
@@ -62,7 +62,7 @@ public:
     void                        set_current_subtitle        (cpaf::video::subtitle_frame&& subtitle);
 
     /// @todo Currently unused, See render_geometry_set()
-    void                        render_dimensions_set       (const cpaf::video::surface_dimensions_t& dimensions );
+    void                        texture_render_dimensions_set(const cpaf::video::surface_dimensions_t& dimensions );
 
     std::string                 subtitles_font_name         () const;
     int32_t                     subtitles_font_size         () const;
@@ -79,8 +79,8 @@ protected:
     cpaf::video::av_codec_context&          video_codec_ctx             () { return *video_codec_ctx_ptr_; }
     cpaf::video::av_frame&                  frame_display               () { return frame_display_; }
     cpaf::video::av_frame                   frame_display_;
-    cpaf::video::surface_dimensions_t       render_dimensions_;
-    void                                    on_configuration_changed           ();
+    cpaf::video::surface_dimensions_t       texture_render_dimensions_  {0,0};
+    void                                    on_configuration_changed    ();
 
     player&                                 player_;
     config&                                 config_;

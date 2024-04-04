@@ -54,8 +54,8 @@ void render_platform::fill_native_video_frame(
     SDL_Rect r;
     r.x = 0;
     r.y = 0;
-    r.w = render_dimensions().x();
-    r.h = render_dimensions().y();
+    r.w = texture_render_dimensions().x();
+    r.h = texture_render_dimensions().y();
 
     // update the texture with the new pixel data
     SDL_UpdateYUVTexture(
@@ -95,20 +95,20 @@ void render_platform::fill_native_subtitle_texture()
     SDL_UnlockTexture(sdl_subtitles_render_texture_);
 }
 
-void render_platform::ensure_valid_render_texture(const cpaf::video::surface_dimensions_t& dimensions)
+void render_platform::ensure_valid_render_texture(const cpaf::video::surface_dimensions_t& texture_dimensions)
 {
-    if (dimensions != render_dimensions_) {
+    if (texture_dimensions != texture_render_dimensions_) {
         if (sdl_frame_render_texture_) {
             SDL_DestroyTexture(sdl_frame_render_texture_);
         }
-        render_dimensions_ = dimensions;
+        texture_render_dimensions_ = texture_dimensions;
 
         sdl_frame_render_texture_ = SDL_CreateTexture(
             get_sdl_renderer(),
             SDL_PIXELFORMAT_YV12,
             SDL_TEXTUREACCESS_STREAMING,
-            dimensions.width(),
-            dimensions.height()
+            texture_dimensions.width(),
+            texture_dimensions.height()
         );
         SDL_SetTextureBlendMode(sdl_frame_render_texture_, SDL_BLENDMODE_BLEND);
     }

@@ -36,14 +36,14 @@ void render_base::init(const system_window& win, const cpaf::video::surface_dime
 {
     main_window_ptr_ = &win;
     do_init(win, dimensions);
-    render_dimensions_ = dimensions;
+    texture_render_dimensions_ = dimensions;
 }
 
 void render_base::init_only_for_old_playground(std::shared_ptr<cpaf::gui::system_render> sys_renderer,
                                                const cpaf::video::surface_dimensions_t& dimensions)
 {
     do_init(sys_renderer, dimensions);
-    render_dimensions_ = dimensions;
+    texture_render_dimensions_ = dimensions;
 }
 
 bool render_base::render_video_frame(const cpaf::video::av_frame& frame) {
@@ -85,9 +85,9 @@ void render_base::set_current_subtitle(cpaf::video::subtitle_frame&& subtitle)
     }
 }
 
-void render_base::render_dimensions_set(const surface_dimensions_t& dimensions) {
+void render_base::texture_render_dimensions_set(const surface_dimensions_t& dimensions) {
     do_render_dimensions_set(dimensions);
-    render_dimensions_ = dimensions;
+    texture_render_dimensions_ = dimensions;
 }
 
 std::string render_base::subtitles_font_name() const
