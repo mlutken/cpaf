@@ -41,6 +41,7 @@ void player::set_main_window(const system_window& main_window)
     if (!video_controls_) {
         set_controls(std::make_unique<video::controls_default>(*this, configuration));
     }
+    update_player_to_screen_size_factor();
 }
 
 void player::start_playing(const std::chrono::microseconds& start_time_pos)
@@ -365,11 +366,7 @@ void player::video_dimensions_set(const surface_dimensions_t& dimensions)
     if (video_render_) {
         video_render_->render_geometry_set(rect(dimensions));
     }
-    if (main_window_ptr_) {
-        const auto play_dims = cpaf::math::v2f(dimensions);
-        const auto screen_dims = cpaf::math::v2f(main_window_ptr_->display_size());
-        player_to_screen_size_factor_ = play_dims / screen_dims;
-    }
+    update_player_to_screen_size_factor();
 
 //    player_to_screen_size_factor_
 
@@ -716,6 +713,18 @@ void player::handle_stream_state()
     if (stream_state().compare_exchange_strong(stream_state_expected, stream_state_t::playing)) {
         start_playing(start_time_pos_);
         if (cb_start_playing_) { cb_start_playing_(); }
+    }
+}
+
+void player::update_player_to_screen_size_factor()
+{
+    if (main_window_ptr_) {
+        const auto play_dims = render_geometry().size();
+        const auto screen_dims = cpaf::math::v2f(main_window_ptr_->display_size());
+        player_to_screen_size_factor_ = play_dims / screen_dims;
+    }
+    if (video_controls_) {
+        video_controls_->on_player_size_changed();
     }
 }
 

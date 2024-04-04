@@ -16,9 +16,10 @@ public:
     controls(player& parent_player, config& cfg);
     virtual ~controls() = default;
 
-    void            render      ();
-    bool            visible     () const { return visible_; }
-    void            show        (bool do_show) { visible_ = do_show; }
+    void            render                  ();
+    void            on_player_size_changed  ();
+    bool            visible                 () const { return visible_; }
+    void            show                    (bool do_show) { visible_ = do_show; }
 
 
 protected:
@@ -53,17 +54,9 @@ protected:
     float                   relative_ypos           () const { return config_.float_val ("controls", "relative_ypos");          }
     std::chrono::seconds    skip_time_small         () const { return config_.seconds   ("controls", "skip_time_small");        }
 
-//    std::string             font_name               () const;
-//    color                   time_text_color         () const;
-//    color                   border_color            () const;
-//    color                   bg_color                () const;
-//    int32_t                 time_font_size          () const;
-//    int32_t                 slider_height           () const;
-//    int16_t                 buttons_size            () const;
-//    float                   relative_ypos           () const;
-
 private:
-    virtual void    do_render() = 0;
+    virtual void    do_calc_geometry    () = 0;
+    virtual void    do_render           () = 0;
 
     bool            visible_ = true;
 

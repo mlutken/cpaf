@@ -203,6 +203,9 @@ private:
     void                            handle_internal_events  ();
     void                            handle_stream_state     ();
 
+
+    void                            update_player_to_screen_size_factor();
+
     // ----------------------------
     // --- PRIVATE: Member vars ---
     // ----------------------------

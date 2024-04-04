@@ -12,7 +12,7 @@ public:
     controls_default(player& parent_player, config& cfg);
 
 private:
-    void    calc_geometry   ();
+    void    do_calc_geometry() override;
     void    do_render       () override;
 
     static constexpr float slider_illegal_pos   {-1};

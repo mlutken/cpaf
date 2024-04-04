@@ -36,7 +36,7 @@ controls_default::controls_default(player& parent_player, config& cfg)
     control_icons_texture_ ->load_png_from_memory(cpaf::gui::video_player_data::video_player_control_icons());
 }
 
-void controls_default::calc_geometry()
+void controls_default::do_calc_geometry()
 {
     const auto render_geometry = player_.render_geometry();
     const int32_t fwd_back_font_size_pixels = font_size::to_pixels(buttons_size(), player_.main_window_ptr());
@@ -81,7 +81,7 @@ void controls_default::calc_geometry()
 
 void controls_default::do_render()
 {
-    calc_geometry();    // TODO : Only calc new geometry when window or fonts/sizes have changed!
+//    do_calc_geometry();    // TODO : Only calc new geometry when window or fonts/sizes have changed!
 
     const color time_text_col = time_text_color();
     const int32_t play_buttons_font_size_pixels = font_size::to_pixels(buttons_size(), player_.main_window_ptr());
