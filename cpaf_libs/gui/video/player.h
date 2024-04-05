@@ -100,7 +100,8 @@ public:
     void                                video_scaler_flags_set  (int32_t flags);
     void                                video_scaler_align_set  (int32_t align);
     void                                ff_dst_pixel_format_set (AVPixelFormat pixel_format);
-    cpaf::math::v2f                     player_to_screen_size_factor    () const { return player_to_screen_size_factor_; }
+    cpaf::math::v2f                     screen_size_factor_use  () const { return screen_size_factor_use_; }
+    cpaf::math::v2f                     screen_size_factor_raw  () const { return screen_size_factor_raw_; }
 
     // ----------------------------
     // --- Video info functions ---
@@ -154,7 +155,7 @@ public:
     void                        resume_playback         ();
     void                        toggle_pause_playback   ();
     void                        playback_paused_set     (bool is_paused);
-    bool                        playback_is_paused         () const;
+    bool                        playback_is_paused      () const;
     cpaf::video::seek_state_t   seek_state              () const;
     std::chrono::microseconds   seek_from_position      () const;
     std::chrono::microseconds   seek_position_requested () const;
@@ -204,7 +205,7 @@ private:
     void                            handle_stream_state     ();
 
 
-    void                            update_player_to_screen_size_factor();
+    void                            update_screen_size_factor();
 
     // ----------------------------
     // --- PRIVATE: Member vars ---
@@ -244,7 +245,8 @@ private:
     std::function<void ()>                          cb_start_playing_;
     std::unique_ptr<std::thread>                    open_thread_                    = nullptr;
     std::unique_ptr<std::thread>                    open_subtitle_thread_           = nullptr;
-    cpaf::math::v2f                                 player_to_screen_size_factor_   {1,1};
+    cpaf::math::v2f                                 screen_size_factor_use_         {1,1};
+    cpaf::math::v2f                                 screen_size_factor_raw_         {1,1};
 
 };
 

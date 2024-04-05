@@ -1,5 +1,6 @@
 #include "player.h"
 
+#include <algorithm>>
 #include <fmt/format.h>
 #include <cpaf_libs/system/cpaf_session.h>
 #include <cpaf_libs/audio/cpaf_audio_device.h>
@@ -41,7 +42,7 @@ void player::set_main_window(const system_window& main_window)
     if (!video_controls_) {
         set_controls(std::make_unique<video::controls_default>(*this, configuration));
     }
-    update_player_to_screen_size_factor();
+    update_screen_size_factor();
 }
 
 void player::start_playing(const std::chrono::microseconds& start_time_pos)
@@ -366,9 +367,7 @@ void player::video_dimensions_set(const surface_dimensions_t& dimensions)
     if (video_render_) {
         video_render_->render_geometry_set(rect(dimensions));
     }
-    update_player_to_screen_size_factor();
-
-//    player_to_screen_size_factor_
+    update_screen_size_factor();
 
 //    video_dst_dimensions_requested_ = dimensions; // TODO: This is currently not working as intended!
 //    update_scaling_context(); // TODO: This is currently not working as intended!
@@ -716,12 +715,15 @@ void player::handle_stream_state()
     }
 }
 
-void player::update_player_to_screen_size_factor()
+void player::update_screen_size_factor()
 {
     if (main_window_ptr_) {
         const auto play_dims = render_geometry().size();
         const auto screen_dims = cpaf::math::v2f(main_window_ptr_->display_size());
-        player_to_screen_size_factor_ = play_dims / screen_dims;
+        screen_size_factor_raw_ = play_dims / screen_dims;
+        screen_size_factor_use_ = screen_size_factor_raw_;
+        screen_size_factor_use_.x() = std::clamp(screen_size_factor_use_.x(), 0.5f, 1.0f);
+        screen_size_factor_use_.y() = std::clamp(screen_size_factor_use_.y(), 0.5f, 1.0f);
     }
     if (video_controls_) {
         video_controls_->on_player_size_changed();

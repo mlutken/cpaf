@@ -129,14 +129,10 @@ bool render_base::subtitles_has_background() const
 
 bool render_base::subtitles_show() const
 {
-    return (player_.seek_state() == seek_state_t::ready) &&
-            config_.bool_val("user", "subtitles_show");
+    return config_.bool_val("user", "subtitles_show");
+///    return (player_.seek_state() == seek_state_t::ready) &&
+///            config_.bool_val("user", "subtitles_show");
 }
-
-//pos_2df render_base::subtitle_pos() const
-//{
-//    return subtitle_relative_pos_ * render_geometry_.size();
-//}
 
 void render_base::create_frame_display()
 {

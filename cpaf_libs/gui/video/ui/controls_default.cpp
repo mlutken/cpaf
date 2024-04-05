@@ -38,13 +38,9 @@ controls_default::controls_default(player& parent_player, config& cfg)
 
 void controls_default::do_calc_geometry()
 {
-    const auto margin_factor = 1.1f;
     const auto render_geometry = player_.render_geometry();
-    const auto screen_fac = player_.player_to_screen_size_factor().height();
-
-
-//    const ImFont* font = imgui_fonts::instance().get(font_name_, font_size_pixels, subtitles_create_dist_);
-
+    const auto screen_fac = player_.screen_size_factor_use().height();
+    const auto btns_relative_x_dist = buttons_relative_x_dist();
     // -----------------------
     // --- Calculate sizes ---
     // -----------------------
@@ -55,7 +51,6 @@ void controls_default::do_calc_geometry()
 
     const int32_t slider_font_size_pixels = font_size::to_pixels(slider_height()*screen_fac, player_.main_window_ptr());
     video_slider_size_.x = render_geometry.size().width() - 2*general_margin;
-    //    video_slider_size_.x = render_geometry.size().width() - 0.8*play_buttons_size;
     video_slider_size_.y = slider_font_size_pixels + 2*general_margin;
     video_slider_grab_width_ = play_buttons_size / 2;
 
@@ -63,29 +58,42 @@ void controls_default::do_calc_geometry()
     video_time_size_.x = time_font_size_pixels*6;
     video_time_size_.y = time_font_size_pixels;
 
-
     // ---------------------------
     // --- Calculate positions ---
     // ---------------------------
     const float control_buttons_y_pos = buttons_relative_ypos()* render_geometry.size().height() + render_geometry.y();
 
-    video_slider_pos_.x = render_geometry.size().width() / 2;
-    video_slider_pos_.y = slider_relative_ypos() * (render_geometry.size().height() - 2*slider_font_size_pixels*margin_factor)  + render_geometry.y();
-
-    play_pause_btn_pos_.x = render_geometry.size().width() / 2;
+    play_pause_btn_pos_.x = render_geometry.x() + render_geometry.size().width() / 2;
     play_pause_btn_pos_.y = control_buttons_y_pos;
 
-    video_back_btn_pos_.x = play_buttons_size;
+    video_back_btn_pos_.x = render_geometry.x() + play_buttons_size;
     video_back_btn_pos_.y = control_buttons_y_pos;
-    video_fwd_btn_pos_.x = render_geometry.size().width() - 1*play_buttons_size;
+    video_fwd_btn_pos_.x = render_geometry.x() + render_geometry.size().width() - 1*play_buttons_size;
     video_fwd_btn_pos_.y = control_buttons_y_pos;
+    if (0.0f < btns_relative_x_dist && btns_relative_x_dist < 1.0f) {
+        const auto x_dist_fac = 1.0f - btns_relative_x_dist;
+        auto back_pos = video_back_btn_pos_.x + (play_pause_btn_pos_.x - video_back_btn_pos_.x)*x_dist_fac;
+        auto fwd_pos = video_fwd_btn_pos_.x - (video_fwd_btn_pos_.x - play_pause_btn_pos_.x)*x_dist_fac;
+        back_pos = std::clamp(back_pos, video_back_btn_pos_.x, play_pause_btn_pos_.x - play_buttons_window_size_.x );
+        fwd_pos = std::clamp(fwd_pos, play_pause_btn_pos_.x + play_buttons_window_size_.x, video_fwd_btn_pos_.x );
+
+        if (back_pos > video_back_btn_pos_.x) {
+            video_back_btn_pos_.x = back_pos;
+        }
+
+        if (fwd_pos < video_fwd_btn_pos_.x) {
+            video_fwd_btn_pos_.x = fwd_pos;
+        }
+    }
+
+    video_slider_pos_.x = render_geometry.x() + render_geometry.size().width() / 2;
+    video_slider_pos_.y = slider_relative_ypos() * (render_geometry.size().height() - video_slider_size_.y - 2*general_margin)  + render_geometry.y();
 
 
+    elapsed_time_pos_.x = render_geometry.x() + video_time_size_.x / 2 + general_margin;
+    elapsed_time_pos_.y = video_slider_pos_.y - video_slider_size_.y - general_margin;
 
-    elapsed_time_pos_.x = render_geometry.x() + video_time_size_.x + general_margin;
-    elapsed_time_pos_.y = video_slider_pos_.y - slider_font_size_pixels*1 - time_font_size_pixels*1;
-
-    remaining_time_pos_.x = video_fwd_btn_pos_.x;
+    remaining_time_pos_.x = render_geometry.x() + render_geometry.width() - video_time_size_.x / 2 - general_margin;
     remaining_time_pos_.y = elapsed_time_pos_.y;
 
 
@@ -97,8 +105,11 @@ void controls_default::do_calc_geometry()
 
     buttons_hover_col_ = buttons_col_*0.8f;
     buttons_active_col_ = buttons_col_*1.0f;
-
     time_text_col_ = time_text_color();
+
+    // -----------------
+    // --- Get fonts ---
+    // -----------------
     font_slider_ = imgui_fonts::instance().get(slider_font_name(), slider_font_size_pixels);
     font_time_ = imgui_fonts::instance().get(time_font_name(), time_font_size_pixels);
 }
@@ -106,7 +117,7 @@ void controls_default::do_calc_geometry()
 void controls_default::do_render()
 {
     // @todo Fix: Just a safeguard, should not be needed!
-    if (!font_slider_) {
+    if (!font_time_) {
         do_calc_geometry();
     }
 
@@ -221,21 +232,24 @@ void controls_default::render_player_time()
     ImGui::Rai imrai{};
     imrai.Font(font_time_)
         .StyleColor(ImGuiCol_Border, {0,0,0,0})
-        .StyleColor(ImGuiCol_WindowBg, {1,0,0,1})
+        .StyleColor(ImGuiCol_WindowBg, {0,0,0,0})
         .StyleColor(ImGuiCol_Text, reinterpret_cast<const ImVec4&>(time_text_col_))
         .StyleVar(ImGuiStyleVar_WindowMinSize, video_time_size_)
         ;
 
     ImGui::SetNextWindowPos(elapsed_time_pos_, ImGuiCond_::ImGuiCond_Always, {0.35, 0.5} );
+    ImGui::SetNextWindowSize(video_time_size_, ImGuiCond_::ImGuiCond_Always);
     //        ImGui::Begin("elapsed_time", &show_controls, ImGuiWindowFlags_NoBackground |ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
+
     ImGui::Begin("elapsed_time", &visible_, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
+    ImGui::SetCursorPosX(general_margin);
+    ImGui::SetCursorPosY(0);
     ImGui::TextUnformatted(elapsed_time);
     ImGui::End();
 
     ImGui::SetNextWindowPos(remaining_time_pos_, ImGuiCond_::ImGuiCond_Always, {0.45, 0.5} );
     ImGui::SetNextWindowSize(video_time_size_, ImGuiCond_::ImGuiCond_Always);
     ImGui::Begin("remaining_time", &visible_, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
-    // set_cursor_pos_image_buttons();
     ImGui::SetCursorPosX(general_margin);
     ImGui::SetCursorPosY(0);
 
@@ -254,7 +268,7 @@ void controls_default::render_debug_window()
 
 //    auto display_size = player_.main_window_ptr()->display_size();
     auto render_size = player_.render_geometry().size();
-    auto screen_size_fac = player_.player_to_screen_size_factor();
+    auto screen_size_fac = player_.screen_size_factor_use();
     ImGui::Begin("Video player default_controls debug");
     ImGui::Text("screen_size_fac = %f x %f", screen_size_fac.width(), screen_size_fac.height());
     ImGui::Text("render_size = %f x %f", render_size.width(), render_size.height());

@@ -43,6 +43,7 @@ private:
     color       buttons_col_                    {};
     color       buttons_hover_col_              {};
     color       buttons_active_col_             {};
+
     color       time_text_col_                  {};
 
     ImFont*     font_slider_                    = nullptr;
