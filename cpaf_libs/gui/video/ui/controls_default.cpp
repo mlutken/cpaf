@@ -40,32 +40,37 @@ void controls_default::do_calc_geometry()
 {
     const auto margin_factor = 1.1f;
     const auto render_geometry = player_.render_geometry();
+    const auto screen_fac = player_.player_to_screen_size_factor().height();
 
-    const int32_t time_font_size_pixels = font_size::to_pixels(time_font_size(), player_.main_window_ptr());
 
 //    const ImFont* font = imgui_fonts::instance().get(font_name_, font_size_pixels, subtitles_create_dist_);
 
     // -----------------------
     // --- Calculate sizes ---
     // -----------------------
-    const auto play_buttons_size = buttons_size()*player_.player_to_screen_size_factor().height();
+    const auto play_buttons_size = buttons_size()*screen_fac;
     play_buttons_size_ = ImVec2{play_buttons_size, play_buttons_size};
     play_buttons_window_size_.x = play_buttons_size_.x + image_buttons_window_size_extra*2;
     play_buttons_window_size_.y = play_buttons_size_.y + image_buttons_window_size_extra*2;
 
-    const int32_t slider_font_size_pixels = font_size::to_pixels(slider_height(), player_.main_window_ptr());
+    const int32_t slider_font_size_pixels = font_size::to_pixels(slider_height()*screen_fac, player_.main_window_ptr());
     video_slider_size_.x = render_geometry.size().width() - 2*general_margin;
+    //    video_slider_size_.x = render_geometry.size().width() - 0.8*play_buttons_size;
     video_slider_size_.y = slider_font_size_pixels + 2*general_margin;
+    video_slider_grab_width_ = play_buttons_size / 2;
 
+    const int32_t time_font_size_pixels = font_size::to_pixels(time_font_size()*screen_fac, player_.main_window_ptr());
+    video_time_size_.x = time_font_size_pixels*6;
+    video_time_size_.y = time_font_size_pixels;
 
-    video_slider_pos_.x = render_geometry.size().width() / 2;
-    video_slider_pos_.y = slider_relative_ypos() * (render_geometry.size().height() - 2*slider_font_size_pixels*margin_factor)  + render_geometry.y();
 
     // ---------------------------
     // --- Calculate positions ---
     // ---------------------------
     const float control_buttons_y_pos = buttons_relative_ypos()* render_geometry.size().height() + render_geometry.y();
 
+    video_slider_pos_.x = render_geometry.size().width() / 2;
+    video_slider_pos_.y = slider_relative_ypos() * (render_geometry.size().height() - 2*slider_font_size_pixels*margin_factor)  + render_geometry.y();
 
     play_pause_btn_pos_.x = render_geometry.size().width() / 2;
     play_pause_btn_pos_.y = control_buttons_y_pos;
@@ -76,10 +81,8 @@ void controls_default::do_calc_geometry()
     video_fwd_btn_pos_.y = control_buttons_y_pos;
 
 
-//    video_slider_size_.x = render_geometry.size().width() - 0.8*play_buttons_size;
-    video_slider_grab_width_ = play_buttons_size / 2;
 
-    elapsed_time_pos_.x = {render_geometry.size().width() - video_slider_size_.x};
+    elapsed_time_pos_.x = render_geometry.x() + video_time_size_.x + general_margin;
     elapsed_time_pos_.y = video_slider_pos_.y - slider_font_size_pixels*1 - time_font_size_pixels*1;
 
     remaining_time_pos_.x = video_fwd_btn_pos_.x;
@@ -119,8 +122,8 @@ void controls_default::render_player_controls()
 
     ImGui::Rai imrai;
     imrai.StyleVar(ImGuiStyleVar_WindowPadding, {0,0})
-        .StyleColor(ImGuiCol_WindowBg, {1,1,1,1}) // FIXMENM
-        //            .StyleColor(ImGuiCol_WindowBg, {0,0,0,0})
+        // .StyleColor(ImGuiCol_WindowBg, {1,1,1,1}) // FIXMENM
+        .StyleColor(ImGuiCol_WindowBg, {0,0,0,0})
         .StyleColor(ImGuiCol_Border, {0,0,0,0})
         .StyleColor(ImGuiCol_Button, {0,0,0,0})
         .StyleColor(ImGuiCol_ButtonActive, reinterpret_cast<const ImVec4&>(buttons_active_col_))
@@ -173,43 +176,40 @@ void controls_default::render_player_controls()
 
 void controls_default::render_slider()
 {
+    const float total_time_seconds = player_.total_time().count() / 1'000'000;
+    const float save_current_postion_seconds = player_.current_time().count() / 1'000'000;
+    float current_postion_seconds = save_current_postion_seconds;
+
+    ImGui::Rai imrai{};
+    imrai.Font(font_slider_)
+        .StyleVar(ImGuiStyleVar_WindowPadding, {0,0})
+        .StyleVar(ImGuiStyleVar_GrabMinSize, video_slider_grab_width_)
+        .StyleVar(ImGuiStyleVar_GrabRounding, video_slider_grab_width_/4)
+        .StyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(4, 4))
+        ;
+
+    ImGui::SetNextWindowPos(video_slider_pos_, ImGuiCond_::ImGuiCond_Always, {0.5, 0.5} );
+    ImGui::SetNextWindowSize(video_slider_size_, ImGuiCond_::ImGuiCond_Always);
+    ImGui::Begin("video_slider_win", &visible_, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
+    ImGui::PushItemWidth(-1);   // Force control to fill width with no label
+
+    if (ImGui::SliderFloat("video_slider", &current_postion_seconds, 0, total_time_seconds, ""))
     {
-        const float total_time_seconds = player_.total_time().count() / 1'000'000;
-        const float save_current_postion_seconds = player_.current_time().count() / 1'000'000;
-        float current_postion_seconds = save_current_postion_seconds;
+        slider_last_user_pos_seconds_ = current_postion_seconds;
+    }
+    else {
+        //            if (std::abs(slider_last_user_pos_seconds_ - current_postion_seconds) > 5) {
+        //                slider_last_user_pos_seconds_ = current_postion_seconds;
+        //            }
 
-        ImGui::Rai imrai{};
-        imrai.Font(font_slider_)
-            .StyleVar(ImGuiStyleVar_WindowPadding, {0,0})
-            .StyleVar(ImGuiStyleVar_GrabMinSize, video_slider_grab_width_)
-            .StyleVar(ImGuiStyleVar_GrabRounding, video_slider_grab_width_/4)
-            .StyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(4, 4))
-            ;
+    }
+    ImGui::PopItemWidth();
+    ImGui::End();
 
-        ImGui::SetNextWindowPos(video_slider_pos_, ImGuiCond_::ImGuiCond_Always, {0.5, 0.5} );
-        ImGui::SetNextWindowSize(video_slider_size_, ImGuiCond_::ImGuiCond_Always);
-        ImGui::Begin("video_slider_win", &visible_, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
-        ImGui::PushItemWidth(-1);   // Force control to fill width with no label
-
-        if (ImGui::SliderFloat("video_slider", &current_postion_seconds, 0, total_time_seconds, ""))
-        {
-            slider_last_user_pos_seconds_ = current_postion_seconds;
-        }
-        else {
-            //            if (std::abs(slider_last_user_pos_seconds_ - current_postion_seconds) > 5) {
-            //                slider_last_user_pos_seconds_ = current_postion_seconds;
-            //            }
-
-        }
-        ImGui::PopItemWidth();
-        ImGui::End();
-
-        const auto diff_in_seconds = current_postion_seconds - save_current_postion_seconds;
-        //std::cerr << "FIXMENM diff slider: " << diff_in_seconds << "\n";
-        if (std::abs(diff_in_seconds) > 5) {
-            player_.seek_position(seconds(static_cast<uint32_t>(current_postion_seconds)));
-        }
-
+    const auto diff_in_seconds = current_postion_seconds - save_current_postion_seconds;
+    //std::cerr << "FIXMENM diff slider: " << diff_in_seconds << "\n";
+    if (std::abs(diff_in_seconds) > 3) {
+        player_.seek_position(seconds(static_cast<uint32_t>(current_postion_seconds)));
     }
 }
 
@@ -220,8 +220,10 @@ void controls_default::render_player_time()
 
     ImGui::Rai imrai{};
     imrai.Font(font_time_)
+        .StyleColor(ImGuiCol_Border, {0,0,0,0})
+        .StyleColor(ImGuiCol_WindowBg, {1,0,0,1})
         .StyleColor(ImGuiCol_Text, reinterpret_cast<const ImVec4&>(time_text_col_))
-        .StyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(4, 4))
+        .StyleVar(ImGuiStyleVar_WindowMinSize, video_time_size_)
         ;
 
     ImGui::SetNextWindowPos(elapsed_time_pos_, ImGuiCond_::ImGuiCond_Always, {0.35, 0.5} );
@@ -231,7 +233,12 @@ void controls_default::render_player_time()
     ImGui::End();
 
     ImGui::SetNextWindowPos(remaining_time_pos_, ImGuiCond_::ImGuiCond_Always, {0.45, 0.5} );
+    ImGui::SetNextWindowSize(video_time_size_, ImGuiCond_::ImGuiCond_Always);
     ImGui::Begin("remaining_time", &visible_, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
+    // set_cursor_pos_image_buttons();
+    ImGui::SetCursorPosX(general_margin);
+    ImGui::SetCursorPosY(0);
+
     ImGui::TextUnformatted(remaining_time);
     ImGui::End();
 }

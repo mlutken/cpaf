@@ -9,6 +9,7 @@ static const auto default_config = nlohmann::json::parse(
     {
         "controls": {
             "buttons_relative_ypos": 0.7,
+            "buttons_relative_x_dist": 1.0,
             "buttons_font_name": "abeezee_regular",
             "buttons_size": 96,
             "buttons_text_color": [1,1,1,1],
@@ -40,11 +41,11 @@ static const auto default_config = nlohmann::json::parse(
         "user": {
             "ui_language_code": "en",
             "subtitles_font_name": "abeezee_regular",
-            "subtitles_font_size": 22,
+            "subtitles_font_size": 18,
             "subtitles_font_color": [1,1,1,1],
             "subtitles_bg_color": [0,0,0,1],
             "subtitles_font_scale": 1.0,
-            "subtitles_relative_ypos": 0.95,
+            "subtitles_relative_ypos": 0.85,
             "subtitles_has_background": true,
             "subtitles_show": true
         }

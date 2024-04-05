@@ -30,6 +30,7 @@ protected:
     bool                    visible_ = true;
 
     float                   buttons_relative_ypos   () const { return config_.float_val ("controls", "buttons_relative_ypos");  }
+    float                   buttons_relative_x_dist () const { return config_.float_val ("controls", "buttons_relative_x_dist");}
     std::string             buttons_font_name       () const { return config_.str       ("controls", "buttons_font_name");      }
     float                   buttons_size            () const { return config_.float_val ("controls", "buttons_size");           }
     color                   buttons_text_color      () const { return config_.color     ("controls", "buttons_text_color");     }

@@ -145,7 +145,7 @@ void render_platform::calc_subtitle_geometry()
 
     const float line_dist = subtitles_line_dist_*font_size_pixels;
     const float x_pos = render_geometry().size().width() / 2;
-    const float lowest_y = subtitles_relative_ypos() * render_geometry().size().height();
+    const float lowest_y = subtitles_relative_ypos() * render_geometry().size().height() + render_geometry().y();
     const float max_width = render_geometry().size().width();
     const size_t lines_count = current_subtitle_frame_.lines_count();
     const size_t max_line_index = lines_count -1;

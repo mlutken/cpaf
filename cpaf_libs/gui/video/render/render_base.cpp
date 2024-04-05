@@ -2,6 +2,7 @@
 #include <cpaf_libs/video/av_format_context.h>
 #include <cpaf_libs/time/cpaf_time.h>
 #include <cpaf_libs/gui/video/config.h>
+#include <cpaf_libs/gui/video/player.h>
 
 namespace cpaf::gui::video {
 
@@ -128,7 +129,8 @@ bool render_base::subtitles_has_background() const
 
 bool render_base::subtitles_show() const
 {
-    return config_.bool_val("user", "subtitles_show");
+    return (player_.seek_state() == seek_state_t::ready) &&
+            config_.bool_val("user", "subtitles_show");
 }
 
 //pos_2df render_base::subtitle_pos() const

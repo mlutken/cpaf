@@ -218,16 +218,16 @@ ImFont* imgui_fonts::find_create_closest(const string& font_name, int32_t size_p
 
 
     if ((create_dist_pixels > 0) && ImGui::GetIO().Fonts->Locked) {
-        std::cerr << "FIXMENM Want to add font '" << font_name
-                  << "' , size : " << size_pixels
-                  << "  create_dist_pixels: " << create_dist_pixels
-                  << "\n";
+        // std::cerr << "FIXMENM Want to add font '" << font_name
+        //           << "' , size : " << size_pixels
+        //           << "  create_dist_pixels: " << create_dist_pixels
+        //           << "\n";
         requested_fonts_.push_back({font_name, size_pixels});
     }
     else {
 //        add(font_name, size_pixels);   // @todo Can cause crash!
     }
-    std::cerr << "FIXMENM Font use closest_distance: " << closest_distance << " v!\n'";
+    // std::cerr << "FIXMENM Font use closest_distance: " << closest_distance << " v!\n'";
 
     // Create new as we are too far from
     return closest_size_font_ptr;
