@@ -18,10 +18,12 @@ using pos_2df = cpaf::gui::pos_2df;
 constexpr float icon_width = 0.25f;
 constexpr pos_2df wh_add = {icon_width, icon_width};
 
-constexpr pos_2df forward_uv0       = {3*icon_width, 0*icon_width};  constexpr pos_2df forward_uv1  = forward_uv0   + wh_add;
+//constexpr pos_2df forward_uv0       = {3*icon_width, 0*icon_width};  constexpr pos_2df forward_uv1  = forward_uv0   + wh_add;
+constexpr pos_2df forward_uv0       = {3*icon_width, 3*icon_width};  constexpr pos_2df forward_uv1  = forward_uv0   + wh_add;
 constexpr pos_2df pause_uv0         = {1*icon_width, 2*icon_width};  constexpr pos_2df pause_uv1    = pause_uv0     + wh_add;
 constexpr pos_2df play_uv0          = {1*icon_width, 3*icon_width};  constexpr pos_2df play_uv1     = play_uv0      + wh_add;
-constexpr pos_2df backward_uv0      = {0*icon_width, 3*icon_width};  constexpr pos_2df backward_uv1 = backward_uv0  + wh_add;
+//constexpr pos_2df backward_uv0      = {0*icon_width, 3*icon_width};  constexpr pos_2df backward_uv1 = backward_uv0  + wh_add;
+constexpr pos_2df backward_uv0      = {3*icon_width, 2*icon_width};  constexpr pos_2df backward_uv1 = backward_uv0  + wh_add;
 
 /// @see https://github.com/ocornut/imgui/issues/4216
 /// @see https://html-color.codes/
