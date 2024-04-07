@@ -156,6 +156,7 @@ inline constexpr std::chrono::microseconds illegal_timestamp()
 
 std::string to_string						(media_type mt);
 std::string to_string						(seek_state_t ss);
+std::string to_string						(stream_state_t ss);
 
 surface_dimensions_t scale_surface_dimensions(const surface_dimensions_t& src_dimensions, const surface_dimensions_t& dst_dimensions);
 

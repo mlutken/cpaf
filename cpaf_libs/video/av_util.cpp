@@ -72,6 +72,20 @@ string to_string(seek_state_t ss)
     return "unknown";
 }
 
+string to_string(stream_state_t ss)
+{
+    switch (ss) {
+    case stream_state_t::inactive :         return "inactive"; break;
+    case stream_state_t::opening :          return "opening"; break;
+    case stream_state_t::open :             return "open"; break;
+    case stream_state_t::playing :          return "playing"; break;
+    case stream_state_t::waiting_for_data : return "waiting_for_data"; break;
+    case stream_state_t::playing_local :    return "playing_local"; break;
+    case stream_state_t::finished :         return "finished"; break;
+    }
+    return "";
+}
+
 
 
 } //END namespace cpaf::video
