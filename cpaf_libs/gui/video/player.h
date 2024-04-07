@@ -21,6 +21,7 @@ class system_window;
 
 
 namespace cpaf::torrent {
+class torrent;
 class torrents;
 }
 
@@ -80,8 +81,9 @@ public:
     std::chrono::microseconds       total_time              () const;
     std::chrono::microseconds       remaining_time          () const { return total_time() - current_time(); }
     bool                            is_playing              () const;
-    std::atomic<stream_state_t>&        stream_state        ()       { return primary_stream().stream_state(); }
-    const std::atomic<stream_state_t>&  stream_state        () const { return primary_stream().stream_state(); }
+    void                            set_stream_state        (stream_state_t stream_state);
+    stream_state_t                  stream_state            () const;
+    std::atomic<stream_state_t>&    stream_state_reference  ()       { return primary_stream().stream_state(); }
 
     // ----------------
     // --- Contexts ---
@@ -170,8 +172,8 @@ public:
 
     cpaf::video::media_stream_time&         cur_media_time  ()       { return cur_media_time_; }
     const cpaf::video::media_stream_time&   cur_media_time  () const { return cur_media_time_; }
-    std::shared_ptr<torrent::torrents>      torrents_get    () const;
-    void                                    torrents_set    (std::shared_ptr<torrent::torrents> tors) { torrents_ = tors; }
+    std::shared_ptr<torrent::torrents>      torrents_get    () ;
+    void                                    torrents_set    (std::shared_ptr<torrent::torrents> tors);
 
     // -----------------
     // --- Callbacks ---
@@ -203,7 +205,7 @@ private:
     const pipeline_threads&         media_pipeline_threads  () const { return *media_pipeline_threads_; }
     void                            handle_internal_events  ();
     void                            handle_stream_state     ();
-
+    void                            torrent_finished_event  (std::shared_ptr<cpaf::torrent::torrent> tor_file);
 
     void                            update_screen_size_factor();
 

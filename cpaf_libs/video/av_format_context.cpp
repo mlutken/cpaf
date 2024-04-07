@@ -32,8 +32,9 @@ namespace cpaf::video {
 // -------------------------
 
 
-av_format_context::av_format_context(get_torrents_fn get_torrents_function) :
-    get_torrents_function_(get_torrents_function)
+av_format_context::av_format_context(get_torrents_fn get_torrents_function)
+    : get_torrents_function_(get_torrents_function)
+    , custom_io_ptr_(nullptr)
 {
 }
 
@@ -182,6 +183,14 @@ std::set<media_type> av_format_context::set_of_each_media_type(const std::set<me
         }
     }
     return all_media_types;
+}
+
+bool av_format_context::is_torrent() const
+{
+    if (custom_io_ptr_) {
+        return custom_io_ptr_->protocol_name() == "magnet";
+    }
+    return false;
 }
 
 

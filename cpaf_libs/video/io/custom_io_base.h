@@ -33,11 +33,12 @@ public:
 
     explicit custom_io_base(std::atomic<stream_state_t>&stream_state);
     virtual ~custom_io_base();
-    size_t              buffer_size             () const noexcept { return do_buffer_size(); };
+    std::string         protocol_name           () const { return do_protocol_name(); }
     bool                open                    (const std::string& resource_path);
     void                close                   () { do_close(); }
     bool                is_open                 () { return do_is_open(); }
     int64_t             size                    () const noexcept { return do_size(); }
+    size_t              buffer_size             () const noexcept { return do_buffer_size(); };
     const std::string&  resource_path           () const { return resource_path_; }
     bool                init                    (AVFormatContext*  ff_format_context);
 //    AVIOContext*        ff_avio_context         () const { return ff_avio_context_; }
@@ -59,6 +60,7 @@ private:
     virtual bool        do_is_open              () const = 0;
     virtual int64_t     do_size                 () const noexcept = 0;
     virtual size_t      do_buffer_size          () const noexcept { return 4096; };
+
     virtual int         do_read_packet          (uint8_t* buf, int buf_size) = 0;
     virtual int         do_write_packet         (uint8_t* buf, int buf_size);
     virtual int64_t     do_seek                 (int64_t offset, int whence) = 0;

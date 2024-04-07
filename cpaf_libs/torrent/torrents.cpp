@@ -59,7 +59,21 @@ void torrents::stop()
 
 void torrents::frame_update()
 {
-//    handle_alerts();
+    //    handle_alerts();
+}
+
+std::shared_ptr<torrent> torrents::find_torrent(const std::string& uri_or_name)
+{
+    for (auto [hash, tor_ptr]: torrents_map_) {
+        const auto& name_to_find = torrent_name(uri_or_name);
+        const auto& name_test = tor_ptr->name();
+
+        if (name_test == name_to_find) {
+//            if (tor_ptr->name() == torrent_name(uri_or_name)) {
+            return tor_ptr;
+        }
+    }
+    return nullptr;
 }
 
 std::shared_ptr<torrent> torrents::add_torrent(const std::string& uri_or_name)
@@ -199,6 +213,9 @@ void torrents::handle_alerts()
             auto tor_ptr = torrents_map_[lt::hash_value(tfa->handle)];
             if (tor_ptr) {
                 tor_ptr->handle_torrent_finished(tfa);
+                if (finished_event_callback_) {
+                    finished_event_callback_(tor_ptr);
+                }
             }
         }
         if (auto tea = lt::alert_cast<lt::torrent_error_alert>(a)) {

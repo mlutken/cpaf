@@ -75,7 +75,7 @@ void player::start_playing(const std::chrono::microseconds& start_time_pos)
     video_fmt_ctx.read_packets_to_queues(video_fmt_ctx.primary_media_type(), 10);
 
     media_pipeline_threads().start();
-    stream_state() = stream_state_t::playing;
+    set_stream_state(stream_state_t::playing);
     // FIXMENM check_activate_subtitle();
     resume_playback();
 }
@@ -218,7 +218,7 @@ void player::close()
         return;
     }
     if (media_pipeline_threads_) {
-        stream_state() = stream_state_t::inactive;
+        set_stream_state(stream_state_t::inactive);
         pause_playback();
         int count = 0;
         const auto ts_end = std::chrono::steady_clock::now() + 5s;
@@ -247,7 +247,7 @@ void player::close_async()
 }
 
 void player::cancel_async_open() {
-    stream_state() = stream_state_t::inactive;
+    set_stream_state(stream_state_t::inactive);
     open_thread_.reset(nullptr);
 }
 
@@ -314,6 +314,21 @@ bool player::is_playing() const
     }
     const auto cur_stream_state_int = to_int(stream_state());
     return cur_stream_state_int >= to_int(stream_state_t::playing);
+}
+
+void player::set_stream_state(stream_state_t stream_state)
+{
+    if (!primary_source_stream_) {
+        primary_stream().stream_state() = stream_state;;
+    }
+}
+
+stream_state_t player::stream_state() const
+{
+    if (!primary_source_stream_) {
+        return stream_state_t::inactive;
+    }
+    return primary_stream().stream_state();
 }
 
 // ----------------
@@ -528,13 +543,19 @@ void player::video_frame_update(av_frame& current_frame)
     }
 }
 
-std::shared_ptr<torrent::torrents> player::torrents_get() const
+std::shared_ptr<torrent::torrents> player::torrents_get()
 {
     if (!torrents_) {
-        torrents_ = std::make_shared<torrent::torrents>();
+        torrents_set(std::make_shared<torrent::torrents>());
         torrents_->start();
     }
     return torrents_;
+}
+
+void player::torrents_set(std::shared_ptr<torrent::torrents> tors)
+{
+    torrents_ = std::move(tors);
+    torrents_->register_finished_event([this](auto tor_file){torrent_finished_event(tor_file);} );
 }
 
 // --------------------
@@ -709,10 +730,19 @@ void player::handle_stream_state()
         return;
     }
     auto stream_state_expected = stream_state_t::open;
-    if (stream_state().compare_exchange_strong(stream_state_expected, stream_state_t::playing)) {
+    if (stream_state_reference().compare_exchange_strong(stream_state_expected, stream_state_t::playing)) {
         start_playing(start_time_pos_);
         if (cb_start_playing_) { cb_start_playing_(); }
     }
+}
+
+void player::torrent_finished_event(std::shared_ptr<cpaf::torrent::torrent> tor_file)
+{
+    if (tor_file) {
+        auto stream_state_expected = stream_state_t::playing;
+        stream_state_reference().compare_exchange_strong(stream_state_expected, stream_state_t::playing_local);
+    }
+
 }
 
 void player::update_screen_size_factor()

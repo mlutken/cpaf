@@ -65,6 +65,15 @@ bool torrent::wait_for_meta_data(std::chrono::milliseconds timeout)
     return false;
 }
 
+string torrent::name() const
+{
+    const auto torinfo_ptr = handle_.torrent_file();
+    if (!torinfo_ptr) {
+        return name_;
+    }
+    return torinfo_ptr->name();
+}
+
 std::string torrent::largest_file_name() const
 {
     return cpaf::torrent::largest_file_name(handle_);
@@ -73,6 +82,11 @@ std::string torrent::largest_file_name() const
 libtorrent::file_index_t torrent::largest_file_index() const
 {
     return cpaf::torrent::largest_file_index(handle_);
+}
+
+int64_t torrent::file_size(libtorrent::file_index_t file_index) const
+{
+    return cpaf::torrent::file_size(handle_, file_index);
 }
 
 std::filesystem::path torrent::largest_file_local_file_path() const

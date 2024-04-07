@@ -37,6 +37,7 @@ bool torrent_io::do_open(const std::string& resource_path)
     cerr << "Number of pieces           : " << torrent_->num_pieces() << "\n";
     cerr << "End piece                  : " << torrent_->piece_index_end() << "\n";
     cerr << "Piece len                  : " << torrent_->piece_length() << "\n";
+    cerr << "Torrent name               : " << torrent_->name() << "\n";
 
     tor_file_ = torrent_->open_largest_file_streaming(torrents_instance_->default_read_ahead_size());
     if (!tor_file_.is_valid()) {
@@ -84,6 +85,8 @@ int64_t torrent_io::do_seek(int64_t offset, int whence)
         return AVERROR(ENOENT); // ERROR
     }
 
+    stream_state_ = stream_state_t::waiting_for_data;
+
     int64_t new_pos = AVERROR(EINVAL);
     if ( (AVSEEK_SIZE & whence) == AVSEEK_SIZE){
         new_pos = size();
@@ -94,6 +97,7 @@ int64_t torrent_io::do_seek(int64_t offset, int whence)
         }
     }
 
+    stream_state_ = stream_state_t::playing;
 //    std::cerr << "torrent_io::do_seek (" << offset << ", " << whence << ") tor_file new pos: " << new_pos << "\n";
     return new_pos;
 }

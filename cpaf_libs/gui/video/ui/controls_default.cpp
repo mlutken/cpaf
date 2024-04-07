@@ -269,13 +269,15 @@ void controls_default::render_debug_window()
         ;
 
 //    auto display_size = player_.main_window_ptr()->display_size();
-    auto render_size = player_.render_geometry().size();
-    auto screen_size_fac = player_.screen_size_factor_use();
+//    auto render_size = player_.render_geometry().size();
+//    auto screen_size_fac = player_.screen_size_factor_use();
     ImGui::Begin("Video player default_controls debug");
-    ImGui::Text("screen_size_fac = %f x %f", screen_size_fac.width(), screen_size_fac.height());
-    ImGui::Text("render_size = %f x %f", render_size.width(), render_size.height());
-    ImGui::Text("video_slider_pos_ [ %f , %f ]", video_slider_pos_.x, video_slider_pos_.y);
-    ImGui::Text("video_slider_size_ ( %f x %f )", video_slider_size_.x, video_slider_size_.y);
+    ImGui::Text("stream_state: %s", to_string(player_.stream_state()).c_str()  );
+
+//    ImGui::Text("screen_size_fac = %f x %f", screen_size_fac.width(), screen_size_fac.height());
+//    ImGui::Text("render_size = %f x %f", render_size.width(), render_size.height());
+//    ImGui::Text("video_slider_pos_ [ %f , %f ]", video_slider_pos_.x, video_slider_pos_.y);
+//    ImGui::Text("video_slider_size_ ( %f x %f )", video_slider_size_.x, video_slider_size_.y);
     ImGui::End();
 
 }

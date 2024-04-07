@@ -118,6 +118,18 @@ libtorrent::file_index_t largest_file_index(const libtorrent::torrent_handle& ha
     return libtorrent::file_index_t(-1);
 }
 
+int64_t file_size(const libtorrent::torrent_handle& handle, libtorrent::file_index_t file_index)
+{
+    auto torinfo_ptr = handle.torrent_file();
+    if (!torinfo_ptr) {
+        return -1;
+    }
+
+    const auto& storage = torinfo_ptr->files();
+    return storage.file_size(file_index);
+}
+
+
 //std::optional<libtorrent::file_index_t> largest_file_index(const libtorrent::torrent_handle& handle)
 //{
 //    auto torinfo_ptr = handle.torrent_file();
@@ -193,7 +205,6 @@ string pieces_range_t::dbg_string() const
 {
     return fmt::format("Piece begin;offset: {};{}, end: {}, file: {}, size: {:.4} Mb", (int)piece_begin, piece_begin_start_offset, (int)piece_end, (int)file_index, data_size/1e6 );
 }
-
 
 
 

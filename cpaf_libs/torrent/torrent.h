@@ -35,12 +35,14 @@ public:
     bool                                wait_for_meta_data              (std::chrono::milliseconds timeout = std::chrono::minutes(1));
 
     const std::string&                  uri                             () const                                    { return uri_; }
-    const std::string&                  name                            () const                                    { return name_; }
+    std::string                         name                            () const;
     lt::torrent_status::state_t         state                           () const                                    { return handle_.status().state;   }
 
 
     std::string                         largest_file_name               () const;
     lt::file_index_t                    largest_file_index              () const;
+    std::int64_t                        file_size                       (lt::file_index_t file_index) const;
+    std::int64_t                        largest_file_size               () const                                    { return file_size(largest_file_index()); };
     std::filesystem::path               largest_file_local_file_path    () const;
     lt::index_range<lt::file_index_t>   all_file_indices                () const;
     std::vector<std::string>            all_file_names                  () const;
