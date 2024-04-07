@@ -169,7 +169,7 @@ void controls_default::render_player_controls()
 
     ImGui::PushButtonRepeat(true);
     if (ImGui::ImageButton("backward", buttons_texture_ptr, play_buttons_size_, backward_uv0.to_struct<ImVec2>(), backward_uv1.to_struct<ImVec2>(), {0,0,0,0}, {1,1,1,1})) {
-        player_.seek_relative(-config_.controls_seconds("skip_time_small"));
+        player_.seek_relative(-config_.seconds("controls", "skip_time_small"));
     }
     ImGui::PopButtonRepeat();
     ImGui::End();
@@ -181,7 +181,7 @@ void controls_default::render_player_controls()
 
     ImGui::PushButtonRepeat(true);
     if (ImGui::ImageButton("forward", buttons_texture_ptr, play_buttons_size_, forward_uv0.to_struct<ImVec2>(), forward_uv1.to_struct<ImVec2>(), {0,0,0,0}, {1,1,1,1})) {
-        player_.seek_relative(config_.controls_seconds("skip_time_small"));
+        player_.seek_relative(config_.seconds("controls", "skip_time_small"));
     }
     ImGui::PopButtonRepeat();
     ImGui::End();

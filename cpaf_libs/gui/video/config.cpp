@@ -27,7 +27,7 @@ static const auto default_config = nlohmann::json::parse(
             "font_color": [1,1,1,1],
             "bg_color": [0,0,0,1],
             "font_scale": 1.0,
-            "relative_ypos": 0.90,
+            "relative_ypos": 0.92,
             "has_background": true,
             "show": true
         },
@@ -52,32 +52,6 @@ void config::controls_set(const std::string& id, const nlohmann::json& val)
 {
     jo_["controls"][id] = val;
     signal_changed();
-}
-
-color config::controls_color(const std::string& id) const
-{
-    const auto jo_arr = cpaf::json_value_array(jo_["controls"], id, nlohmann::json::array({0,0,0,0}));
-    return cpaf::gui::color(jo_arr);
-}
-
-std::string config::controls_str(const std::string& id) const
-{
-    return cpaf::json_value_str(jo_["controls"], id, "");
-}
-
-float config::controls_float(const std::string& id) const
-{
-    return cpaf::json_value_float(jo_["controls"], id, 0);
-}
-
-int32_t config::controls_int32(const std::string& id) const
-{
-    return cpaf::json_value_int32(jo_["controls"], id, 0);
-}
-
-std::chrono::seconds config::controls_seconds(const std::string& id) const
-{
-    return std::chrono::seconds(cpaf::json_value_int32(jo_["controls"], id, 0));
 }
 
 std::string config::str(const std::string& group, const std::string& id) const
