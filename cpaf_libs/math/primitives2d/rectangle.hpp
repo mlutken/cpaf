@@ -50,12 +50,13 @@ public:
     rectangle() = default;
 
 
-    /// Copy constructor. Initializing with another rectangle.
-    rectangle(const rectangle& other) = default;
+//    /// Copy constructor. Initializing with another rectangle.
+//    rectangle(const rectangle& other) = default;
 
     /** Constructor with size onnly initialization. */
     explicit rectangle(const v2<T>& size)		///< [in] Rectangle size
-        : size_(size)
+        : top_left_(T{}, T{})
+        , size_(size)
     {}
 
     /** Constructor with 2 points initialization. */
