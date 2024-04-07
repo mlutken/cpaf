@@ -139,12 +139,13 @@ void render_platform::calc_subtitle_geometry()
         return;
     }
 
+    //const auto screen_fac = player_.screen_size_factor_use().height();
     const int32_t font_size_pixels = font_size::to_pixels(subtitles_font_size(), main_window_ptr_);
     const ImFont* font = imgui_fonts::instance().get(subtitles_font_name(), font_size_pixels, subtitles_create_dist_);
     if (!font) { return; }
 
     const float line_dist = subtitles_line_dist_*font_size_pixels;
-    const float x_pos = render_geometry().size().width() / 2;
+    const float x_pos = render_geometry().size().width() / 2 + render_geometry().x();
     const float lowest_y = subtitles_relative_ypos() * render_geometry().size().height() + render_geometry().y();
     const float max_width = render_geometry().size().width();
     const size_t lines_count = current_subtitle_frame_.lines_count();
@@ -170,13 +171,12 @@ void render_platform::calc_subtitle_geometry()
 
 void render_platform::calc_stream_state_geometry()
 {
-    const auto render_geometry = player_.render_geometry();
     const auto screen_fac = player_.screen_size_factor_use().height();
     stream_state_font_size_pixels_ = font_size::to_pixels(screen_fac*stream_state_font_size(), main_window_ptr_);
     font_stream_state_ = imgui_fonts::instance().get(subtitles_font_name(), stream_state_font_size_pixels_);
 
 
-    const auto render_geometry_center = render_geometry.center();
+    const auto render_geometry_center = render_geometry().center();
     stream_state_pos_.x = render_geometry_center.x();
     stream_state_pos_.y = render_geometry_center.y();
 }
