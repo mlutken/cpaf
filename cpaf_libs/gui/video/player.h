@@ -225,8 +225,6 @@ private:
     int32_t                                         video_scaler_flags_             = SWS_BILINEAR;
     int32_t                                         video_scaler_align_             = 32;
     AVPixelFormat                                   ff_dst_pixel_format_            = AV_PIX_FMT_YUV420P;
-    ///std::atomic_bool                                threads_running_                = true;
-///    std::atomic_bool                                threads_paused_                 = false;
     size_t                                          video_stream_index_             = cpaf::video::no_stream_index;
     size_t                                          audio_stream_index_             = cpaf::video::no_stream_index;
     size_t                                          subtitle_stream_index_          = cpaf::video::no_stream_index;

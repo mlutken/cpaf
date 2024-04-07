@@ -102,6 +102,7 @@ bool player::open(const std::string& resource_path)
 bool player::open(const playable& playab)
 {
     close();
+    subtitle_source_ = subtitle_source_t::stream;
     primary_resource_path_ = playab.path();
     // Create media pipeline threads
     pause_playback();
@@ -380,6 +381,11 @@ void player::video_dimensions_set(int32_t width, int32_t height)
 void player::video_dimensions_set(const surface_dimensions_t& dimensions)
 {
     if (video_render_) {
+///        math::v2i32 delta {150, 100};
+///        math::v2i32 size = dimensions - 2*delta;
+///        rect r(delta, size);
+///        video_render_->render_geometry_set(r); // FIXMENM
+
         video_render_->render_geometry_set(rect(dimensions));
     }
     update_screen_size_factor();
@@ -446,7 +452,7 @@ rect player::render_geometry() const
         const auto size = main_window_ptr_->size();
         return rect(0, 0, size.width(), size.height());
     }
-    
+
     return rect();
 }
 
