@@ -21,16 +21,18 @@ static const auto default_config = nlohmann::json::parse(
 
             "skip_time_small": 15
         },
+        "subtitles": {
+            "font_name": "abeezee_regular",
+            "font_size": 18,
+            "font_color": [1,1,1,1],
+            "bg_color": [0,0,0,1],
+            "font_scale": 1.0,
+            "relative_ypos": 0.90,
+            "has_background": true,
+            "show": true
+        },
         "user": {
-            "ui_language_code": "en",
-            "subtitles_font_name": "abeezee_regular",
-            "subtitles_font_size": 18,
-            "subtitles_font_color": [1,1,1,1],
-            "subtitles_bg_color": [0,0,0,1],
-            "subtitles_font_scale": 1.0,
-            "subtitles_relative_ypos": 0.85,
-            "subtitles_has_background": true,
-            "subtitles_show": true
+            "ui_language_code": "en"
         }
     }
     )");

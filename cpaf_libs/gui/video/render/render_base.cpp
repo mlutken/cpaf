@@ -93,45 +93,45 @@ void render_base::texture_render_dimensions_set(const surface_dimensions_t& dime
 
 std::string render_base::subtitles_font_name() const
 {
-    return config_.str("user", "subtitles_font_name");
+    return config_.str("subtitles", "font_name");
 }
 
 int32_t render_base::subtitles_font_size() const
 {
-    const auto size = config_.float_val("user", "subtitles_font_size") * subtitles_font_scale();
+    const auto size = config_.float_val("subtitles", "font_size") * subtitles_font_scale();
     return static_cast<int32_t>(size);
 }
 
 color render_base::subtitles_font_color() const
 {
-    return config_.color("user", "subtitles_font_color");
+    return config_.color("subtitles", "font_color");
 }
 
 color render_base::subtitles_bg_color() const
 {
-    return config_.color("user", "subtitles_bg_color");
+    return config_.color("subtitles", "bg_color");
 }
 
 float render_base::subtitles_font_scale() const
 {
-    return config_.float_val("user", "subtitles_font_scale");
+    return config_.float_val("subtitles", "font_scale");
 }
 
 float render_base::subtitles_relative_ypos() const
 {
-    return config_.float_val("user", "subtitles_relative_ypos");
+    return config_.float_val("subtitles", "relative_ypos");
 }
 
 bool render_base::subtitles_has_background() const
 {
-    return config_.bool_val("user", "subtitles_has_background");
+    return config_.bool_val("subtitles", "has_background");
 }
 
 bool render_base::subtitles_show() const
 {
-    return config_.bool_val("user", "subtitles_show");
+    return config_.bool_val("subtitles", "show");
 ///    return (player_.seek_state() == seek_state_t::ready) &&
-///            config_.bool_val("user", "subtitles_show");
+///            config_.bool_val("subtitles", "show");
 }
 
 void render_base::create_frame_display()
