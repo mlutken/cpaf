@@ -16,6 +16,7 @@ private:
     void    do_render                       () override;
 
     void    render_player_controls          ();
+    void    render_menu_buttons             ();
     void    render_slider                   ();
     void    render_player_time              ();
     void    render_debug_window             ();
@@ -29,12 +30,19 @@ private:
     std::unique_ptr<cpaf::gui::texture> control_icons_texture_   {};
     ImVec2      play_buttons_size_              {};
     ImVec2      play_buttons_window_size_       {};
-    ImVec2      subtitles_button_size_          {};
+
+    ImVec2      menu_buttons_size_              {};
+    ImVec2      menu_buttons_window_size_       {};
+
     ImVec2      video_slider_size_              {};
     ImVec2      video_time_size_                {};
+
     ImVec2      play_pause_btn_pos_             {};
     ImVec2      video_back_btn_pos_             {};
     ImVec2      video_fwd_btn_pos_              {};
+    ImVec2      subtitles_btn_pos_              {};
+    ImVec2      menu_btn_pos_                   {};
+
     ImVec2      video_slider_pos_               {};
     ImVec2      elapsed_time_pos_               {};
     ImVec2      remaining_time_pos_             {};

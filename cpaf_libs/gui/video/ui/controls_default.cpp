@@ -24,6 +24,7 @@ constexpr pos_2df pause_uv0         = {1*icon_width, 2*icon_width};  constexpr p
 constexpr pos_2df play_uv0          = {1*icon_width, 3*icon_width};  constexpr pos_2df play_uv1     = play_uv0      + wh_add;
 //constexpr pos_2df backward_uv0      = {0*icon_width, 3*icon_width};  constexpr pos_2df backward_uv1 = backward_uv0  + wh_add;
 constexpr pos_2df backward_uv0      = {3*icon_width, 2*icon_width};  constexpr pos_2df backward_uv1 = backward_uv0  + wh_add;
+constexpr pos_2df menu_uv0          = {1*icon_width, 0*icon_width};  constexpr pos_2df menu_uv1     = menu_uv0  + wh_add;
 
 /// @see https://github.com/ocornut/imgui/issues/4216
 /// @see https://html-color.codes/
@@ -46,15 +47,20 @@ void controls_default::do_calc_geometry()
     // -----------------------
     // --- Calculate sizes ---
     // -----------------------
-    const auto play_buttons_size = buttons_size()*screen_fac;
-    play_buttons_size_ = ImVec2{play_buttons_size, play_buttons_size};
+    const auto play_btns_size = play_buttons_size()*screen_fac;
+    play_buttons_size_ = ImVec2{play_btns_size, play_btns_size};
     play_buttons_window_size_.x = play_buttons_size_.x + image_buttons_window_size_extra*2;
     play_buttons_window_size_.y = play_buttons_size_.y + image_buttons_window_size_extra*2;
+
+    const auto menu_btns_size = menu_buttons_size()*screen_fac;
+    menu_buttons_size_ = ImVec2{menu_btns_size, menu_btns_size};
+    menu_buttons_window_size_.x = menu_buttons_size_.x + image_buttons_window_size_extra*2;
+    menu_buttons_window_size_.y = menu_buttons_size_.y + image_buttons_window_size_extra*2;
 
     const int32_t slider_font_size_pixels = font_size::to_pixels(slider_height()*screen_fac, player_.main_window_ptr());
     video_slider_size_.x = render_geometry.size().width() - 2*general_margin;
     video_slider_size_.y = slider_font_size_pixels + 2*general_margin;
-    video_slider_grab_width_ = play_buttons_size / 2;
+    video_slider_grab_width_ = play_btns_size / 2;
 
     const int32_t time_font_size_pixels = font_size::to_pixels(time_font_size()*screen_fac, player_.main_window_ptr());
     video_time_size_.x = time_font_size_pixels*6;
@@ -68,9 +74,9 @@ void controls_default::do_calc_geometry()
     play_pause_btn_pos_.x = render_geometry.x() + render_geometry.size().width() / 2;
     play_pause_btn_pos_.y = control_buttons_y_pos;
 
-    video_back_btn_pos_.x = render_geometry.x() + play_buttons_size;
+    video_back_btn_pos_.x = render_geometry.x() + play_btns_size;
     video_back_btn_pos_.y = control_buttons_y_pos;
-    video_fwd_btn_pos_.x = render_geometry.x() + render_geometry.size().width() - 1*play_buttons_size;
+    video_fwd_btn_pos_.x = render_geometry.x() + render_geometry.size().width() - 1*play_btns_size;
     video_fwd_btn_pos_.y = control_buttons_y_pos;
     if (0.0f < btns_relative_x_dist && btns_relative_x_dist < 1.0f) {
         const auto x_dist_fac = 1.0f - btns_relative_x_dist;
@@ -98,6 +104,10 @@ void controls_default::do_calc_geometry()
     remaining_time_pos_.x = render_geometry.x() + render_geometry.width() - video_time_size_.x / 2 - general_margin;
     remaining_time_pos_.y = elapsed_time_pos_.y;
 
+    const float menu_buttons_y_pos = video_slider_pos_.y - menu_buttons_window_size_.y;
+
+    menu_btn_pos_.x = render_geometry.x() + render_geometry.size().width() / 2; // FIXMENM
+    menu_btn_pos_.y = menu_buttons_y_pos;
 
     // ------------------------
     // --- Calculate colors ---
@@ -124,6 +134,7 @@ void controls_default::do_render()
     }
 
     render_player_controls();
+    render_menu_buttons();
     render_slider();
     render_player_time();
     render_debug_window();
@@ -185,6 +196,34 @@ void controls_default::render_player_controls()
     }
     ImGui::PopButtonRepeat();
     ImGui::End();
+}
+
+void controls_default::render_menu_buttons()
+{
+    auto buttons_texture_ptr = control_icons_texture_->native_texture<void>();
+
+    ImGui::Rai imrai;
+    imrai.StyleVar(ImGuiStyleVar_WindowPadding, {0,0})
+        // .StyleColor(ImGuiCol_WindowBg, {1,1,1,1}) // FIXMENM
+        .StyleColor(ImGuiCol_WindowBg, {0,0,0,0})
+        .StyleColor(ImGuiCol_Border, {0,0,0,0})
+        .StyleColor(ImGuiCol_Button, {0,0,0,0})
+        .StyleColor(ImGuiCol_ButtonActive, reinterpret_cast<const ImVec4&>(buttons_active_col_))
+        .StyleColor(ImGuiCol_ButtonHovered, reinterpret_cast<const ImVec4&>(buttons_hover_col_))
+        ;
+
+    ImGui::SetNextWindowPos(menu_btn_pos_, ImGuiCond_::ImGuiCond_Always, {0.5, 0.5} );
+    ImGui::SetNextWindowSize(menu_buttons_window_size_, ImGuiCond_::ImGuiCond_Always);
+
+
+    ImGui::Begin("menu_btn", &visible_, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
+    set_cursor_pos_image_buttons();
+
+    if (ImGui::ImageButton("pause", buttons_texture_ptr, menu_buttons_size_, menu_uv0.to_struct<ImVec2>(), menu_uv1.to_struct<ImVec2>(), {0,0,0,0}, {1,1,1,1})) {
+        player_.resume_playback();
+    }
+    ImGui::End();
+
 }
 
 void controls_default::render_slider()

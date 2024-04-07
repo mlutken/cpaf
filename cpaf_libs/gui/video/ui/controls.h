@@ -29,20 +29,22 @@ protected:
     config&                 config_;
     bool                    visible_ = true;
 
-    float                   buttons_relative_ypos   () const { return config_.float_val ("controls", "buttons_relative_ypos");  }
-    float                   buttons_relative_x_dist () const { return config_.float_val ("controls", "buttons_relative_x_dist");}
-    float                   buttons_size            () const { return config_.float_val ("controls", "buttons_size");           }
-    color                   buttons_color           () const { return config_.color     ("controls", "buttons_color");          }
+    float                   buttons_relative_ypos       () const { return config_.float_val ("controls", "buttons_relative_ypos");  }
+    float                   buttons_relative_x_dist     () const { return config_.float_val ("controls", "buttons_relative_x_dist");}
+    float                   play_buttons_size           () const { return config_.float_val ("controls", "play_buttons_size");      }
+    float                   menu_buttons_size           () const { return config_.float_val ("controls", "menu_buttons_size");      }
+    color                   buttons_color               () const { return config_.color     ("controls", "buttons_color");          }
 
-    float                   slider_relative_ypos    () const { return config_.float_val ("controls", "slider_relative_ypos");   }
-    int32_t                 slider_height           () const { return config_.int32     ("controls", "slider_height");          }
-    std::string             slider_font_name        () const { return config_.str       ("controls", "slider_font_name");       }
+    float                   slider_relative_ypos        () const { return config_.float_val ("controls", "slider_relative_ypos");   }
+    int32_t                 slider_height               () const { return config_.int32     ("controls", "slider_height");          }
+    std::string             slider_font_name            () const { return config_.str       ("controls", "slider_font_name");       }
 
-    std::string             time_font_name          () const { return config_.str       ("controls", "time_font_name");         }
-    int32_t                 time_font_size          () const { return config_.int32     ("controls", "time_font_size");         }
-    color                   time_text_color         () const { return config_.color     ("controls", "time_text_color");        }
+    std::string             time_font_name              () const { return config_.str       ("controls", "time_font_name");         }
+    int32_t                 time_font_size              () const { return config_.int32     ("controls", "time_font_size");         }
+    color                   time_text_color             () const { return config_.color     ("controls", "time_text_color");        }
 
-    std::chrono::seconds    skip_time_small         () const { return config_.seconds   ("controls", "skip_time_small");        }
+    std::chrono::seconds    skip_time_small             () const { return config_.seconds   ("controls", "skip_time_small");        }
+
 
 private:
     virtual void    do_calc_geometry    () = 0;

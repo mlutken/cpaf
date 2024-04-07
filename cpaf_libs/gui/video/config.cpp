@@ -8,7 +8,8 @@ static const auto default_config = nlohmann::json::parse(
         "controls": {
             "buttons_relative_ypos": 0.8,
             "buttons_relative_x_dist": 0.25,
-            "buttons_size": 84,
+            "play_buttons_size": 84,
+            "menu_buttons_size": 48,
             "buttons_color": [0.282353, 0.239216, 0.545098, 0.5],
 
             "slider_relative_ypos": 1.0,
