@@ -26,6 +26,7 @@ public:
 
     std::string                 path                    () const;
     std::chrono::microseconds   start_time              () const;
+    void                        set_start_time          (std::chrono::microseconds start_time);
     std::string                 start_time_str          () const;
     std::string                 default_subtitle_path   (const std::string& language_code = "default") const;
     std::string                 get_best_subtitle_path  (std::string& language_code) const;

@@ -1,5 +1,6 @@
 #include "playable.h"
 #include <filesystem>
+#include <string>
 #include <cpaf_libs/filesystem/cpaf_file_directory_functions.h>
 #include <cpaf_libs/time/cpaf_time.h>
 
@@ -87,6 +88,12 @@ std::string playable::path() const
 microseconds playable::start_time() const
 {
     return duration_cast<microseconds>(cpaf::time::parse_duration(start_time_str(), nanoseconds(0)));
+}
+
+void playable::set_start_time(std::chrono::microseconds start_time)
+{
+    auto start_seconds = duration_cast<seconds>(start_time);
+    jo_["start_time"] = std::to_string(start_seconds.count()) + "s";
 }
 
 std::string playable::start_time_str() const

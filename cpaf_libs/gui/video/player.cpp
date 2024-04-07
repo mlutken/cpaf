@@ -132,12 +132,9 @@ void player::open_async(const playable& playab)
 
 void player::open_async(const std::string& resource_path, std::chrono::microseconds start_time_pos)
 {
-    primary_resource_path_ = resource_path;
-    start_time_pos_ = start_time_pos;
-
-    open_thread_ = std::make_unique<std::thread>( [=,this]() { this->open(resource_path); } );
-    open_thread_->detach();
-
+    auto playab = cpaf::gui::video::playable(resource_path);
+    playab.set_start_time(start_time_pos);
+    open_async(playab);
 }
 
 void player::open_subtitle(const std::string& subtitle_path, const std::string& language_code)
