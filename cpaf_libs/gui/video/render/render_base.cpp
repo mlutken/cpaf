@@ -102,6 +102,11 @@ int32_t render_base::subtitles_font_size() const
     return static_cast<int32_t>(size);
 }
 
+int32_t render_base::stream_state_font_size() const
+{
+    return 48;
+}
+
 color render_base::subtitles_font_color() const
 {
     return config_.color("subtitles", "font_color");

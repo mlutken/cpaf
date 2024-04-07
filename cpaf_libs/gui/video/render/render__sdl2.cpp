@@ -168,10 +168,19 @@ void render_platform::calc_subtitle_geometry()
     }
 }
 
+void render_platform::calc_stream_state_geometry()
+{
+    const auto render_geometry = player_.render_geometry();
+    const auto screen_fac = player_.screen_size_factor_use().height();
+    stream_state_font_size_pixels_ = font_size::to_pixels(screen_fac*stream_state_font_size(), main_window_ptr_);
+    font_stream_state_ = imgui_fonts::instance().get(subtitles_font_name(), stream_state_font_size_pixels_);
 
-SDL_Renderer* render_platform::get_sdl_renderer() {
-    return system_renderer_->native_renderer<SDL_Renderer>();
+
+    const auto render_geometry_center = render_geometry.center();
+    stream_state_pos_.x = render_geometry_center.x();
+    stream_state_pos_.y = render_geometry_center.y();
 }
+
 
 void render_platform::render_subtitle_text()
 {
@@ -227,6 +236,10 @@ void render_platform::render_subtitle_graphics()
 }
 
 
+SDL_Renderer* render_platform::get_sdl_renderer() {
+    return system_renderer_->native_renderer<SDL_Renderer>();
+}
+
 // -------------------------
 // --- Platform overides ---
 // -------------------------
@@ -280,10 +293,39 @@ bool render_platform::do_render_video_frame(const cpaf::video::av_frame& frame)
     return true;
 }
 
+void render_platform::do_render_stream_state()
+{
+    ///    auto window_flags = ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings|ImGuiWindowFlags_NoInputs;
+    auto window_flags = ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings|ImGuiWindowFlags_NoInputs;
+
+    bool visible = true;
+
+    std::string stream_state_str = to_string(player_.stream_state());
+
+    stream_state_size_.x = (stream_state_font_size_pixels_ * static_cast<int32_t>(stream_state_str.size()))*0.5f;
+    stream_state_size_.y = stream_state_font_size_pixels_ + 2*general_margin;
+
+    ImGui::Rai imrai{};
+    imrai.Font(font_stream_state_)
+        .StyleColor(ImGuiCol_Border, {0,0,0,0})
+        .StyleColor(ImGuiCol_WindowBg, {0,0,0,0})
+        .StyleColor(ImGuiCol_Text, reinterpret_cast<const ImVec4&>(stream_state_color_))
+        .StyleVar(ImGuiStyleVar_WindowMinSize, stream_state_size_)
+        ;
+
+    ImGui::SetNextWindowPos(stream_state_pos_, ImGuiCond_::ImGuiCond_Always, {0.5, 0.5} );
+    ///    ImGui::SetNextWindowSize(stream_state_size_, ImGuiCond_::ImGuiCond_Always);
+
+    ImGui::Begin("stream_state", &visible, window_flags);
+    ImGui::TextUnformatted(stream_state_str.c_str());
+    ImGui::End();
+}
+
 
 void render_platform::on_render_geometry_changed()
 {
     calc_subtitle_geometry();
+    calc_stream_state_geometry();
     ensure_valid_subtitles_graphics_texture(current_subtitle_frame_);
     fill_native_subtitle_texture();
 }
@@ -292,5 +334,9 @@ void render_platform::on_subtitle_changed()
 {
 
 }
+
+
+
+
 
 } //END namespace cpaf::gui::video

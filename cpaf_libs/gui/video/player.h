@@ -208,6 +208,7 @@ private:
     void                            torrent_finished_event  (std::shared_ptr<cpaf::torrent::torrent> tor_file);
 
     void                            update_screen_size_factor();
+    bool                            show_stream_state       () const;
 
     // ----------------------------
     // --- PRIVATE: Member vars ---

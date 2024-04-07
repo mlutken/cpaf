@@ -21,6 +21,9 @@ static const auto default_config = nlohmann::json::parse(
 
             "skip_time_small": 15
         },
+        "network": {
+            "torrent_time_out": "120"
+        },
         "subtitles": {
             "font_name": "abeezee_regular",
             "font_size": 18,

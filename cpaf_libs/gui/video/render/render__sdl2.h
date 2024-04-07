@@ -44,6 +44,10 @@ private:
     void            ensure_valid_render_texture                 (const cpaf::video::surface_dimensions_t& texture_dimensions);
     void            ensure_valid_subtitles_graphics_texture     (const cpaf::video::subtitle_frame& subtitle);
     void            calc_subtitle_geometry                      ();
+    void            calc_stream_state_geometry                  ();
+
+    void            render_subtitle_text        ();
+    void            render_subtitle_graphics    ();
 
 
     SDL_Renderer*   get_sdl_renderer            ();
@@ -54,16 +58,23 @@ private:
     void            do_render_dimensions_set    (const cpaf::video::surface_dimensions_t& dimensions ) override;
     void            do_clear_screen             () override;
     bool            do_render_video_frame       (const cpaf::video::av_frame& frame) override;
+    void            do_render_stream_state      () override;
     void            on_render_geometry_changed  () override;
     void            on_subtitle_changed         () override;
-    void            render_subtitle_text        ();
-    void            render_subtitle_graphics    ();
+
 
     std::shared_ptr<system_render>      system_renderer_;
     SDL_Texture*                        sdl_frame_render_texture_       {nullptr};
     SDL_Texture*                        sdl_subtitles_render_texture_   {nullptr};
     subtitle_render_geometries_t        subtitle_render_geometries_;
     SDL_Rect                            subtitles_dst_rect_;
+
+    ImVec2      stream_state_pos_              {};
+    ImVec2      stream_state_size_             {};
+    ImFont*     font_stream_state_              = nullptr;
+    color       stream_state_color_            {1, 1, 1, 1};
+    int32_t     stream_state_font_size_pixels_;
+
 };
 
 } //END namespace cpaf::gui::video

@@ -507,21 +507,17 @@ player::audio_play_callback_t player::audio_callback_get()
 
 void player::frame_update()
 {
-///    static int FIXMENM_count = 0;
-///   if (FIXMENM_count % 500 == 0) {
-///        std::cerr << "FIXMENM " << steady_now_h_m_s_ms()
-///                  << ", playing: " << is_playing()
-///                  << "\n";
-///    }
-///    ++FIXMENM_count;
-
     handle_internal_events();
-    if ( is_playing()) {
+    if (is_playing()) {
+
         if (has_video_stream()) {
             video_frame_update(next_video_frame_);
             check_activate_subtitle();
         }
         cur_media_time().release_after_reset();
+    }
+    if (video_render_ && show_stream_state()) {
+        video_render_->render_stream_state();
     }
     if (show_controls_ && video_controls_) {
         video_controls_->render();
@@ -758,6 +754,12 @@ void player::update_screen_size_factor()
     if (video_controls_) {
         video_controls_->on_player_size_changed();
     }
+}
+
+bool player::show_stream_state() const
+{
+    const auto ss = stream_state();
+    return ss == stream_state_t::opening || ss == stream_state_t::waiting_for_data;
 }
 
 } // END namespace cpaf::gui::video
