@@ -4,8 +4,14 @@ add_library(${library_name} STATIC "")
 target_sources(${library_name}
     PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/language_codes.h
+    ${CMAKE_CURRENT_LIST_DIR}/translator.h
+    ${CMAKE_CURRENT_LIST_DIR}/translator_if.h
+    ${CMAKE_CURRENT_LIST_DIR}/ui_translator.h
     PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/language_codes.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/translator.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/translator_if.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ui_translator.cpp
 )
 
 get_filename_component(PARENT_DIR ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)

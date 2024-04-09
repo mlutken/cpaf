@@ -7,6 +7,7 @@
 #include <vector>
 #include <filesystem>
 #include <fmt/format.h>
+#include <cpaf_libs/locale/translator.h>
 #include <cpaf_libs/gui/gui_types.h>
 #include <cpaf_libs/gui/system_window.h>
 #include <cpaf_libs/gui/events/event.h>
@@ -66,6 +67,8 @@ public:
     std::filesystem::path       config_path         () const;
     const std::string&          default_font        () const    { return default_font_;    }
     float                       base_font_size      () const    { return base_font_size_;  }
+
+    cpaf::locale::translator   tr;      // Default Text UI Translator
 
 protected:
     std::unique_ptr<system_window_base>     main_window_                    = nullptr;
