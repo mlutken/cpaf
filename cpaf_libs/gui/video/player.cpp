@@ -21,8 +21,9 @@ using namespace std::chrono_literals;
 
 namespace cpaf::gui::video {
 
-player::player(cpaf::audio::device& audio_device)
+player::player(cpaf::audio::device& audio_device, locale::translator& tr)
     : audio_device_(audio_device)
+    , tr_(tr)
     , subtitle_downloader_thread_(*this)
 {
     next_video_frame_ = av_frame::create_alloc();

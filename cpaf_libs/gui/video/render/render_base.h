@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <config/cpaf_platform_definitions.h>
+#include <cpaf_libs/locale/translator.h>
 #include <cpaf_libs/video/av_util.h>
 #include <cpaf_libs/video/av_frame.h>
 #include <cpaf_libs/video/subtitle_frame.h>
@@ -78,6 +79,7 @@ public:
 protected:
     static constexpr float                  general_margin              {4};
 
+    cpaf::locale::translator&               tr                          ();
     cpaf::video::av_format_context&         format_context              () { return *format_context_ptr_; }
     const cpaf::video::av_format_context&   format_context              () const { return *format_context_ptr_; }
     cpaf::video::av_codec_context&          video_codec_ctx             () { return *video_codec_ctx_ptr_; }

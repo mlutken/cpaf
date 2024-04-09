@@ -136,7 +136,12 @@ bool render_base::subtitles_show() const
 {
     return config_.bool_val("subtitles", "show");
 ///    return (player_.seek_state() == seek_state_t::ready) &&
-///            config_.bool_val("subtitles", "show");
+    ///            config_.bool_val("subtitles", "show");
+}
+
+locale::translator& render_base::tr()
+{
+    return player_.tr();
 }
 
 void render_base::create_frame_display()

@@ -18,13 +18,15 @@ using pos_2df = cpaf::gui::pos_2df;
 constexpr float icon_width = 0.25f;
 constexpr pos_2df wh_add = {icon_width, icon_width};
 
-//constexpr pos_2df forward_uv0       = {3*icon_width, 0*icon_width};  constexpr pos_2df forward_uv1  = forward_uv0   + wh_add;
-constexpr pos_2df forward_uv0       = {3*icon_width, 3*icon_width};  constexpr pos_2df forward_uv1  = forward_uv0   + wh_add;
-constexpr pos_2df pause_uv0         = {1*icon_width, 2*icon_width};  constexpr pos_2df pause_uv1    = pause_uv0     + wh_add;
-constexpr pos_2df play_uv0          = {1*icon_width, 3*icon_width};  constexpr pos_2df play_uv1     = play_uv0      + wh_add;
+//constexpr pos_2df forward_uv0       = {3*icon_width, 0*icon_width};  constexpr pos_2df forward_uv1    = forward_uv0   + wh_add;
+constexpr pos_2df forward_uv0       = {3*icon_width, 3*icon_width};  constexpr pos_2df forward_uv1      = forward_uv0   + wh_add;
+constexpr pos_2df pause_uv0         = {1*icon_width, 2*icon_width};  constexpr pos_2df pause_uv1        = pause_uv0     + wh_add;
+constexpr pos_2df play_uv0          = {1*icon_width, 3*icon_width};  constexpr pos_2df play_uv1         = play_uv0      + wh_add;
 //constexpr pos_2df backward_uv0      = {0*icon_width, 3*icon_width};  constexpr pos_2df backward_uv1 = backward_uv0  + wh_add;
-constexpr pos_2df backward_uv0      = {3*icon_width, 2*icon_width};  constexpr pos_2df backward_uv1 = backward_uv0  + wh_add;
-constexpr pos_2df menu_uv0          = {1*icon_width, 0*icon_width};  constexpr pos_2df menu_uv1     = menu_uv0  + wh_add;
+constexpr pos_2df backward_uv0      = {3*icon_width, 2*icon_width};  constexpr pos_2df backward_uv1     = backward_uv0  + wh_add;
+constexpr pos_2df menu_uv0          = {1*icon_width, 0*icon_width};  constexpr pos_2df menu_uv1         = menu_uv0  + wh_add;
+constexpr pos_2df subtitles_off_uv0 = {2*icon_width, 1*icon_width};  constexpr pos_2df subtitles_off_uv1= subtitles_off_uv0  + wh_add;
+constexpr pos_2df subtitles_on_uv0  = {2*icon_width, 2*icon_width};  constexpr pos_2df subtitles_on_uv1 = subtitles_on_uv0  + wh_add;
 
 /// @see https://github.com/ocornut/imgui/issues/4216
 /// @see https://html-color.codes/
@@ -106,8 +108,11 @@ void controls_default::do_calc_geometry()
 
     const float menu_buttons_y_pos = video_slider_pos_.y - menu_buttons_window_size_.y;
 
-    menu_btn_pos_.x = render_geometry.x() + render_geometry.size().width() / 2; // FIXMENM
+    menu_btn_pos_.x         = render_geometry.center().x() - menu_buttons_window_size_.x;
+    subtitles_btn_pos_.x    = menu_btn_pos_.x + 2*menu_buttons_window_size_.x;
+
     menu_btn_pos_.y = menu_buttons_y_pos;
+    subtitles_btn_pos_.y = menu_buttons_y_pos;
 
     // ------------------------
     // --- Calculate colors ---
@@ -133,11 +138,13 @@ void controls_default::do_render()
         do_calc_geometry();
     }
 
+
     render_player_controls();
     render_menu_buttons();
     render_slider();
     render_player_time();
     render_debug_window();
+    render_subtitles_popup();
 }
 
 void controls_default::render_player_controls()
@@ -212,17 +219,56 @@ void controls_default::render_menu_buttons()
         .StyleColor(ImGuiCol_ButtonHovered, reinterpret_cast<const ImVec4&>(buttons_hover_col_))
         ;
 
-    ImGui::SetNextWindowPos(menu_btn_pos_, ImGuiCond_::ImGuiCond_Always, {0.5, 0.5} );
+    // --- Subtitles button ---
+    ImGui::SetNextWindowPos(subtitles_btn_pos_, ImGuiCond_::ImGuiCond_Always, {0.5, 0.5} );
     ImGui::SetNextWindowSize(menu_buttons_window_size_, ImGuiCond_::ImGuiCond_Always);
 
+    ImGui::Begin("subtitles_btn", &visible_, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
+    set_cursor_pos_image_buttons();
 
+    // ---- FIXMENM DEBUG ONLY BEGIN ----
+    static int selected_fish = -1;
+    const char* names[] = { "Bream", "Haddock", "Mackerel", "Pollock", "Tilefish" };
+    static bool toggles[] = { true, false, false, false, false };
+
+    // Simple selection popup (if you want to show the current selection inside the Button itself,
+    // you may want to build a string using the "###" operator to preserve a constant ID with a variable label)
+    if (ImGui::ImageButton("subtitles_btn", buttons_texture_ptr, menu_buttons_size_, subtitles_on_uv0.to_struct<ImVec2>(), subtitles_on_uv1.to_struct<ImVec2>(), {0,0,0,0}, {1,1,1,1})) {
+        ImGui::OpenPopup("subtitles_popup_menu");
+    }
+///    ImGui::SameLine();
+///    ImGui::TextUnformatted(selected_fish == -1 ? "<None>" : names[selected_fish]);
+    if (ImGui::BeginPopup("subtitles_popup_menu"))
+    {
+        ImGui::Text("My Aquarium");
+        ImGui::Separator();
+        for (int i = 0; i < IM_ARRAYSIZE(names); i++)
+            if (ImGui::Selectable(names[i])) {
+                selected_fish = i;
+            }
+        ImGui::EndPopup();
+    }
+
+    // ---- FIXMENM DEBUG ONLY END ----
+
+
+//    if (ImGui::ImageButton("subtitles", buttons_texture_ptr, menu_buttons_size_, subtitles_on_uv0.to_struct<ImVec2>(), subtitles_on_uv1.to_struct<ImVec2>(), {0,0,0,0}, {1,1,1,1})) {
+//        std::cerr << "FIXMENM try to open popup\n";
+//        ImGui::OpenPopup("subtitles_popup");;
+//    }
+    ImGui::End();
+
+    // --- Menu button ---
+    ImGui::SetNextWindowPos(menu_btn_pos_, ImGuiCond_::ImGuiCond_Always, {0.5, 0.5} );
+    ImGui::SetNextWindowSize(menu_buttons_window_size_, ImGuiCond_::ImGuiCond_Always);
     ImGui::Begin("menu_btn", &visible_, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
     set_cursor_pos_image_buttons();
 
-    if (ImGui::ImageButton("pause", buttons_texture_ptr, menu_buttons_size_, menu_uv0.to_struct<ImVec2>(), menu_uv1.to_struct<ImVec2>(), {0,0,0,0}, {1,1,1,1})) {
-        player_.resume_playback();
+    if (ImGui::ImageButton("menu", buttons_texture_ptr, menu_buttons_size_, menu_uv0.to_struct<ImVec2>(), menu_uv1.to_struct<ImVec2>(), {0,0,0,0}, {1,1,1,1})) {
+        render_menu_popup();
     }
     ImGui::End();
+
 
 }
 
@@ -296,6 +342,28 @@ void controls_default::render_player_time()
 
     ImGui::TextUnformatted(remaining_time);
     ImGui::End();
+}
+
+void controls_default::render_subtitles_popup()
+{
+//    std::cerr << "FIXMENM render_subtitles_popup()\n";
+    if (ImGui::BeginPopupModal("subtitles_popup"))
+    {
+        ImGui::Text("Lorem ipsum");
+        ImGui::EndPopup();
+    }
+
+
+}
+
+void controls_default::render_menu_popup()
+{
+    std::cerr << "FIXMENM render_menu_popup()\n";
+}
+
+void controls_default::render_volume_popup()
+{
+    std::cerr << "FIXMENM render_volume_popup()\n";
 }
 
 void controls_default::render_debug_window()

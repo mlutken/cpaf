@@ -3,6 +3,7 @@
 #include <array>
 #include <memory>
 #include <thread>
+#include <cpaf_libs/locale/translator.h>
 #include <cpaf_libs/gui/gui_types.h>
 #include <cpaf_libs/video/av_util.h>
 #include <cpaf_libs/video/play_stream.h>
@@ -37,7 +38,7 @@ class player
 public:
     using audio_play_callback_t  = cpaf::audio::device_base::play_callback_t;
 
-    explicit player(cpaf::audio::device& audio_device);
+    explicit player(cpaf::audio::device& audio_device, cpaf::locale::translator& tr);
     ~player();
     void                            set_main_window         (const system_window& main_window);
     void                            start_playing           (const std::chrono::microseconds& start_time_pos = std::chrono::microseconds(0));
@@ -169,6 +170,8 @@ public:
     bool                        show_controls           () const                        { return show_controls_;    }
     void                        show_controls_set       (bool show)                     { show_controls_ = show;    }
 
+    cpaf::locale::translator&   tr                      () { return tr_; }
+
 
     cpaf::video::media_stream_time&         cur_media_time  ()       { return cur_media_time_; }
     const cpaf::video::media_stream_time&   cur_media_time  () const { return cur_media_time_; }
@@ -215,6 +218,7 @@ private:
     // ----------------------------
     using source_streams_array_t = std::array<std::unique_ptr<cpaf::video::play_stream>, cpaf::video::stream_type_index_size()>;
     cpaf::audio::device&                            audio_device_;
+    cpaf::locale::translator&                       tr_;
     subtitle_downloader_thread                      subtitle_downloader_thread_;
     std::unique_ptr<cpaf::video::play_stream>       primary_source_stream_;
     std::chrono::microseconds                       start_time_pos_;

@@ -19,7 +19,14 @@ private:
     void    render_menu_buttons             ();
     void    render_slider                   ();
     void    render_player_time              ();
+
+    void    render_subtitles_popup          ();
+    void    render_menu_popup               ();
+    void    render_volume_popup             ();
+
     void    render_debug_window             ();
+
+
 
     void    set_cursor_pos_image_buttons    ();
 
@@ -42,6 +49,7 @@ private:
     ImVec2      video_fwd_btn_pos_              {};
     ImVec2      subtitles_btn_pos_              {};
     ImVec2      menu_btn_pos_                   {};
+    ImVec2      volume_btn_pos_                 {};
 
     ImVec2      video_slider_pos_               {};
     ImVec2      elapsed_time_pos_               {};
