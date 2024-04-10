@@ -11,6 +11,7 @@
 #include <cpaf_libs/gui/video/pipeline_threads/pipeline_threads.h>
 #include <cpaf_libs/gui/video/pipeline_threads/subtitle_downloader_thread.h>
 #include <cpaf_libs/gui/video/config.h>
+#include <cpaf_libs/gui/video/data_definitions/playable.h>
 
 namespace cpaf::audio {
 class device;
@@ -31,7 +32,6 @@ namespace cpaf::gui::video {
 
 class render;
 class controls;
-class playable;
 
 class player
 {
@@ -85,6 +85,7 @@ public:
     void                            set_stream_state        (stream_state_t stream_state);
     stream_state_t                  stream_state            () const;
     std::atomic<stream_state_t>&    stream_state_reference  ()       { return primary_stream().stream_state(); }
+    const playable&                 cur_playable            () const { return playable_; }
 
     // ----------------
     // --- Contexts ---
@@ -217,6 +218,7 @@ private:
     // --- PRIVATE: Member vars ---
     // ----------------------------
     using source_streams_array_t = std::array<std::unique_ptr<cpaf::video::play_stream>, cpaf::video::stream_type_index_size()>;
+    playable                                        playable_;
     cpaf::audio::device&                            audio_device_;
     cpaf::locale::translator&                       tr_;
     subtitle_downloader_thread                      subtitle_downloader_thread_;

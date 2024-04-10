@@ -74,6 +74,8 @@ void player::start_playing(const std::chrono::microseconds& start_time_pos)
     media_pipeline_threads().audio_resampler_set(audio_resampler_);
     video_fmt_ctx.read_packets_to_queues(video_fmt_ctx.primary_media_type(), 10);
 
+    playable_.dbg_print(); // FIXMENM
+
     media_pipeline_threads().start();
     set_stream_state(stream_state_t::playing);
     check_activate_subtitle();
@@ -91,27 +93,32 @@ void player::terminate()
 ///       for video, audio, key_frames etc.. For now we simply open a single primary stream with this.
 bool player::open(const std::string& resource_path)
 {
-    close();
-    primary_resource_path_ = resource_path;
-    // Create media pipeline threads
-    pause_playback();
-    primary_source_stream_ = std::make_unique<cpaf::video::play_stream>([this]() {return torrents_get();});
-    return open_primary_stream(resource_path, "");
+    auto playab = cpaf::gui::video::playable(resource_path);
+    return open(playab);
+
+//    close();
+//    primary_resource_path_ = resource_path;
+//    // Create media pipeline threads
+//    pause_playback();
+//    primary_source_stream_ = std::make_unique<cpaf::video::play_stream>([this]() {return torrents_get();});
+//    return open_primary_stream(resource_path, "");
 }
 
 bool player::open(const playable& playab)
 {
+    playable_ = playab;
+
     close();
     subtitle_source_ = subtitle_source_t::stream;
     primary_resource_path_ = playab.path();
     // Create media pipeline threads
     pause_playback();
 
-    std::cerr << "\n---FIXMENM ---\n" << playab.json().dump(4) << "\n FIXMENM\n";
     auto language_code = configuration.str("user", "subtitle_language_code");
-    fmt::println("FIXMENM open playable language_code: '{}'", language_code); std::cout << std::endl;
     const auto subtitle_path = playab.get_best_subtitle_path(language_code);
-    fmt::println("FIXMENM open playable subtitle path: {},  language_code: '{}'", subtitle_path, language_code); std::cout << std::endl;
+//    std::cerr << "\n---FIXMENM ---\n" << playab.json().dump(4) << "\n FIXMENM\n";
+//    fmt::println("FIXMENM open playable language_code: '{}'", language_code); std::cout << std::endl;
+//    fmt::println("FIXMENM open playable subtitle path: {},  language_code: '{}'", subtitle_path, language_code); std::cout << std::endl;
 
     start_time_pos_ = playab.start_time();
     primary_source_stream_ = std::make_unique<cpaf::video::play_stream>([this]() {return torrents_get();});
