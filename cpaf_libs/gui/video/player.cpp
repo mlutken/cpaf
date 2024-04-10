@@ -11,7 +11,6 @@
 #include <cpaf_libs/audio/cpaf_audio_device.h>
 #include <cpaf_libs/gui/video/render/render.h>
 #include <cpaf_libs/gui/video/ui/controls_default.h>
-#include <cpaf_libs/gui/video/data_definitions/playable.h>
 
 
 using namespace cpaf::video;
@@ -77,7 +76,7 @@ void player::start_playing(const std::chrono::microseconds& start_time_pos)
 
     media_pipeline_threads().start();
     set_stream_state(stream_state_t::playing);
-    // FIXMENM check_activate_subtitle();
+    check_activate_subtitle();
     resume_playback();
 }
 
