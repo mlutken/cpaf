@@ -37,6 +37,8 @@ public:
 
     bool                        is_valid                () const;
 
+    std::string                 dbg_str                 () const;
+    void                        dbg_print               () const;
 
 private:
     mutable nlohmann::json jo_;

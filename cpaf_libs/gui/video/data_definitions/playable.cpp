@@ -143,6 +143,18 @@ bool playable::is_valid() const
     return !cpaf::json_value_str(jo_["path"], "").empty();
 }
 
+std::string playable::dbg_str() const
+{
+    std::stringstream ss;
+    ss << jo_.dump(4);
+    return ss.str();
+}
+
+void playable::dbg_print() const
+{
+    std::cerr << dbg_str() << "\n";
+}
+
 nlohmann::json playable::create_json(std::string path)
 {
     auto jo = create_json();
