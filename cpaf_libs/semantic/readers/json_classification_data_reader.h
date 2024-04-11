@@ -1,7 +1,6 @@
-#ifndef JSON_CLASSIFICATION_DATA_READER_H
-#define JSON_CLASSIFICATION_DATA_READER_H
+#pragma once
 
-#include <utils/cpaf_json_utils.h>
+#include <nlohmann/json.hpp>
 #include <semantic/readers/classification_data_reader_base.h>
 
 namespace cpaf::semantic
@@ -60,5 +59,3 @@ private:
 };
 
 } //end namespace cpaf::semantic
-
-#endif // JSON_CLASSIFICATION_DATA_READER_H

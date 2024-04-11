@@ -3,7 +3,7 @@
 #include <functional>
 #include <vector>
 #include <chrono>
-#include <cpaf_libs/utils/cpaf_json_utils.h>
+#include <nlohmann/json.hpp>
 #include <cpaf_libs/gui/color.h>
 
 namespace cpaf::gui::video {

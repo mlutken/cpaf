@@ -4,7 +4,7 @@
 #include <string>
 #include <cpaf_libs/math/base/v4.hpp>
 #include <cpaf_libs/system/cpaf_system_info.h>
-#include <cpaf_libs/utils/cpaf_json_utils.h>
+#include <nlohmann/json.hpp>
 
 
 namespace cpaf::gui {

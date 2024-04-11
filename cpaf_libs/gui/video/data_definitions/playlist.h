@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-#include <cpaf_libs/utils/cpaf_json_utils.h>
+#include <nlohmann/json.hpp>
 
 namespace cpaf::gui::video {
 
