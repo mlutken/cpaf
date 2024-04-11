@@ -1,12 +1,9 @@
 #pragma once
 
-#include <string>
-#include <vector>
-#include <map>
-
+#include <nlohmann/json.hpp>
 
 namespace cpaf::locale {
-
+class translator;
 
 /**
 
@@ -14,13 +11,12 @@ namespace cpaf::locale {
 */
 class language_codes
 {
-    using lc_name_map_t = std::map<std::string, std::string>;
+public:
 
-    static const lc_name_map_t&             codes_and_names     ();
-    static const std::vector<std::string>&  codes               ();
-
-    static bool                             is_languge_code     (const std::string& language_code_lower_case);
-
+    static std::string                      language_name       (const std::string& language_code_lookup, const translator& tr);
+    static std::string                      language_name       (const std::string& language_code_lookup);
+    static bool                             is_languge_code     (const std::string& language_code_lookup);
+    static const nlohmann::json&            codes_and_names     ();
 
 
 };
