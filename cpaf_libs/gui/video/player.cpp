@@ -228,15 +228,17 @@ void player::close()
             std::this_thread::sleep_for(100ms);
         }
         std::cerr << "FIXMENM DONE for threads to ṕause!!! : " << ++count << "\n";
+        media_pipeline_threads().flush_queues();
+        media_pipeline_threads_.reset(nullptr);
+    }
+    if (primary_source_stream_) {
+        primary_source_stream_->close();
+        primary_source_stream_.reset(nullptr);
     }
     audio_device_.pause(); // Pause audio
     primary_resource_path_.clear();
-    primary_source_stream_->close();
-    media_pipeline_threads().flush_queues();
     video_codec_ctx_ = av_codec_context{};
     audio_codec_ctx_ = av_codec_context{};
-    primary_source_stream_.reset(nullptr);
-    media_pipeline_threads_.reset(nullptr);
 }
 
 void player::close_async()
