@@ -1,12 +1,14 @@
 #include "playable.h"
 #include <filesystem>
 #include <string>
+#include <cpaf_libs/locale/translator.h>
 #include <cpaf_libs/filesystem/cpaf_file_directory_functions.h>
 #include <cpaf_libs/time/cpaf_time.h>
 
 namespace fs = std::filesystem;
 using namespace cpaf::filesystem;
 using namespace std::chrono;
+using namespace nlohmann;
 
 namespace cpaf::gui::video {
 
@@ -50,6 +52,14 @@ void playable::auto_set_location_type(nlohmann::json& jo) {
     }
 }
 
+void playable::add_subtitle(nlohmann::json& jo, std::string subtitle_path, std::string_view language_code)
+{
+    if (!jo.contains("subtitles")) {
+        jo["subtitles"] = json::array();
+    }
+    jo["subtitles"].push_back( {{"path", std::move(subtitle_path)}, {"language_code", language_code}});
+}
+
 playable::playable()
     : jo_(playable::create_json())
 {
@@ -80,6 +90,11 @@ void playable::auto_set_location_type()
     playable::auto_set_location_type(jo_);
 }
 
+void playable::update_calculated(const locale::translator& tr)
+{
+
+}
+
 std::string playable::path() const
 {
     return cpaf::json_value_str(jo_["path"], "");
@@ -101,40 +116,55 @@ std::string playable::start_time_str() const
     return cpaf::json_value_str(jo_["start_time"], "");
 }
 
-std::string playable::default_subtitle_path(const std::string& language_code) const
-{
-    auto path = cpaf::json_value_str(jo_, language_code, "");
-    if (path.empty()) {
-        path = cpaf::json_value_str(jo_["subtitles"]["default"], "");
-    }
-    return path;
-}
+//std::string playable::default_subtitle_path(const std::string& language_code) const
+//{
+//    auto path = cpaf::json_value_str(jo_, language_code, "");
+//    if (path.empty()) {
+//        path = cpaf::json_value_str(jo_["subtitles"]["default"], "");
+//    }
+//    return path;
+//}
 
-std::string playable::get_best_subtitle_path(std::string& language_code) const
+std::string playable::get_best_subtitle_path(std::string_view language_code) const
 {
-    std::string path;
-    if (!language_code.empty()) {
-        path = cpaf::json_value_str(jo_, language_code, "");
-        if (!path.empty()) {
-            return path;
+    if (language_code.empty()) {
+        language_code = playable::user_subtitle_language_code;
+    }
+
+    for (auto& el : jo_["subtitles"].items()) {
+        auto sub = el.value();
+        if (sub["language_code"] == language_code) {
+            return sub["path"];
         }
     }
-    language_code = "default";
-    path = cpaf::json_value_str(jo_["subtitles"]["default"], "");
-    return path;
-
+    return "";
 }
 
-bool playable::has_subtitle(const std::string& language_code) const
+bool playable::has_subtitle(std::string_view language_code) const
 {
-    return jo_["subtitles"].contains(language_code);
+    if (language_code.empty()) {
+        return false;
+    }
+    for (auto& el : jo_["subtitles"].items()) {
+        auto sub = el.value();
+        if (sub["language_code"] == language_code) {
+            return true;
+        }
+    }
+    return false;
 }
 
 /// @todo Implement subtitle_language_codes()
 std::vector<std::string> playable::subtitle_language_codes() const
 {
     std::vector<std::string> language_codes;
-
+    for (auto& el : jo_["subtitles"].items()) {
+        auto sub = el.value();
+        const auto language_code = cpaf::json_value_str(sub, "language_code", "");
+        if (!language_code.empty()) {
+            language_codes.push_back(language_code);
+        }
+    }
     return language_codes;
 }
 
@@ -159,6 +189,7 @@ nlohmann::json playable::create_json(std::string path)
 {
     auto jo = create_json();
     jo["path"] = std::move(path);
+    jo["subtitles"] = json::array();
     auto_set_location_type(jo);
     return jo;
 }
@@ -168,7 +199,9 @@ nlohmann::json playable::create_json(std::string path, std::string subtitle_path
     auto jo = create_json();
     jo["path"] = std::move(path);
     auto_set_location_type(jo);
-    jo["subtitles"]["default"] = std::move(subtitle_path);
+    add_subtitle(jo, subtitle_path, "");
+    jo["subtitles"] = json::array();
+    jo["subtitles"].push_back( {{"path", std::move(subtitle_path)}, {"language_code", "user_selected_subtitle"}});
     return jo;
 }
 
@@ -179,8 +212,8 @@ nlohmann::json playable::create_json(std::string path,
     auto jo = create_json();
     jo["path"] = std::move(path);
     auto_set_location_type(jo);
-    jo["subtitles"]["default"] = subtitle_path;
-    jo["subtitles"][language_code] = std::move(subtitle_path);;
+    jo["subtitles"] = json::array();
+    jo["subtitles"].push_back( {{"path", std::move(subtitle_path)}, {"language_code", language_code}});
     return jo;
 }
 
