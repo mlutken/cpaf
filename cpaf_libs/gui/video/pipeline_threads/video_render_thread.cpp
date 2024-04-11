@@ -50,7 +50,7 @@ void video_render_thread::terminate()
 void video_render_thread::video_frame_update(cpaf::video::av_frame& current_frame, cpaf::gui::video::render& video_render)
 {
     [[maybe_unused]] bool new_frame_was_read = video_frame_do_render(current_frame, video_render);
-   debug_gui();
+//   debug_gui();
 //    debug_video_frame_update(current_frame, video_render);
 }
 
@@ -102,7 +102,7 @@ bool video_render_thread::video_frame_do_render(
     bool new_frame_was_read = false;
     time_to_current_frame_ = time_to_current_frame(current_frame);
     if (time_to_current_frame_ > 1s) {
-        std::cerr << "******* ERROR long time to current video frame: " << duration_cast<seconds>(time_to_current_frame(current_frame)) << "\n";
+        std::cerr << "LOG_WARN long time to current video frame: " << duration_cast<seconds>(time_to_current_frame(current_frame)) << "\n";
         current_frame = player_.video_codec_context().read_frame();
         new_frame_was_read = true;
     }
