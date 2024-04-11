@@ -238,16 +238,30 @@ void controls_default::render_menu_buttons()
     }
 ///    ImGui::SameLine();
 ///    ImGui::TextUnformatted(selected_fish == -1 ? "<None>" : names[selected_fish]);
+
     if (ImGui::BeginPopup("subtitles_popup_menu"))
     {
-        ImGui::Text("My Aquarium");
+        ImGui::TextUnformatted(tr().tr("Select subtitle"));
         ImGui::Separator();
-        for (int i = 0; i < IM_ARRAYSIZE(names); i++)
-            if (ImGui::Selectable(names[i])) {
+        const auto& subtitles = player_.cur_playable().subtitles();
+        for (auto i = 0u; i < subtitles.size(); ++i)
+            if (ImGui::Selectable(subtitles[i]["language_name"].get<std::string>())) {
                 selected_fish = i;
+                std::cerr << "FIXMENM subtitle selected index: "  << selected_fish << "\n";
             }
         ImGui::EndPopup();
     }
+
+//    if (ImGui::BeginPopup("subtitles_popup_menu"))
+//    {
+//        ImGui::Text("My Aquarium");
+//        ImGui::Separator();
+//        for (int i = 0; i < IM_ARRAYSIZE(names); i++)
+//            if (ImGui::Selectable(names[i])) {
+//                selected_fish = i;
+//            }
+//        ImGui::EndPopup();
+//    }
 
     // ---- FIXMENM DEBUG ONLY END ----
 

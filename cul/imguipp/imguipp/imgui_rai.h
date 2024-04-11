@@ -56,5 +56,15 @@ private:
 };
 
 inline void TextUnformatted(std::string_view text) { ImGui::TextUnformatted(text.data(), text.data() + text.size()); }
+
+inline bool Selectable(std::string_view label, bool selected = false, ImGuiSelectableFlags flags = 0, const ImVec2& size = ImVec2(0, 0)) {
+    return Selectable(label.data(), selected, flags, size);
+}
+
+inline bool Selectable(std::string_view label, bool* p_selected, ImGuiSelectableFlags flags = 0, const ImVec2& size = ImVec2(0, 0))
+{
+    return Selectable(label.data(), p_selected, flags, size);
+}
+
 }
 

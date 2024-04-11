@@ -4,6 +4,10 @@
 #include <cpaf_libs/gui/color.h>
 #include <cpaf_libs/gui/video/config.h>
 
+namespace cpaf::locale {
+class translator;
+}
+
 namespace cpaf::gui::video {
 
 
@@ -29,6 +33,7 @@ protected:
     config&                 config_;
     bool                    visible_ = true;
 
+
     float                   buttons_relative_ypos       () const { return config_.float_val ("controls", "buttons_relative_ypos");  }
     float                   buttons_relative_x_dist     () const { return config_.float_val ("controls", "buttons_relative_x_dist");}
     float                   play_buttons_size           () const { return config_.float_val ("controls", "play_buttons_size");      }
@@ -44,6 +49,9 @@ protected:
     color                   time_text_color             () const { return config_.color     ("controls", "time_text_color");        }
 
     std::chrono::seconds    skip_time_small             () const { return config_.seconds   ("controls", "skip_time_small");        }
+
+    cpaf::locale::translator&           tr              ();
+    const cpaf::locale::translator&     tr              () const;
 
 
 private:

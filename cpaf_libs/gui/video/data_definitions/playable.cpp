@@ -1,5 +1,6 @@
 #include "playable.h"
 #include <filesystem>
+#include <algorithm>
 #include <string>
 #include <cpaf_libs/utils/cpaf_json_utils.h>
 #include <cpaf_libs/locale/translator.h>
@@ -61,7 +62,6 @@ nlohmann::json playable::create_json(std::string path, std::string subtitle_path
     jo["path"] = std::move(path);
     auto_set_location_type(jo);
     add_subtitle(jo, subtitle_path, "");
-    add_subtitle(jo, subtitle_path);
     return jo;
 }
 
@@ -99,7 +99,7 @@ void playable::add_subtitle(nlohmann::json& jo, std::string subtitle_path, std::
     }
 
     if (language_code.empty()) {
-        language_code = playable::user_selected_subtitle_lc;
+        language_code = playable::subtitle_user_selected_lc;
     }
     jo["subtitles"].push_back( {{"path", std::move(subtitle_path)}, {"language_code", language_code}});
 }
@@ -167,7 +167,7 @@ std::string playable::start_time_str() const
 std::string playable::get_best_subtitle_path(std::string_view language_code) const
 {
     if (language_code.empty()) {
-        language_code = playable::user_selected_subtitle_lc;
+        language_code = playable::subtitle_user_selected_lc;
     }
 
     for (auto& el : jo_["subtitles"].items()) {
@@ -177,6 +177,24 @@ std::string playable::get_best_subtitle_path(std::string_view language_code) con
         }
     }
     return "";
+}
+
+void playable::add_subtitle(std::string subtitle_path, std::string_view language_code)
+{
+    ensure_subtitles();
+    if (language_code.empty()) {
+        language_code = playable::subtitle_user_selected_lc;
+    }
+
+    if (language_code == subtitle_none_selected_lc) {
+        ensure_subtitle_none_selected();
+    }
+    else if (language_code == subtitle_user_selected_lc) {
+        ensure_subtitle_user_selected(subtitle_path);
+    }
+    else {
+        add_subtitle_helper(subtitle_path, language_code);
+    }
 }
 
 bool playable::has_subtitle(std::string_view language_code) const
@@ -191,6 +209,35 @@ bool playable::has_subtitle(std::string_view language_code) const
         }
     }
     return false;
+}
+
+void playable::remove_subtitle(std::string_view language_code)
+{
+    ensure_subtitles();
+    const auto end = jo_["subtitles"].end();
+
+//    json::iterator it = jo_["subtitles"].begin();
+//    for(; it != end; ++it) {
+//        if ((*it)["language_code"] == language_code) {
+////        if (it->at("language_code") == language_code) {
+//            break;
+//        }
+//    }
+
+    json::iterator it = find_subtitle(language_code);
+    if (it != end) {
+        jo_["subtitles"].erase(it);
+    }
+
+//    auto finder = [language_code](const auto& el) -> bool {
+////        return language_code == el.value()["language_code"];
+//        return language_code == el.value()["language_code"].template get<std::string>();
+//    };
+//    const auto& jitems = jo_["subtitles"].items();
+//    const auto iter = std::find_if(jitems.begin(), jitems.end(), finder);
+//    if (iter != jitems.end()) {
+//        jo_["subtitles"].erase(iter);
+//    }
 }
 
 /// @todo Implement subtitle_language_codes()
@@ -229,9 +276,73 @@ void playable::dbg_print() const
     std::cerr << dbg_str() << "\n";
 }
 
+
+
 // -------------------------
 // --- PRIVATE functions ---
 // -------------------------
+json::iterator playable::add_subtitle_helper(std::string subtitle_path, std::string_view language_code)
+{
+    auto it = find_subtitle(language_code);
+    const auto end = jo_["subtitles"].end();
+    if (it != end) {
+        nlohmann::json& subtitle_jo = *it;
+        subtitle_jo["path"] = std::move(subtitle_path);
+    }
+    else {
+        jo_["subtitles"].push_back({{"path", std::move(subtitle_path)}, {"language_code", language_code}});
+    }
+}
+
+
+json::iterator playable::find_subtitle(std::string_view language_code)
+{
+    json::iterator it = jo_["subtitles"].begin();
+    const auto end = jo_["subtitles"].end();
+    for(; it != end; ++it) {
+        if ((*it)["language_code"].get<std::string>() == language_code) {
+            break;
+        }
+    }
+    return it;
+}
+
+void playable::ensure_subtitles()
+{
+    if (!jo_.contains("subtitles")) {
+        jo_["subtitles"] = json::array();
+    }
+}
+
+void playable::ensure_subtitle_none_selected()
+{
+    remove_subtitle(subtitle_none_selected_lc);
+    jo_["subtitles"].insert(jo_["subtitles"].begin(),  {{"path", ""}, {"language_code", subtitle_none_selected_lc}});
+}
+
+void playable::ensure_subtitle_user_selected(std::string user_selected_subtitle_path)
+{
+    auto it = find_subtitle(subtitle_user_selected_lc);
+    nlohmann::json subtitle_jo;
+    if (it != jo_["subtitles"].end()) {
+        subtitle_jo = *it;
+    }
+    if (!user_selected_subtitle_path.empty()) {
+        subtitle_jo["path"] = std::move(user_selected_subtitle_path);
+    }
+    subtitle_jo["language_code"] = subtitle_user_selected_lc;
+    remove_subtitle(subtitle_user_selected_lc);
+
+    jo_["subtitles"].insert(jo_["subtitles"].begin()+1,  subtitle_jo);
+}
+
+void playable::ensure_default_subtitles(std::string user_selected_subtitle_path)
+{
+    ensure_subtitles();
+    ensure_subtitle_none_selected();
+    ensure_subtitle_user_selected(user_selected_subtitle_path);
+}
+
 
 void playable::update_subtitles(const locale::translator& tr)
 {

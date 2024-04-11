@@ -171,8 +171,8 @@ public:
     bool                        show_controls           () const                        { return show_controls_;    }
     void                        show_controls_set       (bool show)                     { show_controls_ = show;    }
 
-    cpaf::locale::translator&   tr                      () { return tr_; }
-
+    cpaf::locale::translator&           tr              ()          { return tr_; }
+    const cpaf::locale::translator&     tr              () const    { return tr_; }
 
     cpaf::video::media_stream_time&         cur_media_time  ()       { return cur_media_time_; }
     const cpaf::video::media_stream_time&   cur_media_time  () const { return cur_media_time_; }

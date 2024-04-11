@@ -22,6 +22,16 @@ void controls::on_player_size_changed()
     do_calc_geometry();
 }
 
+locale::translator& controls::tr()
+{
+    return player_.tr();
+}
+
+const locale::translator& controls::tr() const
+{
+    return player_.tr();
+}
+
 
 } // namespace cpaf::gui::video
 
