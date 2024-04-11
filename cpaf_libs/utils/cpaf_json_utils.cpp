@@ -216,6 +216,19 @@ nlohmann::json json_value_array(const nlohmann::json& jo_object,
     return default_value;
 }
 
+const nlohmann::json& json_value_array_cref(const nlohmann::json& jo_object,
+                                            const std::string& key,
+                                            const nlohmann::json& default_value)
+{
+    if (jo_object.is_object() && jo_object.contains(key)) {
+        const auto& elem = jo_object.at(key);
+        if (elem.is_null()) return default_value;
+        if (!elem.is_array()) return default_value;
+        return elem;
+    }
+    return default_value;
+}
+
 
 /** Remove specified fields from json object.
 */
@@ -253,6 +266,7 @@ nlohmann::json json_copy_fields (const nlohmann::json& jo,
     }
     return jo_ret;
 }
+
 
 } // END namespace cpaf
 
