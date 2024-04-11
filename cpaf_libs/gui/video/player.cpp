@@ -1,6 +1,6 @@
 #include "player.h"
 
-#include <algorithm>>
+#include <algorithm>
 #include <fmt/format.h>
 #include <cpaf_libs/system/cpaf_session.h>
 #include <cpaf_libs/audio/cpaf_audio_device.h>

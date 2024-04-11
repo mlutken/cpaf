@@ -27,7 +27,7 @@ static const auto default_config = nlohmann::json::parse(
             "torrent_time_out": "120"
         },
         "subtitles": {
-            "font_name": "abeezee_regular",
+            "font_name": "manrope",
             "font_size": 18,
             "font_color": [1,1,1,1],
             "bg_color": [0,0,0,1],
