@@ -63,7 +63,11 @@ av_codec_context::av_codec_context(AVCodec* ff_codec,
 av_codec_context::~av_codec_context()
 {
     sws_freeContext(ff_sws_ctx_);
-    if (ff_codec_context_)		{ avcodec_free_context(&ff_codec_context_);	}
+    ff_sws_ctx_ = nullptr;
+    if (ff_codec_context_){
+        avcodec_free_context(&ff_codec_context_);
+        ff_codec_context_ = nullptr;
+    }
 }
 
 void av_codec_context::swap(av_codec_context& src) noexcept
@@ -97,6 +101,10 @@ bool av_codec_context::init_scaling_context(AVPixelFormat ff_dst_pixel_format,
 
 bool av_codec_context::init_scaling_context(AVPixelFormat ff_dst_pixel_format, surface_dimensions_t dst_dimensions, int32_t flags, int32_t dst_image_align)
 {
+    if (!ff_codec_context_) {
+        return false;
+    }
+
     dst_dimensions = scale_surface_dimensions(dimensions(), dst_dimensions);
     dst_width_  = dst_dimensions.x();
     dst_height_ = dst_dimensions.y();
@@ -245,12 +253,20 @@ av_frame av_codec_context::read_frame() const
 // -----------------------
 int av_codec_context::send_packet(const av_packet& packet) const
 {
+    if (!ff_codec_context_) {
+        return AVERROR(EINVAL);
+    }
+
     return avcodec_send_packet(ff_codec_context_, packet.ff_packet());
 }
 
 
 int av_codec_context::receive_frame(av_frame& frame) const
 {
+    if (!ff_codec_context_) {
+        return AVERROR(EINVAL);
+    }
+
     const int ret_val = avcodec_receive_frame(ff_codec_context_, frame.ff_frame());
     if (ret_val == 0) {
         // Got full frame!
@@ -262,7 +278,13 @@ int av_codec_context::receive_frame(av_frame& frame) const
 
 std::vector<subtitle_frame> av_codec_context::read_subtitles() const
 {
-    if (media_type_get() != media_type::subtitle) { return std::vector<subtitle_frame>(); }
+    if (media_type_get() != media_type::subtitle){
+        return std::vector<subtitle_frame>();
+    }
+    if (!ff_codec_context_){
+        return std::vector<subtitle_frame>();;
+    }
+
 
     std::vector<subtitle_frame> subtitles;
     // https://stackoverflow.com/questions/54125207/dump-subtitle-from-avsubtitle-in-the-file
@@ -336,6 +358,9 @@ void av_codec_context::dump() const
 
 int av_codec_context::receive_frame(AVFrame* ff_frame) const
 {
+    if (!ff_codec_context_) {
+        return AVERROR(EINVAL);
+    }
     return avcodec_receive_frame(ff_codec_context_, ff_frame);
 }
 
