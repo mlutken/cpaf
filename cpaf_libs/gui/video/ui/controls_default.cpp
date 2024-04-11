@@ -143,7 +143,7 @@ void controls_default::do_render()
     render_menu_buttons();
     render_slider();
     render_player_time();
-    render_debug_window();
+//    render_debug_window();
     render_subtitles_popup();
 }
 

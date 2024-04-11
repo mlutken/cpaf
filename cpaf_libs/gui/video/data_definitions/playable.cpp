@@ -20,7 +20,6 @@ namespace cpaf::gui::video {
 
 nlohmann::json playable::create_json()
 {
-
     return nlohmann::json::parse(
     u8R"json(
     {

@@ -7,15 +7,14 @@ namespace cpaf::gui::video {
 nlohmann::json playlist::create_json()
 {
     return nlohmann::json::parse(
-        R"(
+    u8R"json(
     {
         "data_type": "playlist",
         "items": [],
         "media_type": "",
         "name": "auto"
     }
-    )");
-
+    )json");
 }
 
 nlohmann::json playlist::create_json(const std::vector<std::string>& paths, const std::string& media_type)
