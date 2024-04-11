@@ -36,6 +36,8 @@ public:
     std::shared_ptr<system_window>  main_window_shared          () const    { return do_main_window_shared(); }
     system_render&                  renderer                    ()          { return main_window().renderer(); }
     std::shared_ptr<system_render>  renderer_shared             () const    { return main_window_shared()->renderer_shared(); }
+    const cpaf::locale::translator& tr                          () const    { return translator_; }
+    cpaf::locale::translator&       tr                          ()          { return translator_; }
 
     void                            add_fonts                   (const std::string& font_name, const std::vector<uint32_t>& sizes_in_points);
     void                            add_fonts                   (const std::string& font_name,
@@ -68,9 +70,9 @@ public:
     const std::string&          default_font        () const    { return default_font_;    }
     float                       base_font_size      () const    { return base_font_size_;  }
 
-    cpaf::locale::translator   tr;      // Default Text UI Translator
 
 protected:
+    cpaf::locale::translator                translator_;                // Default Text UI Translator
     std::unique_ptr<system_window_base>     main_window_                    = nullptr;
     size_2d                                 initial_window_size_            = {800, 600};
     std::atomic_bool                        is_running_                     = false;
