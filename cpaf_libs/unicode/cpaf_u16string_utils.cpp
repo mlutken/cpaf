@@ -156,6 +156,27 @@ std::u16string to_u16string_revert(const std::vector<char16_t>& v)
     return std::u16string(v.rbegin(), v.rend());
 }
 
+void case_transform(std::u16string& str, case_op_t case_op)
+{
+    switch (case_op) {
+    case case_op_t::lowercase_all   : to_lower(str);        break;
+    case case_op_t::lowercase_first : lowercase_first(str); break;
+    case case_op_t::uppercase_all   : to_upper(str);        break;
+    case case_op_t::uppercase_first : uppercase_first(str); break;
+    }
+}
+
+std::u16string case_transform_copy(const std::u16string& str, case_op_t case_op)
+{
+    switch (case_op) {
+    case case_op_t::lowercase_all   : return to_lower_copy(str);        break;
+    case case_op_t::lowercase_first : return lowercase_first_copy(str); break;
+    case case_op_t::uppercase_all   : return to_upper_copy(str);        break;
+    case case_op_t::uppercase_first : return uppercase_first_copy(str); break;
+    }
+    return str;
+}
+
 void to_lower(std::u16string& str)
 {
     const auto end = str.end();
@@ -171,6 +192,56 @@ std::u16string to_lower_copy(const std::u16string& str)
     for(const auto c : str) {
         s.push_back(u_tolower(c));
     }
+    return s;
+}
+
+void to_upper(std::u16string& str)
+{
+    const auto end = str.end();
+    for (auto it = str.begin(); it != end; ++it) {
+        *it = u_toupper(*it);
+    }
+}
+
+std::u16string to_upper_copy(const std::u16string& str)
+{
+    std::u16string s;
+    s.reserve(str.size());
+    for(const auto c : str) {
+        s.push_back(u_toupper(c));
+    }
+    return s;
+}
+
+void lowercase_first(std::u16string& str)
+{
+    const auto end = str.end();
+    auto it = str.begin();
+    if (it < end) {
+        *it = u_tolower(*it);
+    }
+}
+
+std::u16string lowercase_first_copy(const std::u16string& str)
+{
+    std::u16string s = str;
+    lowercase_first(s);
+    return s;
+}
+
+void uppercase_first(std::u16string& str)
+{
+    const auto end = str.end();
+    auto it = str.begin();
+    if (it < end) {
+        *it = u_toupper(*it);
+    }
+}
+
+std::u16string uppercase_first_copy(const std::u16string& str)
+{
+    std::u16string s = str;
+    uppercase_first(s);
     return s;
 }
 
@@ -754,7 +825,10 @@ std::ostream& operator<<(std::ostream& os, const std::u16string_view& view)
     return os;
 }
 
-}// END namespace osops
+}
+
+
+// END namespace osops
 
 
 

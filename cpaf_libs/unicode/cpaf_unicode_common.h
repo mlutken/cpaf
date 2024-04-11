@@ -19,9 +19,10 @@ using u16_range_vec         = std::vector<u16_range>;
 using u16_vec               = std::vector<std::u16string>;
 using u16_index_pair        = std::pair<std::u16string::size_type, std::u16string::size_type>;
 
-enum class do_trim { no, yes };
-enum class post_op { none, trim, simplify_ws, simplify_title, simplify_title_full  };
+enum class do_trim      { no, yes };
+enum class post_op      { none, trim, simplify_ws, simplify_title, simplify_title_full  };
 
+enum class case_op_t    { uppercase_first, uppercase_all, lowercase_first, lowercase_all };
 
 
 } // END namespace cpaf::unicode

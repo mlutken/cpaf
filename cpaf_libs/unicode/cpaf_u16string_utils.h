@@ -28,8 +28,21 @@ std::vector<std::u16string>
                 to_u16string                    (const std::vector<std::string> string_vec);
 
 std::u16string  to_u16string_revert             (const std::vector<char16_t>& v);
+
+void            case_transform                  (std::u16string& str, case_op_t case_op);
+std::u16string  case_transform_copy             (const std::u16string& str, case_op_t case_op);
+
 void            to_lower                        (std::u16string& str);
 std::u16string  to_lower_copy                   (const std::u16string& str);
+
+void            to_upper                        (std::u16string& str);
+std::u16string  to_upper_copy                   (const std::u16string& str);
+
+void            lowercase_first                 (std::u16string& str);
+std::u16string  lowercase_first_copy            (const std::u16string& str);
+
+void            uppercase_first                 (std::u16string& str);
+std::u16string  uppercase_first_copy            (const std::u16string& str);
 
 std::u16string_view  mk_u16_view                (const std::u16string::const_iterator& begin, const std::u16string::const_iterator& end);
 

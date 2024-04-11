@@ -7,12 +7,14 @@ namespace cpaf::unicode {
 
 
 
-std::string         to_lower_copy   (const std::string& str);
+std::string         to_lower_copy       (const std::string& str);
+void                case_transform      (std::string& str, case_op_t case_op);
+std::string         case_transform_copy (const std::string& str, case_op_t case_op);
 
 
 
-inline std::string  to_string       (const u8_const_range& range)   { return std::string(range.begin(), range.end()); }
-inline std::string  to_string       (const u8_range& range)         { return std::string(range.begin(), range.end()); }
+inline std::string  to_string           (const u8_const_range& range)   { return std::string(range.begin(), range.end()); }
+inline std::string  to_string           (const u8_range& range)         { return std::string(range.begin(), range.end()); }
 
 // -------------------------
 // --- Parsing functions ---

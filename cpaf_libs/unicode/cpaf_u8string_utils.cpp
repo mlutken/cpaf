@@ -96,6 +96,27 @@ std::string to_lower_copy(const std::string& str)
     return to_string(to_lower_copy(to_u16string(str)));
 }
 
+/**
+Convert utf-8 string to specified casing.
+@todo This function is currrently implemented using u16string functions, so
+we have unnesscary convertions.
+*/
+void case_transform(std::string& str, case_op_t case_op)
+{
+    str = to_string(case_transform_copy(to_u16string(str), case_op));
+}
+
+/**
+Convert utf-8 string to specified casing.
+@todo This function is currrently implemented using u16string functions, so
+we have unnesscary convertions.
+*/
+string case_transform_copy(const std::string& str, case_op_t case_op)
+{
+    return to_string(case_transform_copy(to_u16string(str), case_op));
+}
+
+
 /** Find substring between the @a begin_marker and @a end_marker substrings.
   The @a from iterator is advanced to the end of the found substring if we succeed in finding
   both markers.
