@@ -95,18 +95,12 @@ bool player::open(const std::string& resource_path)
 {
     auto playab = cpaf::gui::video::playable(resource_path);
     return open(playab);
-
-//    close();
-//    primary_resource_path_ = resource_path;
-//    // Create media pipeline threads
-//    pause_playback();
-//    primary_source_stream_ = std::make_unique<cpaf::video::play_stream>([this]() {return torrents_get();});
-//    return open_primary_stream(resource_path, "");
 }
 
 bool player::open(const playable& playab)
 {
     playable_ = playab;
+    playable_.update_calculated(tr());
 
     close();
     subtitle_source_ = subtitle_source_t::stream;
