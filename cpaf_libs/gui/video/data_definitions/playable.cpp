@@ -34,9 +34,7 @@ nlohmann::json playable::create_json()
         "imdb_rating": -1,
         "source_location_type": "",
         "start_time": "0",
-        "subtitles": {
-            "default": ""
-        },
+        "subtitles": [],
         "title": "",
         "trailers": [],
         "year": 0
@@ -300,7 +298,10 @@ json::iterator playable::find_subtitle(std::string_view language_code)
     json::iterator it = jo_["subtitles"].begin();
     const auto end = jo_["subtitles"].end();
     for(; it != end; ++it) {
-        if ((*it)["language_code"].get<std::string>() == language_code) {
+        nlohmann::json& subtitle_jo = *it;
+        const std::string& lc = subtitle_jo["language_code"];
+
+        if (lc == language_code) {
             break;
         }
     }
@@ -317,7 +318,8 @@ void playable::ensure_subtitles()
 void playable::ensure_subtitle_none_selected()
 {
     remove_subtitle(subtitle_none_selected_lc);
-    jo_["subtitles"].insert(jo_["subtitles"].begin(),  {{"path", ""}, {"language_code", subtitle_none_selected_lc}});
+    nlohmann::json sub{{"path", ""}, {"language_code", subtitle_none_selected_lc}};
+    jo_["subtitles"].insert(jo_["subtitles"].begin(),  sub );
 }
 
 void playable::ensure_subtitle_user_selected(std::string user_selected_subtitle_path)
@@ -346,6 +348,7 @@ void playable::ensure_default_subtitles(std::string user_selected_subtitle_path)
 
 void playable::update_subtitles(const locale::translator& tr)
 {
+    ensure_default_subtitles();
     for (auto& el : jo_["subtitles"].items()) {
         auto& sub = el.value();
         const auto language_code = cpaf::json_value_str(sub, "language_code", "");
