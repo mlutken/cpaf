@@ -20,6 +20,8 @@ public:
 
 
     std::string             tr              (const std::string& text) const;
+    std::string             target_language () const { return translator_->target_language(); }
+    std::string             id              () const { return translator_->id(); }
 
 private:
     std::unique_ptr<translator_if>  translator_;

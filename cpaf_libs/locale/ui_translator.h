@@ -16,7 +16,10 @@ public:
     using translator_if::translator_if;	// "Import" constructors to scope
 
 private:
-    virtual std::string     do_translate    (const std::string& text) const override;
+    std::string     do_translate        (const std::string& text) const override;
+    std::string     do_target_language  () const override { return target_language_; }
+
+    std::string     target_language_ = "dev";
 
 };
 

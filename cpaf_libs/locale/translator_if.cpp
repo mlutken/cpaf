@@ -10,6 +10,11 @@ std::string translator_if::do_translate(const std::string& text) const
     return text;
 }
 
+std::string translator_if::do_id() const
+{
+    return do_target_language();
+}
+
 
 
 
