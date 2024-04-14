@@ -48,7 +48,7 @@ protected:
     int32_t                 time_font_size              () const { return config_.int32     ("controls", "time_font_size");         }
     color                   time_text_color             () const { return config_.color     ("controls", "time_text_color");        }
 
-    std::chrono::seconds    skip_time_small             () const { return config_.seconds   ("controls", "skip_time_small");        }
+    std::chrono::seconds    skip_time_small             () const { return config_.time_s   ("controls", "skip_time_small");        }
 
     cpaf::locale::translator&           tr              ();
     const cpaf::locale::translator&     tr              () const;

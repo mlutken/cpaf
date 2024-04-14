@@ -9,6 +9,8 @@
 #include <cpaf_libs/time/cpaf_time.h>
 
 namespace fs = std::filesystem;
+using namespace std;
+using namespace cpaf;
 using namespace cpaf::filesystem;
 using namespace std::chrono;
 using namespace nlohmann;
@@ -34,7 +36,8 @@ nlohmann::json playable::create_json()
         "imdb_rating": -1,
         "source_location_type": "",
         "start_time": "0",
-        "subtitles": [],
+        "subtitles": [
+        ],
         "title": "",
         "trailers": [],
         "year": 0
@@ -45,63 +48,6 @@ nlohmann::json playable::create_json()
 }
 
 
-nlohmann::json playable::create_json(std::string path)
-{
-    auto jo = create_json();
-    jo["path"] = std::move(path);
-    jo["subtitles"] = json::array();
-    auto_set_location_type(jo);
-    return jo;
-}
-
-nlohmann::json playable::create_json(std::string path, std::string subtitle_path)
-{
-    auto jo = create_json();
-    jo["path"] = std::move(path);
-    auto_set_location_type(jo);
-    add_subtitle(jo, subtitle_path, "");
-    return jo;
-}
-
-nlohmann::json playable::create_json(std::string path,
-                                     std::string subtitle_path,
-                                     const std::string& language_code)
-{
-    auto jo = create_json();
-    jo["path"] = std::move(path);
-    auto_set_location_type(jo);
-    add_subtitle(jo, subtitle_path, language_code);
-    return jo;
-}
-
-
-void playable::auto_set_location_type(nlohmann::json& jo) {
-    const auto path = jo["path"].get<std::string>();
-    fs::path p(path);
-    std::error_code ec;
-    if (fs::exists(path, ec)){
-        jo["source_location_type"] = "local";
-    }
-    else if (detect_media_location(path) == media_location::remote) {
-        jo["source_location_type"] = "remote";
-    }
-}
-
-void playable::add_subtitle(nlohmann::json& jo, std::string subtitle_path, std::string_view language_code)
-{
-    if (subtitle_path.empty()) {
-        return;
-    }
-    if (!jo.contains("subtitles")) {
-        jo["subtitles"] = json::array();
-    }
-
-    if (language_code.empty()) {
-        language_code = playable::subtitle_user_selected_lc;
-    }
-    jo["subtitles"].push_back( {{"path", std::move(subtitle_path)}, {"language_code", language_code}});
-}
-
 // ------------------------
 // --- PUBLIC functions ---
 // ------------------------
@@ -109,36 +55,59 @@ void playable::add_subtitle(nlohmann::json& jo, std::string subtitle_path, std::
 playable::playable()
     : jo_(playable::create_json())
 {
+    dbg_print(); // FIXMENM
 }
 
 playable::playable(std::string path)
-    : jo_(playable::create_json(std::move(path)))
+    : playable()
 {
+    set_path(path);
 }
 
 playable::playable(nlohmann::json playable)
     : jo_(std::move(playable))
 {
+    auto_set_location_type();
 }
 
 playable::playable(std::string path, std::string subtitle_path)
-    : jo_(playable::create_json(std::move(path), std::move(subtitle_path)))
+    : playable()
 {
+    set_path(path);
+    add_subtitle(subtitle_path, subtitle_user_selected_lc);
 }
 
 playable::playable(std::string path, std::string subtitle_path, const std::string& language_code)
-    : jo_(playable::create_json(std::move(path), std::move(subtitle_path), language_code))
+    : playable()
 {
+    set_path(path);
+    add_subtitle(subtitle_path, language_code);
 }
 
-void playable::auto_set_location_type()
+
+void playable::update_calculated(const locale::translator& tr) const
 {
-    playable::auto_set_location_type(jo_);
+    if (translator_id_ == tr.id()) {
+        return;
+    }
+    translator_id_ = tr.id();
+    subtitles_select_entries_.clear();
+    subtitles_select_entries_.push_back({"", tr.tr("None selected")});
+    subtitles_select_entries_.push_back({subtitle_user(), tr.tr("User selected")});
+    for (auto& el : jo_["subtitles"].items()) {
+        auto& sub = el.value();
+        subtitles_select_entries_.push_back({sub["path"], tr.tr(sub["language_code"])});
+    }
+
+    auto comp = [](const auto& entry_lhs, const auto entry_rhs) { return entry_lhs.language_name < entry_rhs.language_name; };
+
+    std::sort(subtitles_select_entries_.begin() +2, subtitles_select_entries_.end(), comp);
 }
 
-void playable::update_calculated(const locale::translator& tr)
+void playable::set_path(std::string path)
 {
-    update_subtitles(tr);
+    jo_["path"] = std::move(path);
+    auto_set_location_type();
 }
 
 std::string playable::path() const
@@ -153,52 +122,45 @@ microseconds playable::start_time() const
 
 void playable::set_start_time(std::chrono::microseconds start_time)
 {
-    auto start_seconds = duration_cast<seconds>(start_time);
+    auto start_seconds = duration_cast<std::chrono::seconds>(start_time);
     jo_["start_time"] = std::to_string(start_seconds.count()) + "s";
 }
 
 std::string playable::start_time_str() const
 {
-    return cpaf::json_value_str(jo_["start_time"], "");
+    return str("start_time");
 }
 
 std::string playable::get_best_subtitle_path(std::string_view language_code) const
 {
-    if (language_code.empty()) {
-        language_code = playable::subtitle_user_selected_lc;
-    }
-
     for (auto& el : jo_["subtitles"].items()) {
         auto sub = el.value();
         if (sub["language_code"] == language_code) {
             return sub["path"];
         }
     }
-    return "";
+    return subtitle_user();
 }
 
 void playable::add_subtitle(std::string subtitle_path, std::string_view language_code)
 {
-    ensure_subtitles();
-    if (language_code.empty()) {
-        language_code = playable::subtitle_user_selected_lc;
-    }
-
-    if (language_code == subtitle_none_selected_lc) {
-        ensure_subtitle_none_selected();
-    }
-    else if (language_code == subtitle_user_selected_lc) {
-        ensure_subtitle_user_selected(subtitle_path);
+    ensure_subtitles_array_exists();
+    auto it = find_subtitle(language_code);
+    const auto end = jo_["subtitles"].end();
+    if (it != end) {
+        nlohmann::json& subtitle_jo = *it;
+        subtitle_jo["path"] = std::move(subtitle_path);
     }
     else {
-        add_subtitle_helper(subtitle_path, language_code);
+        jo_["subtitles"].push_back({{"path", subtitle_path}, {"language_code", language_code}});
     }
 }
 
+
 bool playable::has_subtitle(std::string_view language_code) const
 {
-    if (language_code.empty()) {
-        return false;
+    if (language_code == subtitle_user_selected_lc) {
+        return !subtitle_user().empty();
     }
     for (auto& el : jo_["subtitles"].items()) {
         auto sub = el.value();
@@ -211,31 +173,13 @@ bool playable::has_subtitle(std::string_view language_code) const
 
 void playable::remove_subtitle(std::string_view language_code)
 {
-    ensure_subtitles();
+    ensure_subtitles_array_exists();
     const auto end = jo_["subtitles"].end();
-
-//    json::iterator it = jo_["subtitles"].begin();
-//    for(; it != end; ++it) {
-//        if ((*it)["language_code"] == language_code) {
-////        if (it->at("language_code") == language_code) {
-//            break;
-//        }
-//    }
 
     json::iterator it = find_subtitle(language_code);
     if (it != end) {
         jo_["subtitles"].erase(it);
     }
-
-//    auto finder = [language_code](const auto& el) -> bool {
-////        return language_code == el.value()["language_code"];
-//        return language_code == el.value()["language_code"].template get<std::string>();
-//    };
-//    const auto& jitems = jo_["subtitles"].items();
-//    const auto iter = std::find_if(jitems.begin(), jitems.end(), finder);
-//    if (iter != jitems.end()) {
-//        jo_["subtitles"].erase(iter);
-//    }
 }
 
 /// @todo Implement subtitle_language_codes()
@@ -274,24 +218,9 @@ void playable::dbg_print() const
     std::cerr << dbg_str() << "\n";
 }
 
-
-
 // -------------------------
 // --- PRIVATE functions ---
 // -------------------------
-json::iterator playable::add_subtitle_helper(std::string subtitle_path, std::string_view language_code)
-{
-    auto it = find_subtitle(language_code);
-    const auto end = jo_["subtitles"].end();
-    if (it != end) {
-        nlohmann::json& subtitle_jo = *it;
-        subtitle_jo["path"] = std::move(subtitle_path);
-    }
-    else {
-        jo_["subtitles"].push_back({{"path", std::move(subtitle_path)}, {"language_code", language_code}});
-    }
-}
-
 
 json::iterator playable::find_subtitle(std::string_view language_code)
 {
@@ -308,54 +237,22 @@ json::iterator playable::find_subtitle(std::string_view language_code)
     return it;
 }
 
-void playable::ensure_subtitles()
+void playable::ensure_subtitles_array_exists()
 {
     if (!jo_.contains("subtitles")) {
         jo_["subtitles"] = json::array();
     }
 }
 
-void playable::ensure_subtitle_none_selected()
+void playable::auto_set_location_type()
 {
-    remove_subtitle(subtitle_none_selected_lc);
-    nlohmann::json sub{{"path", ""}, {"language_code", subtitle_none_selected_lc}};
-    jo_["subtitles"].insert(jo_["subtitles"].begin(),  sub );
-}
-
-void playable::ensure_subtitle_user_selected(std::string user_selected_subtitle_path)
-{
-    auto it = find_subtitle(subtitle_user_selected_lc);
-    nlohmann::json subtitle_jo;
-    if (it != jo_["subtitles"].end()) {
-        subtitle_jo = *it;
+    fs::path p(path());
+    std::error_code ec;
+    if (fs::exists(p, ec)){
+        jo_["source_location_type"] = "local";
     }
-    if (!user_selected_subtitle_path.empty()) {
-        subtitle_jo["path"] = std::move(user_selected_subtitle_path);
-    }
-    subtitle_jo["language_code"] = subtitle_user_selected_lc;
-    remove_subtitle(subtitle_user_selected_lc);
-
-    jo_["subtitles"].insert(jo_["subtitles"].begin()+1,  subtitle_jo);
-}
-
-void playable::ensure_default_subtitles(std::string user_selected_subtitle_path)
-{
-    ensure_subtitles();
-    ensure_subtitle_none_selected();
-    ensure_subtitle_user_selected(user_selected_subtitle_path);
-}
-
-
-void playable::update_subtitles(const locale::translator& tr)
-{
-    ensure_default_subtitles();
-    for (auto& el : jo_["subtitles"].items()) {
-        auto& sub = el.value();
-        const auto language_code = cpaf::json_value_str(sub, "language_code", "");
-        if (!language_code.empty()) {
-            sub["language_name_en"] = cpaf::locale::language_codes::language_name(language_code);
-            sub["language_name"] = cpaf::locale::language_codes::language_name(language_code, tr);
-        }
+    else if (detect_media_location(path()) == media_location::remote) {
+        jo_["source_location_type"] = "remote";
     }
 }
 

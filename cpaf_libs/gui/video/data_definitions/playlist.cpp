@@ -32,7 +32,7 @@ void playlist::add_playables(nlohmann::json& pl,
         pl["media_type"] = media_type;
     }
     for (const auto& p: paths) {
-        pl["items"].push_back(playable::create_json(p));
+        pl["items"].push_back(playable(p).json());
     }
 }
 

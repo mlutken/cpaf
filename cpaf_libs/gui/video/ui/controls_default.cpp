@@ -187,7 +187,7 @@ void controls_default::render_player_controls()
 
     ImGui::PushButtonRepeat(true);
     if (ImGui::ImageButton("backward", buttons_texture_ptr, play_buttons_size_, backward_uv0.to_struct<ImVec2>(), backward_uv1.to_struct<ImVec2>(), {0,0,0,0}, {1,1,1,1})) {
-        player_.seek_relative(-config_.seconds("controls", "skip_time_small"));
+        player_.seek_relative(-config_.time_s("controls", "skip_time_small"));
     }
     ImGui::PopButtonRepeat();
     ImGui::End();
@@ -199,7 +199,7 @@ void controls_default::render_player_controls()
 
     ImGui::PushButtonRepeat(true);
     if (ImGui::ImageButton("forward", buttons_texture_ptr, play_buttons_size_, forward_uv0.to_struct<ImVec2>(), forward_uv1.to_struct<ImVec2>(), {0,0,0,0}, {1,1,1,1})) {
-        player_.seek_relative(config_.seconds("controls", "skip_time_small"));
+        player_.seek_relative(config_.time_s("controls", "skip_time_small"));
     }
     ImGui::PopButtonRepeat();
     ImGui::End();
@@ -227,9 +227,9 @@ void controls_default::render_menu_buttons()
     set_cursor_pos_image_buttons();
 
     // ---- FIXMENM DEBUG ONLY BEGIN ----
-    static int selected_fish = -1;
-    const char* names[] = { "Bream", "Haddock", "Mackerel", "Pollock", "Tilefish" };
-    static bool toggles[] = { true, false, false, false, false };
+    static uint32_t selected_subtitle = 0;
+//    const char* names[] = { "Bream", "Haddock", "Mackerel", "Pollock", "Tilefish" };
+//    static bool toggles[] = { true, false, false, false, false };
 
     // Simple selection popup (if you want to show the current selection inside the Button itself,
     // you may want to build a string using the "###" operator to preserve a constant ID with a variable label)
@@ -241,13 +241,14 @@ void controls_default::render_menu_buttons()
 
     if (ImGui::BeginPopup("subtitles_popup_menu"))
     {
+        player_.cur_playable().update_calculated(tr());
         ImGui::TextUnformatted(tr().tr("Select subtitle"));
         ImGui::Separator();
-        const auto& subtitles = player_.cur_playable().subtitles();
+        const auto& subtitles = player_.cur_playable().subtitles_select_entries();
         for (auto i = 0u; i < subtitles.size(); ++i)
-            if (ImGui::Selectable(subtitles[i]["language_name"].get<std::string>())) {
-                selected_fish = i;
-                std::cerr << "FIXMENM subtitle selected index: "  << selected_fish << "\n";
+            if (ImGui::Selectable(subtitles[i].language_name)) {
+                selected_subtitle = i;
+                std::cerr << "FIXMENM subtitle selected index: "  << selected_subtitle << "\n";
             }
         ImGui::EndPopup();
     }

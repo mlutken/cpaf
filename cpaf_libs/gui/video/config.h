@@ -26,13 +26,13 @@ public:
     float                       float_val               (const std::string& group, const std::string& id) const;
     cpaf::gui::color            color                   (const std::string& group, const std::string& id) const;
     cpaf::gui::color            color_rgba              (const std::string& group, const std::string& id) const;
-    std::chrono::seconds        seconds                 (const std::string& group, const std::string& id) const;
+    std::chrono::seconds        time_s                  (const std::string& group, const std::string& id) const;
 
     void                        str_set                 (const std::string& group, const std::string& id, const std::string& val);
     void                        int32_set               (const std::string& group, const std::string& id, int32_t val);
     void                        float_set               (const std::string& group, const std::string& id, float val);
     void                        color_set               (const std::string& group, const std::string& id, cpaf::gui::color val);
-    void                        seconds_set             (const std::string& group, const std::string& id, std::chrono::seconds val);
+    void                        time_s_set              (const std::string& group, const std::string& id, std::chrono::seconds val);
 
     // template <class TYPE>
     // TYPE                    controls_val        (const std::string& id) const

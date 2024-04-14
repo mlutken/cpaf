@@ -1,7 +1,8 @@
 #pragma once
 #include <chrono>
 #include <string_view>
-#include <nlohmann/json.hpp>
+#include <cpaf_libs/utils/cpaf_json_utils.h>
+#include <cpaf_libs/gui/color.h>
 
 namespace cpaf::locale {
 class translator;
@@ -13,16 +14,18 @@ namespace cpaf::gui::video {
 class playable
 {
 public:
-    static constexpr std::string_view               subtitle_none_selected_lc   = "subtitle_none_selected_lc";
+    struct subtitles_select_entry_t {
+        std::string     path;
+        std::string     language_name;
+    };
+
+    using subtitles_select_vector = std::vector<subtitles_select_entry_t>;
+
     static constexpr std::string_view               subtitle_user_selected_lc   = "subtitle_user_selected_lc";
 
-
+private:
     static nlohmann::json   create_json             ();
-    static nlohmann::json   create_json             (std::string path);
-    static nlohmann::json   create_json             (std::string path, std::string subtitle_path);
-    static nlohmann::json   create_json             (std::string path, std::string subtitle_path, const std::string& language_code);
-    static void             auto_set_location_type  (nlohmann::json& jo);
-    static void             add_subtitle            (nlohmann::json& jo, std::string subtitle_path, std::string_view language_code= subtitle_user_selected_lc);
+public:
 
 
     playable();
@@ -34,19 +37,36 @@ public:
 
     const nlohmann::json&           json                    () const { return jo_;  }
 
-    void                            auto_set_location_type  ();
+    void                            update_calculated       (const cpaf::locale::translator& tr) const;
+    std::string                     str                     (const std::string& id) const                       { return cpaf::json_value_str(jo_, id, "");     }
+    std::int32_t                    int32                   (const std::string& id) const                       { return cpaf::json_value_int32(jo_, id, 0);    }
+    bool                            bool_val                (const std::string& id) const                       { return cpaf::json_value_bool(jo_, id, "");    }
+    float                           float_val               (const std::string& id) const                       { return cpaf::json_value_float(jo_, id, 0);    }
+    std::chrono::seconds            time_s                  (const std::string& id) const                       { return std::chrono::seconds(cpaf::json_value_int32(jo_, id, 0)); }
 
-    void                            update_calculated       (const cpaf::locale::translator& tr);
+    void                            str_set                 (const std::string& id, const std::string& val)     { jo_[id] = val; }
+    void                            int32_set               (const std::string& id, int32_t val)                { jo_[id] = val; }
+    void                            float_set               (const std::string& id, float val)                  { jo_[id] = val; }
+    void                            time_s_set              (const std::string& id, std::chrono::seconds val)   { jo_[id] = val.count(); }
+
+
+    void                            set_path                (std::string path);
     std::string                     path                    () const;
+    bool                            has_path                () const    { return !path().empty(); }
     std::chrono::microseconds       start_time              () const;
     void                            set_start_time          (std::chrono::microseconds start_time);
     std::string                     start_time_str          () const;
+
     std::string                     get_best_subtitle_path  (std::string_view language_code = subtitle_user_selected_lc) const;
     void                            add_subtitle            (std::string subtitle_path, std::string_view language_code);
+    void                            set_subtitle_user       (std::string subtitle_path)                         { str_set("subtitle_user", subtitle_path);  }
+    std::string                     subtitle_user           () const                                            { return str("subtitle_user");              }
     bool                            has_subtitle            (std::string_view language_code = subtitle_user_selected_lc) const;
     void                            remove_subtitle         (std::string_view language_code);
     std::vector<std::string>        subtitle_language_codes () const;
     const nlohmann::json&           subtitles               () const;
+
+    const subtitles_select_vector&  subtitles_select_entries() const { return subtitles_select_entries_; }
 
     bool                            is_valid                () const;
 
@@ -54,18 +74,15 @@ public:
     void                            dbg_print               () const;
 
 private:
-    nlohmann::json::iterator        add_subtitle_helper             (std::string subtitle_path, std::string_view language_code);
     nlohmann::json::iterator        find_subtitle                   (std::string_view language_code);
-    void                            ensure_subtitles                ();
-    void                            ensure_subtitle_none_selected   ();
-    void                            ensure_subtitle_user_selected   (std::string user_selected_subtitle_path = "");
-    void                            ensure_default_subtitles        (std::string user_selected_subtitle_path = "");
-
-    void                            update_subtitles                (const cpaf::locale::translator& tr);
+    void                            ensure_subtitles_array_exists   ();
+    void                            auto_set_location_type  ();
 
     mutable nlohmann::json          jo_;
     nlohmann::json::object_t        empty_object_;
     nlohmann::json::array_t         empty_array_;
+    mutable subtitles_select_vector subtitles_select_entries_;
+    mutable std::string             translator_id_;
 };
 
 } // namespace cpaf::gui::video

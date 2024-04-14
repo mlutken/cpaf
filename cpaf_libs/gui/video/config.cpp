@@ -91,7 +91,7 @@ color config::color_rgba(const std::string& group, const std::string& id) const
     return cpaf::gui::color::rgba(jo_arr[0],jo_arr[1],jo_arr[2],jo_arr[3]);
 }
 
-std::chrono::seconds config::seconds(const std::string& group, const std::string& id) const
+std::chrono::seconds config::time_s(const std::string& group, const std::string& id) const
 {
     return std::chrono::seconds(cpaf::json_value_int32(jo_[group], id, 0));
 }
@@ -120,7 +120,7 @@ void config::color_set(const std::string& group, const std::string& id, cpaf::gu
     signal_changed();
 }
 
-void config::seconds_set(const std::string& group, const std::string& id, std::chrono::seconds val)
+void config::time_s_set(const std::string& group, const std::string& id, std::chrono::seconds val)
 {
     jo_[group][id] = val.count();
     signal_changed();
