@@ -2,16 +2,17 @@
 
 extern "C"
 {
-#include <libavutil/samplefmt.h>
 #include <libswresample/swresample.h>
 }
 
 
+#include <vector>
 #include <string>
 #include <chrono>
 #include <atomic>
 #include <memory>
 #include <functional>
+#include <string>
 
 #include <math/base/v2.hpp>
 #include <video/audio_types_convert.h>
@@ -85,6 +86,16 @@ enum class subtitle_text_format_t : int8_t {
     srt
 };
 
+struct subtitle_source_entry_t
+{
+    std::string         path;
+    std::string         language_code;
+    std::string         language_name;
+    subtitle_source_t   source;
+};
+
+using subtitle_source_entries_t = std::vector<subtitle_source_entry_t>;
+
 enum class stream_state_t : int8_t {
     inactive,
     opening,
@@ -109,7 +120,6 @@ struct pixel_rgba_t {
     uint8_t b = 0;
     uint8_t a = 0;
 };
-
 
 
 static_assert(sizeof(uint32_t) == sizeof(pixel_rgba_t), "ERROR pixel_rgba_t is NOT 4 bytes!" );
