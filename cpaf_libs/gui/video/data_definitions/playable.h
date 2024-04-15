@@ -2,6 +2,7 @@
 #include <chrono>
 #include <string_view>
 #include <cpaf_libs/utils/cpaf_json_utils.h>
+#include <cpaf_libs/video/av_util.h>
 #include <cpaf_libs/gui/color.h>
 
 namespace cpaf::locale {
@@ -57,16 +58,20 @@ public:
     void                            set_start_time          (std::chrono::microseconds start_time);
     std::string                     start_time_str          () const;
 
-    std::string                     get_best_subtitle_path  (std::string_view language_code = subtitle_user_selected_lc) const;
+    std::string                     find_best_subtitle_path  (std::string& language_code) const;
     void                            add_subtitle            (std::string subtitle_path, std::string_view language_code);
     void                            set_subtitle_user       (std::string subtitle_path)                         { str_set("subtitle_user", subtitle_path);  }
     std::string                     subtitle_user           () const                                            { return str("subtitle_user");              }
     bool                            has_subtitle            (std::string_view language_code = subtitle_user_selected_lc) const;
+    nlohmann::json                  get_subtitle            (std::string_view language_code = subtitle_user_selected_lc) const;
     void                            remove_subtitle         (std::string_view language_code);
     std::vector<std::string>        subtitle_language_codes () const;
     const nlohmann::json&           subtitles               () const;
 
-    const subtitles_select_vector&  subtitles_select_entries() const { return subtitles_select_entries_; }
+    const cpaf::video::subtitle_source_entries_t&
+    selectable_subtitles                                    () const { return selectable_subtitles_; }
+
+    int32_t                         selectable_subtitle_index_of (std::string_view language_code) const;
 
     bool                            is_valid                () const;
 
@@ -74,15 +79,16 @@ public:
     void                            dbg_print               () const;
 
 private:
-    nlohmann::json::iterator        find_subtitle                   (std::string_view language_code);
-    void                            ensure_subtitles_array_exists   ();
+    nlohmann::json::iterator        find_subtitle                   (std::string_view language_code) const;
+    void                            ensure_subtitles_array_exists   () const;
     void                            auto_set_location_type  ();
 
-    mutable nlohmann::json          jo_;
-    nlohmann::json::object_t        empty_object_;
-    nlohmann::json::array_t         empty_array_;
-    mutable subtitles_select_vector subtitles_select_entries_;
-    mutable std::string             translator_id_;
+    mutable nlohmann::json                          jo_;
+    nlohmann::json::object_t                        empty_object_;
+    nlohmann::json::array_t                         empty_array_;
+    mutable cpaf::video::subtitle_source_entries_t  selectable_subtitles_;
+//    mutable subtitles_select_vector subtitles_select_entries_;
+    mutable std::string                             translator_id_;
 };
 
 } // namespace cpaf::gui::video

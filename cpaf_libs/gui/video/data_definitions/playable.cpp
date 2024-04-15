@@ -84,24 +84,27 @@ playable::playable(std::string path, std::string subtitle_path, const std::strin
     add_subtitle(subtitle_path, language_code);
 }
 
-
 void playable::update_calculated(const locale::translator& tr) const
 {
     if (translator_id_ == tr.id()) {
         return;
     }
+    const auto sub_source = cpaf::video::subtitle_source_t::text_file;
     translator_id_ = tr.id();
-    subtitles_select_entries_.clear();
-    subtitles_select_entries_.push_back({"", tr.tr("None selected")});
-    subtitles_select_entries_.push_back({subtitle_user(), tr.tr("User selected")});
+    selectable_subtitles_.clear();
+    selectable_subtitles_.push_back({subtitle_user(), string(subtitle_user_selected_lc), tr.tr("User selected"), sub_source});
     for (auto& el : jo_["subtitles"].items()) {
-        auto& sub = el.value();
-        subtitles_select_entries_.push_back({sub["path"], tr.tr(sub["language_code"])});
+        auto& sub_jo = el.value();
+        const auto language_code = cpaf::json_value_str(sub_jo, "language_code", "");
+        if (language_code.empty()) {
+            continue;
+        }
+        const string language_name = tr.tr(cpaf::locale::language_codes::language_name(language_code));
+        selectable_subtitles_.push_back({sub_jo["path"], language_code, language_name, sub_source});
     }
-
     auto comp = [](const auto& entry_lhs, const auto entry_rhs) { return entry_lhs.language_name < entry_rhs.language_name; };
 
-    std::sort(subtitles_select_entries_.begin() +2, subtitles_select_entries_.end(), comp);
+    std::sort(selectable_subtitles_.begin() +2, selectable_subtitles_.end(), comp);
 }
 
 void playable::set_path(std::string path)
@@ -131,7 +134,13 @@ std::string playable::start_time_str() const
     return str("start_time");
 }
 
-std::string playable::get_best_subtitle_path(std::string_view language_code) const
+/** Try finding a subtitle file with given language code
+First look for exact match on desired language_code.
+If not found see if we have a user (most likely from command line) specified path that we can use
+In this case we modify the inout parameter language_code to be
+playable::subtitle_user_selected_lc ("subtitle_user_selected_lc")
+*/
+std::string playable::find_best_subtitle_path(std::string& language_code) const
 {
     for (auto& el : jo_["subtitles"].items()) {
         auto sub = el.value();
@@ -139,6 +148,7 @@ std::string playable::get_best_subtitle_path(std::string_view language_code) con
             return sub["path"];
         }
     }
+    language_code = subtitle_user_selected_lc;
     return subtitle_user();
 }
 
@@ -171,6 +181,25 @@ bool playable::has_subtitle(std::string_view language_code) const
     return false;
 }
 
+nlohmann::json playable::get_subtitle(std::string_view language_code) const
+{
+    nlohmann::json sub_jo;
+    sub_jo["language_code"] = language_code;
+    if (language_code == subtitle_user_selected_lc) {
+        sub_jo["path"] = subtitle_user();
+    }
+    else {
+        ensure_subtitles_array_exists();
+        auto it = find_subtitle(language_code);
+        const auto end = jo_["subtitles"].end();
+        if (it != end) {
+            sub_jo = *it;
+        }
+    }
+
+    return sub_jo;
+}
+
 void playable::remove_subtitle(std::string_view language_code)
 {
     ensure_subtitles_array_exists();
@@ -201,6 +230,22 @@ const nlohmann::json& playable::subtitles() const
     return cpaf::json_value_array_cref(jo_, "subtitles", empty_array_);
 }
 
+int32_t playable::selectable_subtitle_index_of(std::string_view language_code) const
+{
+    if (language_code.empty()) {
+        return -1;
+    }
+
+    int32_t index = 0;
+    for (const auto& entry: selectable_subtitles_) {
+        if (entry.language_code == language_code) {
+            return index;
+        }
+        ++index;
+    }
+    return -1;
+}
+
 bool playable::is_valid() const
 {
     return !cpaf::json_value_str(jo_["path"], "").empty();
@@ -222,7 +267,7 @@ void playable::dbg_print() const
 // --- PRIVATE functions ---
 // -------------------------
 
-json::iterator playable::find_subtitle(std::string_view language_code)
+json::iterator playable::find_subtitle(std::string_view language_code) const
 {
     json::iterator it = jo_["subtitles"].begin();
     const auto end = jo_["subtitles"].end();
@@ -237,7 +282,7 @@ json::iterator playable::find_subtitle(std::string_view language_code)
     return it;
 }
 
-void playable::ensure_subtitles_array_exists()
+void playable::ensure_subtitles_array_exists() const
 {
     if (!jo_.contains("subtitles")) {
         jo_["subtitles"] = json::array();
