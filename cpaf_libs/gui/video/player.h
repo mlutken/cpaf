@@ -5,7 +5,6 @@
 #include <thread>
 #include <cpaf_libs/locale/translator.h>
 #include <cpaf_libs/gui/gui_types.h>
-#include <cpaf_libs/video/av_util.h>
 #include <cpaf_libs/video/play_stream.h>
 #include <cpaf_libs/video/media_stream_time.h>
 #include <cpaf_libs/gui/video/pipeline_threads/pipeline_threads.h>
@@ -47,7 +46,6 @@ public:
     bool                            open                    (const playable& playab);
     void                            open_async              (const playable& playab);
     void                            open_async              (const std::string& resource_path, std::chrono::microseconds start_time_pos = {});
-    void                            open_subtitle           (const std::string& subtitle_path, const std::string& language_code);
     void                            close                   ();
     void                            close_async             ();
     void                            cancel_async_open       ();
@@ -131,7 +129,16 @@ public:
     // -------------------------------
     // --- Subtitles setup/control ---
     // -------------------------------
+    void                                open_subtitle           (const std::string& subtitle_path, const std::string& language_code);
     subtitle_source_t                   subtitle_source         () const { return subtitle_source_; }
+    const std::string&                  subtitle_language_code  () const { return subtitle_language_code_; }
+    void                                subtitle_select         (const std::string& language_code);
+    void                                subtitle_select         (int32_t selectable_subtitle_index);
+
+    const cpaf::video::subtitle_source_entries_t&
+    selectable_subtitles                                        () const { return playable_.selectable_subtitles(); }
+    int32_t                             subtitle_selected_index () const;
+
     size_t                              subtitle_stream_index	() const;
     void                                subtitle_container_set  (std::unique_ptr<subtitle_container> container);
 
@@ -210,9 +217,11 @@ private:
     void                            handle_internal_events  ();
     void                            handle_stream_state     ();
     void                            torrent_finished_event  (std::shared_ptr<cpaf::torrent::torrent> tor_file);
+//    void                            calc_selectable_subtitles() const;
 
     void                            update_screen_size_factor();
     bool                            show_stream_state       () const;
+    bool                            set_subtitle_code_helper(std::string language_code);
 
     // ----------------------------
     // --- PRIVATE: Member vars ---
@@ -249,6 +258,9 @@ private:
     bool                                            show_controls_                  = true;
     bool                                            resume_from_pause_on_seek_      = true;
     subtitle_source_t                               subtitle_source_                = subtitle_source_t::stream;    /// @todo
+    std::string                                     subtitle_language_code_;
+///    mutable cpaf::video::subtitle_source_entries_t  selectable_subtitles_;
+///    mutable std::string                             selectable_subtitles_translator_id_;
     std::function<void ()>                          cb_start_playing_;
     std::unique_ptr<std::thread>                    open_thread_                    = nullptr;
     std::unique_ptr<std::thread>                    open_subtitle_thread_           = nullptr;

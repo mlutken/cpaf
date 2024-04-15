@@ -227,7 +227,8 @@ void controls_default::render_menu_buttons()
     set_cursor_pos_image_buttons();
 
     // ---- FIXMENM DEBUG ONLY BEGIN ----
-    static uint32_t selected_subtitle = 0;
+    int32_t cur_selected_index = player_.subtitle_selected_index();
+    int32_t new_selected_index = cur_selected_index;
 //    const char* names[] = { "Bream", "Haddock", "Mackerel", "Pollock", "Tilefish" };
 //    static bool toggles[] = { true, false, false, false, false };
 
@@ -241,17 +242,34 @@ void controls_default::render_menu_buttons()
 
     if (ImGui::BeginPopup("subtitles_popup_menu"))
     {
-        player_.cur_playable().update_calculated(tr());
         ImGui::TextUnformatted(tr().tr("Select subtitle"));
         ImGui::Separator();
-        const auto& subtitles = player_.cur_playable().subtitles_select_entries();
-        for (auto i = 0u; i < subtitles.size(); ++i)
-            if (ImGui::Selectable(subtitles[i].language_name)) {
-                selected_subtitle = i;
-                std::cerr << "FIXMENM subtitle selected index: "  << selected_subtitle << "\n";
+
+        if(ImGui::Button(tr().tr("No subtitles").c_str()) ) {
+            std::cerr << "FIXMENM No subtitles\n";
+            player_.subtitle_select(-1);
+
+        }
+        ImGui::Separator();
+        const auto& subtitles = player_.selectable_subtitles();
+
+        for (auto i = 0u; i < subtitles.size(); ++i) {
+            const auto i_signed = static_cast<int32_t>(i);
+            const bool selected = cur_selected_index == i_signed;
+            if (ImGui::Selectable(subtitles[i].language_name, selected)) {
+                new_selected_index = i_signed;
+                std::cerr << "FIXMENM subtitle selected index: "  << new_selected_index << "\n";
             }
+        }
         ImGui::EndPopup();
     }
+
+
+    if (cur_selected_index != new_selected_index) {
+        std::cerr << "FIXMENM subtitle selected index CHANGED! : "  << new_selected_index << "\n";
+        player_.subtitle_select(new_selected_index);
+    }
+
 
 //    if (ImGui::BeginPopup("subtitles_popup_menu"))
 //    {
