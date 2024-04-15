@@ -30,6 +30,7 @@ public:
 
     void                        str_set                 (const std::string& group, const std::string& id, const std::string& val);
     void                        int32_set               (const std::string& group, const std::string& id, int32_t val);
+    void                        bool_set                (const std::string& group, const std::string& id, bool val);
     void                        float_set               (const std::string& group, const std::string& id, float val);
     void                        color_set               (const std::string& group, const std::string& id, cpaf::gui::color val);
     void                        time_s_set              (const std::string& group, const std::string& id, std::chrono::seconds val);
@@ -43,11 +44,12 @@ public:
 
     void                    connect_for_changes (changed_cb callback);
     std::string             dbg_string          () const;
+    void                    dbg_print           () const;
 
 private:
     void    signal_changed() const;
 
-    nlohmann::json jo_;
+    mutable nlohmann::json jo_;
     std::vector<changed_cb> on_changed_callbacks_;
 
 };

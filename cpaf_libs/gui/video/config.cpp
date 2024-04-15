@@ -34,10 +34,11 @@ static const auto default_config = nlohmann::json::parse(
             "font_scale": 1.0,
             "relative_ypos": 0.92,
             "has_background": true,
-            "show": true
+            "show": true,
+            "language_code": "da"
         },
-        "user": {
-            "ui_language_code": "en"
+        "ui": {
+            "language_code": "en"
         }
     }
     )");
@@ -108,6 +109,13 @@ void config::int32_set(const std::string& group, const std::string& id, int32_t 
     signal_changed();
 }
 
+void config::bool_set(const std::string& group, const std::string& id, bool val)
+{
+    jo_[group][id] = val;
+    signal_changed();
+}
+
+
 void config::float_set(const std::string& group, const std::string& id, float val)
 {
     jo_[group][id] = val;
@@ -136,11 +144,21 @@ std::string config::dbg_string() const
     return jo_.dump(4);
 }
 
+void config::dbg_print() const
+{
+    std::cerr << dbg_string() << "\n";
+}
+
 void config::signal_changed() const
 {
-    for (auto& cb: on_changed_callbacks_) {
-        cb();
-    }
+    std::cerr << "TODO config::signal_changed() crashing. Fix!\n";
+    // Reason: We keep adding in the render_base::render_base constructor whic is caleed on every new file opened
+    // render_base::render_base(player& owning_player, config& cfg)
+    // config_.connect_for_changes([this]() {on_configuration_changed();});
+
+//    for (auto& cb: on_changed_callbacks_) {
+//        cb();
+//    }
 }
 
 } // namespace cpaf::gui::video
