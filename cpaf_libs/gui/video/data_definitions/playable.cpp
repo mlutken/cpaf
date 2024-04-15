@@ -102,9 +102,10 @@ void playable::update_calculated(const locale::translator& tr) const
         const string language_name = tr.tr(cpaf::locale::language_codes::language_name(language_code));
         selectable_subtitles_.push_back({sub_jo["path"], language_code, language_name, sub_source});
     }
-    auto comp = [](const auto& entry_lhs, const auto entry_rhs) { return entry_lhs.language_name < entry_rhs.language_name; };
-
-    std::sort(selectable_subtitles_.begin() +2, selectable_subtitles_.end(), comp);
+    if (selectable_subtitles_.size() > 3) {
+        auto comp = [](const auto& entry_lhs, const auto entry_rhs) { return entry_lhs.language_name < entry_rhs.language_name; };
+        std::sort(selectable_subtitles_.begin() +2, selectable_subtitles_.end(), comp);
+    }
 }
 
 void playable::set_path(std::string path)
