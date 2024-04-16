@@ -60,7 +60,8 @@ public:
     void                            set_start_time          (std::chrono::microseconds start_time);
     std::string                     start_time_str          () const;
 
-    std::string                     find_best_subtitle_path  (std::string& language_code) const;
+    cpaf::video::subtitle_source_entry_t
+                                    find_best_subtitle      (std::string& language_code) const;
     void                            add_subtitle            (std::string subtitle_path, std::string_view language_code);
     void                            set_subtitle_user       (std::string subtitle_path)                         { str_set("subtitle_user", subtitle_path);  }
     std::string                     subtitle_user           () const                                            { return str("subtitle_user");              }

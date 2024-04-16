@@ -3,6 +3,7 @@
 #include <array>
 #include <memory>
 #include <thread>
+#include <mutex>
 #include <cpaf_libs/locale/translator.h>
 #include <cpaf_libs/gui/gui_types.h>
 #include <cpaf_libs/video/play_stream.h>
@@ -43,8 +44,8 @@ public:
     void                            start_playing           (const std::chrono::microseconds& start_time_pos = std::chrono::microseconds(0));
     void                            terminate               ();
     bool                            open                    (const std::string& resource_path);
-    bool                            open                    (const playable& playab);
-    void                            open_async              (const playable& playab);
+    bool                            open                    (playable playab);
+    void                            open_async              (playable playab);
     void                            open_async              (const std::string& resource_path, std::chrono::microseconds start_time_pos = {});
     void                            close                   ();
     void                            close_async             ();
@@ -140,6 +141,7 @@ public:
     int32_t                             subtitle_selected_index () const;
 
     size_t                              subtitle_stream_index	() const;
+    void                                subtitle_stream_index_set(size_t stream_index);
     void                                subtitle_container_set  (std::unique_ptr<subtitle_container> container);
 
     // ---------------------------------------------
@@ -224,6 +226,7 @@ private:
     bool                            show_stream_state       () const;
     bool                            set_subtitle_code_helper(std::string language_code);
 
+
     // ----------------------------
     // --- PRIVATE: Member vars ---
     // ----------------------------
@@ -249,6 +252,9 @@ private:
     mutable cpaf::video::av_codec_context           video_codec_ctx_;
     mutable cpaf::video::av_codec_context           audio_codec_ctx_;
     mutable cpaf::video::av_codec_context           subtitle_codec_ctx_;
+    mutable std::mutex                              video_codec_mutex_;
+    mutable std::mutex                              audio_codec_mutex_;
+    mutable std::mutex                              subtitle_codec_mutex_;
     cpaf::video::audio_resampler                    audio_resampler_;
 
     std::string                                     primary_resource_path_;
@@ -260,8 +266,6 @@ private:
     bool                                            resume_from_pause_on_seek_      = true;
     subtitle_source_t                               subtitle_source_                = subtitle_source_t::stream;    /// @todo
     std::string                                     subtitle_language_code_;
-///    mutable cpaf::video::subtitle_source_entries_t  selectable_subtitles_;
-///    mutable std::string                             selectable_subtitles_translator_id_;
     std::function<void ()>                          cb_start_playing_;
     std::unique_ptr<std::thread>                    open_thread_                    = nullptr;
     std::unique_ptr<std::thread>                    open_subtitle_thread_           = nullptr;

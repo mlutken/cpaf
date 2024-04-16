@@ -159,16 +159,28 @@ If not found see if we have a user (most likely from command line) specified pat
 In this case we modify the inout parameter language_code to be
 playable::subtitle_user_selected_lc ("subtitle_user_selected_lc")
 */
-std::string playable::find_best_subtitle_path(std::string& language_code) const
+subtitle_source_entry_t playable::find_best_subtitle(std::string& language_code) const
 {
+    auto entry = selectable_subtitle_entry(language_code);
+    if (entry.is_valid()) {
+        return entry;
+    }
+
     for (auto& el : jo_["subtitles"].items()) {
         auto sub = el.value();
         if (sub["language_code"] == language_code) {
-            return sub["path"];
+            entry.language_code = sub["language_code"];
+            entry.language_name = "";
+            entry.path = sub["path"];
+            entry.source = subtitle_source_t::text_file;
+            return entry;
         }
     }
-    language_code = subtitle_user_selected_lc;
-    return subtitle_user();
+    entry.language_code = subtitle_user_selected_lc;
+    entry.language_name = "";
+    entry.path = subtitle_user();
+    entry.source = !entry.path.empty() ? subtitle_source_t::text_file : subtitle_source_t::none;
+    return entry;
 }
 
 void playable::add_subtitle(std::string subtitle_path, std::string_view language_code)

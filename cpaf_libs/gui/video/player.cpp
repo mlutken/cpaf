@@ -13,6 +13,7 @@
 #include <cpaf_libs/gui/video/ui/controls_default.h>
 
 
+using namespace std;
 using namespace cpaf::video;
 using namespace cpaf::time;
 using namespace std::chrono;
@@ -66,12 +67,9 @@ void player::start_playing(const std::chrono::microseconds& start_time_pos)
     video_fmt_ctx.seek_time_pos(start_time_pos);
     audio_fmt_ctx.seek_time_pos(start_time_pos);
     subtitle_fmt_ctx.seek_time_pos(start_time_pos);
-    audio_resampler_.in_formats_set(audio_codec_context());
 
+    audio_resampler_.in_formats_set(audio_codec_context());
     audio_resampler_.init();
-    video_codec_context().get_packet_function_set(video_fmt_ctx.get_packet_function(media_type_t::video));
-    audio_codec_context().get_packet_function_set(video_fmt_ctx.get_packet_function(media_type_t::audio));
-    subtitle_codec_context().get_packet_function_set(video_fmt_ctx.get_packet_function(media_type_t::subtitle));
 
     media_pipeline_threads().audio_resampler_set(audio_resampler_);
     video_fmt_ctx.read_packets_to_queues(video_fmt_ctx.primary_media_type(), 10);
@@ -99,41 +97,40 @@ bool player::open(const std::string& resource_path)
     return open(playab);
 }
 
-bool player::open(const playable& playab)
+bool player::open(playable playab)
 {
-    playable_ = playab;
+    playable_ = std::move(playab);
 
     close();
     subtitle_language_code_.clear();
     subtitle_source_ = subtitle_source_t::stream;
-    primary_resource_path_ = playab.path();
+    primary_resource_path_ = playable_.path();
     pause_playback();
 
 
-    auto language_code = configuration.str("subtitles", "language_code");
-    const auto subtitle_path = playab.find_best_subtitle_path(language_code);
-    std::cerr << "\n---FIXMENM Open playable ---\n" << playab.json().dump(4) << "\n FIXMENM\n";
+    std::cerr << "\n---FIXMENM Open playable ---\n" << playable_.json().dump(4) << "\n FIXMENM\n";
     //    configuration.dbg_print(); // FIXMENM
-    //    fmt::println("FIXMENM open playable language_code: '{}'", language_code); std::cout << std::endl;
-    //    fmt::println("FIXMENM open playable subtitle path: {},  language_code: '{}'", subtitle_path, language_code); std::cout << std::endl;
 
-    start_time_pos_ = playab.start_time();
+    start_time_pos_ = playable_.start_time();
     primary_source_stream_ = std::make_unique<cpaf::video::play_stream>([this]() {return torrents_get();});
-    const bool ok = open_primary_stream(playab.path());
+    const bool ok = open_primary_stream(playable_.path());
 
     const bool force = true;
     playable_update_calculated(force);
 
-    if (!subtitle_path.empty()) {
-        open_subtitle(subtitle_path, language_code);
+    auto language_code = configuration.str("subtitles", "language_code");
+    const auto entry = playable_.find_best_subtitle(language_code);
+
+    if (entry.is_valid()) {
+        subtitle_select(entry.language_code);
     }
 
     return ok;
 }
 
-void player::open_async(const playable& playab)
+void player::open_async(playable playab)
 {
-    open_thread_ = std::make_unique<std::thread>( [=,this]() { this->open(playab); } );
+    open_thread_ = std::make_unique<std::thread>( [=,this]() { this->open(std::move(playab)); } );
     open_thread_->detach();
 }
 
@@ -190,6 +187,7 @@ void player::cancel_async_open() {
     open_thread_.reset(nullptr);
 }
 
+/// @todo Most likely we need to test this and make an async version!
 bool player::open_secondary(const std::string& resource_path, stream_type_t sti)
 {
     return open_stream(resource_path, sti);
@@ -275,11 +273,19 @@ stream_state_t player::stream_state() const
 // ----------------
 av_codec_context& player::video_codec_context() const
 {
+    if (!primary_source_stream_) {
+        std::cerr << "LOG_CRITICAL: create_video_codec_ctx(), primary_source_stream_ is nullptr\n";
+        return video_codec_ctx_;
+    }
+
+    std::scoped_lock<std::mutex> lock(video_codec_mutex_);
     if (!video_codec_ctx_.is_valid()) {
         auto* video_stream = source_stream(stream_type_t::video);
         if (video_stream){
             video_codec_ctx_ = video_stream->codec_context(video_stream_index());
             update_scaling_context();
+            av_format_context& video_fmt_ctx = primary_source_stream_->format_context(); // TODO: If we use multiple streams we need to get the right format ctx per stream here!
+            video_codec_ctx_.get_packet_function_set(video_fmt_ctx.get_packet_function(media_type_t::video));
         }
     }
     return video_codec_ctx_;
@@ -287,11 +293,19 @@ av_codec_context& player::video_codec_context() const
 
 av_codec_context& player::audio_codec_context() const
 {
+    if (!primary_source_stream_) {
+        std::cerr << "LOG_CRITICAL: audio_codec_context(), primary_source_stream_ is nullptr\n";
+        return audio_codec_ctx_;
+    }
+
+    std::scoped_lock<std::mutex> lock(audio_codec_mutex_);
     if (!audio_codec_ctx_.is_valid()) {
         auto* audio_stream = source_stream(stream_type_t::audio);
         if (audio_stream){
             audio_codec_ctx_ = audio_stream->codec_context(audio_stream_index());
             //TODO: Should we call update_resampler_context() or similar named function?;
+            auto&  audio_fmt_ctx = primary_source_stream_->format_context(); // TODO: If we use multiple streams we need to get the right format ctx per stream here!
+            audio_codec_ctx_.get_packet_function_set(audio_fmt_ctx.get_packet_function(media_type_t::audio));
         }
     }
     return audio_codec_ctx_;
@@ -299,10 +313,18 @@ av_codec_context& player::audio_codec_context() const
 
 av_codec_context& player::subtitle_codec_context() const
 {
+    if (!primary_source_stream_) {
+        std::cerr << "LOG_CRITICAL: subtitle_codec_context(), primary_source_stream_ is nullptr\n";
+        return subtitle_codec_ctx_;
+    }
+
+    std::scoped_lock<std::mutex> lock(subtitle_codec_mutex_);
     if (!subtitle_codec_ctx_.is_valid()) {
         auto* subtitle_stream = source_stream(stream_type_t::subtitle);
         if (subtitle_stream){
             subtitle_codec_ctx_ = subtitle_stream->codec_context(subtitle_stream_index());
+            auto&  subtitle_fmt_ctx = primary_source_stream_->format_context(); // TODO: If we use multiple streams we need to get the right format ctx per stream here!
+            subtitle_codec_ctx_.get_packet_function_set(subtitle_fmt_ctx.get_packet_function(media_type_t::subtitle));
         }
     }
     return subtitle_codec_ctx_;
@@ -443,9 +465,9 @@ void player::subtitle_select(const std::string& language_code)
         }
         else if (sel_sub_entry.source == subtitle_source_t::stream) {
             if (primary_source_stream_) {
-                std::cerr << "FIXMENM Select subtitle from stream: '" << language_code << "'\n";
+                std::cerr << "FIXMENM Select subtitle from stream: '" << language_code << "', stream index:: " << sel_sub_entry.stream_index << "\n";
 
-                primary_source_stream_->subtitle_index_set(sel_sub_entry.stream_index);
+                subtitle_stream_index_set(sel_sub_entry.stream_index);
             }
             //            // TODO:
 
@@ -487,6 +509,19 @@ int32_t player::subtitle_selected_index() const
 size_t player::subtitle_stream_index() const
 {
     return subtitle_stream_index_ != no_stream_index ? subtitle_stream_index_ : source_stream(stream_type_t::subtitle)->first_subtitle_index();
+}
+
+void player::subtitle_stream_index_set(size_t stream_index)
+{
+    std::scoped_lock<std::mutex> lock(subtitle_codec_mutex_);
+    if (primary_source_stream_) {
+        primary_source_stream_->subtitle_index_set(stream_index);
+        subtitle_stream_index_ = stream_index;
+        subtitle_codec_ctx_ = av_codec_context(); // Reset the subtitle code context
+    }
+    else {
+        subtitle_stream_index_ = no_stream_index;
+    }
 }
 
 
@@ -771,15 +806,6 @@ void player::playable_update_calculated(bool force)
         playable_.update_calculated(tr(), nullptr, force);
     }
 }
-
-//void player::calc_selectable_subtitles() const
-//{
-////    if (selectable_subtitles_translator_id_ == tr_.id()) {
-////        return;
-////    }
-////    selectable_subtitles_translator_id_ = tr().id();
-
-//}
 
 void player::update_screen_size_factor()
 {

@@ -54,7 +54,7 @@ public:
 
     void                    swap						(av_codec_context& src) noexcept;
 
-    media_type_t              media_type_get              () const { return media_type_; }
+    media_type_t            media_type_get              () const { return media_type_; }
     void                    media_type_set              (media_type_t mt) { media_type_ = mt; }
 
     // --- Video info functions ---
