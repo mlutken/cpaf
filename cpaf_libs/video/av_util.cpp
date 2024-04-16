@@ -1,11 +1,15 @@
 
 #include "av_util.h"
 
+
 extern "C"
 {
 #include <libavutil/channel_layout.h>
 #include <libavutil/dict.h>
 }
+
+#include <iostream>
+#include <fmt/format.h>
 
 #include <cpaf_libs/unicode/cpaf_u8string_utils.h>
 #include <cpaf_libs/torrent/torrent_utils.h>
@@ -59,6 +63,24 @@ string protocol_from_uri(const std::string& uri)
         return "magnet";
     }
     return cu::substring_between(uri, "", ":");
+}
+
+string stream_info_t::dbg_str() const
+{
+    string s;
+    s += fmt::format("--- Media type: {}, index: {} ---\n", to_string(media_type), stream_index);
+    s += fmt::format("Language code: {}\n", language_code);
+    s += fmt::format("--- Meta data ---\n");
+    for (const auto& [key, val]: meta_data) {
+        s += fmt::format("{}: {}\n", key, val);
+
+    }
+    return s;
+}
+
+void stream_info_t::dbg_print() const
+{
+    std::cerr << dbg_str();
 }
 
 std::map<string, string> read_av_dictionary(AVDictionary* ff_dict)

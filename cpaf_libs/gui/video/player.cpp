@@ -102,7 +102,6 @@ bool player::open(const std::string& resource_path)
 bool player::open(const playable& playab)
 {
     playable_ = playab;
-    playable_.update_calculated(tr());
 
     close();
     subtitle_source_ = subtitle_source_t::stream;
@@ -120,6 +119,8 @@ bool player::open(const playable& playab)
     start_time_pos_ = playab.start_time();
     primary_source_stream_ = std::make_unique<cpaf::video::play_stream>([this]() {return torrents_get();});
     const bool ok = open_primary_stream(playab.path());
+
+    playable_.update_calculated(tr(), &primary_source_stream_->streams_info());
 
     if (!subtitle_path.empty()) {
         open_subtitle(subtitle_path, language_code);
@@ -429,17 +430,33 @@ void player::open_subtitle(const std::string& subtitle_path, const std::string& 
 /// @todo set subtitle also when using subtitle_source_t::stream
 void player::subtitle_select(const std::string& language_code)
 {
-    std::cerr << "Subtitle select: '" << language_code << "'\n";
+    std::cerr << "FIXMENM  Subtitle select: '" << language_code << "'\n";
     if (set_subtitle_code_helper(language_code)) {
 
-        nlohmann::json sub_jo = playable_.get_subtitle(language_code);
-        const std::string path = cpaf::json_value_str(sub_jo, "path", "");
-        if (!path.empty()) {
-            open_subtitle(path, language_code);
+        auto sel_sub_entry = playable_.selectable_subtitle_entry(language_code);
+        if (sel_sub_entry.source == subtitle_source_t::text_file) {
+            if (!sel_sub_entry.path.empty()) {
+                open_subtitle(sel_sub_entry.path, language_code);
+            }
         }
-        else {
-            // TODO:
+        else if (sel_sub_entry.source == subtitle_source_t::stream) {
+            if (primary_source_stream_) {
+                std::cerr << "FIXMENM Select subtitle from stream: '" << language_code << "'\n";
+
+                primary_source_stream_->subtitle_index_set(sel_sub_entry.stream_index);
+            }
+            //            // TODO:
+
         }
+
+//        nlohmann::json sub_jo = playable_.get_subtitle(language_code);
+//        const std::string path = cpaf::json_value_str(sub_jo, "path", "");
+//        if (!path.empty()) {
+//            open_subtitle(path, language_code);
+//        }
+//        else {
+//            // TODO:
+//        }
     }
 }
 
@@ -498,12 +515,18 @@ player::audio_play_callback_t player::audio_callback_get()
     return media_pipeline_threads().audio_callback_get();
 }
 
+/// @todo This function starts to get a bit messy. For example see playable_.update_calculated ...
 void player::frame_update()
 {
-    playable_.update_calculated(tr_);
     handle_internal_events();
     if (is_playing()) {
 
+        if (primary_source_stream_) {
+            playable_.update_calculated(tr(), &primary_source_stream_->streams_info());
+        }
+        else {
+            playable_.update_calculated(tr(), nullptr);
+        }
         if (has_video_stream()) {
             video_frame_update(next_video_frame_);
             check_activate_subtitle();

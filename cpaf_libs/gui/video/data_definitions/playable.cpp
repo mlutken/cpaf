@@ -11,6 +11,7 @@
 namespace fs = std::filesystem;
 using namespace std;
 using namespace cpaf;
+using namespace cpaf::video;
 using namespace cpaf::filesystem;
 using namespace std::chrono;
 using namespace nlohmann;
@@ -82,15 +83,17 @@ playable::playable(std::string path, std::string subtitle_path, const std::strin
     add_subtitle(subtitle_path, language_code);
 }
 
-void playable::update_calculated(const locale::translator& tr) const
+/// @todo If we have multiple subtitles with same language code only the first is added!
+void playable::update_calculated(const locale::translator& tr,
+                                 const stream_info_vec* streams_info_ptr) const
 {
     if (translator_id_ == tr.id()) {
         return;
     }
-    const auto sub_source = cpaf::video::subtitle_source_t::text_file;
     translator_id_ = tr.id();
     selectable_subtitles_.clear();
-    selectable_subtitles_.push_back({subtitle_user(), string(subtitle_user_selected_lc), tr.tr("User selected"), sub_source});
+    selectable_subtitles_.push_back(
+        {subtitle_user(), string(subtitle_user_selected_lc), tr.tr("User selected"), illegal_stream_index(), subtitle_source_t::text_file});
     for (auto& el : jo_["subtitles"].items()) {
         auto& sub_jo = el.value();
         const auto language_code = cpaf::json_value_str(sub_jo, "language_code", "");
@@ -98,8 +101,21 @@ void playable::update_calculated(const locale::translator& tr) const
             continue;
         }
         const string language_name = tr.tr(cpaf::locale::language_codes::language_name(language_code));
-        selectable_subtitles_.push_back({sub_jo["path"], language_code, language_name, sub_source});
+        selectable_subtitles_.push_back(
+            {sub_jo["path"], language_code, language_name, illegal_stream_index(), subtitle_source_t::text_file});
     }
+
+    // TODO: If we have multiple subtitles with same language code only the first is added!
+    if (streams_info_ptr) {
+        for(const auto& si: *streams_info_ptr) {
+            if (!has_selectable_subtitle(si.language_code)) {
+                const string language_name = tr.tr(cpaf::locale::language_codes::language_name(si.language_code));
+                selectable_subtitles_.push_back(
+                    {"", si.language_code, language_name, si.stream_index, subtitle_source_t::stream});
+            }
+        }
+    }
+
     if (selectable_subtitles_.size() > 3) {
         auto comp = [](const auto& entry_lhs, const auto entry_rhs) { return entry_lhs.language_name < entry_rhs.language_name; };
         std::sort(selectable_subtitles_.begin() +2, selectable_subtitles_.end(), comp);
@@ -227,6 +243,15 @@ std::vector<std::string> playable::subtitle_language_codes() const
 const nlohmann::json& playable::subtitles() const
 {
     return cpaf::json_value_array_cref(jo_, "subtitles", empty_array_);
+}
+
+subtitle_source_entry_t playable::selectable_subtitle_entry(std::string_view language_code) const
+{
+    const int32_t index = selectable_subtitle_index_of(language_code);
+    if (index < 0 || index >= static_cast<int32_t>(selectable_subtitles_.size())) {
+        return subtitle_source_entry_t();
+    }
+    return selectable_subtitles_[static_cast<size_t>(index)];
 }
 
 int32_t playable::selectable_subtitle_index_of(std::string_view language_code) const

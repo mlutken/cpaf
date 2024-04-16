@@ -16,7 +16,6 @@ extern "C"
 
 #include <utility>
 #include <ios>
-#include <iostream>
 #include <thread>
 #include <algorithm>
 #include <fmt/format.h>
@@ -611,9 +610,7 @@ void av_format_context::read_codec_contexts()
     for( size_t i=0; i < streams_count(); i++) {
         const AVStream* ff_stream = ff_format_context_->streams[i];
         const AVMediaType ff_media_type = ff_stream->codecpar->codec_type;
-        //        const AVMediaType ff_media_type = ff_format_context_->streams[i]->codecpar->codec_type;
         if ( ff_media_type != AVMEDIA_TYPE_UNKNOWN) {
-//           ff_stream_codec_parameters_[ff_media_type].push_back(ff_format_context_->streams[i]->codecpar);
             const auto index_media_type = static_cast<size_t>(ff_media_type);
             stream_indices_per_media_type_[index_media_type].push_back(i);
         }
@@ -626,19 +623,18 @@ void av_format_context::read_codec_contexts()
             si.language_code = cpaf::locale::language_codes::iso639_3_to_2(si.meta_data["language"]);
         }
 
-        si.dbg_print();
+//        si.dbg_print(); // FIXMENM
 
-        tag = av_dict_get(ff_stream->metadata, "language", NULL, 0);
-        if (tag) {
-            fmt::println("Subtitle stream language code: {}\n", tag->value); std::cout.flush();
-        } else {
-            fmt::println("Subtitle stream language code not found\n"); std::cout.flush();
-        }
+        streams_info_.push_back(std::move(si));
+
+//        tag = av_dict_get(ff_stream->metadata, "language", NULL, 0);
+//        if (tag) {
+//            fmt::println("Subtitle stream language code: {}\n", tag->value); std::cout.flush();
+//        } else {
+//            fmt::println("Subtitle stream language code not found\n"); std::cout.flush();
+//        }
 
 
-        ///		if ( ff_format_context_->streams[i]->codec->codec_type != AVMEDIA_TYPE_UNKNOWN) {
-        ///			ff_stream_codec_contexts_[i].push_back(ff_format_context_->streams[i]->codec);
-        ///		}
     }
     primary_stream_index_ = default_primary_stream_index();
 }
@@ -666,24 +662,6 @@ AVCodecParameters* av_format_context::ff_codec_parameters(size_t stream_index) c
 const AVCodec* av_format_context::ff_find_decoder(size_t stream_index) const
 {
     return avcodec_find_decoder(codec_id(stream_index));
-}
-
-string av_format_context::stream_info_t::dbg_str() const
-{
-    string s;
-    s += fmt::format("--- Media type: {}, index: {} ---\n", to_string(media_type), stream_index);
-    s += fmt::format("Language code: {}\n", language_code);
-    s += fmt::format("--- Meta data ---\n");
-    for (const auto& [key, val]: meta_data) {
-        s += fmt::format("{}: {}\n", key, val);
-
-    }
-    return s;
-}
-
-void av_format_context::stream_info_t::dbg_print() const
-{
-    std::cerr << dbg_str();
 }
 
 

@@ -151,14 +151,14 @@ void config::dbg_print() const
 
 void config::signal_changed() const
 {
-    std::cerr << "TODO config::signal_changed() crashing. Fix!\n";
+//    std::cerr << "TODO config::signal_changed() crashing. Fix!\n";
     // Reason: We keep adding in the render_base::render_base constructor whic is caleed on every new file opened
     // render_base::render_base(player& owning_player, config& cfg)
     // config_.connect_for_changes([this]() {on_configuration_changed();});
 
-//    for (auto& cb: on_changed_callbacks_) {
-//        cb();
-//    }
+    for (auto& cb: on_changed_callbacks_) {
+        cb();
+    }
 }
 
 } // namespace cpaf::gui::video

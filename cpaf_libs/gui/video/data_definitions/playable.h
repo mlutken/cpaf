@@ -38,7 +38,7 @@ public:
 
     const nlohmann::json&           json                    () const { return jo_;  }
 
-    void                            update_calculated       (const cpaf::locale::translator& tr) const;
+    void                            update_calculated       (const cpaf::locale::translator& tr, const cpaf::video::stream_info_vec* streams_info_ptr) const;
     std::string                     str                     (const std::string& id) const                       { return cpaf::json_value_str(jo_, id, "");     }
     std::int32_t                    int32                   (const std::string& id) const                       { return cpaf::json_value_int32(jo_, id, 0);    }
     bool                            bool_val                (const std::string& id) const                       { return cpaf::json_value_bool(jo_, id, "");    }
@@ -71,7 +71,10 @@ public:
     const cpaf::video::subtitle_source_entries_t&
     selectable_subtitles                                    () const { return selectable_subtitles_; }
 
+    cpaf::video::subtitle_source_entry_t
+                                    selectable_subtitle_entry(std::string_view language_code) const;
     int32_t                         selectable_subtitle_index_of (std::string_view language_code) const;
+    bool                            has_selectable_subtitle (std::string_view language_code) const { return selectable_subtitle_index_of(language_code) != -1; }
 
     bool                            is_valid                () const;
 

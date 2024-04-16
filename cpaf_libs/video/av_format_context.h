@@ -38,17 +38,6 @@ class av_format_context
 public:
     using get_packet_fun = std::function<av_packet()>;
 
-    struct stream_info_t {
-        std::map<std::string, std::string>  meta_data;
-        std::string                         language_code;
-        size_t                              stream_index;
-        media_type_t                        media_type;
-        std::string                         dbg_str     () const;
-        void                                dbg_print   () const;
-    };
-
-    using stream_info_vec = std::vector<stream_info_t>;
-
      // --- Constructors etc. ---
     explicit av_format_context(get_torrents_fn get_torrents_function);
 

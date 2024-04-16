@@ -39,12 +39,14 @@ public:
     size_t                      first_audio_index		() const { return format_context_.first_audio_index(); }
     size_t                      first_subtitle_index	() const { return format_context_.first_subtitle_index(); }
     size_t                      primary_index           () const { return format_context_.primary_index(); }
-    media_type_t                  primary_media_type      () const { return format_context_.primary_media_type(); }
+    media_type_t                primary_media_type      () const { return format_context_.primary_media_type(); }
     const surface_dimensions_t& render_dimensions       () const { return render_dimensions_; }
     std::chrono::microseconds   total_time              () const { return format_context_.total_time(); }
+    bool                        is_torrent              () const { return format_context_.is_torrent(); }
+    const stream_info_vec&      streams_info            () const { return format_context_.streams_info(); }
 
-    std::atomic<stream_state_t>&        stream_state            ()          { return format_context_.stream_state(); }
-    const std::atomic<stream_state_t>&  stream_state            () const    { return format_context_.stream_state(); }
+    std::atomic<stream_state_t>&        stream_state    ()       { return format_context_.stream_state(); }
+    const std::atomic<stream_state_t>&  stream_state    () const { return format_context_.stream_state(); }
 
 
     // ---------------------

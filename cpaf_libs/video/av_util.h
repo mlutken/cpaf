@@ -94,7 +94,8 @@ struct subtitle_source_entry_t
     std::string         path;
     std::string         language_code;
     std::string         language_name;
-    subtitle_source_t   source;
+    size_t              stream_index;
+    subtitle_source_t   source = subtitle_source_t::none;
 };
 
 using subtitle_source_entries_t = std::vector<subtitle_source_entry_t>;
@@ -125,6 +126,18 @@ struct pixel_rgba_t {
 };
 
 
+struct stream_info_t {
+    std::map<std::string, std::string>  meta_data;
+    std::string                         language_code;
+    size_t                              stream_index;
+    media_type_t                        media_type;
+    std::string                         dbg_str     () const;
+    void                                dbg_print   () const;
+};
+
+using stream_info_vec = std::vector<stream_info_t>;
+
+
 static_assert(sizeof(uint32_t) == sizeof(pixel_rgba_t), "ERROR pixel_rgba_t is NOT 4 bytes!" );
 
 
@@ -143,7 +156,7 @@ inline constexpr int    media_type_size_int     () { return static_cast<int>(med
 inline constexpr size_t media_type_size         () { return static_cast<size_t>(media_type_t::SIZE);}
 inline constexpr size_t stream_type_index_size  () { return static_cast<size_t>(stream_type_t::SIZE);}
 
-inline constexpr auto	to_int					(media_type_t mt) -> int				{ return static_cast<int>(mt);	}
+inline constexpr auto	to_int					(media_type_t mt) -> int			{ return static_cast<int>(mt);	}
 inline constexpr auto	to_int					(stream_state_t ss) -> int          { return static_cast<int>(ss);  }
 
 
