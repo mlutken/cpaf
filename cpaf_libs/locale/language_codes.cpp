@@ -1,6 +1,7 @@
 
 #include "language_codes.h"
 #include <algorithm>
+#include <iostream>
 
 #include <cpaf_libs/locale/translator.h>
 #include <cpaf_libs/utils/cpaf_json_utils.h>
@@ -10,21 +11,21 @@ using namespace nlohmann;
 
 namespace cpaf::locale {
 
-string language_codes::language_name(const std::string& language_code_lookup, const translator& tr)
+string language_codes::language_name(const std::string& iso639_2_language_code, const translator& tr)
 {
-    return tr.tr(language_name(language_code_lookup));
+    return tr.tr(language_name(iso639_2_language_code));
 }
 
 
-string language_codes::language_name(const std::string& language_code_lookup)
+string language_codes::language_name(const std::string& iso639_2_language_code)
 {
-    return cpaf::json_value_str(codes_and_names(), language_code_lookup, language_code_lookup);
+    return cpaf::json_value_str(codes_and_names(), iso639_2_language_code, iso639_2_language_code);
 }
 
 
-bool language_codes::is_languge_code(const std::string& language_code_lookup)
+bool language_codes::is_languge_code(const std::string& iso639_2_language_code)
 {
-    return codes_and_names().contains(language_code_lookup);
+    return codes_and_names().contains(iso639_2_language_code);
 }
 
 
@@ -324,5 +325,79 @@ const nlohmann::json& language_codes::codes_and_names()
 }
 
 
+/**
+ *  @see https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes
+ *  */
+std::string language_codes::iso639_3_to_2(const std::string& iso639_3) {
+    if (iso639_3.size() == 2) {
+        return iso639_3;
+    }
+    static const std::unordered_map<std::string, std::string> iso639_3_to_2 = {
+        {"afr", "af"}, // Afrikaans
+        {"alb", "sq"}, // Albanian
+        {"sqi", "sq"}, // Albanian
+        {"bur", "my"}, // Burmese
+        {"mya", "my"}, // Burmese
+        {"eng", "en"}, // English
+        {"fre", "fr"}, // French
+        {"fra", "fr"}, // French
+        {"deu", "de"}, // German
+        {"spa", "es"}, // Spanish
+        {"ita", "it"}, // Italian
+        {"isl", "is"}, // Icelandic
+        {"ice", "is"}, // Icelandic
+        {"por", "pt"}, // Portuguese
+        {"nld", "nl"}, // Dutch
+        {"swe", "sv"}, // Swedish
+        {"dan", "da"}, // Danish
+        {"nor", "no"}, // Norwegian
+        {"fin", "fi"}, // Finnish
+        {"ell", "el"}, // Greek
+        {"tur", "tr"}, // Turkish
+        {"rus", "ru"}, // Russian
+        {"pol", "pl"}, // Polish
+        {"ces", "cs"}, // Czech
+        {"hun", "hu"}, // Hungarian
+        {"slk", "sk"}, // Slovak
+        {"hrv", "hr"}, // Croatian
+        {"ron", "ro"}, // Romanian
+        {"bul", "bg"}, // Bulgarian
+        {"srp", "sr"}, // Serbian
+        {"ukr", "uk"}, // Ukrainian
+        {"lit", "lt"}, // Lithuanian
+        {"slv", "sl"}, // Slovenian
+        {"lav", "lv"}, // Latvian
+        {"est", "et"}, // Estonian
+        {"ara", "ar"}, // Arabic
+        {"heb", "he"}, // Hebrew
+        {"hin", "hi"}, // Hindi
+        {"ben", "bn"}, // Bengali
+        {"urd", "ur"}, // Urdu
+        {"pan", "pa"}, // Punjabi
+        {"tam", "ta"}, // Tamil
+        {"tel", "te"}, // Telugu
+        {"guj", "gu"}, // Gujarati
+        {"kan", "kn"}, // Kannada
+        {"mal", "ml"}, // Malayalam
+        {"tha", "th"}, // Thai
+        {"ind", "id"}, // Indonesian
+        {"msa", "ms"}, // Malay
+        {"fil", "fil"}, // Filipino
+        {"vie", "vi"}, // Vietnamese
+        {"jpn", "ja"}, // Japanese
+        {"kor", "ko"}, // Korean
+        {"chi", "zh"}, // Chinese
+        {"zho", "zh"}, // Chinese
+    };
+
+    auto it = iso639_3_to_2.find(iso639_3);
+    if (it != iso639_3_to_2.end()) {
+        return it->second;
+    } else {
+        // If not found, return empty string or handle the case accordingly
+        std::cerr << "LOG_WARN: iso639_3_to_2, language code '" << iso639_3 << "' not known\n";
+        return "";
+    }
+}
 
 } //END namespace cpaf::locale
