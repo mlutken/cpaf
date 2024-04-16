@@ -84,6 +84,9 @@ protected:
     const cpaf::video::av_format_context&   format_context              () const { return *format_context_ptr_; }
     cpaf::video::av_codec_context&          video_codec_ctx             () { return *video_codec_ctx_ptr_; }
     cpaf::video::av_frame&                  frame_display               () { return frame_display_; }
+    bool                                    subtitle_within_display_time(const cpaf::video::subtitle_frame& subtitle) const;
+
+
     cpaf::video::av_frame                   frame_display_;
     cpaf::video::surface_dimensions_t       texture_render_dimensions_  {0,0};
 //    void                                    on_configuration_changed    ();
