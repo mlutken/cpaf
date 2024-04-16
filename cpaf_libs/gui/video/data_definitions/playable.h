@@ -38,7 +38,9 @@ public:
 
     const nlohmann::json&           json                    () const { return jo_;  }
 
-    void                            update_calculated       (const cpaf::locale::translator& tr, const cpaf::video::stream_info_vec* streams_info_ptr) const;
+    void                            update_calculated       (const cpaf::locale::translator& tr,
+                                                             const cpaf::video::stream_info_vec* streams_info_ptr,
+                                                             bool force) const;
     std::string                     str                     (const std::string& id) const                       { return cpaf::json_value_str(jo_, id, "");     }
     std::int32_t                    int32                   (const std::string& id) const                       { return cpaf::json_value_int32(jo_, id, 0);    }
     bool                            bool_val                (const std::string& id) const                       { return cpaf::json_value_bool(jo_, id, "");    }

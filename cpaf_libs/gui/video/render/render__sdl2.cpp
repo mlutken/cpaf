@@ -230,6 +230,9 @@ void render_platform::render_subtitle_graphics()
     if (!sdl_subtitles_render_texture_) {
         return;
     }
+    if (!subtitles_show()) {
+        return;
+    }
 
     SDL_RenderCopy(get_sdl_renderer(), sdl_subtitles_render_texture_, NULL, &subtitles_dst_rect_);
     SDL_SetRenderTarget( get_sdl_renderer(), nullptr );

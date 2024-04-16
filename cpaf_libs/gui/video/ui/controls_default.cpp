@@ -256,7 +256,8 @@ void controls_default::render_menu_buttons()
         for (auto i = 0u; i < subtitles.size(); ++i) {
             const auto i_signed = static_cast<int32_t>(i);
             const bool selected = cur_selected_index == i_signed;
-            if (ImGui::Selectable(subtitles[i].language_name, selected)) {
+            std::string selelectable_text = subtitles[i].language_name + "###LangSel" + std::to_string(i);
+            if (ImGui::Selectable(selelectable_text, selected)) {
                 new_selected_index = i_signed;
                 std::cerr << "FIXMENM subtitle selected index: "  << new_selected_index << "\n";
             }

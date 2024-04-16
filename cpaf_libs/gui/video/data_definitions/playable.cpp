@@ -85,9 +85,10 @@ playable::playable(std::string path, std::string subtitle_path, const std::strin
 
 /// @todo If we have multiple subtitles with same language code only the first is added!
 void playable::update_calculated(const locale::translator& tr,
-                                 const stream_info_vec* streams_info_ptr) const
+                                 const stream_info_vec* streams_info_ptr,
+                                 bool force) const
 {
-    if (translator_id_ == tr.id()) {
+    if (!force && (translator_id_ == tr.id()) ) {
         return;
     }
     translator_id_ = tr.id();
@@ -108,6 +109,9 @@ void playable::update_calculated(const locale::translator& tr,
     // TODO: If we have multiple subtitles with same language code only the first is added!
     if (streams_info_ptr) {
         for(const auto& si: *streams_info_ptr) {
+            if (si.media_type != media_type_t::subtitle) continue;
+            if (si.language_code.empty()) continue;
+
             if (!has_selectable_subtitle(si.language_code)) {
                 const string language_name = tr.tr(cpaf::locale::language_codes::language_name(si.language_code));
                 selectable_subtitles_.push_back(

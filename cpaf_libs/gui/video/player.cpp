@@ -104,6 +104,7 @@ bool player::open(const playable& playab)
     playable_ = playab;
 
     close();
+    subtitle_language_code_.clear();
     subtitle_source_ = subtitle_source_t::stream;
     primary_resource_path_ = playab.path();
     pause_playback();
@@ -111,7 +112,7 @@ bool player::open(const playable& playab)
 
     auto language_code = configuration.str("subtitles", "language_code");
     const auto subtitle_path = playab.find_best_subtitle_path(language_code);
-    //    std::cerr << "\n---FIXMENM ---\n" << playab.json().dump(4) << "\n FIXMENM\n";
+    std::cerr << "\n---FIXMENM Open playable ---\n" << playab.json().dump(4) << "\n FIXMENM\n";
     //    configuration.dbg_print(); // FIXMENM
     //    fmt::println("FIXMENM open playable language_code: '{}'", language_code); std::cout << std::endl;
     //    fmt::println("FIXMENM open playable subtitle path: {},  language_code: '{}'", subtitle_path, language_code); std::cout << std::endl;
@@ -120,7 +121,8 @@ bool player::open(const playable& playab)
     primary_source_stream_ = std::make_unique<cpaf::video::play_stream>([this]() {return torrents_get();});
     const bool ok = open_primary_stream(playab.path());
 
-    playable_.update_calculated(tr(), &primary_source_stream_->streams_info());
+    const bool force = true;
+    playable_update_calculated(force);
 
     if (!subtitle_path.empty()) {
         open_subtitle(subtitle_path, language_code);
@@ -515,18 +517,15 @@ player::audio_play_callback_t player::audio_callback_get()
     return media_pipeline_threads().audio_callback_get();
 }
 
-/// @todo This function starts to get a bit messy. For example see playable_.update_calculated ...
+/// @todo: Perhaps we do not need to call playable_update_calculated() every frame
 void player::frame_update()
 {
     handle_internal_events();
     if (is_playing()) {
 
-        if (primary_source_stream_) {
-            playable_.update_calculated(tr(), &primary_source_stream_->streams_info());
-        }
-        else {
-            playable_.update_calculated(tr(), nullptr);
-        }
+//        const bool force = false;
+//        playable_update_calculated(force);
+
         if (has_video_stream()) {
             video_frame_update(next_video_frame_);
             check_activate_subtitle();
@@ -759,6 +758,18 @@ void player::torrent_finished_event(std::shared_ptr<cpaf::torrent::torrent> tor_
 void player::on_configuration_changed()
 {
     std::cerr << "FIXMENM player::on_configuration_changed()\n";
+    const bool force = true;
+    playable_update_calculated(force);
+}
+
+void player::playable_update_calculated(bool force)
+{
+    if (primary_source_stream_) {
+        playable_.update_calculated(tr(), &primary_source_stream_->streams_info(), force);
+    }
+    else {
+        playable_.update_calculated(tr(), nullptr, force);
+    }
 }
 
 //void player::calc_selectable_subtitles() const

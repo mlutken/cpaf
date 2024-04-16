@@ -218,7 +218,7 @@ private:
     void                            handle_stream_state     ();
     void                            torrent_finished_event  (std::shared_ptr<cpaf::torrent::torrent> tor_file);
     void                            on_configuration_changed();
-//    void                            calc_selectable_subtitles() const;
+    void                            playable_update_calculated(bool force);
 
     void                            update_screen_size_factor();
     bool                            show_stream_state       () const;
