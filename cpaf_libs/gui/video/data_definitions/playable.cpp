@@ -108,15 +108,21 @@ void playable::update_calculated(const locale::translator& tr,
 
     // TODO: If we have multiple subtitles with same language code only the first is added!
     if (streams_info_ptr) {
+        stream_info_vec subtitles_to_add;
         for(const auto& si: *streams_info_ptr) {
             if (si.media_type != media_type_t::subtitle) continue;
             if (si.language_code.empty()) continue;
 
             if (!has_selectable_subtitle(si.language_code)) {
-                const string language_name = tr.tr(cpaf::locale::language_codes::language_name(si.language_code));
-                selectable_subtitles_.push_back(
-                    {"", si.language_code, language_name, si.stream_index, subtitle_source_t::stream});
+                subtitles_to_add.push_back(si);
             }
+        }
+
+
+        for(const auto& si: subtitles_to_add) {
+            const string language_name = tr.tr(cpaf::locale::language_codes::language_name(si.language_code));
+            selectable_subtitles_.push_back(
+                {"", si.language_code, language_name, si.stream_index, subtitle_source_t::stream});
         }
     }
 
