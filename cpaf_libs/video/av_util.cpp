@@ -92,10 +92,8 @@ std::map<string, string> read_av_dictionary(AVDictionary* ff_dict)
     AVDictionaryEntry* entry = NULL;
 
     // Iterate over dictionary entries
-    printf("Iterating over dictionary:\n");
     while ((entry = av_dict_get(ff_dict, "", entry, AV_DICT_IGNORE_SUFFIX))) {
         dict[entry->key] = entry->value;
-//        printf("Key: %s, Value: %s\n", entry->key, entry->value);
     }
     return dict;
 }
