@@ -102,8 +102,8 @@ bool player::open(playable playab)
     playable_ = std::move(playab);
 
     close();
-    subtitle_language_code_.clear();
-    subtitle_source_ = subtitle_source_t::stream;
+    subtitle_selected_index_ = -1;
+    subtitle_source_ = subtitle_source_t::none;
     primary_resource_path_ = playable_.path();
     pause_playback();
 
@@ -442,11 +442,10 @@ size_t player::audio_stream_index() const
 // -------------------------------
 // --- Subtitles setup/control ---
 // -------------------------------
+/// @todo If called outside of the selectable_subtitles() vector some thing will look strange at the very least in the GUI
 void player::open_subtitle(const std::string& subtitle_path, const std::string& language_code)
 {
-    if (set_subtitle_code_helper(language_code)) {
-        subtitle_downloader_thread_.enqueue_subtitle(subtitle_path, language_code);
-    }
+    subtitle_downloader_thread_.enqueue_subtitle(subtitle_path, language_code);
 }
 
 
@@ -455,54 +454,37 @@ void player::open_subtitle(const std::string& subtitle_path, const std::string& 
 void player::subtitle_select(const std::string& language_code)
 {
     std::cerr << "FIXMENM  Subtitle select: '" << language_code << "'\n";
-    if (set_subtitle_code_helper(language_code)) {
-
-        auto sel_sub_entry = playable_.selectable_subtitle_entry(language_code);
-        if (sel_sub_entry.source == subtitle_source_t::text_file) {
-            if (!sel_sub_entry.path.empty()) {
-                open_subtitle(sel_sub_entry.path, language_code);
-            }
-        }
-        else if (sel_sub_entry.source == subtitle_source_t::stream) {
-            if (primary_source_stream_) {
-                std::cerr << "FIXMENM Select subtitle from stream: '" << language_code << "', stream index:: " << sel_sub_entry.stream_index << "\n";
-
-                subtitle_stream_index_set(sel_sub_entry.stream_index);
-            }
-            //            // TODO:
-
-        }
-
-//        nlohmann::json sub_jo = playable_.get_subtitle(language_code);
-//        const std::string path = cpaf::json_value_str(sub_jo, "path", "");
-//        if (!path.empty()) {
-//            open_subtitle(path, language_code);
-//        }
-//        else {
-//            // TODO:
-//        }
-    }
+    const int32_t sel_index = playable_.selectable_subtitle_index_of(language_code);
+    subtitle_select(sel_index);
 }
 
 void player::subtitle_select(int32_t selectable_subtitle_index)
 {
+    subtitle_source_ = subtitle_source_t::none;
     std::string language_code = "";
-    if (selectable_subtitle_index >= 0) {
+    if (set_subtitle_helper(selectable_subtitle_index)) {
         const auto index = static_cast<uint32_t>(selectable_subtitle_index);
-        if (index < selectable_subtitles().size()) {
-            language_code = selectable_subtitles().at(index).language_code;
+        auto entry = selectable_subtitles().at(index);
+        if (entry.source == subtitle_source_t::text_file) {
+            if (!entry.path.empty()) {
+                subtitle_source_ = subtitle_source_t::text_file;
+                open_subtitle(entry.path, language_code);
+                return;
+            }
+        }
+        else if (entry.source == subtitle_source_t::stream) {
+            if (primary_source_stream_) {
+                subtitle_source_ = subtitle_source_t::stream;
+                subtitle_stream_index_set(entry.stream_index);
+                return;
+            }
         }
     }
-    subtitle_select(language_code);
 }
 
 int32_t player::subtitle_selected_index() const
 {
-    if (subtitle_language_code_.empty()) {
-        return -1;
-    }
-
-    return playable_.selectable_subtitle_index_of(subtitle_language_code_);
+    return subtitle_selected_index_;
 }
 
 
@@ -530,7 +512,6 @@ void player::subtitle_container_set(std::unique_ptr<subtitle_container> containe
     if (!all_initialized()) {
         return;
     }
-    subtitle_language_code_ = container->language_code();
 
 //    const auto is_paused = playback_paused();
 //    pause_playback();
@@ -644,7 +625,6 @@ void player::pause_playback()
 void player::resume_playback()
 {
     cur_media_time_.resume_time();
-    ////threads_paused_ = false;
     if (media_pipeline_threads_) {
         media_pipeline_threads_->resume_playback();
     }
@@ -828,10 +808,10 @@ bool player::show_stream_state() const
     return ss == stream_state_t::opening || ss == stream_state_t::waiting_for_data;
 }
 
-bool player::set_subtitle_code_helper(std::string language_code)
+bool player::set_subtitle_helper(int32_t selectable_subtitle_index)
 {
-    subtitle_language_code_ = std::move(language_code);
-    bool show_subtitles = !subtitle_language_code_.empty();
+    subtitle_selected_index_ = std::clamp(selectable_subtitle_index, -1, (static_cast<int32_t>(selectable_subtitles().size() -1)));
+    bool show_subtitles = subtitle_selected_index_ > -1;
     configuration.bool_set("subtitles", "show", show_subtitles);
     return show_subtitles;
 }

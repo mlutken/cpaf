@@ -132,7 +132,6 @@ public:
     // -------------------------------
     void                                open_subtitle           (const std::string& subtitle_path, const std::string& language_code);
     subtitle_source_t                   subtitle_source         () const { return subtitle_source_; }
-    const std::string&                  subtitle_language_code  () const { return subtitle_language_code_; }
     void                                subtitle_select         (const std::string& language_code);
     void                                subtitle_select         (int32_t selectable_subtitle_index);
 
@@ -224,7 +223,7 @@ private:
 
     void                            update_screen_size_factor();
     bool                            show_stream_state       () const;
-    bool                            set_subtitle_code_helper(std::string language_code);
+    bool                            set_subtitle_helper     (int32_t selectable_subtitle_index);
 
 
     // ----------------------------
@@ -264,8 +263,8 @@ private:
     std::unique_ptr<video::controls>                video_controls_;
     bool                                            show_controls_                  = true;
     bool                                            resume_from_pause_on_seek_      = true;
-    subtitle_source_t                               subtitle_source_                = subtitle_source_t::stream;    /// @todo
-    std::string                                     subtitle_language_code_;
+    std::atomic<subtitle_source_t>                  subtitle_source_                = subtitle_source_t::none;
+    int32_t                                         subtitle_selected_index_        = -1;
     std::function<void ()>                          cb_start_playing_;
     std::unique_ptr<std::thread>                    open_thread_                    = nullptr;
     std::unique_ptr<std::thread>                    open_subtitle_thread_           = nullptr;
