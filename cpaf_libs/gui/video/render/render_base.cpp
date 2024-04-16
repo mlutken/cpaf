@@ -11,7 +11,6 @@ render_base::render_base(player& owning_player, config& cfg)
     : player_(owning_player)
     , config_(cfg)
 {
-    config_.connect_for_changes([this]() {on_configuration_changed();});
     std::cerr << "FIXMENM render_base::render_base CONSTRUCTOR\n";
 }
 
@@ -149,9 +148,9 @@ void render_base::create_frame_display()
     frame_display_ = video_codec_ctx().create_scaling_dst_frame();
 }
 
-void render_base::on_configuration_changed()
-{
-    on_render_geometry_changed();
-}
+//void render_base::on_configuration_changed()
+//{
+//    on_render_geometry_changed();
+//}
 
 } //END namespace cpaf::gui::video

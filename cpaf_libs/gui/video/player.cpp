@@ -26,6 +26,7 @@ player::player(cpaf::audio::device& audio_device, locale::translator& tr)
     , subtitle_downloader_thread_(*this)
 {
     next_video_frame_ = av_frame::create_alloc();
+    configuration.connect_for_changes([this]() {on_configuration_changed();});
 
 //    pause_playback();
 }
@@ -68,9 +69,9 @@ void player::start_playing(const std::chrono::microseconds& start_time_pos)
     audio_resampler_.in_formats_set(audio_codec_context());
 
     audio_resampler_.init();
-    video_codec_context().get_packet_function_set(video_fmt_ctx.get_packet_function(media_type::video));
-    audio_codec_context().get_packet_function_set(video_fmt_ctx.get_packet_function(media_type::audio));
-    subtitle_codec_context().get_packet_function_set(video_fmt_ctx.get_packet_function(media_type::subtitle));
+    video_codec_context().get_packet_function_set(video_fmt_ctx.get_packet_function(media_type_t::video));
+    audio_codec_context().get_packet_function_set(video_fmt_ctx.get_packet_function(media_type_t::audio));
+    subtitle_codec_context().get_packet_function_set(video_fmt_ctx.get_packet_function(media_type_t::subtitle));
 
     media_pipeline_threads().audio_resampler_set(audio_resampler_);
     video_fmt_ctx.read_packets_to_queues(video_fmt_ctx.primary_media_type(), 10);
@@ -118,7 +119,7 @@ bool player::open(const playable& playab)
 
     start_time_pos_ = playab.start_time();
     primary_source_stream_ = std::make_unique<cpaf::video::play_stream>([this]() {return torrents_get();});
-    const bool ok = open_primary_stream(playab.path(), subtitle_path);
+    const bool ok = open_primary_stream(playab.path());
 
     if (!subtitle_path.empty()) {
         open_subtitle(subtitle_path, language_code);
@@ -203,13 +204,13 @@ const play_stream* player::source_stream(stream_type_t sti) const
     if (source_streams_[index]) {
         return source_streams_[index].get();
     }
-    if (sti == stream_type_t::video && primary_source_stream_->has_media_type(media_type::video)) {
+    if (sti == stream_type_t::video && primary_source_stream_->has_media_type(media_type_t::video)) {
         return primary_source_stream_.get();
     }
-    else if (sti == stream_type_t::audio && primary_source_stream_->has_media_type(media_type::audio)) {
+    else if (sti == stream_type_t::audio && primary_source_stream_->has_media_type(media_type_t::audio)) {
         return primary_source_stream_.get();
     }
-    else if (sti == stream_type_t::subtitle && primary_source_stream_->has_media_type(media_type::subtitle)) {
+    else if (sti == stream_type_t::subtitle && primary_source_stream_->has_media_type(media_type_t::subtitle)) {
         return primary_source_stream_.get();
     }
     return nullptr;
@@ -222,13 +223,13 @@ play_stream* player::source_stream(stream_type_t sti)
     if (source_streams_[index]) {
         return source_streams_[index].get();
     }
-    if (sti == stream_type_t::video && primary_source_stream_->has_media_type(media_type::video)) {
+    if (sti == stream_type_t::video && primary_source_stream_->has_media_type(media_type_t::video)) {
         return primary_source_stream_.get();
     }
-    else if (sti == stream_type_t::audio && primary_source_stream_->has_media_type(media_type::audio)) {
+    else if (sti == stream_type_t::audio && primary_source_stream_->has_media_type(media_type_t::audio)) {
         return primary_source_stream_.get();
     }
-    else if (sti == stream_type_t::subtitle && primary_source_stream_->has_media_type(media_type::subtitle)) {
+    else if (sti == stream_type_t::subtitle && primary_source_stream_->has_media_type(media_type_t::subtitle)) {
         return primary_source_stream_.get();
     }
     return nullptr;
@@ -684,8 +685,7 @@ bool player::open_stream(const std::string& resource_path, stream_type_t sti)
     return open_ok;
 }
 
-/// @todo Implement subtitle path handling here
-bool player::open_primary_stream(const std::string& resource_path, const std::string& subtitle_path)
+bool player::open_primary_stream(const std::string& resource_path)
 {
     primary_resource_path_ = resource_path;
     const auto open_ok = primary_stream().open(resource_path);
@@ -731,6 +731,11 @@ void player::torrent_finished_event(std::shared_ptr<cpaf::torrent::torrent> tor_
         stream_state_reference().compare_exchange_strong(stream_state_expected, stream_state_t::playing_local);
     }
 
+}
+
+void player::on_configuration_changed()
+{
+    std::cerr << "FIXMENM player::on_configuration_changed()\n";
 }
 
 //void player::calc_selectable_subtitles() const

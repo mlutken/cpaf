@@ -53,7 +53,7 @@ void audio_resampler_thread::resample_frame(bool& add_samples, const std::chrono
 {
     add_samples = false;
 
-    if (audio_samples_queue().full() || player_.format_context().packet_queue_const(cpaf::video::media_type::audio).empty()) {
+    if (audio_samples_queue().full() || player_.format_context().packet_queue_const(cpaf::video::media_type_t::audio).empty()) {
         return;
     }
 

@@ -190,22 +190,22 @@ void video_render_thread::debug_video_frame_update(cpaf::video::av_frame& curren
 
 cpaf::video::av_packet video_render_thread::video_packet_queue_front()
 {
-    return player_.format_context().packet_queue_front(cpaf::video::media_type::video);
+    return player_.format_context().packet_queue_front(cpaf::video::media_type_t::video);
 }
 
 void video_render_thread::video_packet_queue_pop()
 {
-    player_.format_context().packet_queue_pop(cpaf::video::media_type::video);
+    player_.format_context().packet_queue_pop(cpaf::video::media_type_t::video);
 }
 
 const cpaf::video::packet_queue_t& video_render_thread::video_packet_queue() const
 {
-    return player_.format_context().packet_queue(cpaf::video::media_type::video);
+    return player_.format_context().packet_queue(cpaf::video::media_type_t::video);
 }
 
 const cpaf::video::packet_queue_t& video_render_thread::video_packet_queue_const() const
 {
-    return player_.format_context().packet_queue(cpaf::video::media_type::video);
+    return player_.format_context().packet_queue(cpaf::video::media_type_t::video);
 }
 
 /**

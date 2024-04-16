@@ -54,8 +54,8 @@ public:
 
     void                    swap						(av_codec_context& src) noexcept;
 
-    media_type              media_type_get              () const { return media_type_; }
-    void                    media_type_set              (media_type mt) { media_type_ = mt; }
+    media_type_t              media_type_get              () const { return media_type_; }
+    void                    media_type_set              (media_type_t mt) { media_type_ = mt; }
 
     // --- Video info functions ---
     AVCodecContext*         ff							() const { return ff_codec_context_; }
@@ -131,7 +131,7 @@ private:
     int32_t                     dst_width_                  = -1;
     int32_t                     dst_height_                 = -1;
     get_packet_fun              get_packet_fun_;
-    media_type                  media_type_                 = media_type::unknown;
+    media_type_t                  media_type_                 = media_type_t::unknown;
     bool                        scaling_context_initialized_= false;
 };
 

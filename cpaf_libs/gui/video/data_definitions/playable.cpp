@@ -36,8 +36,7 @@ nlohmann::json playable::create_json()
         "imdb_rating": -1,
         "source_location_type": "",
         "start_time": "0",
-        "subtitles": [
-        ],
+        "subtitles": [],
         "title": "",
         "trailers": [],
         "year": 0
@@ -55,7 +54,6 @@ nlohmann::json playable::create_json()
 playable::playable()
     : jo_(playable::create_json())
 {
-    dbg_print(); // FIXMENM
 }
 
 playable::playable(std::string path)

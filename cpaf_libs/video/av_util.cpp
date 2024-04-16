@@ -4,6 +4,7 @@
 extern "C"
 {
 #include <libavutil/channel_layout.h>
+#include <libavutil/dict.h>
 }
 
 #include <cpaf_libs/unicode/cpaf_u8string_utils.h>
@@ -18,17 +19,17 @@ namespace cu = cpaf::unicode;
 
 namespace cpaf::video {
 
-string to_string(media_type mt)
+string to_string(media_type_t mt)
 {
     switch (mt) {
-    case media_type::unknown:       return "unknown"; break;
-    case media_type::video:         return "video"; break;
-    case media_type::audio:         return "audio"; break;
-    case media_type::data:          return "data"; break;
-    case media_type::subtitle:      return "subtitle"; break;
-    case media_type::attachment:    return "attachment"; break;
-    case media_type::nb:            return "nb"; break;
-    case media_type::SIZE:          return "END"; break;
+    case media_type_t::unknown:       return "unknown"; break;
+    case media_type_t::video:         return "video"; break;
+    case media_type_t::audio:         return "audio"; break;
+    case media_type_t::data:          return "data"; break;
+    case media_type_t::subtitle:      return "subtitle"; break;
+    case media_type_t::attachment:    return "attachment"; break;
+    case media_type_t::nb:            return "nb"; break;
+    case media_type_t::SIZE:          return "END"; break;
     }
     return "";
 }
@@ -60,6 +61,24 @@ string protocol_from_uri(const std::string& uri)
     return cu::substring_between(uri, "", ":");
 }
 
+std::map<string, string> read_av_dictionary(AVDictionary* ff_dict)
+{
+    if (!ff_dict) {
+        return std::map<string, string>();
+    }
+    std::map<string, string> dict;
+    AVDictionaryEntry* entry = NULL;
+
+    // Iterate over dictionary entries
+    printf("Iterating over dictionary:\n");
+    while ((entry = av_dict_get(ff_dict, "", entry, AV_DICT_IGNORE_SUFFIX))) {
+        dict[entry->key] = entry->value;
+//        printf("Key: %s, Value: %s\n", entry->key, entry->value);
+    }
+    return dict;
+}
+
+
 string to_string(seek_state_t ss)
 {
     switch (ss) {
@@ -85,6 +104,7 @@ string to_string(stream_state_t ss)
     }
     return "";
 }
+
 
 
 

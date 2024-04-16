@@ -20,6 +20,7 @@ extern "C"
 #include <thread>
 #include <algorithm>
 #include <fmt/format.h>
+#include <cpaf_libs/locale/language_codes.h>
 #include <cpaf_libs/video/io/custom_io_base.h>
 
 using namespace std;
@@ -83,7 +84,7 @@ void av_format_context::close()
 {
     const std::lock_guard<std::mutex> lock(packet_queues_mutex_);
     stream_state_ = stream_state_t::inactive;
-    for (media_type mt = media_type::video; mt != media_type::SIZE; ++mt) {
+    for (media_type_t mt = media_type_t::video; mt != media_type_t::SIZE; ++mt) {
         auto media_index = to_size_t(mt);
         selected_stream_per_media_type_[media_index] = illegal_stream_index();
         stream_indices_per_media_type_[media_index].clear();
@@ -98,7 +99,7 @@ void av_format_context::close()
     ff_format_context_ = nullptr;
 }
 
-void av_format_context::selected_media_index_set(media_type mt, size_t stream_index)
+void av_format_context::selected_media_index_set(media_type_t mt, size_t stream_index)
 {
     selected_stream_per_media_type_[to_size_t(mt)] = stream_index;
 }
@@ -110,7 +111,7 @@ void av_format_context::primary_index_set(size_t stream_index)
 
 void av_format_context::set_default_selected_streams()
 {
-    for (media_type mt = media_type::video; mt != media_type::SIZE; ++mt) {
+    for (media_type_t mt = media_type_t::video; mt != media_type_t::SIZE; ++mt) {
         selected_stream_per_media_type_[to_size_t(mt)] = first_stream_index(mt);
     }
     set_default_primary_stream();
@@ -118,9 +119,9 @@ void av_format_context::set_default_selected_streams()
 
 void av_format_context::set_default_primary_stream()
 {
-    const size_t video_idx = selected_stream_per_media_type_[to_size_t(media_type::video)];
-    const size_t audio_idx = selected_stream_per_media_type_[to_size_t(media_type::audio)];
-    const size_t subtl_idx = selected_stream_per_media_type_[to_size_t(media_type::subtitle)];
+    const size_t video_idx = selected_stream_per_media_type_[to_size_t(media_type_t::video)];
+    const size_t audio_idx = selected_stream_per_media_type_[to_size_t(media_type_t::audio)];
+    const size_t subtl_idx = selected_stream_per_media_type_[to_size_t(media_type_t::subtitle)];
     if      (video_idx != no_stream_index)  primary_stream_index_ = video_idx;
     else if (audio_idx != no_stream_index)  primary_stream_index_ = audio_idx;
     else if (subtl_idx != no_stream_index)  primary_stream_index_ = subtl_idx;
@@ -139,7 +140,7 @@ size_t av_format_context::streams_count() const
     return 0;
 }
 
-size_t av_format_context::streams_count(media_type mt) const
+size_t av_format_context::streams_count(media_type_t mt) const
 {
     if (ff_format_context_) {
         return stream_indices_per_media_type_[to_size_t(mt)].size();;
@@ -147,7 +148,7 @@ size_t av_format_context::streams_count(media_type mt) const
     return 0;
 }
 
-size_t av_format_context::first_stream_index(media_type mt) const
+size_t av_format_context::first_stream_index(media_type_t mt) const
 {
     if (!media_type_valid(mt)) return no_stream_index;
     const auto& vec = stream_indices_per_media_type_[to_size_t(mt)];
@@ -161,22 +162,22 @@ AVCodecID av_format_context::codec_id(size_t stream_index) const
     return ff_format_context_->streams[stream_index]->codecpar->codec_id;
 }
 
-media_type av_format_context::stream_media_type(size_t stream_index) const
+media_type_t av_format_context::stream_media_type(size_t stream_index) const
 {
     if (stream_index >= streams_count()) {
-        return media_type::SIZE;
+        return media_type_t::SIZE;
     }
 
     const AVStream* ff_stream = ff_format_context_->streams[stream_index];
     const AVMediaType ff_media_type = ff_stream->codecpar->codec_type;
-    const auto mt = static_cast<media_type>(ff_media_type);
+    const auto mt = static_cast<media_type_t>(ff_media_type);
     return mt;
 }
 
-std::set<media_type> av_format_context::set_of_each_media_type(const std::set<media_type>& types_to_skip) const
+std::set<media_type_t> av_format_context::set_of_each_media_type(const std::set<media_type_t>& types_to_skip) const
 {
-    std::set<media_type> all_media_types;
-    for (media_type mt = media_type::video; mt != media_type::SIZE; ++mt) {
+    std::set<media_type_t> all_media_types;
+    for (media_type_t mt = media_type_t::video; mt != media_type_t::SIZE; ++mt) {
         if (types_to_skip.contains(mt)) continue;
         if (media_type_to_index(mt) != no_stream_index) {
             all_media_types.insert(mt);
@@ -244,7 +245,7 @@ bool av_format_context::seek_time_pos(size_t stream_index, std::chrono::microsec
     return true;
 }
 
-bool av_format_context::seek_time_pos(media_type mt, std::chrono::microseconds stream_pos, seek_dir dir)
+bool av_format_context::seek_time_pos(media_type_t mt, std::chrono::microseconds stream_pos, seek_dir dir)
 {
     return seek_time_pos(media_type_to_index(mt), stream_pos, dir);
 }
@@ -296,7 +297,7 @@ av_codec_context av_format_context::codec_context(size_t stream_index) const
     return codec_ctx;
 }
 
-av_codec_context av_format_context::codec_context(media_type selected_media) const
+av_codec_context av_format_context::codec_context(media_type_t selected_media) const
 {
     const size_t stream_index = media_type_to_index(selected_media);
     return codec_context(stream_index);
@@ -354,7 +355,7 @@ Test if packet belongs to one of the selected streams.
 */
 bool av_format_context::packet_in_selected_stream(const av_packet& packet) const
 {
-    const media_type mt = packet.media_type_get();
+    const media_type_t mt = packet.media_type_get();
     const size_t packet_index = packet.stream_index();
     const size_t media_type_int = to_size_t(mt);
     const size_t media_type_index = selected_stream_per_media_type_[media_type_int];
@@ -370,13 +371,13 @@ this packet is put into the respective lockless FIFO queue.
 @return The media_type of the packet added to a queue or media_type::SIZE if
 none is found.
 */
-media_type av_format_context::read_packet_to_queue()
+media_type_t av_format_context::read_packet_to_queue()
 {
     av_packet packet = read_packet_selected();
     if (!packet.is_valid()) {
-        return media_type::SIZE;
+        return media_type_t::SIZE;
     }
-    const media_type mt = packet.media_type_get();
+    const media_type_t mt = packet.media_type_get();
 
     packet_queue_t& queue = packet_queue_get(mt);
     if (queue.capacity() == 0) {
@@ -389,7 +390,7 @@ media_type av_format_context::read_packet_to_queue()
     return mt;
 }
 
-bool av_format_context::read_each_type_to_queues(const std::set<media_type>& types_to_read)
+bool av_format_context::read_each_type_to_queues(const std::set<media_type_t>& types_to_read)
 {
     constexpr int max_packets_to_read = 100;
     auto rest_to_read = types_to_read;
@@ -403,15 +404,15 @@ bool av_format_context::read_each_type_to_queues(const std::set<media_type>& typ
     return rest_to_read.empty();
 }
 
-media_type av_format_context::max_packet_queue_type(const std::set<media_type>& media_types_to_test)
+media_type_t av_format_context::max_packet_queue_type(const std::set<media_type_t>& media_types_to_test)
 {
-    auto compare = [this](media_type mt_lhs, media_type mt_rhs) -> bool {
+    auto compare = [this](media_type_t mt_lhs, media_type_t mt_rhs) -> bool {
         return this->packet_queue(mt_lhs).size() < this->packet_queue(mt_rhs).size();
     };
 
     const auto it_max = std::max_element(media_types_to_test.begin(), media_types_to_test.end(), compare);
 
-    return it_max != media_types_to_test.end() ? *it_max : media_type::SIZE;
+    return it_max != media_types_to_test.end() ? *it_max : media_type_t::SIZE;
 }
 
 
@@ -420,7 +421,7 @@ media_type av_format_context::max_packet_queue_type(const std::set<media_type>& 
 subtitltes regardless of which primary media type we read. So even if we read video packets
 we still put audio packet (for the selected audio stream) into it's own queue as well. Same
 for subtitles. */
-bool av_format_context::read_packets_to_queues(media_type mt, uint32_t fill_to_size)
+bool av_format_context::read_packets_to_queues(media_type_t mt, uint32_t fill_to_size)
 {
     const packet_queue_t& queue = packet_queue(mt);
 
@@ -428,27 +429,27 @@ bool av_format_context::read_packets_to_queues(media_type mt, uint32_t fill_to_s
         return true;
     }
 
-    media_type mt_read = read_packet_to_queue();
+    media_type_t mt_read = read_packet_to_queue();
 
     auto queue_size = queue.size();
-    while ((mt_read != media_type::SIZE) && (queue_size < fill_to_size)) {
+    while ((mt_read != media_type_t::SIZE) && (queue_size < fill_to_size)) {
         mt_read = read_packet_to_queue();
         queue_size = queue.size();
     }
     return queue_size >= fill_to_size;
 }
 
-void av_format_context::packet_queue_pop(media_type mt)
+void av_format_context::packet_queue_pop(media_type_t mt)
 {
     packet_queue_per_media_type_[to_size_t(mt)].pop();
 }
 
-av_packet av_format_context::packet_queue_front(media_type mt)
+av_packet av_format_context::packet_queue_front(media_type_t mt)
 {
     return std::move(packet_queue_per_media_type_[to_size_t(mt)].front());
 }
 
-av_packet av_format_context::packet_queue_pop_front(media_type mt)
+av_packet av_format_context::packet_queue_pop_front(media_type_t mt)
 {
     packet_queue_t& queue = packet_queue_get(mt);
 
@@ -473,7 +474,7 @@ av_packet av_format_context::packet_queue_pop_front(media_type mt)
     return packet;
 }
 
-av_format_context::get_packet_fun av_format_context::get_packet_function(media_type mt)
+av_format_context::get_packet_fun av_format_context::get_packet_function(media_type_t mt)
 {
     get_packet_fun fn = [this, mt] () {
         return this->packet_queue_pop_front(mt);
@@ -488,12 +489,12 @@ av_format_context::get_packet_fun av_format_context::get_packet_function(media_t
     return fn;
 }
 
-std::chrono::microseconds av_format_context::packet_queue_pts(media_type mt) const
+std::chrono::microseconds av_format_context::packet_queue_pts(media_type_t mt) const
 {
     return presentation_time(packet_queue(mt).front());
 }
 
-std::chrono::milliseconds av_format_context::packet_queue_pts_ms(media_type mt) const
+std::chrono::milliseconds av_format_context::packet_queue_pts_ms(media_type_t mt) const
 {
     return std::chrono::duration_cast<std::chrono::milliseconds>(packet_queue_pts(mt));
 }
@@ -587,7 +588,7 @@ string av_format_context::queues_info() const
     for ( size_t media_type_int = 0; media_type_int < selected_stream_per_media_type_.size(); ++media_type_int) {
         size_t stream_index = selected_stream_per_media_type_[media_type_int];
         if (stream_index == no_stream_index) continue;
-        const media_type mt = static_cast<media_type>(media_type_int);
+        const media_type_t mt = static_cast<media_type_t>(media_type_int);
         const packet_queue_t& queue = packet_queue(mt);
         ss << "media: "  << to_string(mt)
            << ", stream: " << stream_index
@@ -605,6 +606,8 @@ string av_format_context::queues_info() const
 
 void av_format_context::read_codec_contexts()
 {
+    AVDictionaryEntry* tag = nullptr;
+
     for( size_t i=0; i < streams_count(); i++) {
         const AVStream* ff_stream = ff_format_context_->streams[i];
         const AVMediaType ff_media_type = ff_stream->codecpar->codec_type;
@@ -614,6 +617,25 @@ void av_format_context::read_codec_contexts()
             const auto index_media_type = static_cast<size_t>(ff_media_type);
             stream_indices_per_media_type_[index_media_type].push_back(i);
         }
+        stream_info_t si;
+        si.stream_index = i;
+        si.media_type = static_cast<media_type_t>(ff_media_type);
+        si.meta_data = read_av_dictionary(ff_stream->metadata);
+
+        if (si.meta_data.contains("language")) {
+            si.language_code = cpaf::locale::language_codes::iso639_3_to_2(si.meta_data["language"]);
+        }
+
+        si.dbg_print();
+
+        tag = av_dict_get(ff_stream->metadata, "language", NULL, 0);
+        if (tag) {
+            fmt::println("Subtitle stream language code: {}\n", tag->value); std::cout.flush();
+        } else {
+            fmt::println("Subtitle stream language code not found\n"); std::cout.flush();
+        }
+
+
         ///		if ( ff_format_context_->streams[i]->codec->codec_type != AVMEDIA_TYPE_UNKNOWN) {
         ///			ff_stream_codec_contexts_[i].push_back(ff_format_context_->streams[i]->codec);
         ///		}
@@ -644,6 +666,24 @@ AVCodecParameters* av_format_context::ff_codec_parameters(size_t stream_index) c
 const AVCodec* av_format_context::ff_find_decoder(size_t stream_index) const
 {
     return avcodec_find_decoder(codec_id(stream_index));
+}
+
+string av_format_context::stream_info_t::dbg_str() const
+{
+    string s;
+    s += fmt::format("--- Media type: {}, index: {} ---\n", to_string(media_type), stream_index);
+    s += fmt::format("Language code: {}\n", language_code);
+    s += fmt::format("--- Meta data ---\n");
+    for (const auto& [key, val]: meta_data) {
+        s += fmt::format("{}: {}\n", key, val);
+
+    }
+    return s;
+}
+
+void av_format_context::stream_info_t::dbg_print() const
+{
+    std::cerr << dbg_str();
 }
 
 

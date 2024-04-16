@@ -178,11 +178,11 @@ public:
     bool                        show_controls           () const                        { return show_controls_;    }
     void                        show_controls_set       (bool show)                     { show_controls_ = show;    }
 
-    cpaf::locale::translator&           tr              ()          { return tr_; }
-    const cpaf::locale::translator&     tr              () const    { return tr_; }
+    cpaf::locale::translator&               tr              ()          { return tr_; }
+    const cpaf::locale::translator&         tr              () const    { return tr_; }
 
-    cpaf::video::media_stream_time&         cur_media_time  ()       { return cur_media_time_; }
-    const cpaf::video::media_stream_time&   cur_media_time  () const { return cur_media_time_; }
+    cpaf::video::media_stream_time&         cur_media_time  ()          { return cur_media_time_; }
+    const cpaf::video::media_stream_time&   cur_media_time  () const    { return cur_media_time_; }
     std::shared_ptr<torrent::torrents>      torrents_get    () ;
     void                                    torrents_set    (std::shared_ptr<torrent::torrents> tors);
 
@@ -209,7 +209,7 @@ private:
     bool                            all_initialized         () const;
     void                            init_video              (const system_window& main_window);
     bool                            open_stream             (const std::string& resource_path, cpaf::video::stream_type_t sti);
-    bool                            open_primary_stream     (const std::string& resource_path, const std::string& subtitle_path);
+    bool                            open_primary_stream     (const std::string& resource_path);
     void                            check_activate_subtitle ();
     void                            update_scaling_context  () const;
     pipeline_threads&               media_pipeline_threads  () { return *media_pipeline_threads_; }
@@ -217,6 +217,7 @@ private:
     void                            handle_internal_events  ();
     void                            handle_stream_state     ();
     void                            torrent_finished_event  (std::shared_ptr<cpaf::torrent::torrent> tor_file);
+    void                            on_configuration_changed();
 //    void                            calc_selectable_subtitles() const;
 
     void                            update_screen_size_factor();

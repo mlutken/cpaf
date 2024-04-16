@@ -86,7 +86,7 @@ protected:
     cpaf::video::av_frame&                  frame_display               () { return frame_display_; }
     cpaf::video::av_frame                   frame_display_;
     cpaf::video::surface_dimensions_t       texture_render_dimensions_  {0,0};
-    void                                    on_configuration_changed    ();
+//    void                                    on_configuration_changed    ();
 
     player&                                 player_;
     config&                                 config_;

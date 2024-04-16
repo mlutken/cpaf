@@ -8,6 +8,7 @@ extern "C"
 
 #include <string>
 #include <vector>
+#include <map>
 #include <set>
 #include <array>
 #include <queue>
@@ -37,42 +38,54 @@ class av_format_context
 public:
     using get_packet_fun = std::function<av_packet()>;
 
+    struct stream_info_t {
+        std::map<std::string, std::string>  meta_data;
+        std::string                         language_code;
+        size_t                              stream_index;
+        media_type_t                        media_type;
+        std::string                         dbg_str     () const;
+        void                                dbg_print   () const;
+    };
+
+    using stream_info_vec = std::vector<stream_info_t>;
+
      // --- Constructors etc. ---
     explicit av_format_context(get_torrents_fn get_torrents_function);
 
     ~av_format_context();
     bool                    open                        (const std::string& resource_path);
     void                    close                       ();
-    void                    selected_media_index_set    (media_type mt, size_t stream_index);
-    size_t                  media_type_to_index         (media_type mt) const { return selected_stream_per_media_type_[to_size_t(mt)]; }
+    void                    selected_media_index_set    (media_type_t mt, size_t stream_index);
+    size_t                  media_type_to_index         (media_type_t mt) const { return selected_stream_per_media_type_[to_size_t(mt)]; }
     size_t                  primary_index               () const { return primary_stream_index_; }
     void                    primary_index_set           (size_t stream_index);
-    media_type              primary_media_type          () const { return stream_media_type(primary_index()); }
+    media_type_t            primary_media_type          () const { return stream_media_type(primary_index()); }
 
-    size_t                  video_index                 () const { return media_type_to_index(media_type::video);}
-    size_t                  audio_index                 () const { return media_type_to_index(media_type::audio);}
-    size_t                  subtitle_index              () const { return media_type_to_index(media_type::subtitle);}
-    void                    video_index_set             (size_t stream_index) { selected_media_index_set(media_type::video, stream_index);}
-    void                    audio_index_set             (size_t stream_index) { selected_media_index_set(media_type::audio, stream_index);}
-    void                    subtitle_index_set          (size_t stream_index) { selected_media_index_set(media_type::subtitle, stream_index);}
+    size_t                  video_index                 () const { return media_type_to_index(media_type_t::video);}
+    size_t                  audio_index                 () const { return media_type_to_index(media_type_t::audio);}
+    size_t                  subtitle_index              () const { return media_type_to_index(media_type_t::subtitle);}
+    void                    video_index_set             (size_t stream_index) { selected_media_index_set(media_type_t::video, stream_index);}
+    void                    audio_index_set             (size_t stream_index) { selected_media_index_set(media_type_t::audio, stream_index);}
+    void                    subtitle_index_set          (size_t stream_index) { selected_media_index_set(media_type_t::subtitle, stream_index);}
     void                    set_default_selected_streams();
     void                    set_default_primary_stream  ();
 
     // --- Info functions ---
     const std::string&      resource_path               () const { return resource_path_; }
     size_t                  streams_count               () const;
-    size_t                  streams_count               (media_type mt) const;
-    size_t                  video_streams_count         () const { return stream_indices_per_media_type_[to_size_t(media_type::video)].size(); }
-    size_t                  audio_streams_count         () const { return stream_indices_per_media_type_[to_size_t(media_type::audio)].size(); }
-    size_t                  subtitle_streams_count      () const { return stream_indices_per_media_type_[to_size_t(media_type::subtitle)].size(); }
-    size_t                  first_stream_index          (media_type mt) const;
-    size_t                  first_video_index           () const { return first_stream_index(media_type::video); }
-    size_t                  first_audio_index           () const { return first_stream_index(media_type::audio); }
-    size_t                  first_subtitle_index        () const { return first_stream_index(media_type::subtitle); }
+    size_t                  streams_count               (media_type_t mt) const;
+    size_t                  video_streams_count         () const { return stream_indices_per_media_type_[to_size_t(media_type_t::video)].size(); }
+    size_t                  audio_streams_count         () const { return stream_indices_per_media_type_[to_size_t(media_type_t::audio)].size(); }
+    size_t                  subtitle_streams_count      () const { return stream_indices_per_media_type_[to_size_t(media_type_t::subtitle)].size(); }
+    size_t                  first_stream_index          (media_type_t mt) const;
+    size_t                  first_video_index           () const { return first_stream_index(media_type_t::video); }
+    size_t                  first_audio_index           () const { return first_stream_index(media_type_t::audio); }
+    size_t                  first_subtitle_index        () const { return first_stream_index(media_type_t::subtitle); }
     AVCodecID				codec_id                    (size_t stream_index) const;
-    media_type              stream_media_type           (size_t stream_index) const;
-    std::set<media_type>    set_of_each_media_type      (const std::set<media_type>& types_to_skip = {media_type::subtitle}) const;
+    media_type_t            stream_media_type           (size_t stream_index) const;
+    std::set<media_type_t>  set_of_each_media_type      (const std::set<media_type_t>& types_to_skip = {media_type_t::subtitle}) const;
     bool                    is_torrent                  () const;
+    const stream_info_vec&  streams_info                () const { return streams_info_; }
 
     std::atomic<stream_state_t>& stream_state           () { return stream_state_; }
     const std::atomic<stream_state_t>&  stream_state    () const { return stream_state_; }
@@ -81,33 +94,33 @@ public:
     bool                    seek_time_pos               (std::chrono::microseconds stream_pos);
     bool                    seek_time_pos               (std::chrono::microseconds stream_pos, seek_dir dir);
     bool                    seek_time_pos               (size_t stream_index, std::chrono::microseconds stream_pos, seek_dir dir);
-    bool                    seek_time_pos               (media_type mt, std::chrono::microseconds stream_pos, seek_dir dir);
+    bool                    seek_time_pos               (media_type_t mt, std::chrono::microseconds stream_pos, seek_dir dir);
 
     // --- Codec Functions ---
     av_codec_parameters     codec_parameters            (size_t stream_index) const;
     av_codec_context		codec_context               (size_t stream_index) const;
-    av_codec_context		codec_context               (media_type selected_media) const;
-    av_codec_context		codec_context_video         () const    { return codec_context(media_type::video); }
-    av_codec_context		codec_context_audio         () const    { return codec_context(media_type::audio); }
-    av_codec_context		codec_context_subtitle      () const    { return codec_context(media_type::subtitle); }
+    av_codec_context		codec_context               (media_type_t selected_media) const;
+    av_codec_context		codec_context_video         () const    { return codec_context(media_type_t::video); }
+    av_codec_context		codec_context_audio         () const    { return codec_context(media_type_t::audio); }
+    av_codec_context		codec_context_subtitle      () const    { return codec_context(media_type_t::subtitle); }
 
 //    av_codec                codec                   (size_t stream_index) const;
     // --- Packet Functions ---
     av_packet                   read_packet             () const;
     av_packet                   read_packet_selected    () const;
     bool                        packet_in_selected_stream(const av_packet& packet) const;
-    media_type                  read_packet_to_queue    ();
-    bool                        read_each_type_to_queues(const std::set<media_type>& types_to_read);
-    media_type                  max_packet_queue_type   (const std::set<media_type>& media_types_to_test);
-    bool                        read_packets_to_queues  (media_type mt, uint32_t fill_to_level);
-    const packet_queue_t&       packet_queue            (media_type mt) const { return packet_queue_per_media_type_[to_size_t(mt)]; }
-    const packet_queue_t&       packet_queue_const      (media_type mt) const { return packet_queue_per_media_type_[to_size_t(mt)]; }
-    void                        packet_queue_pop        (media_type mt);
-    av_packet                   packet_queue_front      (media_type mt);
-    av_packet                   packet_queue_pop_front  (media_type mt);
-    get_packet_fun              get_packet_function     (media_type mt);
-    std::chrono::microseconds   packet_queue_pts        (media_type mt) const;
-    std::chrono::milliseconds   packet_queue_pts_ms     (media_type mt) const;
+    media_type_t                read_packet_to_queue    ();
+    bool                        read_each_type_to_queues(const std::set<media_type_t>& types_to_read);
+    media_type_t                max_packet_queue_type   (const std::set<media_type_t>& media_types_to_test);
+    bool                        read_packets_to_queues  (media_type_t mt, uint32_t fill_to_level);
+    const packet_queue_t&       packet_queue            (media_type_t mt) const { return packet_queue_per_media_type_[to_size_t(mt)]; }
+    const packet_queue_t&       packet_queue_const      (media_type_t mt) const { return packet_queue_per_media_type_[to_size_t(mt)]; }
+    void                        packet_queue_pop        (media_type_t mt);
+    av_packet                   packet_queue_front      (media_type_t mt);
+    av_packet                   packet_queue_pop_front  (media_type_t mt);
+    get_packet_fun              get_packet_function     (media_type_t mt);
+    std::chrono::microseconds   packet_queue_pts        (media_type_t mt) const;
+    std::chrono::milliseconds   packet_queue_pts_ms     (media_type_t mt) const;
     void                        flush_packet_queues     ();
 
     // --- Time functions ---
@@ -131,7 +144,7 @@ public:
 
 private:
     // --- Helper functions ---
-    packet_queue_t&             packet_queue_get        (media_type mt) { return packet_queue_per_media_type_[to_size_t(mt)]; }
+    packet_queue_t&             packet_queue_get        (media_type_t mt) { return packet_queue_per_media_type_[to_size_t(mt)]; }
 
     void                        read_codec_contexts         ();
     size_t                      default_primary_stream_index() const;
@@ -147,6 +160,7 @@ private:
     std::array<size_t, media_type_size()>                   selected_stream_per_media_type_;
     std::array<std::vector<size_t>, media_type_size()>      stream_indices_per_media_type_;
     std::array<packet_queue_t, media_type_size()>           packet_queue_per_media_type_;
+    stream_info_vec                                         streams_info_;
     std::string                                             resource_path_;
     size_t                                                  primary_stream_index_   = no_stream_index;
     size_t                                                  packet_queue_capacity_  = 200;

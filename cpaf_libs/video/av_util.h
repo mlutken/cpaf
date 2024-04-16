@@ -3,11 +3,13 @@
 extern "C"
 {
 #include <libswresample/swresample.h>
+struct AVDictionary;
 }
 
 
 #include <vector>
 #include <string>
+#include <map>
 #include <chrono>
 #include <atomic>
 #include <memory>
@@ -16,6 +18,7 @@ extern "C"
 
 #include <math/base/v2.hpp>
 #include <video/audio_types_convert.h>
+
 
 namespace cpaf::torrent {
     class torrents;
@@ -31,7 +34,7 @@ using get_torrents_fn = std::function<std::shared_ptr<cpaf::torrent::torrents> (
 constexpr int32_t surface_dimension_auto = -1;
 static constexpr size_t no_stream_index = std::numeric_limits<size_t>::max();
 
-enum class media_type : int8_t {
+enum class media_type_t : int8_t {
     unknown		= AVMEDIA_TYPE_UNKNOWN,			///< NB: Is -1!! Usually treated as AVMEDIA_TYPE_DATA
     video		= AVMEDIA_TYPE_VIDEO,
     audio		= AVMEDIA_TYPE_AUDIO,
@@ -43,12 +46,12 @@ enum class media_type : int8_t {
 };
 
 
-inline media_type operator++(media_type& mt) {
-    if (mt == media_type::SIZE) {
+inline media_type_t operator++(media_type_t& mt) {
+    if (mt == media_type_t::SIZE) {
         return mt;
     }
-    using int_type = typename std::underlying_type<media_type>::type;
-    mt = static_cast<media_type>(static_cast<int_type>(mt) + 1);
+    using int_type = typename std::underlying_type<media_type_t>::type;
+    mt = static_cast<media_type_t>(static_cast<int_type>(mt) + 1);
     return mt;
 }
 
@@ -129,22 +132,22 @@ inline bool media_type_valid (AVMediaType ff_mt) {
     return AVMEDIA_TYPE_UNKNOWN < ff_mt && ff_mt <= AVMEDIA_TYPE_NB;
 }
 
-inline bool media_type_valid (media_type mt) {
-    return mt != media_type::unknown && mt != media_type::SIZE;
+inline bool media_type_valid (media_type_t mt) {
+    return mt != media_type_t::unknown && mt != media_type_t::SIZE;
 }
 
-inline constexpr int    media_type_first_int    () { return static_cast<int>(media_type::unknown); }
-inline constexpr size_t media_type_first_size_t () { return static_cast<size_t>(media_type::unknown);}
+inline constexpr int    media_type_first_int    () { return static_cast<int>(media_type_t::unknown); }
+inline constexpr size_t media_type_first_size_t () { return static_cast<size_t>(media_type_t::unknown);}
 
-inline constexpr int    media_type_size_int     () { return static_cast<int>(media_type::SIZE); }
-inline constexpr size_t media_type_size         () { return static_cast<size_t>(media_type::SIZE);}
+inline constexpr int    media_type_size_int     () { return static_cast<int>(media_type_t::SIZE); }
+inline constexpr size_t media_type_size         () { return static_cast<size_t>(media_type_t::SIZE);}
 inline constexpr size_t stream_type_index_size  () { return static_cast<size_t>(stream_type_t::SIZE);}
 
-inline constexpr auto	to_int					(media_type mt) -> int				{ return static_cast<int>(mt);	}
+inline constexpr auto	to_int					(media_type_t mt) -> int				{ return static_cast<int>(mt);	}
 inline constexpr auto	to_int					(stream_state_t ss) -> int          { return static_cast<int>(ss);  }
 
 
-inline constexpr auto to_size_t(media_type mt) -> size_t
+inline constexpr auto to_size_t(media_type_t mt) -> size_t
 {
     return static_cast<size_t>(mt);
 }
@@ -164,7 +167,9 @@ inline constexpr std::chrono::microseconds illegal_timestamp()
     return std::chrono::microseconds::max();
 }
 
-std::string to_string						(media_type mt);
+std::map<std::string, std::string>
+            read_av_dictionary              (AVDictionary* ff_dict);
+std::string to_string						(media_type_t mt);
 std::string to_string						(seek_state_t ss);
 std::string to_string						(stream_state_t ss);
 

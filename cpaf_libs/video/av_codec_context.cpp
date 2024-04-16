@@ -206,7 +206,7 @@ av_frame av_codec_context::read_frame() const
 //    }
 
     auto packet = get_packet_fun_();
-    if ((this->media_type_get() == media_type::audio)) {
+    if ((this->media_type_get() == media_type_t::audio)) {
         if (!packet.is_valid()) {
             packet = get_packet_fun_();
         }
@@ -239,10 +239,10 @@ av_frame av_codec_context::read_frame() const
         packet = get_packet_fun_();
     }
 
-    if ((this->media_type_get() == media_type::audio)) {
+    if ((this->media_type_get() == media_type_t::audio)) {
 //        std::cerr << "ERROR getting audio frame\n";
     }
-    if ((this->media_type_get() == media_type::video)) {
+    if ((this->media_type_get() == media_type_t::video)) {
         std::cerr << "ERROR getting video frame\n";
     }
     return av_frame();
@@ -278,7 +278,7 @@ int av_codec_context::receive_frame(av_frame& frame) const
 
 std::vector<subtitle_frame> av_codec_context::read_subtitles() const
 {
-    if (media_type_get() != media_type::subtitle){
+    if (media_type_get() != media_type_t::subtitle){
         return std::vector<subtitle_frame>();
     }
     if (!ff_codec_context_){

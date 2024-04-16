@@ -44,7 +44,7 @@ public:
     void                    alloc_packet_struct () { ff_packet_ = av_packet_alloc(); }
     uint32_t                create_number       () const    { return create_number_;    }
     bool                    valid               () const    { return ff_packet_ != nullptr;    }
-    media_type              media_type_get      () const    { return media_type_;    }
+    media_type_t              media_type_get      () const    { return media_type_;    }
     size_t                  stream_index        () const    { return static_cast<size_t>(ff_packet_->stream_index);    }
 
     // --- Info functions ---
@@ -66,12 +66,12 @@ public:
 
 private:
     void                destroy                 ();
-    void                media_type_set          (media_type mt) { media_type_ = mt;    }
+    void                media_type_set          (media_type_t mt) { media_type_ = mt;    }
     void                presentation_time_set   (const std::chrono::microseconds& ts) { presentation_time_ = ts; }
 
     AVPacket*                   ff_packet_          = nullptr;
     uint32_t                    create_number_      = 0;
-    media_type                  media_type_         = media_type::unknown;
+    media_type_t                  media_type_         = media_type_t::unknown;
     std::chrono::microseconds   presentation_time_  = illegal_timestamp();
 };
 
