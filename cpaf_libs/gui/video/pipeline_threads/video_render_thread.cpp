@@ -121,8 +121,7 @@ bool video_render_thread::video_frame_do_render(
 
 void video_render_thread::update_current_subtitle(render& video_render)
 {
-    const auto& cur_subtitle = video_render.current_subtitle();
-    if (!subtitle_within_display_time(cur_subtitle)) {
+    if (!subtitle_within_display_time(video_render.current_subtitle())) {
         video_render.clear_current_subtitle();
     }
 

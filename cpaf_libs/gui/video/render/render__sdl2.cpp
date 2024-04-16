@@ -277,11 +277,14 @@ bool render_platform::do_render_video_frame(const cpaf::video::av_frame& frame)
     auto dst_rect = to_sdl_rect(render_geometry());
     SDL_RenderCopy(get_sdl_renderer(), sdl_frame_render_texture_, NULL, &dst_rect);
 
-    if (current_subtitle_frame_.format() == subtitle_frame::format_t::text) {
-        render_subtitle_text();
-    }
-    else if (current_subtitle_frame_.format() == subtitle_frame::format_t::graphics) {
-        render_subtitle_graphics();
+
+    if (subtitle_within_display_time(current_subtitle_frame_)) {
+        if (current_subtitle_frame_.format() == subtitle_frame::format_t::text) {
+            render_subtitle_text();
+        }
+        else if (current_subtitle_frame_.format() == subtitle_frame::format_t::graphics) {
+            render_subtitle_graphics();
+        }
     }
 
 
