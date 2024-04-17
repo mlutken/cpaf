@@ -121,9 +121,7 @@ bool player::open(playable playab)
     auto language_code = configuration.str("subtitles", "language_code");
     const auto entry = playable_.find_best_subtitle(language_code);
 
-    if (entry.is_valid()) {
-        subtitle_select(entry.language_code);
-    }
+    subtitle_select(entry.language_code);
 
     return ok;
 }
@@ -453,7 +451,6 @@ void player::open_subtitle(const std::string& subtitle_path, const std::string& 
 /// @todo set subtitle also when using subtitle_source_t::stream
 void player::subtitle_select(const std::string& language_code)
 {
-    std::cerr << "FIXMENM  Subtitle select: '" << language_code << "'\n";
     const int32_t sel_index = playable_.selectable_subtitle_index_of(language_code);
     subtitle_select(sel_index);
 }
@@ -479,6 +476,8 @@ void player::subtitle_select(int32_t selectable_subtitle_index)
                 return;
             }
         }
+        // If we get here we have no working subtitle so disable
+        configuration.bool_set("subtitles", "show", false);
     }
 }
 
