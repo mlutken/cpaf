@@ -21,12 +21,7 @@ public:
     }
 
     Rai() { pushed_types_.reserve(8);   }
-    ~Rai()
-    {
-        for (auto stack_type: pushed_types_) {
-            Pop(stack_type);
-        }
-    }
+    ~Rai();
 
     Rai&    Font                (ImFont* font)                          { ImGui::PushFont(font); pushed_types_.push_back(Stacktype::Font); return *this; }
     Rai&    StyleColor          (ImGuiCol idx, ImU32 col)               { ImGui::PushStyleColor(idx, col); pushed_types_.push_back(Stacktype::StyleColor); return *this; }
@@ -84,6 +79,13 @@ inline bool MenuItem(std::string_view label, std::string_view shortcut = std::st
 inline bool MenuItem(std::string_view label, std::string_view shortcut, bool* p_selected, bool enabled = true) {
     return MenuItem(label.data(), shortcut.data(), p_selected, enabled);
 }
+
+// ---------------------------
+// --- Convenience helpers ---
+// ---------------------------
+// Helper to display a little (?) mark which shows a tooltip when hovered.
+// In your own code you may want to display an actual icon if you are using a merged icon fonts (see docs/FONTS.md)
+void HelpMarker(std::string_view description);
 
 
 }
