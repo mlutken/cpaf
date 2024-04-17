@@ -228,22 +228,36 @@ void controls_default::render_menu_buttons()
 
     // ---- FIXMENM DEBUG ONLY BEGIN ----
     int32_t cur_selected_index = player_.subtitle_selected_index();
+    bool cur_show_subtitles = config_.bool_val("subtitles", "show");
+
+    const auto subtitles_uv0 = cur_show_subtitles ? subtitles_on_uv0.to_struct<ImVec2>() : subtitles_off_uv0.to_struct<ImVec2>();
+    const auto subtitles_uv1 = cur_show_subtitles ? subtitles_on_uv1.to_struct<ImVec2>() : subtitles_off_uv1.to_struct<ImVec2>();
+
     int32_t new_selected_index = cur_selected_index;
 //    const char* names[] = { "Bream", "Haddock", "Mackerel", "Pollock", "Tilefish" };
 //    static bool toggles[] = { true, false, false, false, false };
 
     // Simple selection popup (if you want to show the current selection inside the Button itself,
     // you may want to build a string using the "###" operator to preserve a constant ID with a variable label)
-    if (ImGui::ImageButton("subtitles_btn", buttons_texture_ptr, menu_buttons_size_, subtitles_on_uv0.to_struct<ImVec2>(), subtitles_on_uv1.to_struct<ImVec2>(), {0,0,0,0}, {1,1,1,1})) {
+    if (ImGui::ImageButton("subtitles_btn", buttons_texture_ptr, menu_buttons_size_, subtitles_uv0, subtitles_uv1, {0,0,0,0}, {1,1,1,1})) {
         ImGui::OpenPopup("subtitles_popup_menu");
     }
 ///    ImGui::SameLine();
 ///    ImGui::TextUnformatted(selected_fish == -1 ? "<None>" : names[selected_fish]);
 
-    if (ImGui::BeginPopup("subtitles_popup_menu"))
+    if (ImGui::BeginPopup("subtitles_popup_menu", ImGuiWindowFlags_MenuBar))
     {
-        ImGui::TextUnformatted(tr().tr("Select subtitle"));
-        ImGui::Separator();
+        if (ImGui::BeginMenuBar())
+        {
+            if (ImGui::MenuItem(tr().tr("Open Subtitle URL")) ) {
+                std::cerr << "FIXMENM Open URL\n";
+                std::cerr << "FIXMENM cur_show_subtitles: '" << cur_show_subtitles << "'\n";
+            }
+            if (ImGui::MenuItem(tr().tr("Open Subtitle File")) ) {
+                std::cerr << "FIXMENM Open File\n";
+            }
+            ImGui::EndMenuBar();
+        }
 
         if(ImGui::Button(tr().tr("No subtitles").c_str()) ) {
             std::cerr << "FIXMENM No subtitles\n";
