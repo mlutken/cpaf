@@ -83,7 +83,7 @@ playable::playable(std::string path, std::string subtitle_path, const std::strin
     add_subtitle(subtitle_path, language_code);
 }
 
-/// @todo If we have multiple subtitles with same language code only the first is added!
+/// @todo If we have multiple subtitles with same language we now add all. Do we still want this?
 void playable::update_calculated(const locale::translator& tr,
                                  const stream_info_vec* streams_info_ptr,
                                  bool force) const
@@ -93,8 +93,7 @@ void playable::update_calculated(const locale::translator& tr,
     }
     translator_id_ = tr.id();
     selectable_subtitles_.clear();
-    selectable_subtitles_.push_back(
-        {subtitle_user(), string(subtitle_user_selected_lc), tr.tr("User selected"), illegal_stream_index(), subtitle_source_t::text_file});
+    selectable_subtitles_.push_back({subtitle_user(), string(subtitle_user_selected_lc), tr.tr("User selected"), illegal_stream_index(), subtitle_source_t::text_file});
     for (auto& el : jo_["subtitles"].items()) {
         auto& sub_jo = el.value();
         const auto language_code = cpaf::json_value_str(sub_jo, "language_code", "");
@@ -102,11 +101,9 @@ void playable::update_calculated(const locale::translator& tr,
             continue;
         }
         const string language_name = tr.tr(cpaf::locale::language_codes::language_name(language_code));
-        selectable_subtitles_.push_back(
-            {sub_jo["path"], language_code, language_name, illegal_stream_index(), subtitle_source_t::text_file});
+        selectable_subtitles_.push_back({sub_jo["path"], language_code, language_name, illegal_stream_index(), subtitle_source_t::text_file});
     }
 
-    // TODO: If we have multiple subtitles with same language code only the first is added!
     if (streams_info_ptr) {
         stream_info_vec subtitles_to_add;
         for(const auto& si: *streams_info_ptr) {
@@ -118,11 +115,9 @@ void playable::update_calculated(const locale::translator& tr,
             }
         }
 
-
         for(const auto& si: subtitles_to_add) {
             const string language_name = tr.tr(cpaf::locale::language_codes::language_name(si.language_code));
-            selectable_subtitles_.push_back(
-                {"", si.language_code, language_name, si.stream_index, subtitle_source_t::stream});
+            selectable_subtitles_.push_back({"", si.language_code, language_name, si.stream_index, subtitle_source_t::stream});
         }
     }
 
