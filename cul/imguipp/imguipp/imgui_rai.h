@@ -55,7 +55,13 @@ private:
 
 };
 
-inline void TextUnformatted(std::string_view text) { ImGui::TextUnformatted(text.data(), text.data() + text.size()); }
+inline bool Button(std::string_view label, const ImVec2& size = ImVec2(0, 0)) {
+    return Button(label.data(), size);
+}
+
+// ----------------------------
+// --- Widgets: Selectables ---
+// ----------------------------
 
 inline bool Selectable(std::string_view label, bool selected = false, ImGuiSelectableFlags flags = 0, const ImVec2& size = ImVec2(0, 0)) {
     return Selectable(label.data(), selected, flags, size);
@@ -65,6 +71,20 @@ inline bool Selectable(std::string_view label, bool* p_selected, ImGuiSelectable
 {
     return Selectable(label.data(), p_selected, flags, size);
 }
+
+inline void TextUnformatted(std::string_view text) { ImGui::TextUnformatted(text.data(), text.data() + text.size()); }
+
+// -------------
+// --- Menus ---
+// -------------
+inline bool MenuItem(std::string_view label, std::string_view shortcut = std::string_view(), bool selected = false, bool enabled = true) {
+    return MenuItem(label.data(), shortcut.data(), selected, enabled);
+}
+
+inline bool MenuItem(std::string_view label, std::string_view shortcut, bool* p_selected, bool enabled = true) {
+    return MenuItem(label.data(), shortcut.data(), p_selected, enabled);
+}
+
 
 }
 
