@@ -1,3 +1,14 @@
+# -----------------------
+# --- ImGuiFileDialog ---
+# -----------------------
+find_package(imgui REQUIRED)
+add_subdirectory(ImGuiFileDialog)
+set (ImGuiFileDialog_library_name ImGuiFileDialog)
+set_target_properties(${ImGuiFileDialog_library_name} PROPERTIES LINKER_LANGUAGE CXX)
+target_include_directories(${ImGuiFileDialog_library_name} PUBLIC ${CMAKE_CURRENT_LIST_DIR})
+target_link_libraries(${ImGuiFileDialog_library_name} imgui::imgui )
+target_compile_options(${ImGuiFileDialog_library_name} PRIVATE ${STANDARD_COMPILE_FLAGS})
+
 add_subdirectory(luepp)
 add_subdirectory(imguipp)
 add_subdirectory(IconFontCppHeaders)
@@ -43,4 +54,3 @@ if ( NOT (CMAKE_SYSTEM_NAME MATCHES "Emscripten") )
     add_subdirectory(loki)
     add_subdirectory(utf8)
 endif()
-
