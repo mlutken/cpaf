@@ -97,11 +97,13 @@ void app_platform::do_platform_process_events()
     }
 }
 
+/// @todo imgui_fonts::instance().add_pending_requested_fonts(); still crashes! :(
 void app_platform::do_platform_pre_frame_update()
 {
     if (clear_window_before_frame_update_) {
         SDL_RenderClear(main_window().native_renderer<SDL_Renderer>());
     }
+    /// imgui_fonts::instance().add_pending_requested_fonts(); // Still crashes :(
     ImGui_ImplSDLRenderer_NewFrame();
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();

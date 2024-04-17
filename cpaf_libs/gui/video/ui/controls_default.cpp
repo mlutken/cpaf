@@ -1,6 +1,8 @@
 #include "controls_default.h"
 
+#include <ImGuiFileDialog.h>
 #include <cpaf_libs/time/cpaf_time.h>
+#include <cpaf_libs/filesystem/cpaf_special_dirs.h>
 #include <cpaf_libs/gui/fonts/font_size.h>
 #include <cpaf_libs/gui/assets/fonts/imgui_fonts.h>
 #include <cpaf_libs/gui/system_window.h>
@@ -143,8 +145,10 @@ void controls_default::do_render()
     render_menu_buttons();
     render_slider();
     render_player_time();
-//    render_debug_window();
-    render_subtitles_popup();
+    render_menu_window();
+
+    //    render_debug_window();
+//    render_subtitles_popup();
 }
 
 void controls_default::render_player_controls()
@@ -205,9 +209,53 @@ void controls_default::render_player_controls()
     ImGui::End();
 }
 
+
+//ImGuiFileDialog::Instance()->OpenModal(
+//    "OpenFontDlg", "Open Font File", "Font File (*.ttf *.otf){.ttf,.otf},All Files (*.*){.*}", path, 0);
+
+void drawGui() {
+    // open Dialog Simple
+    if (ImGui::Begin("##OpenDialogCommand")) {
+        if (ImGui::Button("Open Subtitle File")) {
+            IGFD::FileDialogConfig config;
+            config.path = cpaf::filesystem::special_dirs::home() / "code/crawler/moowees/data/subtitles";
+            ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", "(*.srt *.zip){.srt,.zip},All Files (*.*){.*}", config);
+        }
+    }
+    ImGui::End();
+
+    // display
+    if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey", ImGuiWindowFlags_NoCollapse, {500,300} )) { // => will show a dialog
+        if (ImGuiFileDialog::Instance()->IsOk()) { // action if OK
+            std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
+            std::string filePath = ImGuiFileDialog::Instance()->GetCurrentPath();
+            std::cerr << "FIXMENM ImGuiFileDialog filePathName: '" << filePathName << "'\n";
+            std::cerr << "FIXMENM ImGuiFileDialog filePath: '" << filePath << "'\n";
+            // action
+        }
+
+        // close
+        ImGuiFileDialog::Instance()->Close();
+    }
+}
+
 void controls_default::render_menu_buttons()
 {
+//    drawGui();
+
     auto buttons_texture_ptr = control_icons_texture_->native_texture<void>();
+    if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey", ImGuiWindowFlags_NoCollapse, {500,300} )) { // => will show a dialog
+        if (ImGuiFileDialog::Instance()->IsOk()) { // action if OK
+            std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
+            std::string filePath = ImGuiFileDialog::Instance()->GetCurrentPath();
+            std::cerr << "FIXMENM 2 ImGuiFileDialog filePathName: '" << filePathName << "'\n";
+            std::cerr << "FIXMENM 2 ImGuiFileDialog filePath: '" << filePath << "'\n";
+            // action
+        }
+
+        // close
+        ImGuiFileDialog::Instance()->Close();
+    }
 
     ImGui::Rai imrai;
     imrai.StyleVar(ImGuiStyleVar_WindowPadding, {0,0})
@@ -226,84 +274,19 @@ void controls_default::render_menu_buttons()
     ImGui::Begin("subtitles_btn", &visible_, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
     set_cursor_pos_image_buttons();
 
-    // ---- FIXMENM DEBUG ONLY BEGIN ----
-    int32_t cur_selected_index = player_.subtitle_selected_index();
+
     bool cur_show_subtitles = config_.bool_val("subtitles", "show");
 
     const auto subtitles_uv0 = cur_show_subtitles ? subtitles_on_uv0.to_struct<ImVec2>() : subtitles_off_uv0.to_struct<ImVec2>();
     const auto subtitles_uv1 = cur_show_subtitles ? subtitles_on_uv1.to_struct<ImVec2>() : subtitles_off_uv1.to_struct<ImVec2>();
 
-    int32_t new_selected_index = cur_selected_index;
-//    const char* names[] = { "Bream", "Haddock", "Mackerel", "Pollock", "Tilefish" };
-//    static bool toggles[] = { true, false, false, false, false };
-
     // Simple selection popup (if you want to show the current selection inside the Button itself,
     // you may want to build a string using the "###" operator to preserve a constant ID with a variable label)
-    if (ImGui::ImageButton("subtitles_btn", buttons_texture_ptr, menu_buttons_size_, subtitles_uv0, subtitles_uv1, {0,0,0,0}, {1,1,1,1})) {
+    if (ImGui::ImageButton("###subtitles_btn", buttons_texture_ptr, menu_buttons_size_, subtitles_uv0, subtitles_uv1, {0,0,0,0}, {1,1,1,1})) {
         ImGui::OpenPopup("subtitles_popup_menu");
     }
-///    ImGui::SameLine();
-///    ImGui::TextUnformatted(selected_fish == -1 ? "<None>" : names[selected_fish]);
+    render_subtitles_popup();
 
-    if (ImGui::BeginPopup("subtitles_popup_menu", ImGuiWindowFlags_MenuBar))
-    {
-        if (ImGui::BeginMenuBar())
-        {
-            if (ImGui::MenuItem(tr().tr("Open Subtitle URL")) ) {
-                std::cerr << "FIXMENM Open URL\n";
-                std::cerr << "FIXMENM cur_show_subtitles: '" << cur_show_subtitles << "'\n";
-            }
-            if (ImGui::MenuItem(tr().tr("Open Subtitle File")) ) {
-                std::cerr << "FIXMENM Open File\n";
-            }
-            ImGui::EndMenuBar();
-        }
-
-        if(ImGui::Button(tr().tr("No subtitles").c_str()) ) {
-            std::cerr << "FIXMENM No subtitles\n";
-            player_.subtitle_select(-1);
-
-        }
-        ImGui::Separator();
-        const auto& subtitles = player_.selectable_subtitles();
-
-        for (auto i = 0u; i < subtitles.size(); ++i) {
-            const auto i_signed = static_cast<int32_t>(i);
-            const bool selected = cur_selected_index == i_signed;
-            std::string selelectable_text = subtitles[i].language_name + "###LangSel" + std::to_string(i);
-            if (ImGui::Selectable(selelectable_text, selected)) {
-                new_selected_index = i_signed;
-                std::cerr << "FIXMENM subtitle selected index: "  << new_selected_index << "\n";
-            }
-        }
-        ImGui::EndPopup();
-    }
-
-
-    if (cur_selected_index != new_selected_index) {
-        std::cerr << "FIXMENM subtitle selected index CHANGED! : "  << new_selected_index << "\n";
-        player_.subtitle_select(new_selected_index);
-    }
-
-
-//    if (ImGui::BeginPopup("subtitles_popup_menu"))
-//    {
-//        ImGui::Text("My Aquarium");
-//        ImGui::Separator();
-//        for (int i = 0; i < IM_ARRAYSIZE(names); i++)
-//            if (ImGui::Selectable(names[i])) {
-//                selected_fish = i;
-//            }
-//        ImGui::EndPopup();
-//    }
-
-    // ---- FIXMENM DEBUG ONLY END ----
-
-
-//    if (ImGui::ImageButton("subtitles", buttons_texture_ptr, menu_buttons_size_, subtitles_on_uv0.to_struct<ImVec2>(), subtitles_on_uv1.to_struct<ImVec2>(), {0,0,0,0}, {1,1,1,1})) {
-//        std::cerr << "FIXMENM try to open popup\n";
-//        ImGui::OpenPopup("subtitles_popup");;
-//    }
     ImGui::End();
 
     // --- Menu button ---
@@ -313,12 +296,12 @@ void controls_default::render_menu_buttons()
     set_cursor_pos_image_buttons();
 
     if (ImGui::ImageButton("menu", buttons_texture_ptr, menu_buttons_size_, menu_uv0.to_struct<ImVec2>(), menu_uv1.to_struct<ImVec2>(), {0,0,0,0}, {1,1,1,1})) {
-        render_menu_popup();
+        do_render_menu_window_ = true;
     }
     ImGui::End();
 
-
 }
+
 
 void controls_default::render_slider()
 {
@@ -394,19 +377,93 @@ void controls_default::render_player_time()
 
 void controls_default::render_subtitles_popup()
 {
-//    std::cerr << "FIXMENM render_subtitles_popup()\n";
-    if (ImGui::BeginPopupModal("subtitles_popup"))
+    // ---- FIXMENM DEBUG ONLY BEGIN ----
+    int32_t cur_selected_index = player_.subtitle_selected_index();
+    int32_t new_selected_index = cur_selected_index;
+
+    if (ImGui::BeginPopup("subtitles_popup_menu", ImGuiWindowFlags_MenuBar))
     {
-        ImGui::Text("Lorem ipsum");
+        if (ImGui::BeginMenuBar())
+        {
+            if (ImGui::MenuItem(tr().tr("Open Subtitle URL")) ) {
+                std::cerr << "FIXMENM Open URL\n";
+            }
+            if (ImGui::MenuItem(tr().tr("Open Subtitle File")) ) {
+                IGFD::FileDialogConfig config;
+                config.path = cpaf::filesystem::special_dirs::home() / "code/crawler/moowees/data/subtitles";
+                ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose Subtitle File", "(*.srt *.zip){.srt,.zip},All Files (*.*){.*}", config);
+
+                std::cerr << "FIXMENM Open File\n";
+            }
+            ImGui::EndMenuBar();
+        }
+
+        if(ImGui::Button(tr().tr("No subtitles").c_str()) ) {
+            std::cerr << "FIXMENM No subtitles\n";
+            player_.subtitle_select(-1);
+
+        }
+        ImGui::Separator();
+        const auto& subtitles = player_.selectable_subtitles();
+
+        for (auto i = 0u; i < subtitles.size(); ++i) {
+            const auto i_signed = static_cast<int32_t>(i);
+            const bool selected = cur_selected_index == i_signed;
+            std::string selelectable_text = subtitles[i].language_name + "###LangSel" + std::to_string(i);
+            if (ImGui::Selectable(selelectable_text, selected)) {
+                new_selected_index = i_signed;
+                std::cerr << "FIXMENM subtitle selected index: "  << new_selected_index << "\n";
+            }
+        }
         ImGui::EndPopup();
     }
 
 
+    if (cur_selected_index != new_selected_index) {
+        std::cerr << "FIXMENM subtitle selected index CHANGED! : "  << new_selected_index << "\n";
+        player_.subtitle_select(new_selected_index);
+    }
+    // ---- FIXMENM DEBUG ONLY END ----
+
+
 }
 
-void controls_default::render_menu_popup()
+
+void controls_default::render_menu_window()
 {
-    std::cerr << "FIXMENM render_menu_popup()\n";
+    std::cerr << "FIXMENM render_menu_window(): " << do_render_menu_window_ << " \n";
+    if (!do_render_menu_window_) {
+        return;
+    }
+//    return;
+    static ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
+
+    // We demonstrate using the full viewport area or the work area (without menu-bars, task-bars etc.)
+    // Based on your use case you may want one of the other.
+    const ImGuiViewport* viewport = ImGui::GetMainViewport();
+//    ImGui::SetNextWindowPos(use_work_area ? viewport->WorkPos : viewport->Pos);
+//    ImGui::SetNextWindowSize(use_work_area ? viewport->WorkSize : viewport->Size);
+    ImGui::SetNextWindowPos(viewport->Pos);
+    ImGui::SetNextWindowSize(viewport->Size);
+
+    if (ImGui::Begin("Example: Fullscreen window", &do_render_menu_window_, flags))
+    {
+//        ImGui::Checkbox("Use work area instead of main area", &use_work_area);
+        ImGui::SameLine();
+        ImGui::HelpMarker("Main Area = entire viewport,\nWork Area = entire viewport minus sections used by the main menu bars, task bars etc.\n\nEnable the main-menu bar in Examples menu to see the difference.");
+
+        ImGui::CheckboxFlags("ImGuiWindowFlags_NoBackground", &flags, ImGuiWindowFlags_NoBackground);
+        ImGui::CheckboxFlags("ImGuiWindowFlags_NoDecoration", &flags, ImGuiWindowFlags_NoDecoration);
+        ImGui::Indent();
+        ImGui::CheckboxFlags("ImGuiWindowFlags_NoTitleBar", &flags, ImGuiWindowFlags_NoTitleBar);
+        ImGui::CheckboxFlags("ImGuiWindowFlags_NoCollapse", &flags, ImGuiWindowFlags_NoCollapse);
+        ImGui::CheckboxFlags("ImGuiWindowFlags_NoScrollbar", &flags, ImGuiWindowFlags_NoScrollbar);
+        ImGui::Unindent();
+
+        if (ImGui::Button("Close this window"))
+            do_render_menu_window_ = false;
+    }
+    ImGui::End();
 }
 
 void controls_default::render_volume_popup()
