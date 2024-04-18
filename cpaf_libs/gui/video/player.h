@@ -180,6 +180,10 @@ public:
     void                        set_controls            (std::unique_ptr<video::controls> controls);
     bool                        show_controls           () const                        { return show_controls_;    }
     void                        show_controls_set       (bool show)                     { show_controls_ = show;    }
+    void                        ui_window_active_set    (bool ui_window_active);
+    void                        ui_events_enabled_set   (bool enabled)                  { ui_events_enabled_ = enabled; }
+    bool                        ui_events_enabled       () const                        { return ui_events_enabled_; }
+    bool                        ui_window_active        () const                        { return ui_window_active_; }
 
     cpaf::locale::translator&               tr              ()          { return tr_; }
     const cpaf::locale::translator&         tr              () const    { return tr_; }
@@ -226,6 +230,9 @@ private:
     void                            update_screen_size_factor();
     bool                            show_stream_state       () const;
     bool                            set_subtitle_helper     (int32_t selectable_subtitle_index);
+    void                            internal_paused_set     (bool is_paused);
+    void                            push_paused             ();
+    void                            pop_paused              ();
 
 
     // ----------------------------
@@ -265,6 +272,11 @@ private:
     std::unique_ptr<video::controls>                video_controls_;
     bool                                            show_controls_                  = true;
     bool                                            resume_from_pause_on_seek_      = true;
+
+//    std::atomic<bool>                               save_paused_state_              = false;    // For saving current paused state. For example when showing i UI window on top and we want to ensure player is paused while window is active. See push_paused()/pop_paused()
+    bool                                            save_playback_is_paused_state_              = false;    // For saving current paused state. For example when showing i UI window on top and we want to ensure player is paused while window is active. See push_paused()/pop_paused()
+    std::atomic<bool>                               ui_window_active_               = false;     // When active for example pause is forced when for example showing UI windows on top of player
+    std::atomic<bool>                               ui_events_enabled_              = true;     // Use to disable player ui events when for example showing UI windows on top of player
     std::atomic<subtitle_source_t>                  subtitle_source_                = subtitle_source_t::none;
     int32_t                                         subtitle_selected_index_        = -1;
     std::function<void ()>                          cb_start_playing_;

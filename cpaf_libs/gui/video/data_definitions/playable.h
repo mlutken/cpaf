@@ -63,7 +63,7 @@ public:
     cpaf::video::subtitle_source_entry_t
                                     find_best_subtitle      (std::string& language_code) const;
     void                            add_subtitle            (std::string subtitle_path, std::string_view language_code);
-    void                            set_subtitle_user       (std::string subtitle_path)                         { str_set("subtitle_user", subtitle_path);  }
+    void                            set_subtitle_user       (std::string subtitle_path);
     std::string                     subtitle_user           () const                                            { return str("subtitle_user");              }
     bool                            has_subtitle            (std::string_view language_code = subtitle_user_selected_lc) const;
     nlohmann::json                  get_subtitle            (std::string_view language_code = subtitle_user_selected_lc) const;

@@ -67,9 +67,10 @@ private:
     ImFont*     font_slider_                    = nullptr;
     ImFont*     font_time_                      = nullptr;
 
-    bool        do_render_subtitles_window_     = true; // FIXMENM FIXMENM Set to false when done creating the window
+    bool        do_render_subtitles_window_     = false; // FIXMENM FIXMENM Set to false when done creating the window
     bool        do_render_menu_window_          = false;
 
+    int32_t     new_subtitle_select_index_      = -1;
     std::string new_user_subtitle_file_         {};
 
 

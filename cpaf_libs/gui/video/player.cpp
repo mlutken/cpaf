@@ -457,14 +457,14 @@ void player::subtitle_select(const std::string& language_code)
 void player::subtitle_select(int32_t selectable_subtitle_index)
 {
     subtitle_source_ = subtitle_source_t::none;
-    std::string language_code = "";
+//    std::string language_code = "";
     if (set_subtitle_helper(selectable_subtitle_index)) {
         const auto index = static_cast<uint32_t>(selectable_subtitle_index);
         auto entry = selectable_subtitles().at(index);
         if (entry.source == subtitle_source_t::text_file) {
             if (!entry.path.empty()) {
                 subtitle_source_ = subtitle_source_t::text_file;
-                enqueue_subtitle_file(entry.path, language_code);
+                enqueue_subtitle_file(entry.path, entry.language_code);
                 return;
             }
         }
@@ -476,7 +476,7 @@ void player::subtitle_select(int32_t selectable_subtitle_index)
             }
         }
         // If we get here we have no working subtitle so disable
-        configuration.bool_set("subtitles", "show", false);
+        set_subtitle_helper(-1);
     }
 }
 
@@ -591,6 +591,7 @@ void player::torrents_set(std::shared_ptr<torrent::torrents> tors)
 
 void player::seek_position(const std::chrono::microseconds& stream_pos, seek_dir dir)
 {
+    if (!ui_events_enabled_) { return; }
     if (resume_from_pause_on_seek_) { resume_playback(); }
     if (media_pipeline_threads_) {
         media_pipeline_threads().seek_position(stream_pos, dir);
@@ -599,6 +600,7 @@ void player::seek_position(const std::chrono::microseconds& stream_pos, seek_dir
 
 void player::seek_position(const std::chrono::microseconds& stream_pos)
 {
+    if (!ui_events_enabled_) { return; }
     if (resume_from_pause_on_seek_) { resume_playback(); }
     if (media_pipeline_threads_) {
         media_pipeline_threads().seek_position(stream_pos);
@@ -607,6 +609,7 @@ void player::seek_position(const std::chrono::microseconds& stream_pos)
 
 void player::seek_relative(const std::chrono::microseconds& delta_time)
 {
+    if (!ui_events_enabled_) { return; }
     if (resume_from_pause_on_seek_) { resume_playback(); }
     if (media_pipeline_threads_) {
         media_pipeline_threads().seek_relative(delta_time);
@@ -615,18 +618,22 @@ void player::seek_relative(const std::chrono::microseconds& delta_time)
 
 void player::pause_playback()
 {
-    cur_media_time_.pause_time();
-    if (media_pipeline_threads_) {
-        media_pipeline_threads_->pause_playback();
-    }
+    if (!ui_events_enabled_) { return; }
+    internal_paused_set(true);
+//    cur_media_time_.pause_time();
+//    if (media_pipeline_threads_) {
+//        media_pipeline_threads_->pause_playback();
+//    }
 }
 
 void player::resume_playback()
 {
-    cur_media_time_.resume_time();
-    if (media_pipeline_threads_) {
-        media_pipeline_threads_->resume_playback();
-    }
+    if (!ui_events_enabled_) { return; }
+    internal_paused_set(false);
+//    cur_media_time_.resume_time();
+//    if (media_pipeline_threads_) {
+//        media_pipeline_threads_->resume_playback();
+//    }
 }
 
 void player::toggle_pause_playback()
@@ -641,12 +648,15 @@ void player::toggle_pause_playback()
 
 void player::playback_paused_set(bool is_paused)
 {
-    if (is_paused) {
-        resume_playback();
-    }
-    else {
-        pause_playback();
-    }
+    if (!ui_events_enabled_) { return; }
+    internal_paused_set(is_paused);
+
+//    if (is_paused) {
+//        pause_playback();
+//    }
+//    else {
+//        resume_playback();
+//    }
 }
 
 bool player::playback_is_paused() const {
@@ -683,6 +693,22 @@ std::chrono::microseconds player::seek_position_requested() const
 void player::set_controls(std::unique_ptr<controls> controls)
 {
     video_controls_ = std::move(controls);
+}
+
+void player::ui_window_active_set(bool ui_window_active)
+{
+    if (ui_window_active == ui_window_active_) {
+        return;
+    }
+    if (ui_window_active) {
+        push_paused();
+    }
+    ui_window_active_ = ui_window_active;
+    ui_events_enabled_set(!ui_window_active);
+
+    if (!ui_window_active) {
+        pop_paused();
+    }
 }
 
 // -----------------------
@@ -813,6 +839,33 @@ bool player::set_subtitle_helper(int32_t selectable_subtitle_index)
     bool show_subtitles = subtitle_selected_index_ > -1;
     configuration.bool_set("subtitles", "show", show_subtitles);
     return show_subtitles;
+}
+
+void player::internal_paused_set(bool is_paused)
+{
+    if (is_paused) {
+        cur_media_time_.pause_time();
+        if (media_pipeline_threads_) {
+            media_pipeline_threads_->pause_playback();
+        }
+    }
+    else {
+        cur_media_time_.resume_time();
+        if (media_pipeline_threads_) {
+            media_pipeline_threads_->resume_playback();
+        }
+    }
+}
+
+void player::push_paused()
+{
+    save_playback_is_paused_state_ = playback_is_paused();
+    playback_paused_set(true);
+}
+
+void player::pop_paused()
+{
+    playback_paused_set(save_playback_is_paused_state_);
 }
 
 } // END namespace cpaf::gui::video

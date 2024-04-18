@@ -198,6 +198,11 @@ void playable::add_subtitle(std::string subtitle_path, std::string_view language
     }
 }
 
+void playable::set_subtitle_user(std::string subtitle_path)
+{
+    str_set("subtitle_user", subtitle_path);
+}
+
 
 bool playable::has_subtitle(std::string_view language_code) const
 {
