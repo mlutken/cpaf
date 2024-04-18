@@ -28,8 +28,6 @@ player::player(cpaf::audio::device& audio_device, locale::translator& tr)
 {
     next_video_frame_ = av_frame::create_alloc();
     configuration.connect_for_changes([this]() {on_configuration_changed();});
-
-//    pause_playback();
 }
 
 player::~player()
@@ -157,10 +155,8 @@ void player::close()
         while (!media_pipeline_threads().all_threads_are_paused()
                &&(std::chrono::steady_clock::now() < ts_end))
         {
-            std::cerr << "FIXMENM waiting for threads to ṕause: " << ++count << "\n";
             std::this_thread::sleep_for(100ms);
         }
-        std::cerr << "FIXMENM DONE for threads to ṕause!!! : " << ++count << "\n";
         media_pipeline_threads().flush_queues();
         media_pipeline_threads_.reset(nullptr);
     }
@@ -457,7 +453,6 @@ void player::subtitle_select(const std::string& language_code)
 void player::subtitle_select(int32_t selectable_subtitle_index)
 {
     subtitle_source_ = subtitle_source_t::none;
-//    std::string language_code = "";
     if (set_subtitle_helper(selectable_subtitle_index)) {
         const auto index = static_cast<uint32_t>(selectable_subtitle_index);
         auto entry = selectable_subtitles().at(index);
@@ -511,17 +506,9 @@ void player::subtitle_container_set(std::unique_ptr<subtitle_container> containe
     if (!all_initialized()) {
         return;
     }
-
-//    const auto is_paused = playback_paused();
-//    pause_playback();
     subtitle_source_ = subtitle_source_t::text_file;
     media_pipeline_threads().subtitle_container_set(std::move(container));
-//    playback_paused_set(is_paused);
 }
-
-// -------------------------------
-// --- Subtitles setup/control ---
-// -------------------------------
 
 // ---------------------------------------------
 // --- Interfacing to surrounding app/system ---
@@ -537,10 +524,6 @@ void player::frame_update()
 {
     handle_internal_events();
     if (is_playing()) {
-
-//        const bool force = false;
-//        playable_update_calculated(force);
-
         if (has_video_stream()) {
             video_frame_update(next_video_frame_);
             check_activate_subtitle();
@@ -620,20 +603,12 @@ void player::pause_playback()
 {
     if (!ui_events_enabled_) { return; }
     internal_paused_set(true);
-//    cur_media_time_.pause_time();
-//    if (media_pipeline_threads_) {
-//        media_pipeline_threads_->pause_playback();
-//    }
 }
 
 void player::resume_playback()
 {
     if (!ui_events_enabled_) { return; }
     internal_paused_set(false);
-//    cur_media_time_.resume_time();
-//    if (media_pipeline_threads_) {
-//        media_pipeline_threads_->resume_playback();
-//    }
 }
 
 void player::toggle_pause_playback()
@@ -650,13 +625,6 @@ void player::playback_paused_set(bool is_paused)
 {
     if (!ui_events_enabled_) { return; }
     internal_paused_set(is_paused);
-
-//    if (is_paused) {
-//        pause_playback();
-//    }
-//    else {
-//        resume_playback();
-//    }
 }
 
 bool player::playback_is_paused() const {
@@ -700,15 +668,11 @@ void player::ui_window_active_set(bool ui_window_active)
     if (ui_window_active == ui_window_active_) {
         return;
     }
-    if (ui_window_active) {
-        push_paused();
-    }
+    if (ui_window_active)   { push_paused(); }
+    else                    { pop_paused(); }
+
     ui_window_active_ = ui_window_active;
     ui_events_enabled_set(!ui_window_active);
-
-    if (!ui_window_active) {
-        pop_paused();
-    }
 }
 
 // -----------------------
@@ -729,13 +693,9 @@ bool player::all_initialized() const
 // ---------------------------------
 void player::init_video(const system_window& main_window)
 {
-    /// std::cerr << "FIXMENM player::init_video 1\n";
     video_render_ = render::create_video_render(*this, configuration, main_window, video_dst_dimensions());
     video_render_->video_codec_ctx_set(video_codec_context());
     video_render_->render_geometry_set(rect(main_window.size()));
-
-    /// std::cerr << "FIXMENM player::init_video 4\n";
-    ////    video_render_->render_geometry_set(render_geometry_t({100,100}, main_window.get_size())); // TEST ONLY!
 }
 
 bool player::open_stream(const std::string& resource_path, stream_type_t sti)
@@ -797,7 +757,6 @@ void player::torrent_finished_event(std::shared_ptr<cpaf::torrent::torrent> tor_
 
 void player::on_configuration_changed()
 {
-    std::cerr << "FIXMENM player::on_configuration_changed()\n";
     const bool force = true;
     playable_update_calculated(force);
 }
