@@ -130,10 +130,12 @@ public:
     // -------------------------------
     // --- Subtitles setup/control ---
     // -------------------------------
-    void                                open_subtitle           (const std::string& subtitle_path, const std::string& language_code);
+    void                                enqueue_subtitle_file   (const std::string& subtitle_path, const std::string& language_code);
     subtitle_source_t                   subtitle_source         () const { return subtitle_source_; }
     void                                subtitle_select         (const std::string& language_code);
     void                                subtitle_select         (int32_t selectable_subtitle_index);
+    void                                set_subtitle_user       (std::string subtitle_path)         { playable_.set_subtitle_user(subtitle_path);   }
+    std::string                         subtitle_user           () const                            { return playable_.subtitle_user();             }
 
     const cpaf::video::subtitle_source_entries_t&
     selectable_subtitles                                        () const { return playable_.selectable_subtitles(); }

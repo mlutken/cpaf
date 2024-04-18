@@ -441,14 +441,13 @@ size_t player::audio_stream_index() const
 // --- Subtitles setup/control ---
 // -------------------------------
 /// @todo If called outside of the selectable_subtitles() vector some thing will look strange at the very least in the GUI
-void player::open_subtitle(const std::string& subtitle_path, const std::string& language_code)
+/// @todo Consider making this private
+void player::enqueue_subtitle_file(const std::string& subtitle_path, const std::string& language_code)
 {
     subtitle_downloader_thread_.enqueue_subtitle(subtitle_path, language_code);
 }
 
 
-/// @todo Do implement correctly
-/// @todo set subtitle also when using subtitle_source_t::stream
 void player::subtitle_select(const std::string& language_code)
 {
     const int32_t sel_index = playable_.selectable_subtitle_index_of(language_code);
@@ -465,7 +464,7 @@ void player::subtitle_select(int32_t selectable_subtitle_index)
         if (entry.source == subtitle_source_t::text_file) {
             if (!entry.path.empty()) {
                 subtitle_source_ = subtitle_source_t::text_file;
-                open_subtitle(entry.path, language_code);
+                enqueue_subtitle_file(entry.path, language_code);
                 return;
             }
         }
@@ -506,6 +505,7 @@ void player::subtitle_stream_index_set(size_t stream_index)
 }
 
 
+/// @todo Make this private
 void player::subtitle_container_set(std::unique_ptr<subtitle_container> container)
 {
     if (!all_initialized()) {
