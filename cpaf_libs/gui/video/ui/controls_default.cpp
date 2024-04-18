@@ -146,6 +146,7 @@ void controls_default::do_render()
     render_slider();
     render_player_time();
     render_menu_window();
+    render_subtitles_window();
 
     //    render_debug_window();
 //    render_subtitles_popup();
@@ -283,9 +284,10 @@ void controls_default::render_menu_buttons()
     // Simple selection popup (if you want to show the current selection inside the Button itself,
     // you may want to build a string using the "###" operator to preserve a constant ID with a variable label)
     if (ImGui::ImageButton("###subtitles_btn", buttons_texture_ptr, menu_buttons_size_, subtitles_uv0, subtitles_uv1, {0,0,0,0}, {1,1,1,1})) {
-        ImGui::OpenPopup("subtitles_popup_menu");
+        do_render_subtitles_window_ = true;
+//        ImGui::OpenPopup("subtitles_popup_menu");
     }
-    render_subtitles_popup();
+//do_render_subtitles_window_    render_subtitles_popup();
 
     ImGui::End();
 
@@ -431,7 +433,6 @@ void controls_default::render_subtitles_popup()
 
 void controls_default::render_menu_window()
 {
-    std::cerr << "FIXMENM render_menu_window(): " << do_render_menu_window_ << " \n";
     if (!do_render_menu_window_) {
         return;
     }
@@ -460,8 +461,70 @@ void controls_default::render_menu_window()
         ImGui::CheckboxFlags("ImGuiWindowFlags_NoScrollbar", &flags, ImGuiWindowFlags_NoScrollbar);
         ImGui::Unindent();
 
-        if (ImGui::Button("Close this window"))
+        if (ImGui::Button("Close this window")) {
             do_render_menu_window_ = false;
+        }
+    }
+    ImGui::End();
+}
+
+void controls_default::render_subtitles_window()
+{
+    if (!do_render_subtitles_window_) {
+        return;
+    }
+    //    return;
+    static constexpr ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
+
+    const ImGuiViewport* viewport = ImGui::GetMainViewport();
+    ImGui::SetNextWindowPos(viewport->Pos);
+    ImGui::SetNextWindowSize(viewport->Size);
+
+    if (ImGui::Begin("subtitles_window", &do_render_menu_window_, flags))
+    {
+        std::string subtitle_user = player_.subtitle_user();
+        if (ImGui::InputTextWithHint(tr().tr("Subtitle File"), tr().tr("URL or local .srt or .zip file"), subtitle_user)) {
+//            std::cerr << "FIXMENM Subtitle File, new_user_subtitle_file_: " << new_user_subtitle_file_ << "\n";
+            std::cerr << "FIXMENM Subtitle File, new_user_subtitle_file_: " << subtitle_user << "\n";
+            player_.set_subtitle_user(subtitle_user);
+
+        }
+//        ImGui::Checkbox("Use work area instead of main area", &use_work_area);
+        ImGui::SameLine();
+        ImGui::HelpMarker("Main Area = entire viewport,\nWork Area = entire viewport minus sections used by the main menu bars, task bars etc.\n\nEnable the main-menu bar in Examples menu to see the difference.");
+
+        const auto& subtitles = player_.selectable_subtitles();
+
+        int subtitle_select_index = player_.subtitle_selected_index();
+        if (ImGui::RadioButton(tr().tr("Subtitles disabled"), subtitle_select_index, -1)) {
+            player_.subtitle_select(subtitle_select_index);
+            std::cerr << "Subtitles disabled: " << subtitle_select_index << "\n";
+        }
+        for (auto i = 0u; i < subtitles.size(); ++i) {
+            const auto select_index = static_cast<int32_t>(i);
+            const std::string selelectable_text = subtitles[i].language_name + "###LangSel" + std::to_string(i);
+            if (ImGui::RadioButton(selelectable_text, subtitle_select_index, select_index)) {
+                player_.subtitle_select(subtitle_select_index);
+                std::cerr << "Subtitles disabled: " << subtitle_select_index << "\n";
+            }
+        }
+
+
+        if (ImGui::RadioButton("radio a", subtitle_select_index, 0)) {
+            std::cerr << "FIXMENM radio a: " << subtitle_select_index << "\n";
+
+        }
+        if (ImGui::RadioButton("radio b", subtitle_select_index, 1)) {
+            std::cerr << "FIXMENM radio b: " << subtitle_select_index << "\n";
+
+        }
+//        ImGui::SameLine();
+
+        if (ImGui::Button(tr().tr("Close")) ) {
+            do_render_subtitles_window_ = false;
+            std::cerr << "FIXMENM Close, new_user_subtitle_file_: " << new_user_subtitle_file_ << "\n";
+            std::cerr << "FIXMENM Close, subtitle_select_index: " << subtitle_select_index << "\n";
+        }
     }
     ImGui::End();
 }

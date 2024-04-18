@@ -22,8 +22,9 @@ private:
 
     void    render_subtitles_popup          ();
     void    render_menu_window              ();
-    void    render_volume_popup             ();
+    void    render_subtitles_window         ();
 
+    void    render_volume_popup             ();
     void    render_debug_window             ();
 
 
@@ -66,7 +67,10 @@ private:
     ImFont*     font_slider_                    = nullptr;
     ImFont*     font_time_                      = nullptr;
 
+    bool        do_render_subtitles_window_     = true; // FIXMENM FIXMENM Set to false when done creating the window
     bool        do_render_menu_window_          = false;
+
+    std::string new_user_subtitle_file_         {};
 
 
 };
