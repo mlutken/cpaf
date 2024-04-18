@@ -20,7 +20,6 @@ private:
     void    render_slider                   ();
     void    render_player_time              ();
 
-    void    render_subtitles_popup          ();
     void    render_menu_window              ();
     void    render_subtitles_window         ();
 
@@ -36,7 +35,7 @@ private:
     static constexpr float image_buttons_window_size_extra   {2};
 
     std::unique_ptr<cpaf::gui::texture> control_icons_texture_   {};
-    ImVec2      file_dialog_min_size_           {300,200};
+    ImVec2      file_dialog_min_size_           {500,300};
     ImVec2      play_buttons_size_              {};
     ImVec2      play_buttons_window_size_       {};
 
@@ -67,7 +66,7 @@ private:
     ImFont*     font_slider_                    = nullptr;
     ImFont*     font_time_                      = nullptr;
 
-    bool        do_render_subtitles_window_     = false; // FIXMENM FIXMENM Set to false when done creating the window
+    bool        do_render_subtitles_window_     = false;
     bool        do_render_menu_window_          = false;
 
     int32_t     new_subtitle_select_index_      = -1;
