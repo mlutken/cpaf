@@ -1,8 +1,11 @@
 #pragma once
 
 #include <string_view>
+#include <string>
 #include <vector>
 #include <imgui.h>
+
+// Centering widgets: https://github.com/ocornut/imgui/discussions/3862
 
 namespace ImGui
 {
@@ -50,9 +53,31 @@ private:
 
 };
 
+
+
+// ------------------------
+// --- Widgets: Buttons ---
+// ------------------------
+
 inline bool Button(std::string_view label, const ImVec2& size = ImVec2(0, 0)) {
     return Button(label.data(), size);
 }
+
+// ------------------------------
+// --- Widgets: Radio Buttons ---
+// ------------------------------
+inline bool RadioButton(std::string_view label, int& value, int button_value) {
+    return RadioButton(label.data(), &value, button_value);
+}
+
+
+// ---------------------------
+// --- Widgets: Input text ---
+// ---------------------------
+bool InputText          (std::string_view label, std::string& str, ImGuiInputTextFlags flags = 0, ImGuiInputTextCallback callback = nullptr, void* user_data = nullptr);
+bool InputTextMultiline (std::string_view label, std::string& str, const ImVec2& size = ImVec2(0, 0), ImGuiInputTextFlags flags = 0, ImGuiInputTextCallback callback = nullptr, void* user_data = nullptr);
+bool InputTextWithHint  (std::string_view label, std::string_view hint, std::string& str, ImGuiInputTextFlags flags = 0, ImGuiInputTextCallback callback = nullptr, void* user_data = nullptr);
+
 
 // ----------------------------
 // --- Widgets: Selectables ---
