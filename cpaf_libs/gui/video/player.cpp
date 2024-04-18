@@ -860,12 +860,12 @@ void player::internal_paused_set(bool is_paused)
 void player::push_paused()
 {
     save_playback_is_paused_state_ = playback_is_paused();
-    playback_paused_set(true);
+    internal_paused_set(true);
 }
 
 void player::pop_paused()
 {
-    playback_paused_set(save_playback_is_paused_state_);
+    internal_paused_set(save_playback_is_paused_state_);
 }
 
 } // END namespace cpaf::gui::video
