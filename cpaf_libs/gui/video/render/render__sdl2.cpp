@@ -310,11 +310,17 @@ void render_platform::do_render_stream_state()
 
     stream_state_size_.x = (stream_state_font_size_pixels_ * static_cast<int32_t>(stream_state_str.size()))*0.5f;
     stream_state_size_.y = stream_state_font_size_pixels_ + 2*general_margin;
+    static int FIXMENM_counter = 0;
+    if (player_.stream_state() == stream_state_t::opening || player_.stream_state() == stream_state_t::waiting_for_data) {
+        ++FIXMENM_counter;
+        std::cerr << "FIXMENM do_render_stream_state[" << FIXMENM_counter << "]: '" << stream_state_str << "'\n";
+    }
+
 
     ImGui::Rai imrai{};
     imrai.Font(font_stream_state_)
         .StyleColor(ImGuiCol_Border, {0,0,0,0})
-        .StyleColor(ImGuiCol_WindowBg, {0,0,0,0})
+        .StyleColor(ImGuiCol_WindowBg, {0,0,0,0.5})
         .StyleColor(ImGuiCol_Text, reinterpret_cast<const ImVec4&>(stream_state_color_))
         .StyleVar(ImGuiStyleVar_WindowMinSize, stream_state_size_)
         ;

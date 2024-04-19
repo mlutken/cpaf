@@ -102,6 +102,7 @@ std::map<string, string> read_av_dictionary(AVDictionary* ff_dict)
 string to_string(seek_state_t ss)
 {
     switch (ss) {
+        case seek_state_t::unknown:             return "unknown"; break;
         case seek_state_t::ready:               return "ready"; break;
         case seek_state_t::requested:           return "requested"; break;
         case seek_state_t::flushing:            return "flushing"; break;
@@ -117,7 +118,7 @@ string to_string(stream_state_t ss)
     case stream_state_t::inactive :         return "inactive"; break;
     case stream_state_t::opening :          return "opening stream ..."; break;
     case stream_state_t::open :             return "open"; break;
-    case stream_state_t::playing :          return "playing fixmenm yes ..."; break;
+    case stream_state_t::playing :          return "playing"; break;
     case stream_state_t::waiting_for_data : return "waiting for data ..."; break;
     case stream_state_t::playing_local :    return "playing_local"; break;
     case stream_state_t::finished :         return "finished"; break;
