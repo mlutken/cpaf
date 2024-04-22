@@ -14,6 +14,7 @@ public:
 private:
     void    do_calc_geometry                () override;
     void    do_render                       () override;
+    void    do_render_stream_state          () override;
 
     void    render_player_controls          ();
     void    render_menu_buttons             ();
@@ -72,6 +73,11 @@ private:
     int32_t     new_subtitle_select_index_      = -1;
     std::string new_user_subtitle_file_         {};
 
+    ImVec2      stream_state_pos_               {};
+    ImVec2      stream_state_size_              {};
+    ImFont*     font_stream_state_              = nullptr;
+    color       stream_state_color_             {1, 1, 1, 1};
+    int32_t     stream_state_font_size_pixels_;
 
 };
 

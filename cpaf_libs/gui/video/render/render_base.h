@@ -58,7 +58,6 @@ public:
 
     void                        clear_screen                ()                              { do_clear_screen();  }
     bool                        render_video_frame          (const cpaf::video::av_frame& frame);
-    void                        render_stream_state         ()                              { do_render_stream_state(); }
     const subtitle_frame&       current_subtitle            () const { return current_subtitle_frame_; }
     void                        clear_current_subtitle      ();
     void                        set_current_subtitle        (cpaf::video::subtitle_frame&& subtitle);
@@ -112,7 +111,6 @@ private:
     virtual void                do_render_dimensions_set            (const cpaf::video::surface_dimensions_t& dimensions ) = 0;
     virtual void                do_clear_screen                     () = 0;
     virtual bool                do_render_video_frame               (const cpaf::video::av_frame& frame) = 0;
-    virtual void                do_render_stream_state              () = 0;
     virtual void                on_render_geometry_changed          () = 0;
     virtual void                on_subtitle_changed                 () = 0;
 

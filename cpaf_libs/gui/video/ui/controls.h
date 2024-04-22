@@ -21,6 +21,7 @@ public:
     virtual ~controls() = default;
 
     void            render                  ();
+    void            render_stream_state     ()                              { do_render_stream_state(); }
     void            on_player_size_changed  ();
     bool            visible                 () const                    { return visible_; }
     void            show                    (bool do_show)              { visible_ = do_show; }
@@ -48,15 +49,20 @@ protected:
     int32_t                 time_font_size              () const { return config_.int32     ("controls", "time_font_size");         }
     color                   time_text_color             () const { return config_.color     ("controls", "time_text_color");        }
 
+    std::string             stream_state_font_name      () const { return config_.str       ("controls", "stream_state_font_name"); }
+    int32_t                 stream_state_font_size      () const { return config_.int32     ("controls", "stream_state_font_size"); }
+
     std::chrono::seconds    skip_time_small             () const { return config_.time_s   ("controls", "skip_time_small");        }
+
 
     cpaf::locale::translator&           tr              ();
     const cpaf::locale::translator&     tr              () const;
 
 
 private:
-    virtual void    do_calc_geometry    () = 0;
-    virtual void    do_render           () = 0;
+    virtual void    do_calc_geometry        () = 0;
+    virtual void    do_render               () = 0;
+    virtual void    do_render_stream_state  () = 0;
 };
 
 } // namespace cpaf::gui::video

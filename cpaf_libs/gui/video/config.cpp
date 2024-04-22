@@ -21,6 +21,9 @@ static const auto default_config = nlohmann::json::parse(
             "time_font_size": 16,
             "time_text_color": [1,1,1,1],
 
+            "stream_state_font_name": "manrope",
+            "stream_state_font_size": 48,
+
             "skip_time_small": 15
         },
         "network": {

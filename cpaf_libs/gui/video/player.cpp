@@ -530,11 +530,14 @@ void player::frame_update()
         }
         cur_media_time().release_after_reset();
     }
-    if (video_render_ && show_stream_state()) {
-        video_render_->render_stream_state();
-    }
-    if (show_controls_ && video_controls_) {
-        video_controls_->render();
+
+    if (video_controls_) {
+        if (show_controls_) {
+            video_controls_->render();
+        }
+        if (show_stream_state()) {
+            video_controls_->render_stream_state();
+        }
     }
 
 }

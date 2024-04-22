@@ -131,6 +131,20 @@ void controls_default::do_calc_geometry()
     // -----------------
     font_slider_ = imgui_fonts::instance().get(slider_font_name(), slider_font_size_pixels);
     font_time_ = imgui_fonts::instance().get(time_font_name(), time_font_size_pixels);
+
+
+    // ------------------------------------------
+    // --- Stream state display calc geometry ---
+    // ------------------------------------------
+    stream_state_font_size_pixels_ = font_size::to_pixels(screen_fac*stream_state_font_size(), player_.main_window_ptr());
+    font_stream_state_ = imgui_fonts::instance().get(stream_state_font_name(), stream_state_font_size_pixels_);
+
+
+    const auto render_geometry_center = render_geometry.center();
+    stream_state_pos_.x = render_geometry_center.x();
+    stream_state_pos_.y = render_geometry_center.y();
+
+
 }
 
 void controls_default::do_render()
@@ -149,6 +163,34 @@ void controls_default::do_render()
     render_subtitles_window();
 
     //    render_debug_window();
+}
+
+void controls_default::do_render_stream_state()
+{
+    ///    auto window_flags = ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings|ImGuiWindowFlags_NoInputs;
+    auto window_flags = ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings|ImGuiWindowFlags_NoInputs;
+
+    bool visible = true;
+
+    std::string stream_state_str = to_string(player_.stream_state());
+
+    stream_state_size_.x = (stream_state_font_size_pixels_ * static_cast<int32_t>(stream_state_str.size()))*0.5f;
+    stream_state_size_.y = stream_state_font_size_pixels_ + 2*general_margin;
+
+    ImGui::Rai imrai{};
+    imrai.Font(font_stream_state_)
+        .StyleColor(ImGuiCol_Border, {0,0,0,0})
+        .StyleColor(ImGuiCol_WindowBg, {0,0,0,0.5})
+        .StyleColor(ImGuiCol_Text, reinterpret_cast<const ImVec4&>(stream_state_color_))
+        .StyleVar(ImGuiStyleVar_WindowMinSize, stream_state_size_)
+        ;
+
+    ImGui::SetNextWindowPos(stream_state_pos_, ImGuiCond_::ImGuiCond_Always, {0.5, 0.5} );
+    ///    ImGui::SetNextWindowSize(stream_state_size_, ImGuiCond_::ImGuiCond_Always);
+
+    ImGui::Begin("stream_state", &visible, window_flags);
+    ImGui::TextUnformatted(stream_state_str.c_str());
+    ImGui::End();
 }
 
 void controls_default::render_player_controls()
