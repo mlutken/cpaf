@@ -91,11 +91,13 @@ enum class subtitle_text_format_t : int8_t {
 
 struct subtitle_source_entry_t
 {
-    std::string         path;
-    std::string         language_code;
-    std::string         language_name;
-    size_t              stream_index;
-    subtitle_source_t   source = subtitle_source_t::none;
+    std::string                 path;
+    std::string                 language_code;
+    std::string                 language_name;
+    size_t                      stream_index;
+    subtitle_source_t           source                  = subtitle_source_t::none;
+    std::chrono::microseconds   subtitle_adjust_offset  {};
+
     bool                is_valid    () const { return source != subtitle_source_t::none; }
 };
 

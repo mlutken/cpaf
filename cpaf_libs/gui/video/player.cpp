@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <fmt/format.h>
+#include <fmt/chrono.h>
 #include <cpaf_libs/system/cpaf_session.h>
 #include <cpaf_libs/audio/cpaf_audio_device.h>
 #include <cpaf_libs/time/cpaf_time.h>
@@ -119,7 +120,7 @@ bool player::open(playable playab)
     auto language_code = configuration.str("subtitles", "language_code");
     const auto entry = playable_.find_best_subtitle(language_code);
 
-    subtitle_select(entry.language_code);
+    subtitle_select(entry.language_code, entry.subtitle_adjust_offset);
 
     return ok;
 }
@@ -150,7 +151,6 @@ void player::close()
     if (media_pipeline_threads_) {
         set_stream_state(stream_state_t::inactive);
         pause_playback();
-        int count = 0;
         const auto ts_end = std::chrono::steady_clock::now() + 5s;
         while (!media_pipeline_threads().all_threads_are_paused()
                &&(std::chrono::steady_clock::now() < ts_end))
@@ -438,35 +438,38 @@ size_t player::audio_stream_index() const
 // -------------------------------
 /// @todo If called outside of the selectable_subtitles() vector some thing will look strange at the very least in the GUI
 /// @todo Consider making this private
-void player::enqueue_subtitle_file(const std::string& subtitle_path, const std::string& language_code)
+void player::enqueue_subtitle_file(const std::string& subtitle_path,
+                                   const std::string& language_code,
+                                   std::chrono::microseconds subtitle_adjust_offset)
 {
-    subtitle_downloader_thread_.enqueue_subtitle(subtitle_path, language_code);
+    subtitle_downloader_thread_.enqueue_subtitle(subtitle_path, language_code, subtitle_adjust_offset);
 }
 
 
-void player::subtitle_select(const std::string& language_code)
+void player::subtitle_select(const std::string& language_code, std::chrono::microseconds subtitle_adjust_offset)
 {
     const int32_t sel_index = playable_.selectable_subtitle_index_of(language_code);
-    subtitle_select(sel_index);
+    subtitle_select(sel_index, subtitle_adjust_offset);
 }
 
-void player::subtitle_select(int32_t selectable_subtitle_index)
+void player::subtitle_select(int32_t selectable_subtitle_index, std::chrono::microseconds subtitle_adjust_offset)
 {
     subtitle_source_ = subtitle_source_t::none;
     if (set_subtitle_helper(selectable_subtitle_index)) {
+        std::cerr << fmt::format("FIXMENM adjust time for subtitle: {:%S}", subtitle_adjust_offset);
         const auto index = static_cast<uint32_t>(selectable_subtitle_index);
         auto entry = selectable_subtitles().at(index);
         if (entry.source == subtitle_source_t::text_file) {
             if (!entry.path.empty()) {
                 subtitle_source_ = subtitle_source_t::text_file;
-                enqueue_subtitle_file(entry.path, entry.language_code);
+                enqueue_subtitle_file(entry.path, entry.language_code, subtitle_adjust_offset);
                 return;
             }
         }
         else if (entry.source == subtitle_source_t::stream) {
             if (primary_source_stream_) {
                 subtitle_source_ = subtitle_source_t::stream;
-                subtitle_stream_index_set(entry.stream_index);
+                subtitle_stream_index_set(entry.stream_index, subtitle_adjust_offset);
                 return;
             }
         }
@@ -486,10 +489,11 @@ size_t player::subtitle_stream_index() const
     return subtitle_stream_index_ != no_stream_index ? subtitle_stream_index_ : source_stream(stream_type_t::subtitle)->first_subtitle_index();
 }
 
-void player::subtitle_stream_index_set(size_t stream_index)
+void player::subtitle_stream_index_set(size_t stream_index, std::chrono::microseconds subtitle_adjust_offset)
 {
     std::scoped_lock<std::mutex> lock(subtitle_codec_mutex_);
     if (primary_source_stream_) {
+        cur_media_time().subtitles_offset_set(subtitle_adjust_offset);
         primary_source_stream_->subtitle_index_set(stream_index);
         subtitle_stream_index_ = stream_index;
         subtitle_codec_ctx_ = av_codec_context(); // Reset the subtitle code context
@@ -507,6 +511,7 @@ void player::subtitle_container_set(std::unique_ptr<subtitle_container> containe
         return;
     }
     subtitle_source_ = subtitle_source_t::text_file;
+    cur_media_time_.subtitles_offset_set(container->subtitle_adjust_offset);
     media_pipeline_threads().subtitle_container_set(std::move(container));
 }
 

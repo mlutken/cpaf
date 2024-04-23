@@ -29,9 +29,11 @@ void subtitle_downloader_thread::start()
     // thread_object_->detach();
 }
 
-void subtitle_downloader_thread::enqueue_subtitle(const std::string& subtitle_path, const std::string& language_code)
+void subtitle_downloader_thread::enqueue_subtitle(const std::string& subtitle_path,
+                                                  const std::string& language_code,
+                                                  std::chrono::microseconds subtitle_adjust_offset)
 {
-    queue_in_.push({subtitle_path, language_code});
+    queue_in_.push(job_t{subtitle_path, language_code, subtitle_adjust_offset});
 }
 
 std::unique_ptr<subtitle_container> subtitle_downloader_thread::dequeue_subtitle()
@@ -62,20 +64,23 @@ void subtitle_downloader_thread::thread_function()
         if (!queue_in_.empty()) {
             const job_t job = queue_in_.front();
             queue_in_.pop();
-            download_subtitle(job.subtitle_path, job.language_code);
+            download_subtitle(job.subtitle_path, job.language_code, job.subtitle_adjust_offset);
         }
         std::this_thread::sleep_for(thread_yield_time_);
     }
     std::cerr << "LOG_INFO: subtitle_downloader_thread EXIT\n";
 }
 
-void subtitle_downloader_thread::download_subtitle(const std::string& subtitle_path, const std::string& language_code)
+void subtitle_downloader_thread::download_subtitle(const std::string& subtitle_path,
+                                                   const std::string& language_code,
+                                                   std::chrono::microseconds subtitle_adjust_offset)
 {
     std::cerr << "FIXMENM: subtitle_downloader_thread::download_subtitle: " << subtitle_path << "\n";
     auto container = std::make_unique<subtitle_container>();
     if (subtitle_text_file_data_.open(subtitle_path, download_time_out_)) {
         container->parse_srt_file_data(subtitle_text_file_data_.srt_file_data());
         container->language_code_set(language_code);
+        container->subtitle_adjust_offset = subtitle_adjust_offset;
         queue_out_.push(std::move(container));
     }
     else {

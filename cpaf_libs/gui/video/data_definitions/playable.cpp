@@ -2,6 +2,9 @@
 #include <filesystem>
 #include <algorithm>
 #include <string>
+
+#include <fmt/chrono.h>
+
 #include <cpaf_libs/utils/cpaf_json_utils.h>
 #include <cpaf_libs/locale/translator.h>
 #include <cpaf_libs/locale/language_codes.h>
@@ -84,6 +87,7 @@ playable::playable(std::string path, std::string subtitle_path, const std::strin
 }
 
 /// @todo If we have multiple subtitles with same language we now add all. Do we still want this?
+/// @todo User selected subtitle should be able to set custom subtitle time offset?
 void playable::update_calculated(const locale::translator& tr,
                                  const stream_info_vec* streams_info_ptr,
                                  bool force) const
@@ -93,6 +97,7 @@ void playable::update_calculated(const locale::translator& tr,
     }
     translator_id_ = tr.id();
     selectable_subtitles_.clear();
+
     selectable_subtitles_.push_back({subtitle_user(), string(subtitle_user_selected_lc), tr.tr("User selected"), illegal_stream_index(), subtitle_source_t::text_file});
     for (auto& el : jo_["subtitles"].items()) {
         auto& sub_jo = el.value();
@@ -100,8 +105,10 @@ void playable::update_calculated(const locale::translator& tr,
         if (language_code.empty()) {
             continue;
         }
+
+        const auto adjust_time = cpaf::json_value_seconds(sub_jo, "adjust_time", 0);
         const string language_name = tr.tr(cpaf::locale::language_codes::language_name(language_code));
-        selectable_subtitles_.push_back({sub_jo["path"], language_code, language_name, illegal_stream_index(), subtitle_source_t::text_file});
+        selectable_subtitles_.push_back({sub_jo["path"], language_code, language_name, illegal_stream_index(), subtitle_source_t::text_file, adjust_time});
     }
 
     if (streams_info_ptr) {
@@ -174,6 +181,7 @@ subtitle_source_entry_t playable::find_best_subtitle(std::string& language_code)
             entry.language_name = "";
             entry.path = sub["path"];
             entry.source = subtitle_source_t::text_file;
+            entry.subtitle_adjust_offset = cpaf::json_value_seconds(sub, "adjust_time", 0);
             return entry;
         }
     }

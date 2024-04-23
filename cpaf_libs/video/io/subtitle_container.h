@@ -24,6 +24,7 @@ namespace cpaf::video {
 class subtitle_container
 {
 public:
+    std::chrono::microseconds           subtitle_adjust_offset  {};
 
     struct frame_t {
         std::vector<std::string>        lines                   {};
@@ -83,7 +84,7 @@ private:
     std::vector<frame_t>                subtitles_;
     std::string                         language_code_;
     frame_t                             cur_parse_frame_;
-    state_t                             parse_state_ = state_t::new_frame;
+    state_t                             parse_state_                = state_t::new_frame;
 };
 
 } // namespace cpaf::video

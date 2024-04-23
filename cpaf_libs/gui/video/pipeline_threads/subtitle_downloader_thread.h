@@ -31,7 +31,9 @@ public:
     ~subtitle_downloader_thread();
 
     void                                start                   ();
-    void                                enqueue_subtitle        (const std::string& subtitle_path, const std::string& language_code);
+    void                                enqueue_subtitle        (const std::string& subtitle_path,
+                                                                 const std::string& language_code,
+                                                                 std::chrono::microseconds subtitle_adjust_offset = {});
     std::unique_ptr<subtitle_container> dequeue_subtitle        ();
     bool                                has_subtitle            () const;
 
@@ -41,14 +43,17 @@ public:
 
 private:
     struct job_t {
-        std::string subtitle_path;
-        std::string language_code;
+        std::string                 subtitle_path           {};
+        std::string                 language_code           {};
+        std::chrono::microseconds   subtitle_adjust_offset  {};
     };
     using queue_in_t  = estl::srsw_fifo<job_t>;
     using queue_out_t = estl::srsw_fifo<std::unique_ptr<subtitle_container>>;
 
     void                                thread_function         ();
-    void                                download_subtitle       (const std::string& subtitle_path, const std::string& language_code);
+    void                                download_subtitle       (const std::string& subtitle_path,
+                                                                 const std::string& language_code,
+                                                                 std::chrono::microseconds subtitle_adjust_offset = {});
 
     player&                             player_;
     queue_in_t                          queue_in_;

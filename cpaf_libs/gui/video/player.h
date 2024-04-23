@@ -130,10 +130,11 @@ public:
     // -------------------------------
     // --- Subtitles setup/control ---
     // -------------------------------
-    void                                enqueue_subtitle_file   (const std::string& subtitle_path, const std::string& language_code);
+    void                                enqueue_subtitle_file   (const std::string& subtitle_path, const std::string& language_code,
+                                                                 std::chrono::microseconds subtitle_adjust_offset);
     subtitle_source_t                   subtitle_source         () const { return subtitle_source_; }
-    void                                subtitle_select         (const std::string& language_code);
-    void                                subtitle_select         (int32_t selectable_subtitle_index);
+    void                                subtitle_select         (const std::string& language_code, std::chrono::microseconds subtitle_adjust_offset = {});
+    void                                subtitle_select         (int32_t selectable_subtitle_index, std::chrono::microseconds subtitle_adjust_offset = {});
     void                                set_subtitle_user       (std::string subtitle_path)         { playable_.set_subtitle_user(subtitle_path);   }
     std::string                         subtitle_user           () const                            { return playable_.subtitle_user();             }
 
@@ -142,7 +143,7 @@ public:
     int32_t                             subtitle_selected_index () const;
 
     size_t                              subtitle_stream_index	() const;
-    void                                subtitle_stream_index_set(size_t stream_index);
+    void                                subtitle_stream_index_set(size_t stream_index, std::chrono::microseconds subtitle_adjust_offset = {});
     void                                subtitle_container_set  (std::unique_ptr<subtitle_container> container);
 
     // ---------------------------------------------

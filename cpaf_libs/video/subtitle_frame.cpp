@@ -73,6 +73,14 @@ bool subtitle_frame::subtitle_within_display_time(std::chrono::microseconds curr
     return should_display;
 }
 
+bool subtitle_frame::subtitle_too_old(std::chrono::microseconds current_time) const
+{
+    if (!is_valid()) {
+        return true;
+    }
+    return presentation_time_end < current_time;
+}
+
 
 
 bool subtitle_frame::ff_subtitle_is_valid() const {

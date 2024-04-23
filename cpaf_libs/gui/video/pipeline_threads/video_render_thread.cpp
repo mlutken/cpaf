@@ -135,10 +135,9 @@ void video_render_thread::update_current_subtitle(render& video_render)
         video_render.set_current_subtitle(std::move(subtitles_queue_.front()));
         subtitles_queue_.pop();
 //        std::cerr << "FIXMENM SET current subtitle: " << video_render.current_subtitle().dbg_str()
-//                  << " cur time: " << cpaf::time::format_h_m_s(player_.cur_media_time().video_time_pos())
+//                  << " cur time: " << cpaf::time::format_h_m_s(player_.cur_media_time().subtitles_time_pos())
 //                  << "  within time: '" << subtitle_within_display_time(video_render.current_subtitle()) << "'"
 //                  << "\n";
-
     }
 }
 
@@ -150,11 +149,7 @@ bool video_render_thread::subtitle_within_display_time(const cpaf::video::subtit
 
 bool video_render_thread::subtitle_too_old(const cpaf::video::subtitle_frame& subtitle) const
 {
-    if (!subtitle.is_valid()) {
-        return true;
-    }
-    const auto cur_time = player_.cur_media_time().video_time_pos();
-    return subtitle.presentation_time_end < cur_time;
+    return subtitle.subtitle_too_old(player_.cur_media_time().subtitles_time_pos());
 }
 
 void video_render_thread::debug_video_frame_update(cpaf::video::av_frame& current_frame, gui::video::render& /*video_render*/)
@@ -217,7 +212,7 @@ void video_render_thread::debug_gui()
 //    std::string subtitle = "time to frame: " + cpaf::time::format_h_m_s_ms(cpaf::time::abs(time_to_current_frame_))  + " ";
     if (!subtitles_queue_.empty()) {
         if (subtitles_queue_.front().is_valid() && subtitles_queue_.front().is_text_format()) {
-            subtitle += cpaf::time::format_h_m_s_ms(subtitles_queue_.front().presentation_time) + " ";
+            subtitle += cpaf::time::format_h_m_s_ms(subtitles_queue_.front().presentation_time - player_.cur_media_time().subtitles_adjust_offset()) + " ";
             if (!subtitles_queue_.front().lines.empty()) {
                 subtitle += subtitles_queue_.front().lines[0];
             }
