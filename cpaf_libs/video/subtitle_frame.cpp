@@ -64,6 +64,17 @@ subtitle_frame::~subtitle_frame()
     }
 }
 
+bool subtitle_frame::subtitle_within_display_time(std::chrono::microseconds current_time) const
+{
+    if (!is_valid()) {
+        return false;
+    }
+    const auto should_display = presentation_time <= current_time && current_time <= presentation_time_end;
+    return should_display;
+}
+
+
+
 bool subtitle_frame::ff_subtitle_is_valid() const {
     if (!ff_subtitle_ptr_) { return false; }
     if ((ff_subtitle_ptr_->num_rects == 0) ||

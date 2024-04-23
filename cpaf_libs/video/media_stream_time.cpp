@@ -42,6 +42,11 @@ std::chrono::microseconds media_stream_time::video_time_pos() const
     return current_time_pos() + video_offset_;
 }
 
+std::chrono::microseconds media_stream_time::subtitles_time_pos() const
+{
+    return video_time_pos() + subtitles_adjust_offset_;
+}
+
 
 void media_stream_time::pause_time()
 {

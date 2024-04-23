@@ -145,12 +145,7 @@ locale::translator& render_base::tr()
 
 bool render_base::subtitle_within_display_time(const cpaf::video::subtitle_frame& subtitle) const
 {
-    if (!subtitle.is_valid()) {
-        return false;
-    }
-    const auto cur_time = player_.cur_media_time().video_time_pos();
-    const auto should_display = subtitle.presentation_time <= cur_time && cur_time <= subtitle.presentation_time_end;
-    return should_display;
+    return subtitle.subtitle_within_display_time(player_.cur_media_time().subtitles_time_pos());
 }
 
 

@@ -152,7 +152,7 @@ void subtitle_reader_thread::enqueue_current_subtitle()
 // Assumes mutex is already locked and subtitle_container_ valid
 void subtitle_reader_thread::set_cur_subtitle_iter()
 {
-    current_subtitle_iter_ = subtitle_container_->find_last_before(player_.current_time());
+    current_subtitle_iter_ = subtitle_container_->find_last_before(player_.cur_media_time().subtitles_time_pos());
     // fmt::println("****FIXMENM subtitle_reader_thread::set_cur_subtitle_iter -----\n{}\n", current_subtitle_iter_->to_string()); std::cout << std::endl;
 }
 

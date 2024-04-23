@@ -64,6 +64,7 @@ public:
     ~subtitle_frame();
 
 
+    bool                            subtitle_within_display_time(std::chrono::microseconds current_time) const;
     bool                            ff_subtitle_is_valid        () const;
     bool                            is_valid                    () const;
     format_t                        format                      () const { return format_; }

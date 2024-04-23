@@ -145,12 +145,7 @@ void video_render_thread::update_current_subtitle(render& video_render)
 
 bool video_render_thread::subtitle_within_display_time(const cpaf::video::subtitle_frame& subtitle) const
 {
-    if (!subtitle.is_valid()) {
-        return false;
-    }
-    const auto cur_time = player_.cur_media_time().video_time_pos();
-    const auto should_display = subtitle.presentation_time <= cur_time && cur_time <= subtitle.presentation_time_end;
-    return should_display;
+    return subtitle.subtitle_within_display_time(player_.cur_media_time().subtitles_time_pos());
 }
 
 bool video_render_thread::subtitle_too_old(const cpaf::video::subtitle_frame& subtitle) const

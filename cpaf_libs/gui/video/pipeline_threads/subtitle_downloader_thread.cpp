@@ -31,7 +31,6 @@ void subtitle_downloader_thread::start()
 
 void subtitle_downloader_thread::enqueue_subtitle(const std::string& subtitle_path, const std::string& language_code)
 {
-    fmt::println("FIXMENM subtitle_downloader_thread::enqueue_subtitle {} , {}", subtitle_path, language_code);
     queue_in_.push({subtitle_path, language_code});
 }
 
@@ -60,7 +59,6 @@ float subtitle_downloader_thread::download_progress() const
 void subtitle_downloader_thread::thread_function()
 {
     while(thread_is_running_) {
-        // std::cerr << "FIXMENM subtitle reader thread ....\n";
         if (!queue_in_.empty()) {
             const job_t job = queue_in_.front();
             queue_in_.pop();
@@ -68,7 +66,7 @@ void subtitle_downloader_thread::thread_function()
         }
         std::this_thread::sleep_for(thread_yield_time_);
     }
-    std::cerr << "\n!!! EXIT subtitle_reader_thread::audio_samples_thread_fn() !!!\n";
+    std::cerr << "LOG_INFO: subtitle_downloader_thread EXIT\n";
 }
 
 void subtitle_downloader_thread::download_subtitle(const std::string& subtitle_path, const std::string& language_code)
