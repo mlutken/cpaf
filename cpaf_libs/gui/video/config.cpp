@@ -24,7 +24,8 @@ static const auto default_config = nlohmann::json::parse(
             "stream_state_font_name": "manrope",
             "stream_state_font_size": 48,
 
-            "skip_time_small": 15
+            "skip_time_small": 15,
+            "show_ui_time_out": 7
         },
         "network": {
             "torrent_time_out": "120"

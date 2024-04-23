@@ -271,7 +271,7 @@ private:
     cpaf::video::media_stream_time                  cur_media_time_;
     std::unique_ptr<video::render>                  video_render_;
     std::unique_ptr<video::controls>                video_controls_;
-    bool                                            show_controls_                  = true;
+    bool                                            show_controls_                  = false;
     bool                                            resume_from_pause_on_seek_      = true;
 
     bool                                            save_playback_is_paused_state_  = false;    // For saving current paused state. For example when showing i UI window on top and we want to ensure player is paused while window is active. See push_paused()/pop_paused()
@@ -284,7 +284,6 @@ private:
     std::unique_ptr<std::thread>                    open_subtitle_thread_           = nullptr;
     cpaf::math::v2f                                 screen_size_factor_use_         {1,1};
     cpaf::math::v2f                                 screen_size_factor_raw_         {1,1};
-
 };
 
 } //END namespace cpaf::gui::video
