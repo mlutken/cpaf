@@ -108,13 +108,11 @@ void controls_default::do_calc_geometry()
     remaining_time_pos_.x = render_geometry.x() + render_geometry.width() - video_time_size_.x / 2 - general_margin;
     remaining_time_pos_.y = elapsed_time_pos_.y;
 
-    const float menu_buttons_y_pos = video_slider_pos_.y - menu_buttons_window_size_.y;
+    menu_btn_pos_.x         = render_geometry.x() + menu_buttons_window_size_.x;
+    menu_btn_pos_.y         = render_geometry.y() + 2*menu_buttons_window_size_.y;
 
-    menu_btn_pos_.x         = render_geometry.center().x() - menu_buttons_window_size_.x;
-    subtitles_btn_pos_.x    = menu_btn_pos_.x + 2*menu_buttons_window_size_.x;
-
-    menu_btn_pos_.y = menu_buttons_y_pos;
-    subtitles_btn_pos_.y = menu_buttons_y_pos;
+    subtitles_btn_pos_.x    = render_geometry.x() + render_geometry.width() - 4*menu_buttons_window_size_.x;
+    subtitles_btn_pos_.y    = render_geometry.y() + render_geometry.height() - 2*menu_buttons_window_size_.y;
 
     // ------------------------
     // --- Calculate colors ---
