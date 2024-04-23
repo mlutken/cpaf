@@ -19,7 +19,7 @@ namespace cpaf::gui::events {
 
 class events_sdl {
 public:
-    event                   convert_event           (const SDL_Event& sdl_event) const;
+    event                   convert_event               (const SDL_Event& sdl_event) const;
 private:
 
     event                   create_none                 () const { return event{events::none()}; }
