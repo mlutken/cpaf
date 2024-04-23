@@ -9,6 +9,12 @@ using namespace std;
 
 namespace cpaf::gui {
 
+app_base::app_base() :
+    last_mouse_or_touch_event_time_(std::chrono::steady_clock::now())
+{
+
+}
+
 exit_status_t app_base::run()
 {
     do_platform_start_run();
@@ -104,7 +110,15 @@ void app_base::process_events()
         if (evt.is<events::none>()) {
             break;
         }
+        update_mouse_touch_time(evt);
         event_handler(evt);
+    }
+}
+
+void app_base::update_mouse_touch_time(const events::event& evt)
+{
+    if (evt.is<events::mouse>() || evt.is<events::touch>()) {
+        last_mouse_or_touch_event_time_ = std::chrono::steady_clock::now();
     }
 }
 

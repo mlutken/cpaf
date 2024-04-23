@@ -18,10 +18,10 @@ namespace cpaf::gui {
 class system_render;
 
 
-class app_base {
+class                                   app_base {
 public:
 
-    app_base() = default;
+    app_base();
     app_base(const app_base&) = delete;
     app_base(app_base&&) = delete;
     app_base& operator=(const app_base& other) = delete;
@@ -70,6 +70,9 @@ public:
     const std::string&          default_font        () const    { return default_font_;    }
     float                       base_font_size      () const    { return base_font_size_;  }
 
+    // --- Runtime information ---
+    std::chrono::steady_clock::time_point       last_mouse_or_touch_time        () const     { return last_mouse_or_touch_event_time_; }
+    std::chrono::nanoseconds                    time_since_last_mouse_or_touch  () const     { return std::chrono::steady_clock::now() - last_mouse_or_touch_event_time_; }
 
 protected:
     cpaf::locale::translator                translator_;                // Default Text UI Translator
@@ -122,16 +125,18 @@ private:
     // --- PRIVATE: Helper functions ---
     // ---------------------------------
     void                            process_events              ();
+    void                            update_mouse_touch_time     (const events::event& evt);
 
     // ----------------------------------
     // --- PRIVATE: Memeber variables ---
     // ----------------------------------
-    std::filesystem::path   config_path_      {};
-    std::string             app_name_         {"MyApp"};
-    std::string             company_name_     {""};
-    std::string             window_title_     {"Hello CPAF GUI"};
-    std::string             default_font_     {"manrope"};
-    float                   base_font_size_   {28};
+    std::filesystem::path                   config_path_      {};
+    std::string                             app_name_         {"MyApp"};
+    std::string                             company_name_     {""};
+    std::string                             window_title_     {"Hello CPAF GUI"};
+    std::string                             default_font_     {"manrope"};
+    float                                   base_font_size_   {28};
+    std::chrono::steady_clock::time_point   last_mouse_or_touch_event_time_{};
 
 };
 
