@@ -142,6 +142,16 @@ int32_t json_value_int32(const nlohmann::json& jo_object,
     return default_value;
 }
 
+std::chrono::seconds json_value_seconds(const nlohmann::json& jo, int32_t default_value)
+{
+    return std::chrono::seconds(json_value_int32(jo, default_value));
+}
+
+std::chrono::seconds json_value_seconds(const nlohmann::json& jo_object, const std::string& key, int32_t default_value)
+{
+    return std::chrono::seconds(json_value_int32(jo_object, key, default_value));
+}
+
 
 bool json_value_bool(const nlohmann::json& jo, bool default_value)
 {
