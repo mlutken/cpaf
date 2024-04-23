@@ -605,8 +605,6 @@ string av_format_context::queues_info() const
 
 void av_format_context::read_codec_contexts()
 {
-    AVDictionaryEntry* tag = nullptr;
-
     for( size_t i=0; i < streams_count(); i++) {
         const AVStream* ff_stream = ff_format_context_->streams[i];
         const AVMediaType ff_media_type = ff_stream->codecpar->codec_type;
@@ -622,18 +620,7 @@ void av_format_context::read_codec_contexts()
         if (si.meta_data.contains("language")) {
             si.language_code = cpaf::locale::language_codes::iso639_3_to_2(si.meta_data["language"]);
         }
-
-//        si.dbg_print(); // FIXMENM
-
         streams_info_.push_back(std::move(si));
-
-//        tag = av_dict_get(ff_stream->metadata, "language", NULL, 0);
-//        if (tag) {
-//            fmt::println("Subtitle stream language code: {}\n", tag->value); std::cout.flush();
-//        } else {
-//            fmt::println("Subtitle stream language code not found\n"); std::cout.flush();
-//        }
-
 
     }
     primary_stream_index_ = default_primary_stream_index();
