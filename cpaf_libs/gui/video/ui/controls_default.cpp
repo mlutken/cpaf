@@ -385,25 +385,39 @@ void controls_default::render_menu_window()
     ImGui::SetNextWindowPos(viewport->Pos);
     ImGui::SetNextWindowSize(viewport->Size);
 
-    if (ImGui::Begin("Example: Fullscreen window", &do_render_menu_window_, flags))
-    {
-//        ImGui::Checkbox("Use work area instead of main area", &use_work_area);
-        ImGui::SameLine();
-        ImGui::HelpMarker("Main Area = entire viewport,\nWork Area = entire viewport minus sections used by the main menu bars, task bars etc.\n\nEnable the main-menu bar in Examples menu to see the difference.");
 
-        ImGui::CheckboxFlags("ImGuiWindowFlags_NoBackground", &flags, ImGuiWindowFlags_NoBackground);
-        ImGui::CheckboxFlags("ImGuiWindowFlags_NoDecoration", &flags, ImGuiWindowFlags_NoDecoration);
-        ImGui::Indent();
-        ImGui::CheckboxFlags("ImGuiWindowFlags_NoTitleBar", &flags, ImGuiWindowFlags_NoTitleBar);
-        ImGui::CheckboxFlags("ImGuiWindowFlags_NoCollapse", &flags, ImGuiWindowFlags_NoCollapse);
-        ImGui::CheckboxFlags("ImGuiWindowFlags_NoScrollbar", &flags, ImGuiWindowFlags_NoScrollbar);
-        ImGui::Unindent();
+    if (ImGui::Begin("Main Player Menu", &do_render_menu_window_, flags))
+    {
+        if (ImGui::Button("Open Local Media")) {
+            IGFD::FileDialogConfig config;
+            config.path = cpaf::filesystem::special_dirs::home();
+
+            auto filter = tr().tr("Video files") + "{.avi,.mkv,.mp4,.mov}" + ",All Files (*.*){.*}";
+            filter += "," + tr().tr("Audio files") + "{.flac,.mp3,.wav}";
+            filter += "," + tr().tr("All Files") +  " (*.*){.*}";
+            ImGuiFileDialog::Instance()->OpenDialog("ChooseMediaFileDlgKey", tr().tr("Choose File"), filter.c_str(), config);
+        }
 
         if (ImGui::Button("Close this window")) {
             do_render_menu_window_ = false;
         }
     }
     ImGui::End();
+
+
+    // -----------------------------------------
+    // --- Open media file dialog definition ---
+    // -----------------------------------------
+    if (ImGuiFileDialog::Instance()->Display("ChooseMediaFileDlgKey", ImGuiWindowFlags_NoCollapse, file_dialog_min_size_ )) { // => will show a dialog
+        if (ImGuiFileDialog::Instance()->IsOk()) { // action if OK
+            new_user_media_file_ = ImGuiFileDialog::Instance()->GetFilePathName();
+            std::cerr << "FIXMENM 2 ChooseMediaFileDlgKey new_user_subtitle_file_: '" << new_user_media_file_ << "'\n";
+            //            std::cerr << "FIXMENM 2 ChooseMediaFileDlgKey filePath: '" << filePath << "'\n";
+        }
+        // close
+        ImGuiFileDialog::Instance()->Close();
+    }
+
 }
 
 void controls_default::render_subtitles_window()
@@ -429,8 +443,10 @@ void controls_default::render_subtitles_window()
         ImGui::SameLine();
         if (ImGui::Button(tr().tr("Open subtitle file"))) {
             IGFD::FileDialogConfig config;
-            config.path = cpaf::filesystem::special_dirs::home() / "code/crawler/moowees/data/subtitles";
-            ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", "(*.srt *.zip){.srt,.zip},All Files (*.*){.*}", config);
+///            config.path = cpaf::filesystem::special_dirs::home() / "code/crawler/moowees/data/subtitles"; // FIXMENM
+            config.path = cpaf::filesystem::special_dirs::home();
+            const auto filter = tr().tr("Subtitle files") + "{.srt,.zip}" "," + tr().tr("All Files") +  " (*.*){.*}";
+            ImGuiFileDialog::Instance()->OpenDialog("ChooseSubtitleFileDlgKey", tr().tr("Choose File"), filter.c_str(), config);
         }
 
         ImGui::SameLine();
@@ -455,10 +471,10 @@ void controls_default::render_subtitles_window()
     }
     ImGui::End();
 
-    // -----------------------------------
-    // --- Open file dialog definition ---
-    // -----------------------------------
-    if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey", ImGuiWindowFlags_NoCollapse, file_dialog_min_size_ )) { // => will show a dialog
+    // --------------------------------------------
+    // --- Open subtitle file dialog definition ---
+    // --------------------------------------------
+    if (ImGuiFileDialog::Instance()->Display("ChooseSubtitleFileDlgKey", ImGuiWindowFlags_NoCollapse, file_dialog_min_size_ )) { // => will show a dialog
         if (ImGuiFileDialog::Instance()->IsOk()) { // action if OK
             new_user_subtitle_file_ = ImGuiFileDialog::Instance()->GetFilePathName();
             new_subtitle_select_index_ = 0;
@@ -484,6 +500,8 @@ void controls_default::render_debug_window()
         .StyleColor(ImGuiCol_ButtonActive, {0, 0, 0, 0})
         .StyleColor(ImGuiCol_ButtonHovered, {0, 0, 0, 0})
         ;
+
+
 
 //    auto display_size = player_.main_window_ptr()->display_size();
 //    auto render_size = player_.render_geometry().size();
@@ -526,7 +544,7 @@ void controls_default::set_cursor_pos_image_buttons()
 //            if (ImGui::MenuItem(tr().tr("Open Subtitle File")) ) {
 //                IGFD::FileDialogConfig config;
 //                config.path = cpaf::filesystem::special_dirs::home() / "code/crawler/moowees/data/subtitles";
-//                ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose Subtitle File", "(*.srt *.zip){.srt,.zip},All Files (*.*){.*}", config);
+//                ImGuiFileDialog::Instance()->OpenDialog("ChooseSubtitleFileDlgKey", "Choose Subtitle File", "(*.srt *.zip){.srt,.zip},All Files (*.*){.*}", config);
 
 //                std::cerr << "FIXMENM Open File\n";
 //            }

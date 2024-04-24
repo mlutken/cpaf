@@ -71,6 +71,7 @@ private:
     bool        do_render_menu_window_          = false;
 
     int32_t     new_subtitle_select_index_      = -1;
+    std::string new_user_media_file_            {};
     std::string new_user_subtitle_file_         {};
 
     ImVec2      stream_state_pos_               {};
