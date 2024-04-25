@@ -99,7 +99,7 @@ public:
     // --- Video setup/control ---
     // ---------------------------
     void                                video_dimensions_set    (int32_t width, int32_t height = cpaf::video::surface_dimension_auto);
-    void                                video_dimensions_set    (const cpaf::video::surface_dimensions_t& dimensions);
+    void                                video_dimensions_set    (surface_dimensions_t dimensions);
     void                                video_scaler_flags_set  (int32_t flags);
     void                                video_scaler_align_set  (int32_t align);
     void                                ff_dst_pixel_format_set (AVPixelFormat pixel_format);
@@ -272,6 +272,7 @@ private:
     cpaf::video::media_stream_time                  cur_media_time_;
     std::unique_ptr<video::render>                  video_render_;
     std::unique_ptr<video::controls>                video_controls_;
+    bool                                            keep_aspect_ratio_              = true;
     bool                                            show_controls_                  = false;
     bool                                            resume_from_pause_on_seek_      = true;
 

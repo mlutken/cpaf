@@ -332,9 +332,12 @@ void player::video_dimensions_set(int32_t width, int32_t height)
     video_dimensions_set({width, height});
 }
 
-void player::video_dimensions_set(const surface_dimensions_t& dimensions)
+void player::video_dimensions_set(surface_dimensions_t dimensions)
 {
     if (video_render_) {
+        if (keep_aspect_ratio_) {
+            dimensions = video_src_dimensions().uniform_scale_x(dimensions.x());
+        }
 ///        math::v2i32 delta {150, 100};
 ///        math::v2i32 size = dimensions - 2*delta;
 ///        rect r(delta, size);
