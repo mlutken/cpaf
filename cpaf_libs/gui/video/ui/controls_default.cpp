@@ -424,7 +424,7 @@ void controls_default::render_menu_window()
         ImGui::Separator();
 
         {
-            ImGui::Rai imrai = std::move(ImGui::Rai::Create().ButtonColorAuto(reinterpret_cast<const ImVec4&>(menu_close_button_color_)));
+            ImGui::Rai imrai = ImGui::Rai::Create().ButtonColorAuto(reinterpret_cast<const ImVec4&>(menu_close_button_color_));
 //            imrai.ButtonColorAuto(reinterpret_cast<const ImVec4&>(menu_close_button_color_))
 //            ;
 
@@ -515,7 +515,7 @@ void controls_default::render_subtitles_window()
             ImGui::RadioButton(selelectable_text, new_subtitle_select_index_, static_cast<int32_t>(i));
         }
 
-        if (ImGui::Button(tr().tr("Close")) ) {
+        if (ImGui::Button(tr().tr("Apply")) ) {
             player_.set_subtitle_user(new_user_subtitle_file_);
             player_.subtitle_select(new_subtitle_select_index_);
             player_.ui_window_active_set(false);

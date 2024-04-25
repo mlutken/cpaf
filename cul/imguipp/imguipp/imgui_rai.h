@@ -63,7 +63,6 @@ inline bool Button(std::string_view label, const ImVec2& size = ImVec2(0, 0)) {
     return Button(label.data(), size);
 }
 
-bool AlignedButton  (std::string_view label, float alignment = 0.5f, ImVec2 size = ImVec2(0, 0));
 bool AlignedButton  (std::string_view label, float alignment, float relative_width);
 bool CenteredButton (std::string_view label, float relative_width);
 
@@ -73,6 +72,7 @@ bool CenteredButton (std::string_view label, float relative_width);
 inline bool RadioButton(std::string_view label, int& value, int button_value) {
     return RadioButton(label.data(), &value, button_value);
 }
+bool AlignedRadioButton(std::string_view label, int& value, int button_value, float alignment);
 
 
 // ---------------------------

@@ -55,24 +55,6 @@ void Rai::Pop(Stacktype type)
 // --- Widgets: Buttons ---
 // ------------------------
 
-bool AlignedButton(std::string_view label, float alignment, ImVec2 size)
-{
-    const auto content_region = ImGui::GetContentRegionAvail();
-    const float width_calculated = CalcTextWidth(label);
-
-    const float width_wanted = std::max(size.x, width_calculated);
-    size.x = std::min(width_wanted, content_region.x);
-
-    const float avail = content_region.x;
-
-    const float off = (avail - size.x) * alignment;
-    if (off > 0.0f) {
-        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + off);
-    }
-
-    return ImGui::Button(label, size);
-}
-
 bool AlignedButton(std::string_view label, float alignment, float relative_width)
 {
     const auto content_region = ImGui::GetContentRegionAvail();
@@ -94,26 +76,26 @@ bool AlignedButton(std::string_view label, float alignment, float relative_width
 
 bool CenteredButton(std::string_view label, float relative_width)
 {
-    const auto content_region = ImGui::GetContentRegionAvail();
-    const float width_wanted = content_region.x*relative_width;
-
-    ImVec2 size{0,0};
-    size.x = std::min(width_wanted, content_region.x);
-
-    const float avail = content_region.x;
-
-    const float off = (avail - size.x) * 0.5f;
-    if (off > 0.0f) {
-        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + off);
-    }
-
-    return ImGui::Button(label, size);
-
+    return AlignedButton(label, 0.5f, relative_width);
 }
 
 // ------------------------------
 // --- Widgets: Radio Buttons ---
 // ------------------------------
+bool AlignedRadioButton(std::string_view label, int& value, int button_value, float alignment)
+{
+    const auto content_region = ImGui::GetContentRegionAvail();
+    const float width_calculated = CalcTextWidth(label);
+
+    const float avail = content_region.x;
+
+    const float off = (avail - width_calculated) * alignment;
+    if (off > 0.0f) {
+        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + off);
+    }
+
+    return RadioButton(label, value, button_value);
+}
 
 
 // ---------------------------
@@ -229,6 +211,7 @@ float CalcTextWidth(std::string_view text, const ImGuiStyle& style)
     return ImGui::CalcTextSize(text.data()).x + style.FramePadding.x * 2.0f;
 
 }
+
 
 
 
