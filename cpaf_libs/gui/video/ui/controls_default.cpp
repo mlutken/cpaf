@@ -29,6 +29,7 @@ constexpr pos_2df backward_uv0      = {3*icon_width, 2*icon_width};  constexpr p
 constexpr pos_2df menu_uv0          = {1*icon_width, 0*icon_width};  constexpr pos_2df menu_uv1         = menu_uv0  + wh_add;
 constexpr pos_2df subtitles_off_uv0 = {2*icon_width, 1*icon_width};  constexpr pos_2df subtitles_off_uv1= subtitles_off_uv0  + wh_add;
 constexpr pos_2df subtitles_on_uv0  = {2*icon_width, 2*icon_width};  constexpr pos_2df subtitles_on_uv1 = subtitles_on_uv0  + wh_add;
+constexpr pos_2df fullscreen_uv0    = {0*icon_width, 2*icon_width};  constexpr pos_2df fullscreen_uv1   = fullscreen_uv0  + wh_add;
 
 /// @see https://github.com/ocornut/imgui/issues/4216
 /// @see https://html-color.codes/
@@ -113,6 +114,9 @@ void controls_default::do_calc_geometry()
 
     subtitles_btn_pos_.x    = render_geometry.x() + render_geometry.width() - 4*menu_buttons_window_size_.x;
     subtitles_btn_pos_.y    = render_geometry.y() + render_geometry.height() - 2*menu_buttons_window_size_.y;
+
+    fullscreen_btn_pos_.x   = subtitles_btn_pos_.x - 2*menu_buttons_window_size_.x;
+    fullscreen_btn_pos_.y   = subtitles_btn_pos_.y;
 
     // ------------------------
     // --- Calculate colors ---
@@ -266,16 +270,16 @@ void controls_default::render_menu_buttons()
         .StyleColor(ImGuiCol_ButtonHovered, reinterpret_cast<const ImVec4&>(buttons_hover_col_))
         ;
 
+    // ------------------------
     // --- Subtitles button ---
+    // ------------------------
     ImGui::SetNextWindowPos(subtitles_btn_pos_, ImGuiCond_::ImGuiCond_Always, {0.5, 0.5} );
     ImGui::SetNextWindowSize(menu_buttons_window_size_, ImGuiCond_::ImGuiCond_Always);
 
-    ImGui::Begin("subtitles_btn", &visible_, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
+    ImGui::Begin("###subtitles_btn_win", &visible_, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
     set_cursor_pos_image_buttons();
 
-
     bool cur_show_subtitles = config_.bool_val("subtitles", "show");
-
     const auto subtitles_uv0 = cur_show_subtitles ? subtitles_on_uv0.to_struct<ImVec2>() : subtitles_off_uv0.to_struct<ImVec2>();
     const auto subtitles_uv1 = cur_show_subtitles ? subtitles_on_uv1.to_struct<ImVec2>() : subtitles_off_uv1.to_struct<ImVec2>();
 
@@ -284,17 +288,33 @@ void controls_default::render_menu_buttons()
     if (ImGui::ImageButton("###subtitles_btn", buttons_texture_ptr, menu_buttons_size_, subtitles_uv0, subtitles_uv1, {0,0,0,0}, {1,1,1,1})) {
         do_render_subtitles_window_ = true;
     }
-
     ImGui::End();
 
+
+    // -------------------
     // --- Menu button ---
+    // -------------------
     ImGui::SetNextWindowPos(menu_btn_pos_, ImGuiCond_::ImGuiCond_Always, {0.5, 0.5} );
     ImGui::SetNextWindowSize(menu_buttons_window_size_, ImGuiCond_::ImGuiCond_Always);
-    ImGui::Begin("menu_btn", &visible_, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
+    ImGui::Begin("###menu_btn_win", &visible_, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
     set_cursor_pos_image_buttons();
 
-    if (ImGui::ImageButton("menu", buttons_texture_ptr, menu_buttons_size_, menu_uv0.to_struct<ImVec2>(), menu_uv1.to_struct<ImVec2>(), {0,0,0,0}, {1,1,1,1})) {
+    if (ImGui::ImageButton("###menu_btn", buttons_texture_ptr, menu_buttons_size_, menu_uv0.to_struct<ImVec2>(), menu_uv1.to_struct<ImVec2>(), {0,0,0,0}, {1,1,1,1})) {
         do_render_menu_window_ = true;
+    }
+    ImGui::End();
+
+    // -------------------------
+    // --- Fullscreen button ---
+    // -------------------------
+    ImGui::SetNextWindowPos(fullscreen_btn_pos_, ImGuiCond_::ImGuiCond_Always, {0.5, 0.5} );
+    ImGui::SetNextWindowSize(menu_buttons_window_size_, ImGuiCond_::ImGuiCond_Always);
+    ImGui::Begin("###fullscreen_btn_win", &visible_, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
+    set_cursor_pos_image_buttons();
+
+    if (ImGui::ImageButton("###fullscreen_btn", buttons_texture_ptr, menu_buttons_size_, fullscreen_uv0.to_struct<ImVec2>(), fullscreen_uv1.to_struct<ImVec2>(), {0,0,0,0}, {1,1,1,1})) {
+        std::cerr << "Toggle fullscreen\n";
+        player_.toggle_full_screen();
     }
     ImGui::End();
 
@@ -381,13 +401,9 @@ void controls_default::render_menu_window()
     const float buttons_relative_width = 0.7f;
     static ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
 
-    // We demonstrate using the full viewport area or the work area (without menu-bars, task-bars etc.)
-    // Based on your use case you may want one of the other.
     const ImGuiViewport* viewport = ImGui::GetMainViewport();
-//    ImGui::SetNextWindowPos(viewport->WorkPos);
-//    ImGui::SetNextWindowSize(viewport->WorkSize);
-    ImGui::SetNextWindowPos(viewport->Pos);
-    ImGui::SetNextWindowSize(viewport->Size);
+    ImGui::SetNextWindowPos(viewport->Pos);     // viewport->WorkPos/Pos
+    ImGui::SetNextWindowSize(viewport->Size);   // viewport->WorkSize/Size
 
 
     if (ImGui::Begin("Main Player Menu", &do_render_menu_window_, flags))
@@ -433,18 +449,15 @@ void controls_default::render_menu_window()
     // ---------------------------------------------------
     // --- Open media network stream dialog definition ---
     // ---------------------------------------------------
-
-    // Always center this window when appearing
     ImGui::SetNextWindowPosRelative({0.5f, 0.1f}, ImGuiCond_Appearing, {0.5,0.5});
     ImGui::SetNextWindowSizeRelative({0.8f, 0}, ImGuiCond_Appearing);
     ImGui::SetNextWindowSizeConstraints(ImVec2(0, -1), ImVec2(FLT_MAX, -1));  // Resize Horizontal only
-
 
     if (ImGui::BeginPopupModal((tr().tr("Open network stream") + "###ChooseMediaNetworkStreamDlg").c_str(), nullptr))
     {
         ImGui::PushItemWidth(-1);   // Force control to fill width with no label
         ImGui::InputTextWithHint("###open_stream_input_text", tr().tr("Open network URL https://, magnet:, ftp://"), new_user_media_file_);
-        ImGui::PopItemWidth();      // Force control to fill width with no label
+        ImGui::PopItemWidth();
 
         if (ImGui::AlignedButton(tr().tr("Ok"), 0.2, 0.3)) {
             ImGui::CloseCurrentPopup();
@@ -514,8 +527,8 @@ void controls_default::render_subtitles_window()
     // --------------------------------------------
     // --- Open subtitle file dialog definition ---
     // --------------------------------------------
-    if (ImGuiFileDialog::Instance()->Display("ChooseSubtitleFileDlgKey", ImGuiWindowFlags_NoCollapse, file_dialog_min_size_ )) { // => will show a dialog
-        if (ImGuiFileDialog::Instance()->IsOk()) { // action if OK
+    if (ImGuiFileDialog::Instance()->Display("ChooseSubtitleFileDlgKey", ImGuiWindowFlags_NoCollapse, file_dialog_min_size_ )) {
+        if (ImGuiFileDialog::Instance()->IsOk()) {
             new_user_subtitle_file_ = ImGuiFileDialog::Instance()->GetFilePathName();
             new_subtitle_select_index_ = 0;
         }

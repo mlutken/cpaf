@@ -21,8 +21,8 @@ public:
     texture_base& operator=(const texture_base& other) = delete;
 
     void                            set_render                  (std::shared_ptr<system_render> render);
-    void                            set_blendmode               (blendmode_t blendmode)                         { blendmode_ = blendmode; do_update_blendmode(); }
-    blendmode_t                     blendmode                   () const                                        { return blendmode_; }
+    void                            set_blendmode               (blend_mode_t blendmode)                         { blendmode_ = blendmode; do_update_blendmode(); }
+    blend_mode_t                     blendmode                   () const                                        { return blendmode_; }
 
     size_2d                         size                        () const                                        { return do_get_size();                         }
     bool                            load_from_file              (const std::filesystem::path& local_path)       { return do_load_from_file(local_path);         }
@@ -45,7 +45,7 @@ protected:
 
     // --- PROTECTED: Helper functions for derived classes ---
     std::shared_ptr<system_render>  render_                 {nullptr};
-    blendmode_t                     blendmode_              {blendmode_t::alpha};
+    blend_mode_t                     blendmode_              {blend_mode_t::alpha};
 
 private:
     virtual void                            do_update_blendmode             () = 0;

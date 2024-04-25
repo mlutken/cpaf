@@ -40,7 +40,7 @@ public:
 
     explicit player(cpaf::audio::device& audio_device, cpaf::locale::translator& tr);
     ~player();
-    void                            set_main_window         (const system_window& main_window);
+    void                            set_main_window         (system_window& main_window);
     void                            start_playing           (const std::chrono::microseconds& start_time_pos = std::chrono::microseconds(0));
     void                            terminate               ();
     bool                            open                    (const std::string& resource_path);
@@ -152,6 +152,7 @@ public:
     const system_window*        main_window_ptr         () const { return main_window_ptr_; }
     audio_play_callback_t       audio_callback_get      ();
     void                        frame_update            ();
+    void                        toggle_full_screen      ();
 
     // TODO: Make these two private
     void                        video_frame_update      (cpaf::video::av_frame& current_frame, cpaf::gui::video::render& video_render);
@@ -247,7 +248,7 @@ private:
     std::unique_ptr<cpaf::video::play_stream>       primary_source_stream_;
     std::chrono::microseconds                       start_time_pos_;
     std::unique_ptr<pipeline_threads>               media_pipeline_threads_;
-    const system_window*                            main_window_ptr_                = nullptr;
+    system_window*                                  main_window_ptr_                = nullptr;
     source_streams_array_t                          source_streams_                 = {nullptr, nullptr, nullptr, nullptr, nullptr};
     cpaf::video::surface_dimensions_t               video_dst_dimensions_requested_ = {cpaf::video::surface_dimension_auto,cpaf::video::surface_dimension_auto};
     int32_t                                         video_scaler_flags_             = SWS_BILINEAR;

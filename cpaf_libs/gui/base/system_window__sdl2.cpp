@@ -3,6 +3,7 @@
 #include <fmt/format.h>
 
 #include <cpaf_libs/gui/system_render.h>
+#include <cpaf_libs/gui/platform_utils/sdl_convert.h>
 
 namespace cpaf::gui {
 
@@ -76,6 +77,12 @@ std::string system_window_platform::do_get_title() const
 int32_t system_window_platform::do_display_index() const
 {
     return SDL_GetWindowDisplayIndex(sdl_window_);
+}
+
+
+bool system_window_platform::do_window_mode_set(window_mode_t wm)
+{
+    return SDL_SetWindowFullscreen(sdl_window_, to_sdl_window_mode(wm)) == 0;
 }
 
 void* system_window_platform::do_get_native_window()

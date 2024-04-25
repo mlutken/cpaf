@@ -23,7 +23,9 @@ using rect_i32 = cpaf::math::rectangle<int32_t>;
 
 enum class exit_status_t : int { success = 0, failure = 1 };
 
-enum class blendmode_t { none, alpha, additive, color_modulate, color_multiply };
+enum class blend_mode_t { none, alpha, additive, color_modulate, color_multiply };
+enum class window_mode_t { window, full_screen, full_screen_desktop };
+enum class window_orientation_t { horizontal, vertical };
 
 //std::string to_string   (audio_format_t audio_format);
 

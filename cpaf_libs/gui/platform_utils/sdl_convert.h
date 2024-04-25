@@ -13,7 +13,11 @@ namespace cpaf::gui {
 SDL_Rect            to_sdl_rect             (rect geom);
 rect                to_rect                 (SDL_Rect rect);
 
-SDL_BlendMode       to_sdl_blendmode        (blendmode_t blendmode);
+SDL_BlendMode       to_sdl_blendmode        (blend_mode_t blendmode);
+
+uint32_t            to_sdl_window_mode      (window_mode_t wm);
+window_mode_t       to_window_mode          (uint32_t sdl_window_mode);
+
 
 inline uint32_t     pixel_from_rgba         (uint8_t r, uint8_t g, uint8_t b, uint8_t a)
 {

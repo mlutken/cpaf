@@ -17,7 +17,7 @@ enum class platform_type_t {
     tablet          = CPAF_PLATFORM_TYPE_ID_TABLET,
     tablet_web      = CPAF_PLATFORM_TYPE_ID_TABLET_WEB,
     mobile_web      = CPAF_PLATFORM_TYPE_ID_MOBILE_WEB,
-    COUNT
+    END
 };
 
 consteval bool is_little_endian () { return std::endian::native == std::endian::little; }

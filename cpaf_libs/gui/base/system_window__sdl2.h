@@ -28,6 +28,7 @@ private:
     size_2d                         do_display_size             () const override;
     std::string                     do_get_title    			() const override;
     int32_t                         do_display_index   			() const override;
+    bool                            do_window_mode_set          (window_mode_t wm) override;
     void*                           do_get_native_window    	() override;
     void*                           do_get_native_renderer    	() override;
     system_render&                  do_renderer                 () override;

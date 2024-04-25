@@ -50,8 +50,9 @@ private:
     ImVec2      play_pause_btn_pos_             {};
     ImVec2      video_back_btn_pos_             {};
     ImVec2      video_fwd_btn_pos_              {};
-    ImVec2      subtitles_btn_pos_              {};
     ImVec2      menu_btn_pos_                   {};
+    ImVec2      subtitles_btn_pos_              {};
+    ImVec2      fullscreen_btn_pos_             {};
     ImVec2      volume_btn_pos_                 {};
 
     ImVec2      video_slider_pos_               {};
