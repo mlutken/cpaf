@@ -119,6 +119,7 @@ void controls_default::do_calc_geometry()
     // ------------------------
 
     buttons_col_ = buttons_color();
+    menu_close_button_color_ = menu_close_button_color();
 
     buttons_hover_col_ = buttons_col_*0.8f;
     buttons_active_col_ = buttons_col_*1.0f;
@@ -157,6 +158,7 @@ void controls_default::do_render()
     render_menu_buttons();
     render_slider();
     render_player_time();
+    update_prevent_hiding();
     render_menu_window();
     render_subtitles_window();
 
@@ -373,22 +375,24 @@ void controls_default::render_player_time()
 void controls_default::render_menu_window()
 {
     if (!do_render_menu_window_) {
+        new_user_media_file_.clear();
         return;
     }
+    const float buttons_relative_width = 0.7f;
     static ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
 
     // We demonstrate using the full viewport area or the work area (without menu-bars, task-bars etc.)
     // Based on your use case you may want one of the other.
     const ImGuiViewport* viewport = ImGui::GetMainViewport();
-//    ImGui::SetNextWindowPos(use_work_area ? viewport->WorkPos : viewport->Pos);
-//    ImGui::SetNextWindowSize(use_work_area ? viewport->WorkSize : viewport->Size);
+//    ImGui::SetNextWindowPos(viewport->WorkPos);
+//    ImGui::SetNextWindowSize(viewport->WorkSize);
     ImGui::SetNextWindowPos(viewport->Pos);
     ImGui::SetNextWindowSize(viewport->Size);
 
 
     if (ImGui::Begin("Main Player Menu", &do_render_menu_window_, flags))
     {
-        if (ImGui::Button("Open Local Media")) {
+        if (ImGui::CenteredButton(tr().tr("Open Local Media"), buttons_relative_width)) {
             IGFD::FileDialogConfig config;
             config.path = cpaf::filesystem::special_dirs::home();
 
@@ -397,27 +401,66 @@ void controls_default::render_menu_window()
             filter += "," + tr().tr("All Files") +  " (*.*){.*}";
             ImGuiFileDialog::Instance()->OpenDialog("ChooseMediaFileDlgKey", tr().tr("Choose File"), filter.c_str(), config);
         }
+        if (ImGui::CenteredButton(tr().tr("Open network Stream"), buttons_relative_width)) {
+            ImGui::OpenPopup("###ChooseMediaNetworkStreamDlg");
+        }
 
-        if (ImGui::Button("Close this window")) {
-            do_render_menu_window_ = false;
+        ImGui::Separator();
+
+        {
+            ImGui::Rai imrai;
+            imrai.StyleColor(ImGuiCol_Button, reinterpret_cast<const ImVec4&>(menu_close_button_color_))
+            ;
+
+            if (ImGui::CenteredButton(tr().tr("Close this window"), buttons_relative_width)) {
+                do_render_menu_window_ = false;
+            }
         }
     }
-    ImGui::End();
-
-
-    // -----------------------------------------
-    // --- Open media file dialog definition ---
-    // -----------------------------------------
-    if (ImGuiFileDialog::Instance()->Display("ChooseMediaFileDlgKey", ImGuiWindowFlags_NoCollapse, file_dialog_min_size_ )) { // => will show a dialog
+    // -----------------------------------------------
+    // --- Open local media file dialog definition ---
+    // -----------------------------------------------
+    ImGui::SetNextWindowPosRelative({0.5f, 0.1f}, ImGuiCond_Appearing, {0.5,0});
+    ImGui::SetNextWindowSizeRelative({0.9, 0.9}, ImGuiCond_Appearing);
+    if (ImGuiFileDialog::Instance()->Display("ChooseMediaFileDlgKey", ImGuiWindowFlags_NoCollapse, file_dialog_min_size_ )) {
         if (ImGuiFileDialog::Instance()->IsOk()) { // action if OK
-            new_user_media_file_ = ImGuiFileDialog::Instance()->GetFilePathName();
-            std::cerr << "FIXMENM 2 ChooseMediaFileDlgKey new_user_subtitle_file_: '" << new_user_media_file_ << "'\n";
-            //            std::cerr << "FIXMENM 2 ChooseMediaFileDlgKey filePath: '" << filePath << "'\n";
+            do_render_menu_window_ = false;
+            player_.open_async(ImGuiFileDialog::Instance()->GetFilePathName());
         }
-        // close
         ImGuiFileDialog::Instance()->Close();
     }
 
+    // ---------------------------------------------------
+    // --- Open media network stream dialog definition ---
+    // ---------------------------------------------------
+
+    // Always center this window when appearing
+    ImGui::SetNextWindowPosRelative({0.5f, 0.1f}, ImGuiCond_Appearing, {0.5,0.5});
+    ImGui::SetNextWindowSizeRelative({0.8f, 0}, ImGuiCond_Appearing);
+    ImGui::SetNextWindowSizeConstraints(ImVec2(0, -1), ImVec2(FLT_MAX, -1));  // Resize Horizontal only
+
+
+    if (ImGui::BeginPopupModal((tr().tr("Open network stream") + "###ChooseMediaNetworkStreamDlg").c_str(), nullptr))
+    {
+        ImGui::PushItemWidth(-1);   // Force control to fill width with no label
+        ImGui::InputTextWithHint("###open_stream_input_text", tr().tr("Open network URL https://, magnet:, ftp://"), new_user_media_file_);
+        ImGui::PopItemWidth();      // Force control to fill width with no label
+
+        if (ImGui::AlignedButton(tr().tr("Ok"), 0.2, 0.3)) {
+            ImGui::CloseCurrentPopup();
+            do_render_menu_window_ = false;
+            player_.open_async(new_user_media_file_);
+        }
+        ImGui::SetItemDefaultFocus();
+        ImGui::SameLine();
+        if (ImGui::AlignedButton(tr().tr("Cancel"), 0.8, 0.3)) {
+            new_user_media_file_.clear();
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
+    }
+
+    ImGui::End();
 }
 
 void controls_default::render_subtitles_window()
@@ -443,7 +486,6 @@ void controls_default::render_subtitles_window()
         ImGui::SameLine();
         if (ImGui::Button(tr().tr("Open subtitle file"))) {
             IGFD::FileDialogConfig config;
-///            config.path = cpaf::filesystem::special_dirs::home() / "code/crawler/moowees/data/subtitles"; // FIXMENM
             config.path = cpaf::filesystem::special_dirs::home();
             const auto filter = tr().tr("Subtitle files") + "{.srt,.zip}" "," + tr().tr("All Files") +  " (*.*){.*}";
             ImGuiFileDialog::Instance()->OpenDialog("ChooseSubtitleFileDlgKey", tr().tr("Choose File"), filter.c_str(), config);
@@ -460,13 +502,11 @@ void controls_default::render_subtitles_window()
             ImGui::RadioButton(selelectable_text, new_subtitle_select_index_, static_cast<int32_t>(i));
         }
 
-//        ImGui::SameLine();
-
         if (ImGui::Button(tr().tr("Close")) ) {
             player_.set_subtitle_user(new_user_subtitle_file_);
             player_.subtitle_select(new_subtitle_select_index_);
-            do_render_subtitles_window_ = false;
             player_.ui_window_active_set(false);
+            do_render_subtitles_window_ = false;
         }
     }
     ImGui::End();
@@ -478,13 +518,9 @@ void controls_default::render_subtitles_window()
         if (ImGuiFileDialog::Instance()->IsOk()) { // action if OK
             new_user_subtitle_file_ = ImGuiFileDialog::Instance()->GetFilePathName();
             new_subtitle_select_index_ = 0;
-//            std::cerr << "FIXMENM 2 ImGuiFileDialog new_user_subtitle_file_: '" << new_user_subtitle_file_ << "'\n";
-//            std::cerr << "FIXMENM 2 ImGuiFileDialog filePath: '" << filePath << "'\n";
         }
-        // close
         ImGuiFileDialog::Instance()->Close();
     }
-
 }
 
 void controls_default::render_volume_popup()
@@ -525,61 +561,10 @@ void controls_default::set_cursor_pos_image_buttons()
     ImGui::SetCursorPosY(cursor_pos_y);
 }
 
-
-
-
-//void controls_default::render_subtitles_popup()
-//{
-//    // ---- FIXMENM DEBUG ONLY BEGIN ----
-//    int32_t cur_selected_index = player_.subtitle_selected_index();
-//    int32_t new_selected_index = cur_selected_index;
-
-//    if (ImGui::BeginPopup("subtitles_popup_menu", ImGuiWindowFlags_MenuBar))
-//    {
-//        if (ImGui::BeginMenuBar())
-//        {
-//            if (ImGui::MenuItem(tr().tr("Open Subtitle URL")) ) {
-//                std::cerr << "FIXMENM Open URL\n";
-//            }
-//            if (ImGui::MenuItem(tr().tr("Open Subtitle File")) ) {
-//                IGFD::FileDialogConfig config;
-//                config.path = cpaf::filesystem::special_dirs::home() / "code/crawler/moowees/data/subtitles";
-//                ImGuiFileDialog::Instance()->OpenDialog("ChooseSubtitleFileDlgKey", "Choose Subtitle File", "(*.srt *.zip){.srt,.zip},All Files (*.*){.*}", config);
-
-//                std::cerr << "FIXMENM Open File\n";
-//            }
-//            ImGui::EndMenuBar();
-//        }
-
-//        if(ImGui::Button(tr().tr("No subtitles").c_str()) ) {
-//            std::cerr << "FIXMENM No subtitles\n";
-//            player_.subtitle_select(-1);
-
-//        }
-//        ImGui::Separator();
-//        const auto& subtitles = player_.selectable_subtitles();
-
-//        for (auto i = 0u; i < subtitles.size(); ++i) {
-//            const auto i_signed = static_cast<int32_t>(i);
-//            const bool selected = cur_selected_index == i_signed;
-//            std::string selelectable_text = subtitles[i].language_name + "###LangSel" + std::to_string(i);
-//            if (ImGui::Selectable(selelectable_text, selected)) {
-//                new_selected_index = i_signed;
-//                std::cerr << "FIXMENM subtitle selected index: "  << new_selected_index << "\n";
-//            }
-//        }
-//        ImGui::EndPopup();
-//    }
-
-
-//    if (cur_selected_index != new_selected_index) {
-//        std::cerr << "FIXMENM subtitle selected index CHANGED! : "  << new_selected_index << "\n";
-//        player_.subtitle_select(new_selected_index);
-//    }
-//    // ---- FIXMENM DEBUG ONLY END ----
-
-
-//}
+void controls_default::update_prevent_hiding()
+{
+    prevent_hiding(do_render_subtitles_window_ || do_render_menu_window_);
+}
 
 } // namespace cpaf::gui::video
 

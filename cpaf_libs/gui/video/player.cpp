@@ -537,9 +537,8 @@ void player::frame_update()
     }
 
     if (video_controls_) {
-        if (show_controls_) {
-            video_controls_->render();
-        }
+        video_controls_->show(show_controls_);
+        video_controls_->render();
         if (show_stream_state()) {
             video_controls_->render_stream_state();
         }

@@ -21,9 +21,9 @@ public:
     virtual ~controls() = default;
 
     void            render                  ();
-    void            render_stream_state     ()                              { do_render_stream_state(); }
+    void            render_stream_state     ()                          { do_render_stream_state(); }
     void            on_player_size_changed  ();
-    bool            visible                 () const                    { return visible_; }
+    bool            visible                 () const                    { return visible_ || prevent_hiding_; }
     void            show                    (bool do_show)              { visible_ = do_show; }
     void            show                    ()                          { visible_ = true; }
     void            hide                    ()                          { visible_ = false; }
@@ -34,12 +34,15 @@ protected:
     config&                 config_;
     bool                    visible_ = true;
 
+    void                    prevent_hiding              (bool do_prevent) { prevent_hiding_ = do_prevent; }
+
 
     float                   buttons_relative_ypos       () const { return config_.float_val ("controls", "buttons_relative_ypos");  }
     float                   buttons_relative_x_dist     () const { return config_.float_val ("controls", "buttons_relative_x_dist");}
     float                   play_buttons_size           () const { return config_.float_val ("controls", "play_buttons_size");      }
     float                   menu_buttons_size           () const { return config_.float_val ("controls", "menu_buttons_size");      }
     color                   buttons_color               () const { return config_.color     ("controls", "buttons_color");          }
+    color                   menu_close_button_color     () const { return config_.color     ("controls", "menu_close_button_color");}
 
     float                   slider_relative_ypos        () const { return config_.float_val ("controls", "slider_relative_ypos");   }
     int32_t                 slider_height               () const { return config_.int32     ("controls", "slider_height");          }
@@ -60,6 +63,7 @@ protected:
 
 
 private:
+    bool            prevent_hiding_      = false;
     virtual void    do_calc_geometry        () = 0;
     virtual void    do_render               () = 0;
     virtual void    do_render_stream_state  () = 0;

@@ -12,6 +12,7 @@ static const auto default_config = nlohmann::json::parse(
             "play_buttons_size": 84,
             "menu_buttons_size": 48,
             "buttons_color": [0.282353, 0.239216, 0.545098, 0.5],
+            "menu_close_button_color": [0.9, 0.1, 0.1, 1.0],
 
             "slider_relative_ypos": 1.0,
             "slider_height": 8,
