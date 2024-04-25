@@ -354,13 +354,25 @@ public:
 		return fOrgLen;
 	}
 
+    /** Linear interpolation towards a destination vector.
+        \return Interpolated vector.
+        \note NOT_IMPLEMENTED_YET.*/
+    value_type	lerp(const_reference max,       ///< [in] Destination vector we are pulling towards.
+                     T interpolation_fraction)	///< [in] Maximum angle to move the vector.
+    {
+        return value_type(lerp(x(), max.x(),interpolation_fraction),
+                          lerp(y(), max.y(),interpolation_fraction),
+                          lerp(z(), max.z(),interpolation_fraction),
+                          lerp(w(), max.w(),interpolation_fraction));
+    }
+
 	/** Pulls a vector towards a destination vector. But only a fixed angle 
 		at a time. Returns true when the destination vector is reached 
 		otherwise false. 
 		\return True if vector has reached destination vector.
 		\note NOT_IMPLEMENTED_YET.*/
-	bool_t				pull(const_reference vDest,		///< [in] Destination vector we are pulling towards.
-							 const T fMaxMoveAng)	///< [in] Maximum angle to move the vector.
+    bool_t				pull_rotate(const_reference vDest,	///< [in] Destination vector we are pulling towards.
+                                    const T fMaxMoveAng)	///< [in] Maximum angle to move the vector.
 	{
 		STATIC_CHECK(0, v4_pull_NOT_IMPLEMENTED_YET);
 		return true;

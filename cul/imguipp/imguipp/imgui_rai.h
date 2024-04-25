@@ -29,6 +29,7 @@ public:
     Rai&    Font                (ImFont* font)                          { ImGui::PushFont(font); pushed_types_.push_back(Stacktype::Font); return *this; }
     Rai&    StyleColor          (ImGuiCol idx, ImU32 col)               { ImGui::PushStyleColor(idx, col); pushed_types_.push_back(Stacktype::StyleColor); return *this; }
     Rai&    StyleColor          (ImGuiCol idx, const ImVec4& col)       { ImGui::PushStyleColor(idx, col); pushed_types_.push_back(Stacktype::StyleColor); return *this; }
+    Rai&&   ButtonColorAuto     (const ImVec4& col);
     Rai&    StyleVar            (ImGuiStyleVar idx, float val)          { ImGui::PushStyleVar(idx, val); pushed_types_.push_back(Stacktype::StyleVar); return *this; }
     Rai&    StyleVar            (ImGuiStyleVar idx, const ImVec2& val)  { ImGui::PushStyleVar(idx, val); pushed_types_.push_back(Stacktype::StyleVar); return *this; }
     Rai&    AllowKeyboardFocus  (bool allow_keyboard_focus)             { ImGui::PushAllowKeyboardFocus(allow_keyboard_focus); pushed_types_.push_back(Stacktype::AllowKeyboardFocus); return *this; }
@@ -52,7 +53,6 @@ private:
     void            Pop     (Stacktype type);
 
 };
-
 
 
 // ------------------------
@@ -121,6 +121,11 @@ void SetNextWindowSizeRelative  (const ImVec2& size_relative, ImGuiCond cond = 0
 // Helper to display a little (?) mark which shows a tooltip when hovered.
 // In your own code you may want to display an actual icon if you are using a merged icon fonts (see docs/FONTS.md)
 void HelpMarker(std::string_view description);
+
+// ------------------------------
+// --- Alignment/Layout Utils ---
+// ------------------------------
+float CalcTextWidth(std::string_view text, const ImGuiStyle& style = ImGui::GetStyle());
 
 
 }

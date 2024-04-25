@@ -19,13 +19,13 @@ XX*/
 
 _GMATH_BEGIN_NAMESPACE
 
-// *********************************
-// *** Random numbers generation ***
-// *********************************
+    // *********************************
+    // *** Random numbers generation ***
+    // *********************************
 
-/// Get integer random number between 0 and an upper limit.
-/// \return Random number in interval [0..iUpperLimit]
-inline int_t random(int_t iUpperLimit)	///< Upper limit. Ie. number returned is in [0..iUpperLimit]
+    /// Get integer random number between 0 and an upper limit.
+    /// \return Random number in interval [0..iUpperLimit]
+    inline int_t random(int_t iUpperLimit)	///< Upper limit. Ie. number returned is in [0..iUpperLimit]
 {
     return rand() % (iUpperLimit+1);
 }
@@ -48,8 +48,8 @@ inline int_t random(int_t iLowerLimit,	///< lower limit. Ie. number returned is 
     minimum and a maximum value. The interval is not inclusive */
 template<typename TYPE>
 inline void clamp(	TYPE& v,				///< [inout] Variable to restrict value.
-                    const TYPE& min,		///< [in]	 Minimum allowed value.
-                    const TYPE& max)		///< [in]	 Maximum allowed value.
+                  const TYPE& min,		///< [in]	 Minimum allowed value.
+                  const TYPE& max)		///< [in]	 Maximum allowed value.
 {
     if		(v < min)	v = min;
     else if	(v > max)	v = max;
@@ -59,8 +59,8 @@ inline void clamp(	TYPE& v,				///< [inout] Variable to restrict value.
     minimum and a maximum value. The interval is not inclusive */
 template<typename TYPE>
 inline TYPE clamp_copy(const TYPE& v,          ///< [in] Variable to restrict value.
-                const TYPE& min,		///< [in]	 Minimum allowed value.
-                const TYPE& max)		///< [in]	 Maximum allowed value.
+                       const TYPE& min,		///< [in]	 Minimum allowed value.
+                       const TYPE& max)		///< [in]	 Maximum allowed value.
 {
     if		(v < min)	return min;
     else if	(v > max)	return max;
@@ -83,8 +83,8 @@ inline bool within_interval_open(const TYPE& v,         ///< [in] Variable to re
     wanted value, in a given Delta value per time. */
 template<typename T1, typename T2, typename T3>
 bool scalar_pull(	T1 &Val,				///< [inout] Value to change
-                    const T2 DestVal,		///< [in]  Destination value we are "pulling" towards
-                    const T3 Delta)			///< [in]  Delta value
+                 const T2 DestVal,          ///< [in]  Destination value we are "pulling" towards
+                 const T3 Delta)			///< [in]  Delta value
 {
     bool bReachedValue= false;
     if (Val > DestVal)
@@ -112,6 +112,18 @@ bool scalar_pull(	T1 &Val,				///< [inout] Value to change
     // ELSE
     return bReachedValue;
 }
+
+/** Linear Interpolation (Lerp)
+@return The "new" value between min and max
+*/
+template<typename T>
+T lerp (T min,                    ///< [in] Minimum/start value
+        T max,                    ///< [in] Maximum/end value. Ie. the value we are "pulling" towards
+        T interpolation_fraction) ///< [in] Fraction/inperpolation point. I.e. how "far" relative (0..1) between min and max
+{
+    return min + (max - min)*interpolation_fraction;
+}
+
 
 template <typename INT_TYPE>
 constexpr INT_TYPE round_up(INT_TYPE number, INT_TYPE multiple)

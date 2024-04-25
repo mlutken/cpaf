@@ -19,6 +19,16 @@ Rai::~Rai()
     }
 }
 
+Rai&& Rai::ButtonColorAuto(const ImVec4& col)
+{
+    constexpr auto hover_fac = 1.2f;
+    constexpr auto active_fac = 1.1f;
+    StyleColor(ImGuiCol_Button, col);
+    StyleColor(ImGuiCol_ButtonHovered, ImVec4(col.x*hover_fac, col.y*hover_fac, col.z*hover_fac, col.w*hover_fac));
+    StyleColor(ImGuiCol_ButtonActive, ImVec4(col.x*active_fac, col.y*active_fac, col.z*active_fac, col.w*active_fac));
+    return std::move(*this);
+}
+
 void Rai::Pop(Stacktype type)
 {
     switch (type) {
@@ -47,10 +57,9 @@ void Rai::Pop(Stacktype type)
 
 bool AlignedButton(std::string_view label, float alignment, ImVec2 size)
 {
-    const ImGuiStyle& style = ImGui::GetStyle();
-
     const auto content_region = ImGui::GetContentRegionAvail();
-    const float width_calculated = ImGui::CalcTextSize(label.data()).x + style.FramePadding.x * 2.0f;
+    const float width_calculated = CalcTextWidth(label);
+
     const float width_wanted = std::max(size.x, width_calculated);
     size.x = std::min(width_wanted, content_region.x);
 
@@ -66,11 +75,9 @@ bool AlignedButton(std::string_view label, float alignment, ImVec2 size)
 
 bool AlignedButton(std::string_view label, float alignment, float relative_width)
 {
-    const ImGuiStyle& style = ImGui::GetStyle();
-
     const auto content_region = ImGui::GetContentRegionAvail();
     ImVec2 size {relative_width*content_region.x, 0};
-    const float width_calculated = ImGui::CalcTextSize(label.data()).x + style.FramePadding.x * 2.0f;
+    const float width_calculated = CalcTextWidth(label);
     const float width_wanted = std::max(size.x, width_calculated);
     size.x = std::min(width_wanted, content_region.x);
 
@@ -87,12 +94,8 @@ bool AlignedButton(std::string_view label, float alignment, float relative_width
 
 bool CenteredButton(std::string_view label, float relative_width)
 {
-//    const ImGuiStyle& style = ImGui::GetStyle();
-
     const auto content_region = ImGui::GetContentRegionAvail();
-//    const float width_calculated = ImGui::CalcTextSize(label.data()).x + style.FramePadding.x * 2.0f;
     const float width_wanted = content_region.x*relative_width;
-//    const float width_used = content_region.x*relative_width;
 
     ImVec2 size{0,0};
     size.x = std::min(width_wanted, content_region.x);
@@ -215,6 +218,16 @@ void HelpMarker(std::string_view description)
         ImGui::PopTextWrapPos();
         ImGui::EndTooltip();
     }
+}
+
+// ------------------------------
+// --- Alignment/Layout Utils ---
+// ------------------------------
+
+float CalcTextWidth(std::string_view text, const ImGuiStyle& style)
+{
+    return ImGui::CalcTextSize(text.data()).x + style.FramePadding.x * 2.0f;
+
 }
 
 

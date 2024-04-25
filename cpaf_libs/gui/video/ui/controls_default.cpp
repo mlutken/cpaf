@@ -424,9 +424,9 @@ void controls_default::render_menu_window()
         ImGui::Separator();
 
         {
-            ImGui::Rai imrai;
-            imrai.StyleColor(ImGuiCol_Button, reinterpret_cast<const ImVec4&>(menu_close_button_color_))
-            ;
+            ImGui::Rai imrai = std::move(ImGui::Rai::Create().ButtonColorAuto(reinterpret_cast<const ImVec4&>(menu_close_button_color_)));
+//            imrai.ButtonColorAuto(reinterpret_cast<const ImVec4&>(menu_close_button_color_))
+//            ;
 
             if (ImGui::CenteredButton(tr().tr("Close this window"), buttons_relative_width)) {
                 do_render_menu_window_ = false;
@@ -521,12 +521,13 @@ void controls_default::render_subtitles_window()
             player_.ui_window_active_set(false);
             do_render_subtitles_window_ = false;
         }
-    }
-    ImGui::End();
 
+    }
     // --------------------------------------------
     // --- Open subtitle file dialog definition ---
     // --------------------------------------------
+    ImGui::SetNextWindowPosRelative({0.5f, 0.1f}, ImGuiCond_Appearing, {0.5,0});
+    ImGui::SetNextWindowSizeRelative({0.9, 0.9}, ImGuiCond_Appearing);
     if (ImGuiFileDialog::Instance()->Display("ChooseSubtitleFileDlgKey", ImGuiWindowFlags_NoCollapse, file_dialog_min_size_ )) {
         if (ImGuiFileDialog::Instance()->IsOk()) {
             new_user_subtitle_file_ = ImGuiFileDialog::Instance()->GetFilePathName();
@@ -534,6 +535,9 @@ void controls_default::render_subtitles_window()
         }
         ImGuiFileDialog::Instance()->Close();
     }
+
+    ImGui::End();
+
 }
 
 void controls_default::render_volume_popup()
