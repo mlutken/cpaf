@@ -4,7 +4,7 @@ add_library(${library_name} INTERFACE)
 target_sources(${library_name}
     INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}/base/_gmath_internal_utils.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/base/c.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/base/constants.hpp
     ${CMAKE_CURRENT_LIST_DIR}/base/g33.hpp
     ${CMAKE_CURRENT_LIST_DIR}/base/g44.hpp
     ${CMAKE_CURRENT_LIST_DIR}/base/gmath.h
@@ -22,7 +22,9 @@ target_sources(${library_name}
 )
 
 get_filename_component(PARENT_DIR ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
-target_include_directories(${library_name} INTERFACE ${PARENT_DIR})
+get_filename_component(PARENT2_DIR ${PARENT_DIR} DIRECTORY)
+target_include_directories(${library_name} INTERFACE ${PARENT2_DIR} ${PARENT_DIR})
+
 #     target_compile_options(${library_name} INTERFACE ${STANDARD_COMPILE_FLAGS})
 
 add_subdirectories_standard()

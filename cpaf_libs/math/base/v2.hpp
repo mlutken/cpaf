@@ -387,7 +387,7 @@ public:
     constexpr T				normalize()
     {
         const T fOrgLen = len();
-        if (fOrgLen <= C<T>::EPSILON())
+        if (fOrgLen <= constants<T>::EPSILON())
         {
             reset();
             return static_cast<T>(0);
@@ -406,7 +406,7 @@ public:
     constexpr value_type				normalized() const
     {
         const T fOrgLen = len();
-        if (fOrgLen <= C<T>::EPSILON())
+        if (fOrgLen <= constants<T>::epsilon())
         {
             return value_type(T(0),T(0));
         }
@@ -447,29 +447,29 @@ public:
     // -------------------------
 
     /** '==' operator, Equality test.
-        C<T>::EPSILON() is used as threshold to avoid numeric instabilities.
+        constants<T>::epsilon() is used as threshold to avoid numeric instabilities.
         Use	the 'equal_exact' member function if exact comparision is required.
         \return True if all corresponding elements of the two vectors is no further,
-        than C<T>::EPSILON() apart (absolute value), false otherwise. */
+        than constants<T>::epsilon() apart (absolute value), false otherwise. */
     constexpr bool_t	operator ==(const_reference v		///< [in] Right operand.
                         ) const
     {
-        return	( Abs(x() - v.x()) < C<T>::EPSILON() ) &&
-                ( Abs(y() - v.y()) < C<T>::EPSILON() );
+        return	( Abs(x() - v.x()) < constants<T>::epsilon() ) &&
+                ( Abs(y() - v.y()) < constants<T>::epsilon() );
     }
 
     /** '!=' operator, In-equality test.
-        C<T>::EPSILON() is used as threshold to avoid numeric instabilities.
+        constants<T>::epsilon() is used as threshold to avoid numeric instabilities.
         Use	the 'equal_exact' member function if exact comparision is required.
         \return True if just one corresponding pair of elements of the two
-        vectors is further than C<T>::EPSILON() apart (absolute value),
+        vectors is further than constants<T>::epsilon() apart (absolute value),
         false otherwise. */
     constexpr bool_t	operator !=(const_reference v		///< [in] Right operand.
                         ) const
     {
 
-        return	( Abs(x() - v.x()) > C<T>::EPSILON() ) ||
-                ( Abs(y() - v.y()) > C<T>::EPSILON() );
+        return	( Abs(x() - v.x()) > constants<T>::epsilon() ) ||
+                ( Abs(y() - v.y()) > constants<T>::epsilon() );
     }
 
     /** '<' operator, Length comparision. Returns true if the length of the left hand
@@ -497,26 +497,26 @@ public:
     /** '<=' operator, Length comparision. Returns true if the length of the left hand side vector
         is less than or equal to the length of the right hand side vector. Uses
         the square of the length of the two vectors for speed optimization reasons.
-        C<T>::EPSILON() is used as threshold to avoid numeric instabilities.
+        constants<T>::epsilon() is used as threshold to avoid numeric instabilities.
         See also operator '<' for exact numeric comparision without epsilon value.
-        \return Truth value of: ( v0.len2() - v1.len2() ) <= C<T>::EPSILON().*/
+        \return Truth value of: ( v0.len2() - v1.len2() ) <= constants<T>::epsilon().*/
     constexpr bool_t	operator <=(const_reference v		///< [in] Right operand.
                         ) const
     {
-        return ( len2() - v.len2() ) <= C<T>::EPSILON();
+        return ( len2() - v.len2() ) <= constants<T>::epsilon();
     }
 
 
     /** '>=' operator, Length comparision. Returns true if the length of the left hand side vector
         is greater than or equal to the length of the right hand side vector. Uses
         the square of the length of the two vectors for speed optimization reasons.
-        C<T>::EPSILON() is used as threshold to avoid numeric instabilities.
+        constants<T>::epsilon() is used as threshold to avoid numeric instabilities.
         See also operator '>' for exact numeric comparision without epsilon value.
-        \return Truth value of: ( v0.len2() - v1.len2() ) >= -C<T>::EPSILON().*/
+        \return Truth value of: ( v0.len2() - v1.len2() ) >= -constants<T>::epsilon().*/
     constexpr bool_t	operator >=(const_reference v		///< [in] Right operand.
                         ) const
     {
-        return ( len2() - v.len2() ) >= -C<T>::EPSILON();
+        return ( len2() - v.len2() ) >= -constants<T>::epsilon();
     }
 
 

@@ -1,5 +1,4 @@
-#ifndef _GMATH_STDMATH_HPP_
-#define _GMATH_STDMATH_HPP_
+#pragma once
 // ****************************************************************************
 // CREATED_ON	: 20-03-03 19:00
 // CREATED_BY	: Martin Lutken
@@ -8,15 +7,10 @@
 // ****************************************************************************
 
 
-// standard headers
-//#include <stdio.h>
 #include <math.h>
-
-//gmath headers
-#include "gmath.h"
-#include "c.hpp"
-
-
+#include <cmath>
+#include <cpaf_libs/math/base/gmath.h>
+#include <cpaf_libs/math/base/constants.hpp>
 
 /** \unit
 All math functions from the standard C math.h file. Default implementation 
@@ -54,8 +48,8 @@ inline TYPE Ceil(const TYPE x				///< [in] Argument.
 // Double floating point precision math specialization.
 template<>
 inline double_t Ceil<double_t>(const double_t x)
-{ 
-	return static_cast<double_t>(ceil( x ));
+{
+    return static_cast<double_t>(std::ceil( x ));
 }
 
 
@@ -72,7 +66,7 @@ inline TYPE Floor(const TYPE x				///< [in] Argument.
 template<>
 inline double_t Floor<double_t>(const double_t x)
 { 
-	return static_cast<double_t>(floor( x ));
+    return static_cast<double_t>(std::floor( x ));
 }
 
 
@@ -83,13 +77,13 @@ template<typename TYPE>
 inline TYPE Sqrt(const TYPE x				///< [in] Value to find square root of. 
                  )
 { 
-	return static_cast<TYPE>(sqrtf( x ));
+    return static_cast<TYPE>(std::sqrt( x ));
 }
 // Double floating point precision math specialization.
 template<>
 inline double_t Sqrt<double_t>(const double_t x)
 { 
-	return static_cast<double_t>(sqrt( x ));
+    return static_cast<double_t>(std::sqrt( x ));
 }
 
 
@@ -192,7 +186,7 @@ inline TYPE Acos(const TYPE x					///< [in] Argument in radians.
                  )
 { 
 	if( x >  1.0f ) return 0;
-	if( x < -1.0f ) return C<TYPE>::PI();
+    if( x < -1.0f ) return constants<TYPE>::pi();
 	return static_cast<TYPE>(acosf( x ));
 }
 // Double floating point precision math specialization.
@@ -200,7 +194,7 @@ template<>
 inline double_t Acos<double_t>(const double_t x) 
 { 
 	if( x >  1.0f ) return 0;
-	if( x < -1.0f ) return C<double_t>::PI();
+    if( x < -1.0f ) return constants<double_t>::pi();
 	return static_cast<double_t>(acos( x ));
 }
 
@@ -213,16 +207,16 @@ template<typename TYPE>
 inline TYPE Asin(const TYPE x					///< [in] Argument in radians. 
                  )
 { 
-	if( x >  1.0f ) return  C<TYPE>::PI()/2.0f;
-	if( x < -1.0f ) return -C<TYPE>::PI()/2.0f;
+    if( x >  1.0f ) return  constants<TYPE>::pi()/2.0f;
+    if( x < -1.0f ) return -constants<TYPE>::pi()/2.0f;
 	return static_cast<TYPE>(asinf( x ));
 }
 // Double floating point precision math specialization.
 template<>
 inline double_t Asin<double_t>(const double_t x) 
 { 
-	if( x >  1.0f ) return  C<double_t>::PI()/2.0f;
-	if( x < -1.0f ) return -C<double_t>::PI()/2.0f;
+    if( x >  1.0f ) return  constants<double_t>::pi()/2.0f;
+    if( x < -1.0f ) return -constants<double_t>::pi()/2.0f;
 	return static_cast<double_t>(asin( x ));
 }
 
@@ -405,6 +399,3 @@ inline double_t Pow<double_t>(const double_t x,			///< [in] Argument.
 
 _GMATH_END_NAMESPACE
 
-
-
-#endif	// _GMATH_STDMATH_HPP_

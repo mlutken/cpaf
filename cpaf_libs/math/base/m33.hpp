@@ -442,13 +442,13 @@ public:
 	void				create_rot(v3_const_reference vDir)		///< [in] Direction of Z-axis in new matrix
 	{
 		zcol() = vDir;
-		if ( zcol().normalize() < C<T>::EPSILON() ) 
+		if ( zcol().normalize() < constants<T>::epsilon() ) 
 		{
 			zcol() = v3_value_type::V_Z;
 		}
 
 		v3_value_type v1(v3_value_type::V_Y);
-		if ( Abs( zcol()*v1 ) > (T(1)-C<T>::EPSILON()) ) 
+		if ( Abs( zcol()*v1 ) > (T(1)-constants<T>::epsilon()) ) 
 		{
 			v1 = v3_value_type::V_X;
 		}
@@ -465,12 +465,12 @@ public:
 									v3_const_reference vUp)		///< [in] Direction to use as up vector
 	{
 		zcol() = vDir;
-		if ( zcol().normalize() < C<T>::EPSILON() ) 
+		if ( zcol().normalize() < constants<T>::epsilon() ) 
 		{
 			zcol() = v3_value_type::V_Z;
 		}
 
-		if ( Abs( zcol()*vUp ) > (T(1)-C<T>::EPSILON()) ) 
+		if ( Abs( zcol()*vUp ) > (T(1)-constants<T>::epsilon()) ) 
 		{
 			zcol() = v3_value_type::V_Y;
 		}

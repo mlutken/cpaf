@@ -1,5 +1,4 @@
-#ifndef CPAF_GMATH_H
-#define CPAF_GMATH_H
+#pragma once
 // ****************************************************************************
 // CREATED_ON	: 20-03-03 19:00
 // CREATED_BY	: Martin Lutken
@@ -55,8 +54,4 @@ enum {X=0, Y=1, Z=2, W=3};
 
 
 _GMATH_END_NAMESPACE
-
-
-#endif // CPAF_GMATH_H
-
 

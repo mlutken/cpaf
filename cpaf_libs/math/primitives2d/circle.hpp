@@ -230,7 +230,7 @@ public:
     bool_t	operator ==(const_reference c			///< [in] Right operand.
                        ) const
     {
-        return	( Abs(radius() - c.radius()) < C<T>::EPSILON() ) &&
+        return	( Abs(radius() - c.radius()) < constants<T>::epsilon() ) &&
                 ( center() == c.center() );
     }
 
@@ -243,7 +243,7 @@ public:
     bool_t	operator !=(const_reference c			///< [in] Right operand.
                        ) const
     {
-        return	( Abs(radius() - c.radius()) > C<T>::EPSILON() ) ||
+        return	( Abs(radius() - c.radius()) > constants<T>::epsilon() ) ||
                 ( center() != c.center() );
     }
 

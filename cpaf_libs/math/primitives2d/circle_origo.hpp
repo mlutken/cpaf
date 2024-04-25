@@ -133,7 +133,7 @@ public:
 	bool_t	operator ==(const_reference c			///< [in] Right operand.    
 					   ) const
 	{
-		return	( Abs(radius() - c.radius()) < C<T>::EPSILON() ) ;
+		return	( Abs(radius() - c.radius()) < constants<T>::epsilon() ) ;
 	}
 
 	/** '!=' operator. Tests two circles for in-equality. 
@@ -145,7 +145,7 @@ public:
 	bool_t	operator !=(const_reference c			///< [in] Right operand.    
 					   ) const
 	{
-		return	( Abs(radius() - c.radius()) > C<T>::EPSILON() ) ;
+		return	( Abs(radius() - c.radius()) > constants<T>::epsilon() ) ;
 	}
 
 
