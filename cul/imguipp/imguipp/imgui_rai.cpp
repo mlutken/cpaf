@@ -1,6 +1,7 @@
 
 #include "imgui_rai.h"
 #include <ranges>
+#include <limits>
 
 
 namespace ImGui
@@ -39,6 +40,78 @@ void Rai::Pop(Stacktype type)
         break;
     }
 }
+
+// ------------------------
+// --- Widgets: Buttons ---
+// ------------------------
+
+bool AlignedButton(std::string_view label, float alignment, ImVec2 size)
+{
+    const ImGuiStyle& style = ImGui::GetStyle();
+
+    const auto content_region = ImGui::GetContentRegionAvail();
+    const float width_calculated = ImGui::CalcTextSize(label.data()).x + style.FramePadding.x * 2.0f;
+    const float width_wanted = std::max(size.x, width_calculated);
+    size.x = std::min(width_wanted, content_region.x);
+
+    const float avail = content_region.x;
+
+    const float off = (avail - size.x) * alignment;
+    if (off > 0.0f) {
+        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + off);
+    }
+
+    return ImGui::Button(label, size);
+}
+
+bool AlignedButton(std::string_view label, float alignment, float relative_width)
+{
+    const ImGuiStyle& style = ImGui::GetStyle();
+
+    const auto content_region = ImGui::GetContentRegionAvail();
+    ImVec2 size {relative_width*content_region.x, 0};
+    const float width_calculated = ImGui::CalcTextSize(label.data()).x + style.FramePadding.x * 2.0f;
+    const float width_wanted = std::max(size.x, width_calculated);
+    size.x = std::min(width_wanted, content_region.x);
+
+    const float avail = content_region.x;
+
+    const float off = (avail - size.x) * alignment;
+    if (off > 0.0f) {
+        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + off);
+    }
+
+    return ImGui::Button(label, size);
+}
+
+
+bool CenteredButton(std::string_view label, float relative_width)
+{
+//    const ImGuiStyle& style = ImGui::GetStyle();
+
+    const auto content_region = ImGui::GetContentRegionAvail();
+//    const float width_calculated = ImGui::CalcTextSize(label.data()).x + style.FramePadding.x * 2.0f;
+    const float width_wanted = content_region.x*relative_width;
+//    const float width_used = content_region.x*relative_width;
+
+    ImVec2 size{0,0};
+    size.x = std::min(width_wanted, content_region.x);
+
+    const float avail = content_region.x;
+
+    const float off = (avail - size.x) * 0.5f;
+    if (off > 0.0f) {
+        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + off);
+    }
+
+    return ImGui::Button(label, size);
+
+}
+
+// ------------------------------
+// --- Widgets: Radio Buttons ---
+// ------------------------------
+
 
 // ---------------------------
 // --- Widgets: Input text ---
@@ -107,6 +180,24 @@ bool InputTextWithHint(std::string_view label, std::string_view hint, std::strin
     return InputTextWithHint(label.data(), hint.data(), const_cast<char*>(str.c_str()), str.capacity() + 1, flags, InputTextCallback, &cb_user_data);
 }
 
+// ------------------------
+// --- Window positions ---
+// ------------------------
+void SetNextWindowPosRelative (const ImVec2& pos_relative, ImGuiCond cond, const ImVec2& pivot)
+{
+    const auto content_region = ImGui::GetContentRegionAvail();
+    const ImVec2 pos {pos_relative.x*content_region.x, pos_relative.y*content_region.y};
+    SetNextWindowPos(pos, cond, pivot);
+}
+
+
+void SetNextWindowSizeRelative(const ImVec2& size_relative, ImGuiCond cond)
+{
+    const auto content_region = ImGui::GetContentRegionAvail();
+    const ImVec2 size {size_relative.x*content_region.x, size_relative.y*content_region.y};
+    SetNextWindowSize(size, cond);
+}
+
 
 // ---------------------------
 // --- Convenience helpers ---
@@ -125,6 +216,8 @@ void HelpMarker(std::string_view description)
         ImGui::EndTooltip();
     }
 }
+
+
 
 
 

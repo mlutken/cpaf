@@ -63,6 +63,10 @@ inline bool Button(std::string_view label, const ImVec2& size = ImVec2(0, 0)) {
     return Button(label.data(), size);
 }
 
+bool AlignedButton  (std::string_view label, float alignment = 0.5f, ImVec2 size = ImVec2(0, 0));
+bool AlignedButton  (std::string_view label, float alignment, float relative_width);
+bool CenteredButton (std::string_view label, float relative_width);
+
 // ------------------------------
 // --- Widgets: Radio Buttons ---
 // ------------------------------
@@ -104,6 +108,12 @@ inline bool MenuItem(std::string_view label, std::string_view shortcut = std::st
 inline bool MenuItem(std::string_view label, std::string_view shortcut, bool* p_selected, bool enabled = true) {
     return MenuItem(label.data(), shortcut.data(), p_selected, enabled);
 }
+
+// ------------------------
+// --- Window positions ---
+// ------------------------
+void SetNextWindowPosRelative   (const ImVec2& pos_relative, ImGuiCond cond = 0, const ImVec2& pivot = ImVec2(0, 0));
+void SetNextWindowSizeRelative  (const ImVec2& size_relative, ImGuiCond cond = 0);
 
 // ---------------------------
 // --- Convenience helpers ---
