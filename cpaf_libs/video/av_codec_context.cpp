@@ -271,7 +271,7 @@ int av_codec_context::receive_frame(av_frame& frame) const
     if (ret_val == 0) {
         // Got full frame!
         frame.stream_index_set(stream_index());
-        frame.presentation_time_set(time_from_stream_time(frame.ff_frame()->pts));
+        set_frame_presentation_time(frame);
     }
     return ret_val;
 }
@@ -332,6 +332,29 @@ std::chrono::microseconds av_codec_context::time_from_stream_time(int64_t stream
     av_base_duration av_duration(av_time_point);
 
     return std::chrono::duration_cast<std::chrono::microseconds>(av_duration);
+}
+
+std::chrono::microseconds av_codec_context::time_from_stream_time(const av_frame& frame) const
+{
+    int64_t stream_timestamp = -1;
+    if (frame.pts_valid()) {
+        stream_timestamp = frame.ff_frame()->pts;
+    }
+    else if (frame.pkt_dts_valid()) {
+        stream_timestamp = frame.ff_frame()->pkt_dts;
+    }
+    else if (frame.best_effort_timestamp_valid()) {
+        stream_timestamp = frame.ff_frame()->best_effort_timestamp;
+    }
+    if (stream_timestamp != -1) {
+        return time_from_stream_time(stream_timestamp);
+    }
+    return std::chrono::microseconds(0);
+}
+
+void av_codec_context::set_frame_presentation_time(av_frame& frame) const
+{
+    frame.presentation_time_set(time_from_stream_time(frame));
 }
 
 //int av_codec_context::receive_frame() const
