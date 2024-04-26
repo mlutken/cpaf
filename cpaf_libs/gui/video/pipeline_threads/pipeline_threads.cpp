@@ -138,34 +138,36 @@ bool pipeline_threads::all_threads_terminated() const
     if (threads_running_) {
         return false;
     }
-    const bool packet_running = packet_reader_thread_.thread_is_running();
-    const bool resampler_running = audio_resampler_thread_.thread_is_running();
-    const bool audio_render_running = audio_render_thread_.thread_is_running();
-    const bool subtitle_running = subtitle_reader_thread_.thread_is_running();
+    const bool packet_terminated        = !packet_reader_thread_.thread_is_running();
+    const bool resampler_terminated     = !audio_resampler_thread_.thread_is_running();
+    const bool audio_render_terminated  = !audio_render_thread_.thread_is_running();
+    const bool subtitle_terminated      = !subtitle_reader_thread_.thread_is_running();
 
-    return  packet_running       &&
-           resampler_running    &&
-           audio_render_running &&
-           subtitle_running
+    return  packet_terminated      &&
+           resampler_terminated    &&
+           audio_render_terminated &&
+           subtitle_terminated
         ;
 }
 
 bool pipeline_threads::wait_for_all_paused(std::chrono::milliseconds max_wait_time) const
 {
     const auto ts_end = std::chrono::steady_clock::now() + max_wait_time;
-    while (!all_threads_paused() &&(std::chrono::steady_clock::now() < ts_end))
+    while (!all_threads_paused() && (std::chrono::steady_clock::now() < ts_end))
     {
         std::this_thread::sleep_for(100ms);
     }
+    return std::chrono::steady_clock::now() < ts_end;
 }
 
 bool pipeline_threads::wait_for_all_terminated(std::chrono::milliseconds max_wait_time) const
 {
     const auto ts_end = std::chrono::steady_clock::now() + max_wait_time;
-    while (!all_threads_terminated() &&(std::chrono::steady_clock::now() < ts_end))
+    while (!all_threads_terminated() && (std::chrono::steady_clock::now() < ts_end))
     {
         std::this_thread::sleep_for(100ms);
     }
+    return std::chrono::steady_clock::now() < ts_end;
 }
 
 void pipeline_threads::subtitle_container_set(std::unique_ptr<subtitle_container> container)
