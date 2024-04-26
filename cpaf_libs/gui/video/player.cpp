@@ -700,6 +700,14 @@ std::string player::queues_info() const
     return primary_stream().format_context().queues_info();
 }
 
+std::chrono::microseconds player::dbg_audio_front_time() const
+{
+    if (media_pipeline_threads_) {
+        return media_pipeline_threads_->dbg_audio_front_time();
+    }
+    return std::chrono::microseconds(0);
+}
+
 bool player::all_initialized() const
 {
     return media_pipeline_threads_ != nullptr;

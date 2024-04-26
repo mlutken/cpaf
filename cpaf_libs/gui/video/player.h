@@ -198,13 +198,15 @@ public:
     // -----------------
     // --- Callbacks ---
     // -----------------
-    void                        cb_start_playing            (std::function<void ()>&& cb) { cb_start_playing_ = std::move(cb); }
+    void                            cb_start_playing        (std::function<void ()>&& cb) { cb_start_playing_ = std::move(cb); }
 
 
     // -----------------------
     // --- Debug functions ---
     // -----------------------
-    std::string                 queues_info                 () const;
+    std::string                     queues_info             () const;
+    const cpaf::video::av_frame&    next_video_frame        () const { return next_video_frame_; }
+    std::chrono::microseconds       dbg_audio_front_time    () const;
 
     // ----------------------
     // --- Public members ---
