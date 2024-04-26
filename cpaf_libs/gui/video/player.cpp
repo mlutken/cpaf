@@ -150,14 +150,9 @@ void player::close()
     }
     if (media_pipeline_threads_) {
         set_stream_state(stream_state_t::inactive);
-        pause_playback();
-        const auto ts_end = std::chrono::steady_clock::now() + 5s;
-        while (!media_pipeline_threads().all_threads_paused()
-               &&(std::chrono::steady_clock::now() < ts_end))
-        {
-            std::this_thread::sleep_for(100ms);
-        }
-        media_pipeline_threads().flush_queues();
+        resume_playback();
+        media_pipeline_threads_->terminate();
+        media_pipeline_threads_->wait_for_all_terminated();
         media_pipeline_threads_.reset(nullptr);
     }
     if (primary_source_stream_) {
