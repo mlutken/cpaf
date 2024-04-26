@@ -52,8 +52,8 @@ public:
     bool                is_valid            () const { return ff_packet_ != nullptr; }
     int64_t             pts_stream_base     () const { return ff_packet_ ? ff_packet_->pts : std::numeric_limits<int64_t>::min(); }
     int64_t             dts_stream_base     () const { return ff_packet_ ? ff_packet_->dts : std::numeric_limits<int64_t>::min(); }
-    bool                dts_valid           () const { return ff_packet_ ? ff_packet_->dts != AV_NOPTS_VALUE: false; }
     bool                pts_valid           () const { return ff_packet_ ? ff_packet_->pts != AV_NOPTS_VALUE: false; }
+    bool                dts_valid           () const { return ff_packet_ ? ff_packet_->dts != AV_NOPTS_VALUE: false; }
 
     const std::chrono::microseconds&   presentation_time       () const { return presentation_time_; }
     std::chrono::milliseconds          presentation_time_ms    () const { return std::chrono::duration_cast<std::chrono::milliseconds>(presentation_time()); }
