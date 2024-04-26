@@ -38,10 +38,11 @@ public:
     std::chrono::microseconds           seek_from_position      () const { return seek_from_position_; }
     std::chrono::microseconds           seek_position_requested () const { return seek_time_pos_requested_; }
     const std::atomic_bool&             thread_is_paused        () const { return thread_is_paused_; }
+    const std::atomic_bool&             thread_is_running       () const { return thread_is_running_; }
     void                                debug_print_info        () const;
 
 private:
-    void                    read_packets_thread_fn  ();
+    void                    thread_function         ();
     void                    check_seek_position     ();
     void                    check_seek_completed    ();
     void                    flush_queues            ();
@@ -53,6 +54,7 @@ private:
     const std::atomic_bool&                 threads_paused_;
     std::atomic<cpaf::video::seek_state_t>& seek_state_;
     std::atomic_bool                        thread_is_paused_ = true;
+    std::atomic_bool                        thread_is_running_ = false;
 
     std::chrono::microseconds               seek_from_position_;
     std::chrono::microseconds               seek_time_pos_requested_;

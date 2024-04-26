@@ -56,7 +56,10 @@ public:
     void                        pause_playback          ();
     void                        resume_playback         ();
     bool                        playback_paused         () const { return threads_paused_; }
-    bool                        all_threads_are_paused  () const;
+    bool                        all_threads_paused      () const;
+    bool                        all_threads_terminated  () const;
+    bool                        wait_for_all_paused     (std::chrono::milliseconds max_wait_time = std::chrono::seconds{5}) const;
+    bool                        wait_for_all_terminated (std::chrono::milliseconds max_wait_time = std::chrono::seconds{5}) const;
     void                        subtitle_container_set  (std::unique_ptr<subtitle_container> container);
 
     void                        video_frame_update      (cpaf::video::av_frame& current_frame, cpaf::gui::video::render& video_render);
@@ -77,11 +80,13 @@ private:
     cpaf::video::av_samples_queue               audio_samples_queue_;
     cpaf::video::subtitles_queue                subtitles_queue_;
 //TODO: Nove this to here    cpaf::video::audio_resampler                audio_resampler_;
+
     packet_reader_thread                        packet_reader_thread_;
     audio_resampler_thread                      audio_resampler_thread_;
     audio_render_thread                         audio_render_thread_;
     subtitle_reader_thread                      subtitle_reader_thread_;
     video_render_thread                         video_render_thread_;
+
     cpaf::video::audio_resampler*               audio_resampler_ptr_            = nullptr;
     std::atomic<cpaf::video::seek_state_t>      seek_state_                     = cpaf::video::seek_state_t::ready;
     std::atomic_bool                            threads_running_                = true;

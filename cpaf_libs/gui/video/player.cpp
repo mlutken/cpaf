@@ -152,7 +152,7 @@ void player::close()
         set_stream_state(stream_state_t::inactive);
         pause_playback();
         const auto ts_end = std::chrono::steady_clock::now() + 5s;
-        while (!media_pipeline_threads().all_threads_are_paused()
+        while (!media_pipeline_threads().all_threads_paused()
                &&(std::chrono::steady_clock::now() < ts_end))
         {
             std::this_thread::sleep_for(100ms);

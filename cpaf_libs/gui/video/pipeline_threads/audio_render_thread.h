@@ -27,11 +27,15 @@ public:
     explicit audio_render_thread(player& owning_player,
                                  pipeline_threads& pline_threads,
                                  cpaf::video::av_samples_queue& audio_samples_queue,
+                                 const std::atomic_bool& threads_running,
+                                 const std::atomic_bool& threads_paused,
                                  std::atomic<cpaf::video::seek_state_t>& seek_state);
 
     void                        start                   ();
+    void                        terminate               ();
     audio_play_callback_t       audio_callback_get      ();
     const std::atomic_bool&     thread_is_paused        () const { return thread_is_paused_; }
+    const std::atomic_bool&     thread_is_running       () const { return thread_is_running_; }
     std::chrono::microseconds   dbg_audio_front_time    () const;
 
 
@@ -45,8 +49,11 @@ private:
     player&                                     player_;
     pipeline_threads&                           pipeline_threads_;
     cpaf::video::av_samples_queue&              audio_samples_queue_;
+    const std::atomic_bool&                     threads_running_;
+    const std::atomic_bool&                     threads_paused_;
     std::atomic<cpaf::video::seek_state_t>&     seek_state_;
     std::atomic_bool                            thread_is_paused_ = true;
+    std::atomic_bool                            thread_is_running_ = false;
     std::chrono::microseconds                   sync_ok_interval                = std::chrono::milliseconds(15);
     int                                         audio_callback_dbg_counter_     = 0;
 };

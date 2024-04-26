@@ -75,6 +75,7 @@ void subtitle_reader_thread::flush_done()
 
 void subtitle_reader_thread::thread_function()
 {
+    thread_is_running_ = true;
     while(threads_running_) {
         if (threads_paused_) {
             thread_is_paused_ = true;
@@ -92,6 +93,7 @@ void subtitle_reader_thread::thread_function()
         std::this_thread::sleep_for(thread_yield_time_);
     }
     std::cerr << "LOG_INFO: EXIT subtitle_reader_thread::thread_function()!!!\n";
+    thread_is_running_ = false;
 }
 
 void subtitle_reader_thread::read_from_stream()

@@ -37,6 +37,7 @@ public:
 
     void                                start                   ();
     const std::atomic_bool&             thread_is_paused        () const { return thread_is_paused_; }
+    const std::atomic_bool&             thread_is_running       () const { return thread_is_running_; }
     void                                subtitle_container_set  (std::unique_ptr<subtitle_container> container);
 
     void                                flush                   ();
@@ -59,6 +60,7 @@ private:
     const std::atomic_bool&             threads_paused_;
     std::atomic<cpaf::video::seek_state_t>& seek_state_;
     std::atomic_bool                    thread_is_paused_ = true;
+    std::atomic_bool                    thread_is_running_ = false;
     cpaf::video::subtitle_frame         current_subtitle_frame_     {};
 
 

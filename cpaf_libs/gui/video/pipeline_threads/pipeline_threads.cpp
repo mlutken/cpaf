@@ -23,7 +23,7 @@ pipeline_threads::pipeline_threads(player& owning_player)
     , subtitles_queue_(100)
     , packet_reader_thread_(owning_player, threads_running_, threads_paused_, seek_state_)
     , audio_resampler_thread_(owning_player, audio_samples_queue_, threads_running_, threads_paused_)
-    , audio_render_thread_(owning_player, *this, audio_samples_queue_, seek_state_)
+    , audio_render_thread_(owning_player, *this, audio_samples_queue_, threads_running_, threads_paused_, seek_state_)
     , subtitle_reader_thread_(owning_player, subtitles_queue_, threads_running_, threads_paused_, seek_state_)
     , video_render_thread_(owning_player, audio_samples_queue_, subtitles_queue_, threads_running_, threads_paused_, seek_state_)
 {
@@ -65,14 +65,16 @@ void pipeline_threads::start()
 
 void pipeline_threads::terminate()
 {
-    threads_running_ = false;
+    bool expected_value = true;
+    if (threads_running_.compare_exchange_strong(expected_value, false)) {
+        std::cerr << "LOG_DEBUG pipeline_threads::terminate() called!\n";
+    }
 }
 
 void pipeline_threads::seek_position(const std::chrono::microseconds& stream_pos, cpaf::video::seek_dir dir)
 {
     packet_reader_thread_.seek_position(stream_pos, dir);
 }
-
 void pipeline_threads::seek_position(const std::chrono::microseconds& stream_pos)
 {
     packet_reader_thread_.seek_position(stream_pos);
@@ -114,7 +116,7 @@ void pipeline_threads::resume_playback()
     threads_paused_ = false;
 }
 
-bool pipeline_threads::all_threads_are_paused() const
+bool pipeline_threads::all_threads_paused() const
 {
     if (!threads_running_) {
         return true;
@@ -129,6 +131,41 @@ bool pipeline_threads::all_threads_are_paused() const
             audio_render_paused &&
             subtitle_paused
         ;
+}
+
+bool pipeline_threads::all_threads_terminated() const
+{
+    if (threads_running_) {
+        return false;
+    }
+    const bool packet_running = packet_reader_thread_.thread_is_running();
+    const bool resampler_running = audio_resampler_thread_.thread_is_running();
+    const bool audio_render_running = audio_render_thread_.thread_is_running();
+    const bool subtitle_running = subtitle_reader_thread_.thread_is_running();
+
+    return  packet_running       &&
+           resampler_running    &&
+           audio_render_running &&
+           subtitle_running
+        ;
+}
+
+bool pipeline_threads::wait_for_all_paused(std::chrono::milliseconds max_wait_time) const
+{
+    const auto ts_end = std::chrono::steady_clock::now() + max_wait_time;
+    while (!all_threads_paused() &&(std::chrono::steady_clock::now() < ts_end))
+    {
+        std::this_thread::sleep_for(100ms);
+    }
+}
+
+bool pipeline_threads::wait_for_all_terminated(std::chrono::milliseconds max_wait_time) const
+{
+    const auto ts_end = std::chrono::steady_clock::now() + max_wait_time;
+    while (!all_threads_terminated() &&(std::chrono::steady_clock::now() < ts_end))
+    {
+        std::this_thread::sleep_for(100ms);
+    }
 }
 
 void pipeline_threads::subtitle_container_set(std::unique_ptr<subtitle_container> container)

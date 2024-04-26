@@ -16,22 +16,30 @@ using namespace cpaf;
 
 namespace cpaf::gui::video {
 
-audio_render_thread::audio_render_thread(
-    player& owning_player,
-    pipeline_threads& pline_threads,
-    av_samples_queue& audio_samples_queue,
-    std::atomic<cpaf::video::seek_state_t>& seek_state)
-    : player_(owning_player)
-    , pipeline_threads_(pline_threads)
-    , audio_samples_queue_(audio_samples_queue)
-    , seek_state_(seek_state)
-{
+    audio_render_thread::audio_render_thread(player& owning_player,
+                                             pipeline_threads& pline_threads,
+                                             av_samples_queue& audio_samples_queue,
+                                             const std::atomic_bool& threads_running,
+                                             const std::atomic_bool& threads_paused,
+                                             std::atomic<cpaf::video::seek_state_t>& seek_state)
+        : player_(owning_player),
+          pipeline_threads_(pline_threads),
+          audio_samples_queue_(audio_samples_queue),
+          seek_state_(seek_state),
+          threads_running_(threads_running),
+          threads_paused_(threads_paused)
+    {
 
 }
 
 void audio_render_thread::start()
 {
+    thread_is_running_ = true;
+}
 
+void audio_render_thread::terminate()
+{
+    thread_is_running_ = false;
 }
 
 audio_render_thread::audio_play_callback_t audio_render_thread::audio_callback_get()
@@ -51,7 +59,16 @@ std::chrono::microseconds audio_render_thread::dbg_audio_front_time() const
 }
 
 void audio_render_thread::audio_callback_function(uint8_t* stream, int32_t length)
-{    
+{
+    if (!threads_running_) {
+        thread_is_running_ = false;
+    }
+
+    if (!thread_is_running_) {
+        render_audio_silence(stream, length);
+        return;
+    }
+
     if (seek_state_ == seek_state_t::flushing) {
         render_audio_silence(stream, length);
         return;

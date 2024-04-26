@@ -33,6 +33,7 @@ public:
 
     void                    start                   ();
     const std::atomic_bool& thread_is_paused        () const { return thread_is_paused_; }
+    const std::atomic_bool& thread_is_running       () const { return thread_is_running_; }
 
 private:
     void                    thread_function         ();
@@ -46,6 +47,7 @@ private:
     const std::atomic_bool&             threads_running_;
     const std::atomic_bool&             threads_paused_;
     std::atomic_bool                    thread_is_paused_ = true;
+    std::atomic_bool                    thread_is_running_ = false;
 
     cpaf::video::audio_resampler*       audio_resampler_ptr_            = nullptr;
 

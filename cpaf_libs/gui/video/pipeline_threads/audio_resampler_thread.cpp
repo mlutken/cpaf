@@ -32,6 +32,7 @@ void audio_resampler_thread::start()
 
 void audio_resampler_thread::thread_function()
 {
+    thread_is_running_ = true;
     while(threads_running_) {
         if (threads_paused_) {
             thread_is_paused_ = true;
@@ -47,6 +48,7 @@ void audio_resampler_thread::thread_function()
         std::this_thread::sleep_for(audio_samples_yield_time_);
     }
     std::cerr << "\n!!! EXIT audio_resampler_thread::audio_samples_thread_fn() !!!\n";
+    thread_is_running_ = false;
 }
 
 void audio_resampler_thread::resample_frame(bool& add_samples, const std::chrono::microseconds& cur_media_time_pos)

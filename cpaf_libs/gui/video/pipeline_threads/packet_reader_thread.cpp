@@ -26,7 +26,7 @@ packet_reader_thread::packet_reader_thread(
 
 void packet_reader_thread::start()
 {
-    read_packets_thread_  = std::make_unique<std::thread>(&packet_reader_thread::read_packets_thread_fn, this);
+    read_packets_thread_  = std::make_unique<std::thread>(&packet_reader_thread::thread_function, this);
     read_packets_thread_->detach();
 }
 
@@ -58,8 +58,11 @@ void packet_reader_thread::debug_print_info() const
               << " !!!\n\n";
 }
 
-void packet_reader_thread::read_packets_thread_fn()
+/// @todo add a possible nullptr to threads_running_ to the read_packets_to_queues() so
+/// we can terminate the loop it holds in case the thread needs to stop!
+void packet_reader_thread::thread_function()
 {
+    thread_is_running_ = true;
     const auto mt = player_.format_context().primary_media_type();
     while(threads_running_) {
         check_seek_position();
@@ -74,6 +77,7 @@ void packet_reader_thread::read_packets_thread_fn()
         std::this_thread::sleep_for(read_packets_yield_time_);
     }
     std::cerr << "\n!!! EXIT packet_reader_thread::read_packets_thread_fn() !!!\n";
+    thread_is_running_ = false;
 }
 
 void packet_reader_thread::check_seek_position()
