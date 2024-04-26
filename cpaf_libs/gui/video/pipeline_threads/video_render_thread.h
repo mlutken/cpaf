@@ -71,7 +71,7 @@ private:
 
     int                                     video_frame_update_dbg_counter_ = 0;
     std::atomic_bool                        video_queue_flush_in_progress_  = false;
-    std::atomic_bool                        video_queue_flushed_            = false;
+    std::atomic_bool                        handle_flush_done_         = false;
     std::atomic_bool                        flush_requested_                = false;
     std::chrono::microseconds               time_to_current_frame_;
 };

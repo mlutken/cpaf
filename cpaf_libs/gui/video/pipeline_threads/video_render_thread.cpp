@@ -61,7 +61,7 @@ void video_render_thread::video_queue_flush_start() {
 
 void video_render_thread::video_queue_flush_done() {
     video_queue_flush_in_progress_ = false;
-    video_queue_flushed_ = true;
+    handle_flush_done_ = true;
 }
 
 std::chrono::microseconds video_render_thread::time_to_current_frame(cpaf::video::av_frame& current_frame) const
@@ -86,6 +86,11 @@ bool video_render_thread::video_frame_do_render(
         flush_queues();
     }
 
+    // if (seek_state_ != seek_state_t::ready) {
+    //     video_render.render_video_frame(current_frame);
+    //     return false;
+    // }
+
     // --- Special case when we are flushing (seeking) ---
     if (seek_state_ == seek_state_t::flushing) {
         video_render.render_video_frame(current_frame);
@@ -97,12 +102,33 @@ bool video_render_thread::video_frame_do_render(
         return true;
     }
 
+    if (handle_flush_done_) {
+        std::cerr << "FIXMENM Handle Flusk Done!! state: '"  << to_string(player_.stream_state()) << "'"
+                  << " dist time : " << duration_cast<milliseconds>(time_to_current_frame(current_frame))
+                  << " frame ps time: " << cpaf::time::format_h_m_s_ms(current_frame.presentation_time())
+                  << " cur video time: " << cpaf::time::format_h_m_s_ms(player_.cur_media_time().video_time_pos())
+                  << "\n";
+        current_frame = player_.video_codec_context().read_frame();
+        video_render.render_video_frame(current_frame);
+        handle_flush_done_ = false;
+        std::cerr << "FIXMENM Handled!! state: '"  << to_string(player_.stream_state()) << "'"
+                  << " dist time : " << duration_cast<milliseconds>(time_to_current_frame(current_frame))
+                  << " frame ps time: " << cpaf::time::format_h_m_s_ms(current_frame.presentation_time())
+                  << " cur video time: " << cpaf::time::format_h_m_s_ms(player_.cur_media_time().video_time_pos())
+                  << "\n";
+        return true;
+    }
 
 
     bool new_frame_was_read = false;
     time_to_current_frame_ = time_to_current_frame(current_frame);
     if (time_to_current_frame_ > 1s) {
-        std::cerr << "LOG_WARN long time to current video frame: " << duration_cast<seconds>(time_to_current_frame(current_frame)) << "\n";
+        std::cerr << "LOG_WARN Long time frame, state: '"  << to_string(player_.stream_state()) << "'"
+                  << " dist time : " << duration_cast<milliseconds>(time_to_current_frame(current_frame))
+                  << " frame ps time: " << cpaf::time::format_h_m_s_ms(current_frame.presentation_time())
+                  << " cur video time: " << cpaf::time::format_h_m_s_ms(player_.cur_media_time().video_time_pos())
+                  << "\n";
+
         current_frame = player_.video_codec_context().read_frame();
         new_frame_was_read = true;
     }
