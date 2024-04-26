@@ -41,6 +41,15 @@ audio_render_thread::audio_play_callback_t audio_render_thread::audio_callback_g
     };
 }
 
+/// Debug only: Not thread safe !!!
+std::chrono::microseconds audio_render_thread::dbg_audio_front_time() const
+{
+    if (audio_samples_queue_.empty()) {
+        return std::chrono::microseconds(0);
+    }
+    return audio_samples_queue_.front().presentation_time();
+}
+
 void audio_render_thread::audio_callback_function(uint8_t* stream, int32_t length)
 {    
     if (seek_state_ == seek_state_t::flushing) {

@@ -29,9 +29,11 @@ public:
                                  cpaf::video::av_samples_queue& audio_samples_queue,
                                  std::atomic<cpaf::video::seek_state_t>& seek_state);
 
-    void                    start                   ();
-    audio_play_callback_t   audio_callback_get      ();
-    const std::atomic_bool& thread_is_paused        () const { return thread_is_paused_; }
+    void                        start                   ();
+    audio_play_callback_t       audio_callback_get      ();
+    const std::atomic_bool&     thread_is_paused        () const { return thread_is_paused_; }
+    std::chrono::microseconds   dbg_audio_front_time    () const;
+
 
 private:
     void                    audio_callback_function (uint8_t* stream, int32_t length);

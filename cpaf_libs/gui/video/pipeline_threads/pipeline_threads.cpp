@@ -149,6 +149,15 @@ void pipeline_threads::flush_queues()
     subtitle_reader_thread_.flush();
 }
 
+/// Debug only: Not thread safe !!!
+std::chrono::microseconds pipeline_threads::dbg_audio_front_time() const
+{
+    if (audio_samples_queue_.empty()) {
+        return std::chrono::microseconds(0);
+    }
+    return audio_samples_queue_.front().presentation_time();
+}
+
 void pipeline_threads::signal_flush_start()
 {
     video_render_thread_.video_queue_flush_start();
