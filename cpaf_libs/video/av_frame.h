@@ -86,6 +86,12 @@ public:
     bool            save_as_ppm_auto(const std::filesystem::path& frames_dir) const;
 
 
+    // --- Time functions ---
+    bool                        pts_valid                   () const { return ff_frame_ ? ff_frame_->pts != AV_NOPTS_VALUE: false; }
+    bool                        pkt_dts_valid               () const { return ff_frame_ ? ff_frame_->pkt_dts != AV_NOPTS_VALUE: false; }
+    bool                        best_effort_timestamp_valid () const { return ff_frame_ ? ff_frame_->best_effort_timestamp != AV_NOPTS_VALUE: false; }
+
+
     // --- Debug functions ---
     void			dump            () const;
     void            dbg_print       (const std::string_view msg) const;
