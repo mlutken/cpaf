@@ -39,7 +39,8 @@ public:
     using get_packet_fun = std::function<av_packet()>;
 
      // --- Constructors etc. ---
-    explicit av_format_context(get_torrents_fn get_torrents_function);
+    explicit av_format_context(get_torrents_fn get_torrents_function,
+                               std::atomic<stream_state_t>* stream_state_ptr);
 
     ~av_format_context();
     bool                    open                        (const std::string& resource_path);
@@ -76,8 +77,8 @@ public:
     bool                    is_torrent                  () const;
     const stream_info_vec&  streams_info                () const { return streams_info_; }
 
-    std::atomic<stream_state_t>& stream_state           () { return stream_state_; }
-    const std::atomic<stream_state_t>&  stream_state    () const { return stream_state_; }
+    std::atomic<stream_state_t>& stream_state           ()          { return global_stream_state_ptr_ ? *global_stream_state_ptr_ : local_stream_state_; }
+    const std::atomic<stream_state_t>&  stream_state    () const    { return global_stream_state_ptr_ ? *global_stream_state_ptr_ : local_stream_state_; }
 
     // --- Seek Functions ---
     bool                    seek_time_pos               (std::chrono::microseconds stream_pos);
@@ -145,8 +146,9 @@ private:
     AVRational                  stream_time_base            (size_t stream_index) const { return ff_format_context_->streams[stream_index]->time_base; }
 
     get_torrents_fn                                         get_torrents_function_;
+    std::atomic<stream_state_t>*                            global_stream_state_ptr_= nullptr;
     std::unique_ptr<custom_io_base>                         custom_io_ptr_;
-    std::atomic<stream_state_t>                             stream_state_           = stream_state_t::inactive;
+    std::atomic<stream_state_t>                             local_stream_state_     = stream_state_t::inactive;
     AVFormatContext*                                        ff_format_context_      = nullptr;
     std::array<size_t, media_type_size()>                   selected_stream_per_media_type_;
     std::array<std::vector<size_t>, media_type_size()>      stream_indices_per_media_type_;

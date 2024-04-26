@@ -10,10 +10,10 @@ namespace cpaf::video {
 // --- Constructors etc. ---
 // -------------------------
 
-play_stream::play_stream(get_torrents_fn get_torrents_function) :
-    format_context_(get_torrents_function)
+play_stream::play_stream(get_torrents_fn get_torrents_function,
+                         std::atomic<stream_state_t>* stream_state_ptr)
+    : format_context_(get_torrents_function, stream_state_ptr)
 {
-
 }
 
 play_stream::~play_stream()

@@ -176,7 +176,7 @@ void controls_default::do_render_stream_state()
 
     bool visible = true;
 
-    std::string stream_state_str = to_string(player_.stream_state());
+    std::string stream_state_str = to_string(player_.primary_stream_state());
 
     stream_state_size_.x = (stream_state_font_size_pixels_ * static_cast<int32_t>(stream_state_str.size()))*0.5f;
     stream_state_size_.y = stream_state_font_size_pixels_ + 2*general_margin;
@@ -560,7 +560,7 @@ void controls_default::render_debug_window()
 //    auto render_size = player_.render_geometry().size();
     auto screen_size_fac = player_.screen_size_factor_use();
     ImGui::Begin("Video player default_controls debug");
-    ImGui::Text("stream_state: %s", to_string(player_.stream_state()).c_str()  );
+    ImGui::Text("stream_state: %s", to_string(player_.primary_stream_state()).c_str()  );
 
     ImGui::Text("screen_size_fac = %f x %f", screen_size_fac.width(), screen_size_fac.height());
 //    ImGui::Text("render_size = %f x %f", render_size.width(), render_size.height());

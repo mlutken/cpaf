@@ -26,6 +26,7 @@ player::player(cpaf::audio::device& audio_device, locale::translator& tr)
     : audio_device_(audio_device)
     , tr_(tr)
     , subtitle_downloader_thread_(*this)
+    // , play_handler_thread_(*this)
 {
     next_video_frame_ = av_frame::create_alloc();
     configuration.connect_for_changes([this]() {on_configuration_changed();});
@@ -39,6 +40,7 @@ void player::set_main_window(system_window& main_window)
 {
     main_window_ptr_ = &main_window;
     subtitle_downloader_thread_.start();
+    // play_handler_thread_.start();
 
     if (!video_controls_) {
         set_controls(std::make_unique<video::controls_default>(*this, configuration));
@@ -73,10 +75,10 @@ void player::start_playing(const std::chrono::microseconds& start_time_pos)
     media_pipeline_threads().audio_resampler_set(audio_resampler_);
     video_fmt_ctx.read_packets_to_queues(video_fmt_ctx.primary_media_type(), 10);
 
-    playable_.dbg_print(); // FIXMENM
+    cur_playable().dbg_print(); // FIXMENM
 
     media_pipeline_threads().start();
-    set_stream_state(stream_state_t::playing);
+    primary_stream_state() = stream_state_t::playing;
     check_activate_subtitle();
     resume_playback();
 }
@@ -96,29 +98,30 @@ bool player::open(const std::string& resource_path)
     return open(playab);
 }
 
+/// @todo Make private
 bool player::open(playable playab)
 {
-    playable_ = std::move(playab);
+    cur_playable_set(std::move(playab));
 
     close();
     subtitle_selected_index_ = -1;
     subtitle_source_ = subtitle_source_t::none;
-    primary_resource_path_ = playable_.path();
+    primary_resource_path_ = cur_playable().path();
     pause_playback();
 
 
-    std::cerr << "\n---FIXMENM Open playable ---\n" << playable_.json().dump(4) << "\n FIXMENM\n";
+    std::cerr << "\n---FIXMENM Open playable ---\n" << cur_playable().json().dump(4) << "\n FIXMENM\n";
     //    configuration.dbg_print(); // FIXMENM
 
-    start_time_pos_ = playable_.start_time();
-    primary_source_stream_ = std::make_unique<cpaf::video::play_stream>([this]() {return torrents_get();});
-    const bool ok = open_primary_stream(playable_.path());
+    start_time_pos_ = cur_playable().start_time();
+    primary_source_stream_ = std::make_unique<cpaf::video::play_stream>([this]() {return torrents_get();}, &primary_stream_state_);
+    const bool ok = open_primary_stream(cur_playable().path());
 
     const bool force = true;
-    playable_update_calculated(force);
+    cur_playable_upd_calc(force);
 
     auto language_code = configuration.str("subtitles", "language_code");
-    const auto entry = playable_.find_best_subtitle(language_code);
+    const auto entry = cur_playable().find_best_subtitle(language_code);
 
     subtitle_select(entry.language_code, entry.subtitle_adjust_offset);
 
@@ -141,6 +144,7 @@ void player::open_async(const std::string& resource_path, std::chrono::microseco
 
 /**
  *  @todo If threads are taking too long to close, then force close/delete them!
+ *  @todo Perhaps a good idea to pause audio device as one of the first things!
  *
 */
 void player::close()
@@ -148,8 +152,8 @@ void player::close()
     if (!primary_source_stream_) {
         return;
     }
+    primary_stream_state() = stream_state_t::finished;
     if (media_pipeline_threads_) {
-        set_stream_state(stream_state_t::inactive);
         resume_playback();
         media_pipeline_threads_->terminate();
         media_pipeline_threads_->wait_for_all_terminated();
@@ -159,10 +163,11 @@ void player::close()
         primary_source_stream_->close();
         primary_source_stream_.reset(nullptr);
     }
-    audio_device_.pause(); // Pause audio
+    audio_device_.pause(); // Pause audio.
     primary_resource_path_.clear();
     video_codec_ctx_ = av_codec_context{};
     audio_codec_ctx_ = av_codec_context{};
+    primary_stream_state() = stream_state_t::inactive;
 }
 
 void player::close_async()
@@ -171,8 +176,10 @@ void player::close_async()
     open_thread_->detach();
 }
 
+/// @todo This function most likely needs a more solid implementation.
+///       I expect that it will crash often if called
 void player::cancel_async_open() {
-    set_stream_state(stream_state_t::inactive);
+    primary_stream_state() = stream_state_t::inactive;
     open_thread_.reset(nullptr);
 }
 
@@ -238,23 +245,13 @@ bool player::is_playing() const
     if (!primary_source_stream_) {
         return false;
     }
-    const auto cur_stream_state_int = to_int(stream_state());
+    const auto cur_stream_state_int = to_int(primary_stream_state());
     return cur_stream_state_int >= to_int(stream_state_t::playing);
 }
 
-void player::set_stream_state(stream_state_t stream_state)
-{
-    if (!primary_source_stream_) {
-        primary_stream().stream_state() = stream_state;;
-    }
-}
-
-stream_state_t player::stream_state() const
-{
-    if (!primary_source_stream_) {
-        return stream_state_t::inactive;
-    }
-    return primary_stream().stream_state();
+const playable& player::cur_playable() const {
+    // std::scoped_lock<std::mutex> lock(current_playable_mutex_);
+    return current_playable_;
 }
 
 // ----------------
@@ -446,7 +443,7 @@ void player::enqueue_subtitle_file(const std::string& subtitle_path,
 
 void player::subtitle_select(const std::string& language_code, std::chrono::microseconds subtitle_adjust_offset)
 {
-    const int32_t sel_index = playable_.selectable_subtitle_index_of(language_code);
+    const int32_t sel_index = cur_playable().selectable_subtitle_index_of(language_code);
     subtitle_select(sel_index, subtitle_adjust_offset);
 }
 
@@ -721,7 +718,7 @@ void player::init_video(const system_window& main_window)
 bool player::open_stream(const std::string& resource_path, stream_type_t sti)
 {
     const auto index = to_size_t(sti);
-    source_streams_[index] = std::make_unique<play_stream>([this]() {return torrents_get();});
+    source_streams_[index] = std::make_unique<play_stream>([this]() {return torrents_get();}, nullptr);
     const auto open_ok = source_streams_[index]->open(resource_path);
 
     return open_ok;
@@ -760,7 +757,7 @@ void player::handle_stream_state()
         return;
     }
     auto stream_state_expected = stream_state_t::open;
-    if (stream_state_reference().compare_exchange_strong(stream_state_expected, stream_state_t::playing)) {
+    if (primary_stream_state().compare_exchange_strong(stream_state_expected, stream_state_t::playing)) {
         start_playing(start_time_pos_);
         if (cb_start_playing_) { cb_start_playing_(); }
     }
@@ -770,7 +767,7 @@ void player::torrent_finished_event(std::shared_ptr<cpaf::torrent::torrent> tor_
 {
     if (tor_file) {
         auto stream_state_expected = stream_state_t::playing;
-        stream_state_reference().compare_exchange_strong(stream_state_expected, stream_state_t::playing_local);
+        primary_stream_state().compare_exchange_strong(stream_state_expected, stream_state_t::playing_local);
     }
 
 }
@@ -778,16 +775,17 @@ void player::torrent_finished_event(std::shared_ptr<cpaf::torrent::torrent> tor_
 void player::on_configuration_changed()
 {
     const bool force = true;
-    playable_update_calculated(force);
+    cur_playable_upd_calc(force);
 }
 
-void player::playable_update_calculated(bool force)
+void player::cur_playable_upd_calc(bool force)
 {
+    // std::scoped_lock<std::mutex> lock(current_playable_mutex_);
     if (primary_source_stream_) {
-        playable_.update_calculated(tr(), &primary_source_stream_->streams_info(), force);
+        current_playable_.update_calculated(tr(), &primary_source_stream_->streams_info(), force);
     }
     else {
-        playable_.update_calculated(tr(), nullptr, force);
+        current_playable_.update_calculated(tr(), nullptr, force);
     }
 }
 
@@ -808,7 +806,7 @@ void player::update_screen_size_factor()
 
 bool player::show_stream_state() const
 {
-    const auto ss = stream_state();
+    const auto& ss = primary_stream_state();
     return ss == stream_state_t::opening || ss == stream_state_t::waiting_for_data;
 }
 
@@ -845,6 +843,12 @@ void player::push_paused()
 void player::pop_paused()
 {
     internal_paused_set(save_playback_is_paused_state_);
+}
+
+void player::cur_playable_set(playable&& playab)
+{
+    // std::scoped_lock<std::mutex> lock(current_playable_mutex_);
+    current_playable_ = std::move(playab);
 }
 
 } // END namespace cpaf::gui::video

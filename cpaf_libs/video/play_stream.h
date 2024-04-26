@@ -16,7 +16,8 @@ public:
     // -------------------------
     // --- Constructors etc. ---
     // -------------------------
-    explicit play_stream(get_torrents_fn get_torrents_function);
+    explicit play_stream(get_torrents_fn get_torrents_function,
+                         std::atomic<stream_state_t>* stream_state_ptr);
      ~play_stream();
     bool                        open                    (const std::string& resource_path);
     void                        close                   ();

@@ -12,6 +12,7 @@
 #include <cpaf_libs/gui/video/pipeline_threads/subtitle_downloader_thread.h>
 #include <cpaf_libs/gui/video/config.h>
 #include <cpaf_libs/gui/video/data_definitions/playable.h>
+// #include <cpaf_libs/gui/video/pipeline_threads/play_handler_thread.h>
 
 namespace cpaf::audio {
 class device;
@@ -33,8 +34,10 @@ namespace cpaf::gui::video {
 class render;
 class controls;
 
+
 class player
 {
+    // friend class play_handler_thread;
 public:
     using audio_play_callback_t  = cpaf::audio::device_base::play_callback_t;
 
@@ -77,14 +80,13 @@ public:
     // ----------------------------------
     // --- Current media playing info ---
     // ----------------------------------
-    std::chrono::microseconds       current_time            () const { return cur_media_time().current_time_pos(); }
-    std::chrono::microseconds       total_time              () const;
-    std::chrono::microseconds       remaining_time          () const { return total_time() - current_time(); }
-    bool                            is_playing              () const;
-    void                            set_stream_state        (stream_state_t stream_state);
-    stream_state_t                  stream_state            () const;
-    std::atomic<stream_state_t>&    stream_state_reference  ()       { return primary_stream().stream_state(); }
-    const playable&                 cur_playable            () const { return playable_; }
+    std::chrono::microseconds           current_time            () const { return cur_media_time().current_time_pos(); }
+    std::chrono::microseconds           total_time              () const;
+    std::chrono::microseconds           remaining_time          () const { return total_time() - current_time(); }
+    bool                                is_playing              () const;
+    const std::atomic<stream_state_t>&  primary_stream_state    () const { return primary_stream_state_; }
+    std::atomic<stream_state_t>&        primary_stream_state    ()       { return primary_stream_state_; }
+    const playable&                     cur_playable            () const;
 
     // ----------------
     // --- Contexts ---
@@ -135,11 +137,11 @@ public:
     subtitle_source_t                   subtitle_source         () const { return subtitle_source_; }
     void                                subtitle_select         (const std::string& language_code, std::chrono::microseconds subtitle_adjust_offset = {});
     void                                subtitle_select         (int32_t selectable_subtitle_index, std::chrono::microseconds subtitle_adjust_offset = {});
-    void                                set_subtitle_user       (std::string subtitle_path)         { playable_.set_subtitle_user(subtitle_path);   }
-    std::string                         subtitle_user           () const                            { return playable_.subtitle_user();             }
+    void                                set_subtitle_user       (std::string subtitle_path)         { current_playable_.set_subtitle_user(subtitle_path);   }
+    std::string                         subtitle_user           () const                            { return current_playable_.subtitle_user();             }
 
     const cpaf::video::subtitle_source_entries_t&
-    selectable_subtitles                                        () const { return playable_.selectable_subtitles(); }
+    selectable_subtitles                                        () const { return current_playable_.selectable_subtitles(); }
     int32_t                             subtitle_selected_index () const;
 
     size_t                              subtitle_stream_index	() const;
@@ -229,7 +231,7 @@ private:
     void                            handle_stream_state     ();
     void                            torrent_finished_event  (std::shared_ptr<cpaf::torrent::torrent> tor_file);
     void                            on_configuration_changed();
-    void                            playable_update_calculated(bool force);
+    void                            cur_playable_upd_calc   (bool force);
 
     void                            update_screen_size_factor();
     bool                            show_stream_state       () const;
@@ -237,16 +239,19 @@ private:
     void                            internal_paused_set     (bool is_paused);
     void                            push_paused             ();
     void                            pop_paused              ();
+    void                            cur_playable_set        (playable&& playab);
 
 
     // ----------------------------
     // --- PRIVATE: Member vars ---
     // ----------------------------
     using source_streams_array_t = std::array<std::unique_ptr<cpaf::video::play_stream>, cpaf::video::stream_type_index_size()>;
-    playable                                        playable_;
+    std::atomic<stream_state_t>                     primary_stream_state_           = stream_state_t::inactive;
     cpaf::audio::device&                            audio_device_;
     cpaf::locale::translator&                       tr_;
     subtitle_downloader_thread                      subtitle_downloader_thread_;
+    // play_handler_thread                             play_handler_thread_;
+    playable                                        current_playable_;
     std::unique_ptr<cpaf::video::play_stream>       primary_source_stream_;
     std::chrono::microseconds                       start_time_pos_;
     std::unique_ptr<pipeline_threads>               media_pipeline_threads_;
@@ -267,6 +272,7 @@ private:
     mutable std::mutex                              video_codec_mutex_;
     mutable std::mutex                              audio_codec_mutex_;
     mutable std::mutex                              subtitle_codec_mutex_;
+    // mutable std::mutex                              current_playable_mutex_;
     cpaf::video::audio_resampler                    audio_resampler_;
 
     std::string                                     primary_resource_path_;

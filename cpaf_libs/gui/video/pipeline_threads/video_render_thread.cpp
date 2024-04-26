@@ -102,7 +102,7 @@ bool video_render_thread::video_frame_do_render(
     bool new_frame_was_read = false;
     time_to_current_frame_ = time_to_current_frame(current_frame);
     if (time_to_current_frame_ > 5s) {
-        std::cerr << "LOG_WARN Long time frame, state: '"  << to_string(player_.stream_state()) << "'"
+        std::cerr << "LOG_WARN Long time frame, state: '"  << to_string(player_.primary_stream_state()) << "'"
                   << " dist time : " << duration_cast<seconds>(time_to_current_frame(current_frame))
                   << " frame ps time: " << cpaf::time::format_h_m_s_ms(current_frame.presentation_time())
                   << " cur video time: " << cpaf::time::format_h_m_s_ms(player_.cur_media_time().video_time_pos())

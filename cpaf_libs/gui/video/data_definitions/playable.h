@@ -52,7 +52,6 @@ public:
     void                            float_set               (const std::string& id, float val)                  { jo_[id] = val; }
     void                            time_s_set              (const std::string& id, std::chrono::seconds val)   { jo_[id] = val.count(); }
 
-
     void                            set_path                (std::string path);
     std::string                     path                    () const;
     bool                            has_path                () const    { return !path().empty(); }

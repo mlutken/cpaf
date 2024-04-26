@@ -32,10 +32,11 @@ namespace cpaf::video {
 // --- Constructors etc. ---
 // -------------------------
 
-
-av_format_context::av_format_context(get_torrents_fn get_torrents_function)
-    : get_torrents_function_(get_torrents_function)
-    , custom_io_ptr_(nullptr)
+av_format_context::av_format_context(get_torrents_fn get_torrents_function,
+                                     std::atomic<stream_state_t>* stream_state_ptr)
+    : get_torrents_function_(get_torrents_function),
+      global_stream_state_ptr_(stream_state_ptr),
+      custom_io_ptr_(nullptr)
 {
 }
 
@@ -46,44 +47,55 @@ av_format_context::~av_format_context()
 
 bool av_format_context::open(const std::string& resource_path)
 {
-    stream_state_ = stream_state_t::opening;
+    auto expected_state = stream_state_t::inactive;
+    if (!stream_state().compare_exchange_strong(expected_state, stream_state_t::opening)) {
+        std::cerr << "LOG_ERR: Can't open '" <<  resource_path << "' while another open is in progress\n";
+        return false;
+    }
+    std::cerr << "FIXMENM: Start opening '" <<  resource_path << "'\n";
     resource_path_ = resource_path;
 
     const string protocol_name = protocol_from_uri(resource_path);
-    custom_io_ptr_ = custom_io_base::create(stream_state_, protocol_name, get_torrents_function_);
+    custom_io_ptr_ = custom_io_base::create(stream_state(), protocol_name, get_torrents_function_);
     if (custom_io_ptr_) {
         if (!custom_io_ptr_->open(resource_path)) {
+            stream_state() = stream_state_t::inactive;
             return false;
         }
         if (!(ff_format_context_ = avformat_alloc_context())) {
+            stream_state() = stream_state_t::inactive;
             return false;
         }
 
         if (!custom_io_ptr_->init(ff_format_context_)) {
+            stream_state() = stream_state_t::inactive;
             return false;
         }
         if ( avformat_open_input(&ff_format_context_, nullptr, nullptr, nullptr) != 0) {
+            stream_state() = stream_state_t::inactive;
             return false;
         }
     }
     else if ( avformat_open_input(&ff_format_context_, resource_path_.c_str(), nullptr, nullptr) != 0) {
+        stream_state() = stream_state_t::inactive;
         return false; // Couldn't open resource/file
     }
 
     if ( avformat_find_stream_info(ff_format_context_, nullptr) <0 ) {
+        stream_state() = stream_state_t::inactive;
         return false; // Couldn't find stream information
     }
     read_codec_contexts();
     set_default_selected_streams();
-    ///subtitle_index_set(5); // FIXMENM
-    stream_state_ = stream_state_t::open;
+    stream_state() = stream_state_t::open;
+    std::cerr << "!!!! FIXMENM: DONE opening '" <<  resource_path << "'\n";
     return true;
 }
 
 void av_format_context::close()
 {
+    custom_io_ptr_.reset();
     const std::lock_guard<std::mutex> lock(packet_queues_mutex_);
-    stream_state_ = stream_state_t::inactive;
     for (media_type_t mt = media_type_t::video; mt != media_type_t::SIZE; ++mt) {
         auto media_index = to_size_t(mt);
         selected_stream_per_media_type_[media_index] = illegal_stream_index();
@@ -97,6 +109,7 @@ void av_format_context::close()
         avformat_close_input(&ff_format_context_);
     }
     ff_format_context_ = nullptr;
+    stream_state() = stream_state_t::inactive;
 }
 
 void av_format_context::selected_media_index_set(media_type_t mt, size_t stream_index)
