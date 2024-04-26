@@ -86,7 +86,7 @@ bool video_render_thread::video_frame_do_render(
         flush_queues();
     }
 
-    if (seek_state_ != seek_state_t::ready) {
+    if ( (seek_state_ != seek_state_t::ready) || !threads_running_ ) {
         video_render.render_video_frame(current_frame);
         return false;
     }
@@ -101,7 +101,7 @@ bool video_render_thread::video_frame_do_render(
 
     bool new_frame_was_read = false;
     time_to_current_frame_ = time_to_current_frame(current_frame);
-    if (time_to_current_frame_ > 1s) {
+    if (time_to_current_frame_ > 5s) {
         std::cerr << "LOG_WARN Long time frame, state: '"  << to_string(player_.stream_state()) << "'"
                   << " dist time : " << duration_cast<seconds>(time_to_current_frame(current_frame))
                   << " frame ps time: " << cpaf::time::format_h_m_s_ms(current_frame.presentation_time())
