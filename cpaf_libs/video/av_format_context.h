@@ -109,11 +109,13 @@ public:
     av_packet                   packet_queue_pop_front  (media_type_t mt);
     get_packet_fun              get_packet_function     (media_type_t mt);
     std::chrono::microseconds   packet_queue_pts        (media_type_t mt) const;
-    std::chrono::milliseconds   packet_queue_pts_ms     (media_type_t mt) const;
+    // std::chrono::milliseconds   packet_queue_pts_ms     (media_type_t mt) const;
     void                        flush_packet_queues     ();
 
     // --- Time functions ---
     std::chrono::microseconds   time_from_stream_time   (size_t stream_index, int64_t stream_time_duration) const;
+    std::chrono::microseconds   time_from_stream_time   (size_t stream_index, const av_packet& packet) const;
+    void                        set_packet_presentation_time (size_t stream_index, av_packet& packet) const;
     std::chrono::microseconds   presentation_time       (const av_packet& packet) const;
     std::chrono::milliseconds   presentation_time_ms    (const av_packet& packet) const;
     std::chrono::microseconds   decode_time             (const av_packet& packet) const;

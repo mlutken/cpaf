@@ -20,6 +20,7 @@ extern "C"
 #include <algorithm>
 #include <fmt/format.h>
 #include <cpaf_libs/locale/language_codes.h>
+#include <cpaf_libs/time/cpaf_time.h>
 #include <cpaf_libs/video/io/custom_io_base.h>
 
 using namespace std;
@@ -320,15 +321,26 @@ av_packet av_format_context::read_packet() const
     const auto stream_index = packet.stream_index();
     packet.media_type_set(stream_media_type(stream_index));
 
-    // Set a presentation time for the packet
-    auto pts = time_from_stream_time(stream_index, packet.pts_stream_base());
-    if (!packet.pts_valid()) {
-        pts = time_from_stream_time(stream_index, packet.dts_stream_base());    // Fall back to decode timestamp if pts is invalid!
-    }
-    packet.presentation_time_set(pts);
-///    if (packet.media_type_get() == media_type::subtitle) {
-///        std::cerr << "FIXMENM packet media type:" << to_string(packet.media_type_get()) << "\n";
-///    }
+    /// Set a presentation time for the packet
+    /// auto pts = time_from_stream_time(stream_index, packet.pts_stream_base());
+    /// if (!packet.pts_valid()) {
+    ///     pts = time_from_stream_time(stream_index, packet.dts_stream_base());    // Fall back to decode timestamp if pts is invalid!
+    /// }
+    /// packet.presentation_time_set(pts);
+
+    set_packet_presentation_time(stream_index, packet);
+
+    // if (packet.media_type_get() == media_type_t::video) {
+    //     if (packet.ff_packet_) {
+    //         std::cerr   << "FIXMENM packet media type:" << to_string(packet.media_type_get())
+    //                     << " ps: " << cpaf::time::format_h_m_s_ms(packet.presentation_time())
+    //                     << " pts_fixmenm: " << cpaf::time::format_h_m_s_ms(pts_fixmenm)
+    //                     << " pts: " << packet.ff_packet_->pts
+    //                     << " dts: " << packet.ff_packet_->dts
+    //                     << "\n";
+    //     }
+    // }
+
     return packet;
 }
 
@@ -450,6 +462,7 @@ av_packet av_format_context::packet_queue_front(media_type_t mt)
 
 av_packet av_format_context::packet_queue_pop_front(media_type_t mt)
 {
+    const std::lock_guard<std::mutex> lock(packet_queues_mutex_);
     packet_queue_t& queue = packet_queue_get(mt);
 
 //    if (mt == media_type::subtitle) {
@@ -464,7 +477,6 @@ av_packet av_format_context::packet_queue_pop_front(media_type_t mt)
         return av_packet();
     }
 
-    const std::lock_guard<std::mutex> lock(packet_queues_mutex_);
     if (queue.empty()) {
         return av_packet();
     }
@@ -493,10 +505,10 @@ std::chrono::microseconds av_format_context::packet_queue_pts(media_type_t mt) c
     return presentation_time(packet_queue(mt).front());
 }
 
-std::chrono::milliseconds av_format_context::packet_queue_pts_ms(media_type_t mt) const
-{
-    return std::chrono::duration_cast<std::chrono::milliseconds>(packet_queue_pts(mt));
-}
+// std::chrono::milliseconds av_format_context::packet_queue_pts_ms(media_type_t mt) const
+// {
+//     return std::chrono::duration_cast<std::chrono::milliseconds>(packet_queue_pts(mt));
+// }
 
 void av_format_context::flush_packet_queues()
 {
@@ -518,6 +530,20 @@ std::chrono::microseconds av_format_context::time_from_stream_time(
     av_base_duration av_duration(av_time_point);
 
     return std::chrono::duration_cast<std::chrono::microseconds>(av_duration);
+}
+
+std::chrono::microseconds av_format_context::time_from_stream_time(size_t stream_index, const av_packet& packet) const
+{
+    auto pts = time_from_stream_time(stream_index, packet.pts_stream_base());
+    if (!packet.pts_valid()) {
+        pts = time_from_stream_time(stream_index, packet.dts_stream_base());    // Fall back to decode timestamp if pts is invalid!
+    }
+    return pts;
+}
+
+void av_format_context::set_packet_presentation_time(size_t stream_index, av_packet& packet) const
+{
+    packet.presentation_time_set(time_from_stream_time(stream_index, packet));
 }
 
 std::chrono::microseconds av_format_context::presentation_time(const av_packet& packet) const
