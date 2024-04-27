@@ -37,6 +37,7 @@ namespace cpaf::gui::video {
 void audio_render_thread::run()
 {
     thread_is_running_ = true;
+    thread_is_stopped_ = false;
 }
 
 void audio_render_thread::terminate()
@@ -62,11 +63,13 @@ std::chrono::microseconds audio_render_thread::dbg_audio_front_time() const
 
 void audio_render_thread::audio_callback_function(uint8_t* stream, int32_t length)
 {
-    if (!threads_running_) {
-        thread_is_running_ = false;
-    }
+    thread_is_running_ = (threads_running_ == true);
+    thread_is_stopped_ = (threads_started_ == false);
 
-    if (!thread_is_running_) {
+    const bool is_inactive = !thread_is_running_ || thread_is_stopped_;
+    /// const bool is_inactive = !thread_is_running_ ;
+
+    if (is_inactive) {
         render_audio_silence(stream, length);
         return;
     }
@@ -76,7 +79,7 @@ void audio_render_thread::audio_callback_function(uint8_t* stream, int32_t lengt
         return;
     }
 
-    if (player_.cur_media_time().time_is_paused()) {
+    if (threads_paused_) {
         thread_is_paused_ = true;
         render_audio_silence(stream, length);
         return;

@@ -62,6 +62,8 @@ void pipeline_threads::run()
     packet_reader_thread_.run();
     subtitle_reader_thread_.run();
     video_render_thread_.run();
+
+    start();
 }
 
 void pipeline_threads::start()
