@@ -87,7 +87,10 @@ public:
     const std::atomic<stream_state_t>&  primary_stream_state    () const { return primary_stream_state_; }
     std::atomic<stream_state_t>&        primary_stream_state    ()       { return primary_stream_state_; }
     const playable&                     cur_playable            () const;
+    std::chrono::microseconds
+                                        current_io_operation_duration() const;
 
+    bool                                is_waiting_for_io       () const { return current_io_operation_duration() > std::chrono::seconds(3); }
     // ----------------
     // --- Contexts ---
     // ----------------
@@ -234,7 +237,7 @@ private:
     void                            cur_playable_upd_calc   (bool force);
 
     void                            update_screen_size_factor();
-    bool                            show_stream_state       () const;
+    bool                            should_show_stream_state       () const;
     bool                            set_subtitle_helper     (int32_t selectable_subtitle_index);
     void                            internal_paused_set     (bool is_paused);
     void                            push_paused             ();

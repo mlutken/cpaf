@@ -613,6 +613,13 @@ std::chrono::microseconds av_format_context::total_time() const
     return std::chrono::microseconds(ff_format_context_->duration);
 }
 
+std::chrono::microseconds av_format_context::current_io_operation_duration() const
+{
+    if (!custom_io_ptr_) {
+        return std::chrono::microseconds(0);
+    }
+    return custom_io_ptr_->current_io_operation_duration();
+}
 
 // -----------------------
 // --- Debug functions ---

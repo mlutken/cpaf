@@ -49,6 +49,8 @@ public:
     std::atomic<stream_state_t>&        stream_state    ()       { return format_context_.stream_state(); }
     const std::atomic<stream_state_t>&  stream_state    () const { return format_context_.stream_state(); }
 
+    std::chrono::microseconds
+                                current_io_operation_duration() const;
 
     // ---------------------
     // --- Context/codec ---

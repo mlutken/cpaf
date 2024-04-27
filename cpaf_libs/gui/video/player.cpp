@@ -277,6 +277,14 @@ const playable& player::cur_playable() const {
     return current_playable_;
 }
 
+std::chrono::microseconds player::current_io_operation_duration() const
+{
+    if (!primary_source_stream_) {
+        return std::chrono::microseconds(0);
+    }
+    return primary_source_stream_->current_io_operation_duration();
+}
+
 // ----------------
 // --- Contexts ---
 // ----------------
@@ -556,7 +564,7 @@ void player::frame_update()
     if (video_controls_) {
         video_controls_->show(show_controls_);
         video_controls_->render();
-        if (show_stream_state()) {
+        if (should_show_stream_state()) {
             video_controls_->render_stream_state();
         }
     }
@@ -825,12 +833,13 @@ void player::update_screen_size_factor()
     }
 }
 
-bool player::show_stream_state() const
+/// @todo Find right should_show_stream_state() condition
+bool player::should_show_stream_state() const
 {
     return true; // FIXMENM
     const auto& ss = primary_stream_state();
-    // return ss == stream_state_t::opening || ss == stream_state_t::waiting_for_data;
-    return ss == stream_state_t::opening || ss == stream_state_t::waiting_for_data || ss == stream_state_t::closing;
+    return ss == stream_state_t::opening || is_waiting_for_io();
+    // return ss == stream_state_t::opening || ss == stream_state_t::closing || is_waiting_for_io();
 }
 
 bool player::set_subtitle_helper(int32_t selectable_subtitle_index)

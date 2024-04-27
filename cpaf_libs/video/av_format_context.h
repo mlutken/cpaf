@@ -128,6 +128,8 @@ public:
     std::chrono::milliseconds   best_effort_pts_ms      (const av_frame& frame) const;
 
     std::chrono::microseconds   total_time              () const;
+    std::chrono::microseconds
+                                current_io_operation_duration() const;
 
     // --- Debug functions ---
     void                        dump                    () const;

@@ -171,12 +171,20 @@ void controls_default::do_render()
 
 void controls_default::do_render_stream_state()
 {
+
     ///    auto window_flags = ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings|ImGuiWindowFlags_NoInputs;
     auto window_flags = ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings|ImGuiWindowFlags_NoInputs;
 
     bool visible = true;
 
-    std::string stream_state_str = to_string(player_.primary_stream_state());
+    std::string stream_state_str;
+    if (player_.is_waiting_for_io()) {
+        const auto io_time_secs = duration_cast<seconds>(player_.current_io_operation_duration());
+        stream_state_str = tr().tr("Waiting for data") + " " + std::to_string(io_time_secs.count()) + " s";
+    }
+    else {
+        stream_state_str = to_string(player_.primary_stream_state());
+    }
 
     stream_state_size_.x = (stream_state_font_size_pixels_ * static_cast<int32_t>(stream_state_str.size()))*0.5f;
     stream_state_size_.y = stream_state_font_size_pixels_ + 2*general_margin;
