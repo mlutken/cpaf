@@ -25,6 +25,8 @@ public:
     ~torrent_io() override;
 private:
 
+    void            torrent_cleanup         ();
+
     std::string     do_protocol_name        () const override { return "magnet"; }
     bool            do_open                 (const std::string& resource_path) override;
     void            do_close                () override;

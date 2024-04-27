@@ -36,10 +36,7 @@ custom_io_base::custom_io_base(std::atomic<stream_state_t>& stream_state)
 
 custom_io_base::~custom_io_base()
 {
-    if (ff_avio_context_) {
-         av_freep(&ff_avio_context_->buffer);
-    }
-    avio_context_free(&ff_avio_context_);
+    cleanup();
 }
 
 bool custom_io_base::init(AVFormatContext* ff_format_context)
@@ -72,10 +69,37 @@ bool custom_io_base::init(AVFormatContext* ff_format_context)
     return true;
 }
 
+/// @todo Do we need to call
+/// av_freep(&ff_avio_context_buffer_);
+/// ?
+/// Or is the destructor av_freep(&ff_avio_context_->buffer); enough?
+/// Seems it requires that avio_alloc_context sets the ff_avio_context_->buffer before doing to much else!
+void custom_io_base::cleanup()
+{
+    if (ff_avio_context_) {
+        av_freep(&ff_avio_context_->buffer);
+        avio_context_free(&ff_avio_context_);
+        ff_avio_context_ = nullptr;
+    }
+
+    // TODO: Is this needed? See function doc comments above!
+    // if (ff_avio_context_buffer_) {
+    //     av_freep(&ff_avio_context_buffer_);
+    //     ff_avio_context_buffer_ = nullptr;
+    // }
+
+    ff_avio_context_buffer_ = nullptr;
+}
+
 bool custom_io_base::open(const std::string& resource_path)
 {
     resource_path_ = resource_path;
     return do_open(resource_path);
+}
+
+void custom_io_base::close() {
+    do_close();
+    cleanup();
 }
 
 int custom_io_base::do_write_packet(uint8_t* , int )

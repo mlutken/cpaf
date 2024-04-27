@@ -21,7 +21,13 @@ torrent_io::torrent_io(std::atomic<stream_state_t>& stream_state,
 
 torrent_io::~torrent_io()
 {
-    close();
+    torrent_cleanup();
+}
+
+/// @todo torrent::file::close() is not yet implemented!
+void torrent_io::torrent_cleanup()
+{
+    tor_file_.close();
 }
 
 bool torrent_io::do_open(const std::string& resource_path)
@@ -54,9 +60,7 @@ bool torrent_io::do_open(const std::string& resource_path)
 /// @todo torrent::file::close() is not yet implemented!
 void torrent_io::do_close()
 {
-    if (!tor_file_.is_valid()) {
-        tor_file_.close();
-    }
+    torrent_cleanup();
 }
 
 bool torrent_io::do_is_open() const

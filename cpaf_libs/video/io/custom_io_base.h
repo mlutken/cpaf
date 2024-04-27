@@ -35,7 +35,7 @@ public:
     virtual ~custom_io_base();
     std::string         protocol_name           () const { return do_protocol_name(); }
     bool                open                    (const std::string& resource_path);
-    void                close                   () { do_close(); }
+    void                close                   ();
     bool                is_open                 () { return do_is_open(); }
     int64_t             size                    () const noexcept { return do_size(); }
     size_t              buffer_size             () const noexcept { return do_buffer_size(); };
@@ -53,6 +53,7 @@ private:
     AVIOContext*        ff_avio_context_        = nullptr;
     std::string         resource_path_;
 
+    void                cleanup                 ();
 
     virtual std::string do_protocol_name        () const { return ""; }
     virtual bool        do_open                 (const std::string& resource_path) = 0;
