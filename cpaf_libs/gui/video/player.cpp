@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <fmt/format.h>
 #include <fmt/chrono.h>
+#include <concurrent/concurrent_utils.hpp>
 #include <cpaf_libs/system/cpaf_session.h>
 #include <cpaf_libs/audio/cpaf_audio_device.h>
 #include <cpaf_libs/time/cpaf_time.h>
@@ -154,15 +155,21 @@ void player::open_async(const std::string& resource_path, std::chrono::microseco
 void player::close()
 {
     std::cerr << fmt::format("FIXMENM close 1 [{}]\n", to_string(primary_stream_state()));
+    // if (media_pipeline_threads_) {
+    //     media_pipeline_threads_->stop();
+    // }
+
     if (!primary_source_stream_) {
         return;
     }
+
     std::cerr << fmt::format("FIXMENM close 2 [{}]\n", to_string(primary_stream_state()));
-    auto expected_state = stream_state_t::playing;
-    while (!primary_stream_state().compare_exchange_strong(expected_state, stream_state_t::closing) ) {
-        std::cerr << "FIXMENM waiting for ready to start closing\n";
-        std::this_thread::sleep_for(1ms);
-    }
+    // [[maybe_unused]] estl::wait_for_expected_value(primary_stream_state(), stream_state_t::playing, 5s);
+
+    // while (!(primary_stream_state() == stream_state_t::playing)) {
+    //     std::cerr << "FIXMENM waiting for ready to start closing\n";
+    //     std::this_thread::sleep_for(1ms);
+    // }
     std::cerr << fmt::format("\n---FIXMENM close 3 [{}] Start closing ---\n", to_string(primary_stream_state()));
     std::cerr << fmt::format("FIXMENM path: {}\n----------------------\n\n", cur_playable().path());
 
@@ -261,8 +268,8 @@ bool player::is_playing() const
     if (!primary_source_stream_) {
         return false;
     }
-    const auto cur_stream_state_int = to_int(primary_stream_state());
-    return cur_stream_state_int >= to_int(stream_state_t::playing);
+    return  primary_stream_state_ == stream_state_t::playing ||
+            primary_stream_state_ == stream_state_t::waiting_for_data;
 }
 
 const playable& player::cur_playable() const {
@@ -820,6 +827,7 @@ void player::update_screen_size_factor()
 
 bool player::show_stream_state() const
 {
+    return true; // FIXMENM
     const auto& ss = primary_stream_state();
     // return ss == stream_state_t::opening || ss == stream_state_t::waiting_for_data;
     return ss == stream_state_t::opening || ss == stream_state_t::waiting_for_data || ss == stream_state_t::closing;
