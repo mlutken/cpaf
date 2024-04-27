@@ -156,9 +156,15 @@ void player::close()
     if (!primary_source_stream_) {
         return;
     }
+    auto expected_state = stream_state_t::playing;
+    while (!primary_stream_state().compare_exchange_strong(expected_state, stream_state_t::closing) ) {
+        std::cerr << "FIXMENM waiting for ready to start closing\n";
+        std::this_thread::sleep_for(1ms);
+    }
+    pause_playback();
+    audio_device_.pause(); // Pause audio.
     primary_stream_state() = stream_state_t::closing;
     if (media_pipeline_threads_) {
-        resume_playback();
         media_pipeline_threads_->terminate();
         media_pipeline_threads_->wait_for_all_terminated();
         media_pipeline_threads_.reset(nullptr);
@@ -167,7 +173,6 @@ void player::close()
         primary_source_stream_->close();
         primary_source_stream_.reset(nullptr);
     }
-    audio_device_.pause(); // Pause audio.
     primary_resource_path_.clear();
     video_codec_ctx_ = av_codec_context{};
     audio_codec_ctx_ = av_codec_context{};
