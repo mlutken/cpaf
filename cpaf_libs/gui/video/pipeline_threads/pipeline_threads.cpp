@@ -21,11 +21,11 @@ pipeline_threads::pipeline_threads(player& owning_player)
     : player_(owning_player)
     , audio_samples_queue_(1000)
     , subtitles_queue_(100)
-    , packet_reader_thread_(owning_player, threads_running_, threads_paused_, seek_state_)
-    , audio_resampler_thread_(owning_player, audio_samples_queue_, threads_running_, threads_paused_)
-    , audio_render_thread_(owning_player, *this, audio_samples_queue_, threads_running_, threads_paused_, seek_state_)
-    , subtitle_reader_thread_(owning_player, subtitles_queue_, threads_running_, threads_paused_, seek_state_)
-    , video_render_thread_(owning_player, audio_samples_queue_, subtitles_queue_, threads_running_, threads_paused_, seek_state_)
+    , packet_reader_thread_(owning_player, threads_running_, threads_started_, threads_paused_, seek_state_)
+    , audio_resampler_thread_(owning_player, audio_samples_queue_, threads_running_, threads_started_, threads_paused_)
+    , audio_render_thread_(owning_player, *this, audio_samples_queue_, threads_running_, threads_started_, threads_paused_, seek_state_)
+    , subtitle_reader_thread_(owning_player, subtitles_queue_, threads_running_, threads_started_, threads_paused_, seek_state_)
+    , video_render_thread_(owning_player, audio_samples_queue_, subtitles_queue_, threads_running_, threads_started_, threads_paused_, seek_state_)
 {
     packet_reader_thread_.pipeline_threads_set(this);
 }
@@ -55,12 +55,23 @@ pipeline_threads::audio_play_callback_t pipeline_threads::audio_callback_get()
 
 void pipeline_threads::run()
 {
+    threads_running_ = true;
     seek_state_ = seek_state_t::ready;
     audio_render_thread_.run();
     audio_resampler_thread_.run();
     packet_reader_thread_.run();
     subtitle_reader_thread_.run();
     video_render_thread_.run();
+}
+
+void pipeline_threads::start()
+{
+    threads_started_ = true;
+}
+
+void pipeline_threads::stop()
+{
+    threads_started_ = false;
 }
 
 void pipeline_threads::terminate()
@@ -133,10 +144,27 @@ bool pipeline_threads::all_threads_paused() const
         ;
 }
 
+bool pipeline_threads::all_threads_stopped() const
+{
+    if (!threads_running_) {
+        return true;
+    }
+    const bool packet_stopped = packet_reader_thread_.thread_is_stopped();
+    const bool resampler_stopped = audio_resampler_thread_.thread_is_stopped();
+    const bool audio_render_stopped = audio_render_thread_.thread_is_stopped();
+    const bool subtitle_stopped = subtitle_reader_thread_.thread_is_stopped();
+
+    return  packet_stopped       &&
+           resampler_stopped    &&
+           audio_render_stopped &&
+           subtitle_stopped
+        ;
+}
+
 bool pipeline_threads::all_threads_terminated() const
 {
     if (threads_running_) {
-        return false;
+        return true;
     }
     const bool packet_terminated        = !packet_reader_thread_.thread_is_running();
     const bool resampler_terminated     = !audio_resampler_thread_.thread_is_running();
@@ -155,7 +183,17 @@ bool pipeline_threads::wait_for_all_paused(std::chrono::milliseconds max_wait_ti
     const auto ts_end = std::chrono::steady_clock::now() + max_wait_time;
     while (!all_threads_paused() && (std::chrono::steady_clock::now() < ts_end))
     {
-        std::this_thread::sleep_for(100ms);
+        std::this_thread::sleep_for(10ms);
+    }
+    return std::chrono::steady_clock::now() < ts_end;
+}
+
+bool pipeline_threads::wait_for_all_stopped(std::chrono::milliseconds max_wait_time) const
+{
+    const auto ts_end = std::chrono::steady_clock::now() + max_wait_time;
+    while (!all_threads_stopped() && (std::chrono::steady_clock::now() < ts_end))
+    {
+        std::this_thread::sleep_for(10ms);
     }
     return std::chrono::steady_clock::now() < ts_end;
 }
@@ -165,7 +203,7 @@ bool pipeline_threads::wait_for_all_terminated(std::chrono::milliseconds max_wai
     const auto ts_end = std::chrono::steady_clock::now() + max_wait_time;
     while (!all_threads_terminated() && (std::chrono::steady_clock::now() < ts_end))
     {
-        std::this_thread::sleep_for(100ms);
+        std::this_thread::sleep_for(10ms);
     }
     return std::chrono::steady_clock::now() < ts_end;
 }

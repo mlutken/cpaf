@@ -28,6 +28,7 @@ class packet_reader_thread
 public:
     packet_reader_thread(player& owning_player,
                          const std::atomic_bool& threads_running,
+                         const std::atomic_bool& threads_started,
                          const std::atomic_bool& threads_paused,
                          std::atomic<cpaf::video::seek_state_t>& seek_state);
     void                                pipeline_threads_set    (pipeline_threads* ptr)     { pipeline_threads_ptr_ = ptr; }
@@ -37,8 +38,9 @@ public:
 
     std::chrono::microseconds           seek_from_position      () const { return seek_from_position_; }
     std::chrono::microseconds           seek_position_requested () const { return seek_time_pos_requested_; }
-    const std::atomic_bool&             thread_is_paused        () const { return thread_is_paused_; }
     const std::atomic_bool&             thread_is_running       () const { return thread_is_running_; }
+    const std::atomic_bool&             thread_is_stopped       () const { return thread_is_stopped_; }
+    const std::atomic_bool&             thread_is_paused        () const { return thread_is_paused_; }
     void                                debug_print_info        () const;
 
 private:
@@ -51,10 +53,14 @@ private:
 
     player&                                 player_;
     const std::atomic_bool&                 threads_running_;
+    const std::atomic_bool&                 threads_started_;
     const std::atomic_bool&                 threads_paused_;
+
     std::atomic<cpaf::video::seek_state_t>& seek_state_;
-    std::atomic_bool                        thread_is_paused_ = true;
+
     std::atomic_bool                        thread_is_running_ = false;
+    std::atomic_bool                        thread_is_stopped_ = true;
+    std::atomic_bool                        thread_is_paused_ = true;
 
     std::chrono::microseconds               seek_from_position_;
     std::chrono::microseconds               seek_time_pos_requested_;

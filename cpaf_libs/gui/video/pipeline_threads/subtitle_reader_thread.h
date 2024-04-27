@@ -30,14 +30,18 @@ public:
     subtitle_reader_thread(player& owning_player,
                            cpaf::video::subtitles_queue& subtitles_queue,
                            const std::atomic_bool& threads_running,
+                           const std::atomic_bool& threads_started,
                            const std::atomic_bool& threads_paused,
                            std::atomic<cpaf::video::seek_state_t>& seek_state);
 
     ~subtitle_reader_thread();
 
     void                                run                     ();
-    const std::atomic_bool&             thread_is_paused        () const { return thread_is_paused_; }
+
     const std::atomic_bool&             thread_is_running       () const { return thread_is_running_; }
+    const std::atomic_bool&             thread_is_stopped       () const { return thread_is_stopped_; }
+    const std::atomic_bool&             thread_is_paused        () const { return thread_is_paused_; }
+
     void                                subtitle_container_set  (std::unique_ptr<subtitle_container> container);
 
     void                                flush                   ();
@@ -56,11 +60,16 @@ private:
     std::mutex                          subtitle_container_mutex_;
     player&                             player_;
     cpaf::video::subtitles_queue&       subtitles_queue_;
+
     const std::atomic_bool&             threads_running_;
+    const std::atomic_bool&             threads_started_;
     const std::atomic_bool&             threads_paused_;
+
     std::atomic<cpaf::video::seek_state_t>& seek_state_;
-    std::atomic_bool                    thread_is_paused_ = true;
+
     std::atomic_bool                    thread_is_running_ = false;
+    std::atomic_bool                    thread_is_stopped_ = true;
+    std::atomic_bool                    thread_is_paused_ = true;
     cpaf::video::subtitle_frame         current_subtitle_frame_     {};
 
 

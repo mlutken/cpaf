@@ -20,6 +20,7 @@ namespace cpaf::gui::video {
                                              pipeline_threads& pline_threads,
                                              av_samples_queue& audio_samples_queue,
                                              const std::atomic_bool& threads_running,
+                                             const std::atomic_bool& threads_started,
                                              const std::atomic_bool& threads_paused,
                                              std::atomic<cpaf::video::seek_state_t>& seek_state)
         : player_(owning_player),
@@ -27,6 +28,7 @@ namespace cpaf::gui::video {
           audio_samples_queue_(audio_samples_queue),
           seek_state_(seek_state),
           threads_running_(threads_running),
+          threads_started_(threads_started),
           threads_paused_(threads_paused)
     {
 

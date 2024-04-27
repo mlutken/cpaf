@@ -25,6 +25,7 @@ public:
     audio_resampler_thread( player& owning_player,
                             cpaf::video::av_samples_queue& audio_samples_queue,
                             const std::atomic_bool& threads_running,
+                           const std::atomic_bool& threads_started,
                             const std::atomic_bool& threads_paused);
     void                    audio_resampler_set     (cpaf::video::audio_resampler* resampler){ audio_resampler_ptr_ = resampler; }
     void                    audio_resampler_set     (cpaf::video::audio_resampler& resampler){ audio_resampler_ptr_ = &resampler; }
@@ -32,8 +33,9 @@ public:
     void                    samples_queue_flush_done()                          { samples_queue_flush_in_progress_ = false; samples_queue_flushed_ = true; }
 
     void                    run                     ();
-    const std::atomic_bool& thread_is_paused        () const { return thread_is_paused_; }
     const std::atomic_bool& thread_is_running       () const { return thread_is_running_; }
+    const std::atomic_bool& thread_is_stopped       () const { return thread_is_stopped_; }
+    const std::atomic_bool& thread_is_paused        () const { return thread_is_paused_; }
 
 private:
     void                    thread_function         ();
@@ -45,9 +47,11 @@ private:
     player&                             player_;
     cpaf::video::av_samples_queue&      audio_samples_queue_;
     const std::atomic_bool&             threads_running_;
+    const std::atomic_bool&             threads_started_;
     const std::atomic_bool&             threads_paused_;
-    std::atomic_bool                    thread_is_paused_ = true;
     std::atomic_bool                    thread_is_running_ = false;
+    std::atomic_bool                    thread_is_stopped_ = true;
+    std::atomic_bool                    thread_is_paused_ = true;
 
     cpaf::video::audio_resampler*       audio_resampler_ptr_            = nullptr;
 

@@ -15,10 +15,12 @@ namespace cpaf::gui::video {
 packet_reader_thread::packet_reader_thread(
     player& owning_player,
     const std::atomic_bool& threads_running,
+    const std::atomic_bool& threads_started,
     const std::atomic_bool& threads_paused,
     std::atomic<seek_state_t>& seek_state)
     : player_(owning_player)
     , threads_running_(threads_running)
+    , threads_started_(threads_started)
     , threads_paused_(threads_paused)
     , seek_state_(seek_state)
 {

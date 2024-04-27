@@ -45,6 +45,8 @@ public:
     audio_play_callback_t       audio_callback_get      ();
 
     void                        run                     ();
+    void                        start                   ();
+    void                        stop                    ();
     void                        terminate               ();
     void                        seek_position           (const std::chrono::microseconds& stream_pos, cpaf::video::seek_dir dir);
     void                        seek_position           (const std::chrono::microseconds& stream_pos);
@@ -57,8 +59,10 @@ public:
     void                        resume_playback         ();
     bool                        playback_paused         () const { return threads_paused_; }
     bool                        all_threads_paused      () const;
+    bool                        all_threads_stopped     () const;
     bool                        all_threads_terminated  () const;
     bool                        wait_for_all_paused     (std::chrono::milliseconds max_wait_time = std::chrono::seconds{5}) const;
+    bool                        wait_for_all_stopped    (std::chrono::milliseconds max_wait_time = std::chrono::seconds{5}) const;
     bool                        wait_for_all_terminated (std::chrono::milliseconds max_wait_time = std::chrono::seconds{5}) const;
     void                        subtitle_container_set  (std::unique_ptr<subtitle_container> container);
 
@@ -89,7 +93,8 @@ private:
 
     cpaf::video::audio_resampler*               audio_resampler_ptr_            = nullptr;
     std::atomic<cpaf::video::seek_state_t>      seek_state_                     = cpaf::video::seek_state_t::ready;
-    std::atomic_bool                            threads_running_                = true;
+    std::atomic_bool                            threads_running_                = false;
+    std::atomic_bool                            threads_started_                = false;
     std::atomic_bool                            threads_paused_                 = false;
 };
 

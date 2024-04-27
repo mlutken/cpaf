@@ -28,21 +28,23 @@ public:
                                  pipeline_threads& pline_threads,
                                  cpaf::video::av_samples_queue& audio_samples_queue,
                                  const std::atomic_bool& threads_running,
+                                 const std::atomic_bool& threads_started,
                                  const std::atomic_bool& threads_paused,
                                  std::atomic<cpaf::video::seek_state_t>& seek_state);
 
     void                        run                     ();
     void                        terminate               ();
     audio_play_callback_t       audio_callback_get      ();
-    const std::atomic_bool&     thread_is_paused        () const { return thread_is_paused_; }
     const std::atomic_bool&     thread_is_running       () const { return thread_is_running_; }
+    const std::atomic_bool&     thread_is_stopped       () const { return thread_is_stopped_; }
+    const std::atomic_bool&     thread_is_paused        () const { return thread_is_paused_; }
     std::chrono::microseconds   dbg_audio_front_time    () const;
 
 
 private:
-    void                    audio_callback_function (uint8_t* stream, int32_t length);
-    void                    render_audio_silence    (uint8_t* stream, int32_t length);
-    void                    debug_audio_callback    (uint8_t* stream, int32_t length);
+    void                        audio_callback_function (uint8_t* stream, int32_t length);
+    void                        render_audio_silence    (uint8_t* stream, int32_t length);
+    void                        debug_audio_callback    (uint8_t* stream, int32_t length);
 
     cpaf::video::av_samples_queue&       audio_samples_queue     () { return audio_samples_queue_; }
 
@@ -50,10 +52,12 @@ private:
     pipeline_threads&                           pipeline_threads_;
     cpaf::video::av_samples_queue&              audio_samples_queue_;
     const std::atomic_bool&                     threads_running_;
+    const std::atomic_bool&                     threads_started_;
     const std::atomic_bool&                     threads_paused_;
     std::atomic<cpaf::video::seek_state_t>&     seek_state_;
-    std::atomic_bool                            thread_is_paused_ = true;
     std::atomic_bool                            thread_is_running_ = false;
+    std::atomic_bool                            thread_is_stopped_ = true;
+    std::atomic_bool                            thread_is_paused_ = true;
     std::chrono::microseconds                   sync_ok_interval                = std::chrono::milliseconds(15);
     int                                         audio_callback_dbg_counter_     = 0;
 };

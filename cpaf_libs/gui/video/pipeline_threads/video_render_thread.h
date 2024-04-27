@@ -33,6 +33,7 @@ public:
                         cpaf::video::av_samples_queue& audio_samples_queue,
                         cpaf::video::subtitles_queue& subtitles_queue,
                         const std::atomic_bool& threads_running,
+                        const std::atomic_bool& threads_started,
                         const std::atomic_bool& threads_paused,
                         std::atomic<cpaf::video::seek_state_t>& seek_state);
     void                                    run                         ();
@@ -43,6 +44,10 @@ public:
     void                                    video_queue_flush_done      ();
     std::chrono::microseconds               time_to_current_frame       (cpaf::video::av_frame& current_frame) const;
     std::chrono::microseconds               time_to_current_frame_abs   (cpaf::video::av_frame& current_frame) const;
+
+    bool                                    thread_is_running       () const { return threads_running_; }
+    bool                                    thread_is_stopped       () const { return !threads_started_; }
+    bool                                    thread_is_paused        () const { return threads_paused_; }
 
 private:
     bool                                    video_frame_do_render       (cpaf::video::av_frame& current_frame,
@@ -66,12 +71,13 @@ private:
     cpaf::video::av_samples_queue&          audio_samples_queue_;
     cpaf::video::subtitles_queue&           subtitles_queue_;
     const std::atomic_bool&                 threads_running_;
+    const std::atomic_bool&                 threads_started_;
     const std::atomic_bool&                 threads_paused_;
     std::atomic<cpaf::video::seek_state_t>& seek_state_;
 
     int                                     video_frame_update_dbg_counter_ = 0;
     std::atomic_bool                        video_queue_flush_in_progress_  = false;
-    std::atomic_bool                        handle_flush_done_         = false;
+    std::atomic_bool                        handle_flush_done_              = false;
     std::atomic_bool                        flush_requested_                = false;
     std::chrono::microseconds               time_to_current_frame_;
 };

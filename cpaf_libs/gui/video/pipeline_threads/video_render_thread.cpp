@@ -25,12 +25,14 @@ video_render_thread::video_render_thread(
     cpaf::video::av_samples_queue& audio_samples_queue,
     cpaf::video::subtitles_queue& subtitles_queue,
     const std::atomic_bool& threads_running,
+    const std::atomic_bool& threads_started,
     const std::atomic_bool& threads_paused,
     std::atomic<seek_state_t>& seek_state)
     : player_(owning_player)
     , audio_samples_queue_(audio_samples_queue)
     , subtitles_queue_(subtitles_queue)
     , threads_running_(threads_running)
+    , threads_started_(threads_started)
     , threads_paused_(threads_paused)
     , seek_state_(seek_state)
 {

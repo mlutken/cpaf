@@ -15,10 +15,12 @@ audio_resampler_thread::audio_resampler_thread(
     player& owning_player,
     cpaf::video::av_samples_queue& audio_samples_queue,
     const std::atomic_bool& threads_running,
+        const std::atomic_bool& threads_started,
     const std::atomic_bool& threads_paused)
     : player_(owning_player)
     , audio_samples_queue_(audio_samples_queue)
     , threads_running_(threads_running)
+    , threads_started_(threads_started)
     , threads_paused_(threads_paused)
 {
 
