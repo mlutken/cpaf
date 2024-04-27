@@ -8,7 +8,7 @@ using namespace std::filesystem;
 using namespace std::chrono;
 using namespace std::chrono_literals;
 
-constexpr int dbg_print_pieces_lower_than = 5;
+constexpr int dbg_print_pieces_lower_than = -1;
 
 namespace cpaf::torrent {
 
