@@ -36,24 +36,28 @@ void audio_resampler_thread::thread_function()
 {
     thread_is_running_ = true;
     while(threads_running_) {
-        if (threads_paused_) {
-            thread_is_paused_ = true;
-        }
-        else {
-            thread_is_paused_ = false;
-            const auto cur_media_time_pos = player_.cur_media_time().current_time_pos();
-            bool add_samples = true;
-            while (add_samples) {
-                resample_frame(add_samples, cur_media_time_pos);
-            }
-        }
-        std::this_thread::sleep_for(audio_samples_yield_time_);
+        thread_is_paused_  = threads_paused_ == true;
+        thread_is_stopped_ = threads_started_ == false;
+        work_function();
+        std::this_thread::sleep_for(thread_yield_time_);
     }
     std::cerr << "\n!!! EXIT audio_resampler_thread::audio_samples_thread_fn() !!!\n";
     thread_is_running_ = false;
 }
 
-void audio_resampler_thread::resample_frame(bool& add_samples, const std::chrono::microseconds& cur_media_time_pos)
+void audio_resampler_thread::work_function()
+{
+    if (thread_is_stopped_) { return; }
+    if (thread_is_paused_)  { return; }
+    const auto cur_media_time_pos = player_.cur_media_time().current_time_pos();
+    bool add_samples = true;
+    while (add_samples) {
+        resample_frame(add_samples, cur_media_time_pos);
+    }
+}
+
+void audio_resampler_thread::resample_frame(bool& add_samples,
+                                            const std::chrono::microseconds& cur_media_time_pos)
 {
     add_samples = false;
 

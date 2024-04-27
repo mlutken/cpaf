@@ -39,6 +39,7 @@ public:
 
 private:
     void                    thread_function         ();
+    void                    work_function           ();
     void                    resample_frame          (bool& add_samples, const std::chrono::microseconds& cur_media_time_pos);
 
     cpaf::video::audio_resampler&       audio_sampler           () { return *audio_resampler_ptr_; }
@@ -56,7 +57,7 @@ private:
     cpaf::video::audio_resampler*       audio_resampler_ptr_            = nullptr;
 
     uint32_t                            audio_samples_fill_level_       = 30;
-    std::chrono::microseconds           audio_samples_yield_time_       = std::chrono::milliseconds(1);
+    std::chrono::microseconds           thread_yield_time_              = std::chrono::milliseconds(1);
     std::chrono::microseconds           audio_samples_read_ahead_time_  = std::chrono::milliseconds(300);
     std::atomic_bool                    samples_queue_flush_in_progress_= false;
     std::atomic_bool                    samples_queue_flushed_          = false;
