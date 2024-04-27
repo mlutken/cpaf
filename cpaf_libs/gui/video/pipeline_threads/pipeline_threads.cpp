@@ -66,6 +66,14 @@ void pipeline_threads::run()
     start();
 }
 
+void pipeline_threads::terminate()
+{
+    bool expected_value = true;
+    if (threads_running_.compare_exchange_strong(expected_value, false)) {
+        std::cerr << "LOG_DEBUG pipeline_threads::terminate() called!\n";
+    }
+}
+
 void pipeline_threads::start()
 {
     threads_started_ = true;
@@ -76,12 +84,14 @@ void pipeline_threads::stop()
     threads_started_ = false;
 }
 
-void pipeline_threads::terminate()
+void pipeline_threads::pause_playback()
 {
-    bool expected_value = true;
-    if (threads_running_.compare_exchange_strong(expected_value, false)) {
-        std::cerr << "LOG_DEBUG pipeline_threads::terminate() called!\n";
-    }
+    threads_paused_ = true;
+}
+
+void pipeline_threads::resume_playback()
+{
+    threads_paused_ = false;
 }
 
 void pipeline_threads::seek_position(const std::chrono::microseconds& stream_pos, cpaf::video::seek_dir dir)
@@ -117,16 +127,6 @@ bool pipeline_threads::check_set_seek_in_sync()
         return true;
     }
     return false;
-}
-
-void pipeline_threads::pause_playback()
-{
-    threads_paused_ = true;
-}
-
-void pipeline_threads::resume_playback()
-{
-    threads_paused_ = false;
 }
 
 bool pipeline_threads::all_threads_paused() const

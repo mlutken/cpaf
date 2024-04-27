@@ -45,9 +45,11 @@ public:
     audio_play_callback_t       audio_callback_get      ();
 
     void                        run                     ();
+    void                        terminate               ();
     void                        start                   ();
     void                        stop                    ();
-    void                        terminate               ();
+    void                        pause_playback          ();
+    void                        resume_playback         ();
     void                        seek_position           (const std::chrono::microseconds& stream_pos, cpaf::video::seek_dir dir);
     void                        seek_position           (const std::chrono::microseconds& stream_pos);
     void                        seek_relative           (const std::chrono::microseconds& delta_time);
@@ -55,8 +57,6 @@ public:
     bool                        check_set_seek_in_sync  ();
     std::chrono::microseconds   seek_from_position      () const { return packet_reader_thread_.seek_from_position(); }
     std::chrono::microseconds   seek_position_requested () const { return packet_reader_thread_.seek_position_requested(); }
-    void                        pause_playback          ();
-    void                        resume_playback         ();
     bool                        playback_paused         () const { return threads_paused_; }
     bool                        all_threads_paused      () const;
     bool                        all_threads_stopped     () const;

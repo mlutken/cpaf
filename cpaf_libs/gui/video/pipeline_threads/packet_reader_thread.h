@@ -45,6 +45,7 @@ public:
 
 private:
     void                    thread_function         ();
+    void                    work_function           ();
     void                    check_seek_position     ();
     void                    check_seek_completed    ();
     void                    flush_queues            ();

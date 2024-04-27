@@ -81,6 +81,7 @@ void player::start_playing(const std::chrono::microseconds& start_time_pos)
     /// cur_playable().dbg_print(); // FIXMENM
 
     media_pipeline_threads().run();
+    media_pipeline_threads().start();
     std::this_thread::sleep_for(2ms);
     primary_stream_state() = stream_state_t::playing;
     check_activate_subtitle();
@@ -155,9 +156,9 @@ void player::open_async(const std::string& resource_path, std::chrono::microseco
 void player::close()
 {
     std::cerr << fmt::format("FIXMENM close 1 [{}]\n", to_string(primary_stream_state()));
-    // if (media_pipeline_threads_) {
-    //     media_pipeline_threads_->stop();
-    // }
+    if (media_pipeline_threads_) {
+        media_pipeline_threads_->stop();
+    }
 
     if (!primary_source_stream_) {
         return;
@@ -832,7 +833,6 @@ void player::update_screen_size_factor()
     }
 }
 
-/// @todo Find right should_show_stream_state() condition
 bool player::should_show_stream_state() const
 {
     // return true; // FIXMENM

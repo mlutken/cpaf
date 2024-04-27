@@ -65,21 +65,26 @@ void packet_reader_thread::debug_print_info() const
 void packet_reader_thread::thread_function()
 {
     thread_is_running_ = true;
-    const auto mt = player_.format_context().primary_media_type();
     while(threads_running_) {
-        check_seek_position();
-        check_seek_completed();
-        if (threads_paused_) {
-            thread_is_paused_ = true;
-        }
-        else {
-            thread_is_paused_ = false;
-            player_.format_context().read_packets_to_queues(mt, primary_queue_fill_level_);
-        }
+        work_function();
         std::this_thread::sleep_for(read_packets_yield_time_);
     }
     std::cerr << "\n!!! EXIT packet_reader_thread::read_packets_thread_fn() !!!\n";
     thread_is_running_ = false;
+}
+
+void packet_reader_thread::work_function()
+{
+    check_seek_position();
+    check_seek_completed();
+    if (threads_paused_) {
+        thread_is_paused_ = true;
+    }
+    else {
+        thread_is_paused_ = false;
+        const auto mt = player_.format_context().primary_media_type();
+        player_.format_context().read_packets_to_queues(mt, primary_queue_fill_level_);
+    }
 }
 
 void packet_reader_thread::check_seek_position()
