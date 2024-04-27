@@ -31,7 +31,7 @@ public:
                          const std::atomic_bool& threads_paused,
                          std::atomic<cpaf::video::seek_state_t>& seek_state);
     void                                pipeline_threads_set    (pipeline_threads* ptr)     { pipeline_threads_ptr_ = ptr; }
-    void                                start                   ();
+    void                                run                     ();
     bool                                seek_position           (const std::chrono::microseconds& stream_pos, cpaf::video::seek_dir dir);
     bool                                seek_position           (const std::chrono::microseconds& stream_pos);
 

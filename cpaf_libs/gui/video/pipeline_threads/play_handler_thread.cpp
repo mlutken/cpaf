@@ -17,7 +17,7 @@ play_handler_thread::~play_handler_thread()
     terminate();
 }
 
-void play_handler_thread::start()
+void play_handler_thread::run()
 {
     thread_object_ = std::make_unique<std::thread>(&play_handler_thread::thread_function, this);
     thread_object_->detach();

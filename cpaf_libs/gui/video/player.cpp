@@ -39,8 +39,8 @@ player::~player()
 void player::set_main_window(system_window& main_window)
 {
     main_window_ptr_ = &main_window;
-    subtitle_downloader_thread_.start();
-    play_handler_thread_.start();
+    subtitle_downloader_thread_.run();
+    play_handler_thread_.run();
 
     if (!video_controls_) {
         set_controls(std::make_unique<video::controls_default>(*this, configuration));
@@ -79,7 +79,7 @@ void player::start_playing(const std::chrono::microseconds& start_time_pos)
 
     /// cur_playable().dbg_print(); // FIXMENM
 
-    media_pipeline_threads().start();
+    media_pipeline_threads().run();
     std::this_thread::sleep_for(2ms);
     primary_stream_state() = stream_state_t::playing;
     check_activate_subtitle();
@@ -153,14 +153,19 @@ void player::open_async(const std::string& resource_path, std::chrono::microseco
 */
 void player::close()
 {
+    std::cerr << fmt::format("FIXMENM close 1 [{}]\n", to_string(primary_stream_state()));
     if (!primary_source_stream_) {
         return;
     }
+    std::cerr << fmt::format("FIXMENM close 2 [{}]\n", to_string(primary_stream_state()));
     auto expected_state = stream_state_t::playing;
     while (!primary_stream_state().compare_exchange_strong(expected_state, stream_state_t::closing) ) {
         std::cerr << "FIXMENM waiting for ready to start closing\n";
         std::this_thread::sleep_for(1ms);
     }
+    std::cerr << fmt::format("\n---FIXMENM close 3 [{}] Start closing ---\n", to_string(primary_stream_state()));
+    std::cerr << fmt::format("FIXMENM path: {}\n----------------------\n\n", cur_playable().path());
+
     pause_playback();
     audio_device_.pause(); // Pause audio.
     primary_stream_state() = stream_state_t::closing;
@@ -177,6 +182,7 @@ void player::close()
     video_codec_ctx_ = av_codec_context{};
     audio_codec_ctx_ = av_codec_context{};
     primary_stream_state() = stream_state_t::inactive;
+    std::cerr << fmt::format("FIXMENM close 4 [{}]\n", to_string(primary_stream_state()));
 }
 
 void player::close_async()

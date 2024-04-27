@@ -35,7 +35,7 @@ public:
 
     ~subtitle_reader_thread();
 
-    void                                start                   ();
+    void                                run                     ();
     const std::atomic_bool&             thread_is_paused        () const { return thread_is_paused_; }
     const std::atomic_bool&             thread_is_running       () const { return thread_is_running_; }
     void                                subtitle_container_set  (std::unique_ptr<subtitle_container> container);

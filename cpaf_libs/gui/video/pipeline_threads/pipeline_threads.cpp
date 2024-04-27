@@ -53,14 +53,14 @@ pipeline_threads::audio_play_callback_t pipeline_threads::audio_callback_get()
 }
 
 
-void pipeline_threads::start()
+void pipeline_threads::run()
 {
     seek_state_ = seek_state_t::ready;
-    audio_render_thread_.start();
-    audio_resampler_thread_.start();
-    packet_reader_thread_.start();
-    subtitle_reader_thread_.start();
-    video_render_thread_.start();
+    audio_render_thread_.run();
+    audio_resampler_thread_.run();
+    packet_reader_thread_.run();
+    subtitle_reader_thread_.run();
+    video_render_thread_.run();
 }
 
 void pipeline_threads::terminate()

@@ -23,7 +23,7 @@ subtitle_downloader_thread::~subtitle_downloader_thread()
     }
 }
 
-void subtitle_downloader_thread::start()
+void subtitle_downloader_thread::run()
 {
     thread_object_ = std::make_unique<std::thread>(&subtitle_downloader_thread::thread_function, this);
     // thread_object_->detach();

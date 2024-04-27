@@ -24,7 +24,7 @@ audio_resampler_thread::audio_resampler_thread(
 
 }
 
-void audio_resampler_thread::start()
+void audio_resampler_thread::run()
 {
     thread_object_ = std::make_unique<std::thread>(&audio_resampler_thread::thread_function, this);
     thread_object_->detach();

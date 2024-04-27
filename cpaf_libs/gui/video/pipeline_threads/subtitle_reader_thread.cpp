@@ -41,7 +41,7 @@ subtitle_reader_thread::~subtitle_reader_thread()
 
 }
 
-void subtitle_reader_thread::start()
+void subtitle_reader_thread::run()
 {
     thread_object_ = std::make_unique<std::thread>(&subtitle_reader_thread::thread_function, this);
     thread_object_->detach();

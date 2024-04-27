@@ -37,7 +37,7 @@ video_render_thread::video_render_thread(
 
 }
 
-void video_render_thread::start()
+void video_render_thread::run()
 {
 
 }

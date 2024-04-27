@@ -32,7 +32,7 @@ namespace cpaf::gui::video {
 
 }
 
-void audio_render_thread::start()
+void audio_render_thread::run()
 {
     thread_is_running_ = true;
 }

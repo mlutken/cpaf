@@ -30,7 +30,7 @@ public:
 
     ~subtitle_downloader_thread();
 
-    void                                start                   ();
+    void                                run                     ();
     void                                enqueue_subtitle        (const std::string& subtitle_path,
                                                                  const std::string& language_code,
                                                                  std::chrono::microseconds subtitle_adjust_offset = {});

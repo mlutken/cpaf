@@ -44,7 +44,7 @@ public:
     void                        audio_resampler_set     (cpaf::video::audio_resampler& resampler);
     audio_play_callback_t       audio_callback_get      ();
 
-    void                        start                   ();
+    void                        run                     ();
     void                        terminate               ();
     void                        seek_position           (const std::chrono::microseconds& stream_pos, cpaf::video::seek_dir dir);
     void                        seek_position           (const std::chrono::microseconds& stream_pos);

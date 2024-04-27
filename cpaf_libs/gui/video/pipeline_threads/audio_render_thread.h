@@ -31,7 +31,7 @@ public:
                                  const std::atomic_bool& threads_paused,
                                  std::atomic<cpaf::video::seek_state_t>& seek_state);
 
-    void                        start                   ();
+    void                        run                     ();
     void                        terminate               ();
     audio_play_callback_t       audio_callback_get      ();
     const std::atomic_bool&     thread_is_paused        () const { return thread_is_paused_; }

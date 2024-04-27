@@ -18,7 +18,7 @@ public:
 
     ~play_handler_thread();
 
-    void                    start           ();
+    void                    run             ();
     void                    terminate       ();
     void                    open_async      (playable playab);
     void                    close_async     ();

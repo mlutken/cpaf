@@ -24,7 +24,7 @@ packet_reader_thread::packet_reader_thread(
 {
 }
 
-void packet_reader_thread::start()
+void packet_reader_thread::run()
 {
     read_packets_thread_  = std::make_unique<std::thread>(&packet_reader_thread::thread_function, this);
     read_packets_thread_->detach();

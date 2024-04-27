@@ -31,7 +31,7 @@ public:
     void                    samples_queue_flush_start()                         { samples_queue_flush_in_progress_ = true; }
     void                    samples_queue_flush_done()                          { samples_queue_flush_in_progress_ = false; samples_queue_flushed_ = true; }
 
-    void                    start                   ();
+    void                    run                     ();
     const std::atomic_bool& thread_is_paused        () const { return thread_is_paused_; }
     const std::atomic_bool& thread_is_running       () const { return thread_is_running_; }
 

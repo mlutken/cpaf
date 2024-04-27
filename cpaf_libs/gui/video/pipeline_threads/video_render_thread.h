@@ -35,7 +35,7 @@ public:
                         const std::atomic_bool& threads_running,
                         const std::atomic_bool& threads_paused,
                         std::atomic<cpaf::video::seek_state_t>& seek_state);
-    void                                    start                       ();
+    void                                    run                         ();
     void                                    terminate                   ();
     void                                    video_frame_update          (cpaf::video::av_frame& current_frame,
                                                                          cpaf::gui::video::render& video_render);
