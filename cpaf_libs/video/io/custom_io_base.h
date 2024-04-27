@@ -6,6 +6,7 @@ extern "C"
 }
 
 #include <memory>
+#include <chrono>
 #include <cpaf_libs/video/av_util.h>
 
 namespace cpaf::torrent {
@@ -41,6 +42,10 @@ public:
     size_t              buffer_size             () const noexcept { return do_buffer_size(); };
     const std::string&  resource_path           () const { return resource_path_; }
     bool                init                    (AVFormatContext*  ff_format_context);
+
+
+    std::chrono::microseconds
+                        current_io_operation_duration() const;
 //    AVIOContext*        ff_avio_context         () const { return ff_avio_context_; }
 
 protected:
@@ -49,26 +54,35 @@ protected:
 //    bool                use_blocking_seek_      = true;
 
 private:
-    uint8_t*            ff_avio_context_buffer_ = nullptr;
-    AVIOContext*        ff_avio_context_        = nullptr;
-    std::string         resource_path_;
+    using time_point_t = std::chrono::steady_clock::time_point;
 
-    void                cleanup                 ();
+    uint8_t*                ff_avio_context_buffer_ = nullptr;
+    AVIOContext*            ff_avio_context_        = nullptr;
+    std::string             resource_path_;
+    mutable time_point_t    last_io_op_started_time_;
+    void                    cleanup                 ();
+    void                    mark_io_begin           () const { last_io_op_started_time_ = std::chrono::steady_clock::now();}
+    void                    mark_io_done            () const { last_io_op_started_time_ = time_point_t();}
 
-    virtual std::string do_protocol_name        () const { return ""; }
-    virtual bool        do_open                 (const std::string& resource_path) = 0;
-    virtual void        do_close                () = 0;
-    virtual bool        do_is_open              () const = 0;
-    virtual int64_t     do_size                 () const noexcept = 0;
-    virtual size_t      do_buffer_size          () const noexcept { return 4096; };
+    int                     read_packet             (uint8_t* buf, int buf_size);
+    int                     write_packet            (uint8_t* buf, int buf_size);
+    int64_t                 seek                    (int64_t offset, int whence);
 
-    virtual int         do_read_packet          (uint8_t* buf, int buf_size) = 0;
-    virtual int         do_write_packet         (uint8_t* buf, int buf_size);
-    virtual int64_t     do_seek                 (int64_t offset, int whence) = 0;
 
-    static int          read_packet_wrapper     (void* opaque, uint8_t* buf, int buf_size);
-    static int          write_packet_wrapper    (void* opaque, uint8_t* buf, int buf_size);
-    static int64_t      seek_wrapper            (void* opaque, int64_t offset, int whence);
+    virtual std::string     do_protocol_name        () const { return ""; }
+    virtual bool            do_open                 (const std::string& resource_path) = 0;
+    virtual void            do_close                () = 0;
+    virtual bool            do_is_open              () const = 0;
+    virtual int64_t         do_size                 () const noexcept = 0;
+    virtual size_t          do_buffer_size          () const noexcept { return 4096; };
+
+    virtual int             do_read_packet          (uint8_t* buf, int buf_size) = 0;
+    virtual int             do_write_packet         (uint8_t* buf, int buf_size);
+    virtual int64_t         do_seek                 (int64_t offset, int whence) = 0;
+
+    static int              read_packet_wrapper     (void* opaque, uint8_t* buf, int buf_size);
+    static int              write_packet_wrapper    (void* opaque, uint8_t* buf, int buf_size);
+    static int64_t          seek_wrapper            (void* opaque, int64_t offset, int whence);
 
 };
 

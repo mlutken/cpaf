@@ -3,6 +3,7 @@
 #include "my_file_io.h"
 #include <cpaf_libs/unicode/cpaf_u8string_utils.h>
 
+using namespace std::chrono;
 
 namespace cpaf::video {
 
@@ -69,6 +70,15 @@ bool custom_io_base::init(AVFormatContext* ff_format_context)
     return true;
 }
 
+std::chrono::microseconds custom_io_base::current_io_operation_duration() const
+{
+    if (last_io_op_started_time_ == time_point_t()) {
+        return microseconds(0);
+    }
+    const auto duration = steady_clock::now() - last_io_op_started_time_;
+    return duration_cast<microseconds>(duration);
+}
+
 /// @todo Do we need to call
 /// av_freep(&ff_avio_context_buffer_);
 /// ?
@@ -91,15 +101,48 @@ void custom_io_base::cleanup()
     ff_avio_context_buffer_ = nullptr;
 }
 
+int custom_io_base::read_packet(uint8_t* buf, int buf_size)
+{
+    mark_io_begin();
+    const auto retval = do_read_packet(buf, buf_size);
+    mark_io_done();
+
+    return retval;
+}
+
+int custom_io_base::write_packet(uint8_t* buf, int buf_size)
+{
+    mark_io_begin();
+    const auto retval = do_write_packet(buf, buf_size);
+    mark_io_done();
+
+    return retval;
+}
+
+int64_t custom_io_base::seek(int64_t offset, int whence)
+{
+    mark_io_begin();
+    const auto retval = do_seek(offset, whence);
+    mark_io_done();
+
+    return retval;
+}
+
 bool custom_io_base::open(const std::string& resource_path)
 {
+    mark_io_begin();
     resource_path_ = resource_path;
-    return do_open(resource_path);
+    const auto retval = do_open(resource_path);
+    mark_io_done();
+
+    return retval;
 }
 
 void custom_io_base::close() {
+    mark_io_begin();
     do_close();
     cleanup();
+    mark_io_done();
 }
 
 int custom_io_base::do_write_packet(uint8_t* , int )
@@ -111,19 +154,19 @@ int custom_io_base::read_packet_wrapper(void* opaque, uint8_t* buf, int buf_size
 {
     // AVERROR_EXTERNAL, AVERROR_EOF
     auto* self = static_cast<custom_io_base*>(opaque);
-    return self->do_read_packet(buf, buf_size);
+    return self->read_packet(buf, buf_size);
 }
 
 int custom_io_base::write_packet_wrapper(void* opaque, uint8_t* buf, int buf_size)
 {
     auto* self = static_cast<custom_io_base*>(opaque);
-    return self->do_write_packet(buf, buf_size);
+    return self->write_packet(buf, buf_size);
 }
 
 int64_t custom_io_base::seek_wrapper(void* opaque, int64_t offset, int whence)
 {
     auto* self = static_cast<custom_io_base*>(opaque);
-    return self->do_seek(offset, whence);
+    return self->seek(offset, whence);
 }
 
 } //END namespace cpaf::video
