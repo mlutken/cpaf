@@ -268,8 +268,7 @@ bool player::is_playing() const
     if (!primary_source_stream_) {
         return false;
     }
-    return  primary_stream_state_ == stream_state_t::playing ||
-            primary_stream_state_ == stream_state_t::waiting_for_data;
+    return  primary_stream_state_ == stream_state_t::playing;
 }
 
 const playable& player::cur_playable() const {
@@ -836,7 +835,7 @@ void player::update_screen_size_factor()
 /// @todo Find right should_show_stream_state() condition
 bool player::should_show_stream_state() const
 {
-    return true; // FIXMENM
+    // return true; // FIXMENM
     const auto& ss = primary_stream_state();
     return ss == stream_state_t::opening || is_waiting_for_io();
     // return ss == stream_state_t::opening || ss == stream_state_t::closing || is_waiting_for_io();

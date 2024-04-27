@@ -108,7 +108,6 @@ enum class stream_state_t : int8_t {
     opening,
     open,
     playing,
-    waiting_for_data,
     closing
 };
 
