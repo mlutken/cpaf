@@ -66,8 +66,10 @@ void packet_reader_thread::thread_function()
 {
     thread_is_running_ = true;
     while(threads_running_) {
+        thread_is_paused_  = threads_paused_ == true;
+        thread_is_stopped_ = threads_started_ == false;
         work_function();
-        std::this_thread::sleep_for(read_packets_yield_time_);
+        std::this_thread::sleep_for(thread_yield_time_);
     }
     std::cerr << "\n!!! EXIT packet_reader_thread::read_packets_thread_fn() !!!\n";
     thread_is_running_ = false;
@@ -75,16 +77,13 @@ void packet_reader_thread::thread_function()
 
 void packet_reader_thread::work_function()
 {
+    if (thread_is_stopped_) { return; }
     check_seek_position();
     check_seek_completed();
-    if (threads_paused_) {
-        thread_is_paused_ = true;
-    }
-    else {
-        thread_is_paused_ = false;
-        const auto mt = player_.format_context().primary_media_type();
-        player_.format_context().read_packets_to_queues(mt, primary_queue_fill_level_);
-    }
+    if (thread_is_paused_)  { return; }
+
+    const auto mt = player_.format_context().primary_media_type();
+    player_.format_context().read_packets_to_queues(mt, primary_queue_fill_level_);
 }
 
 void packet_reader_thread::check_seek_position()

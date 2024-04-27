@@ -66,11 +66,11 @@ private:
     std::chrono::microseconds               seek_from_position_;
     std::chrono::microseconds               seek_time_pos_requested_;
     std::chrono::steady_clock::time_point   flush_done_time_point_;
-    cpaf::video::seek_dir                   seek_direction_                 = cpaf::video::seek_dir::forward;
-    pipeline_threads*                       pipeline_threads_ptr_           = nullptr;
+    cpaf::video::seek_dir                   seek_direction_             = cpaf::video::seek_dir::forward;
+    pipeline_threads*                       pipeline_threads_ptr_       = nullptr;
 
-    std::chrono::microseconds               read_packets_yield_time_        = std::chrono::milliseconds(1);
-    uint32_t                                primary_queue_fill_level_       = 30;
+    std::chrono::microseconds               thread_yield_time_          = std::chrono::milliseconds(1);
+    uint32_t                                primary_queue_fill_level_   = 30;
     std::unique_ptr<std::thread>            read_packets_thread_;
 
 };
