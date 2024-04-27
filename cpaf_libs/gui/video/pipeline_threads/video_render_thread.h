@@ -46,7 +46,7 @@ public:
     std::chrono::microseconds               time_to_current_frame_abs   (cpaf::video::av_frame& current_frame) const;
 
     bool                                    thread_is_running       () const { return threads_running_; }
-    bool                                    thread_is_stopped       () const { return !threads_started_; }
+    bool                                    thread_is_stopped       () const { return !(threads_started_ && threads_running_); }
     bool                                    thread_is_paused        () const { return threads_paused_; }
 
 private:
