@@ -97,7 +97,6 @@ bool av_format_context::open(const std::string& resource_path)
 
 void av_format_context::close()
 {
-    custom_io_ptr_.reset();
     const std::lock_guard<std::mutex> lock(packet_queues_mutex_);
     for (media_type_t mt = media_type_t::video; mt != media_type_t::SIZE; ++mt) {
         auto media_index = to_size_t(mt);
@@ -113,6 +112,7 @@ void av_format_context::close()
     }
     ff_format_context_ = nullptr;
     stream_state() = stream_state_t::inactive;
+    custom_io_ptr_.reset();
 }
 
 void av_format_context::selected_media_index_set(media_type_t mt, size_t stream_index)
