@@ -93,10 +93,7 @@ int64_t torrent_io::do_seek(int64_t offset, int whence)
         return AVERROR(ENOENT); // ERROR
     }
 
-    {
-        auto stream_state_expected = stream_state_t::playing;
-        stream_state_.compare_exchange_strong(stream_state_expected, stream_state_t::waiting_for_data);
-    }
+    stream_state_ = stream_state_t::waiting_for_data;
 
     int64_t new_pos = AVERROR(EINVAL);
     if ( (AVSEEK_SIZE & whence) == AVSEEK_SIZE){
@@ -108,10 +105,7 @@ int64_t torrent_io::do_seek(int64_t offset, int whence)
         }
     }
 
-    {
-        auto stream_state_expected = stream_state_t::waiting_for_data;
-        stream_state_.compare_exchange_strong(stream_state_expected, stream_state_t::playing);
-    }
+    stream_state_ = stream_state_t::playing;
 
     //    std::cerr << "torrent_io::do_seek (" << offset << ", " << whence << ") tor_file new pos: " << new_pos << "\n";
     return new_pos;
