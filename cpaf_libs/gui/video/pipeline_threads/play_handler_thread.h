@@ -37,11 +37,12 @@ private:
 
     using job_queue_t = estl::mutex_fifo<job_t>;
 
-    void                                thread_function ();
-    void                                perform_open    (job_t&& job);
-    void                                peform_close    (job_t&& job);
+    void                                thread_function     ();
+    void                                perform_open        (job_t job);
+    void                                perform_close       (job_t job);
 
-    void                                set_current_job (job_t&& job);
+    void                                set_current_job     (job_t job);
+    void                                set_current_job_done();
 
     player&                             player_;
     job_queue_t                         job_queue_;

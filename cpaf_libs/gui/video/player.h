@@ -12,7 +12,7 @@
 #include <cpaf_libs/gui/video/pipeline_threads/subtitle_downloader_thread.h>
 #include <cpaf_libs/gui/video/config.h>
 #include <cpaf_libs/gui/video/data_definitions/playable.h>
-// #include <cpaf_libs/gui/video/pipeline_threads/play_handler_thread.h>
+#include <cpaf_libs/gui/video/pipeline_threads/play_handler_thread.h>
 
 namespace cpaf::audio {
 class device;
@@ -37,7 +37,7 @@ class controls;
 
 class player
 {
-    // friend class play_handler_thread;
+    friend class play_handler_thread;
 public:
     using audio_play_callback_t  = cpaf::audio::device_base::play_callback_t;
 
@@ -250,7 +250,7 @@ private:
     cpaf::audio::device&                            audio_device_;
     cpaf::locale::translator&                       tr_;
     subtitle_downloader_thread                      subtitle_downloader_thread_;
-    // play_handler_thread                             play_handler_thread_;
+    play_handler_thread                             play_handler_thread_;
     playable                                        current_playable_;
     std::unique_ptr<cpaf::video::play_stream>       primary_source_stream_;
     std::chrono::microseconds                       start_time_pos_;
@@ -272,7 +272,7 @@ private:
     mutable std::mutex                              video_codec_mutex_;
     mutable std::mutex                              audio_codec_mutex_;
     mutable std::mutex                              subtitle_codec_mutex_;
-    // mutable std::mutex                              current_playable_mutex_;
+    mutable std::mutex                              current_playable_mutex_;
     cpaf::video::audio_resampler                    audio_resampler_;
 
     std::string                                     primary_resource_path_;
@@ -280,11 +280,12 @@ private:
     cpaf::video::media_stream_time                  cur_media_time_;
     std::unique_ptr<video::render>                  video_render_;
     std::unique_ptr<video::controls>                video_controls_;
-    bool                                            keep_aspect_ratio_              = true;
+    bool                                            keep_aspect_ratio_              = false;
     bool                                            show_controls_                  = false;
     bool                                            resume_from_pause_on_seek_      = true;
 
     bool                                            save_playback_is_paused_state_  = false;    // For saving current paused state. For example when showing i UI window on top and we want to ensure player is paused while window is active. See push_paused()/pop_paused()
+    std::atomic<bool>                               stream_completely_downloaded_   = false;    // When active for example pause is forced when for example showing UI windows on top of player
     std::atomic<bool>                               ui_window_active_               = false;    // When active for example pause is forced when for example showing UI windows on top of player
     std::atomic<bool>                               ui_events_enabled_              = true;     // Use to disable player ui events when for example showing UI windows on top of player
     std::atomic<subtitle_source_t>                  subtitle_source_                = subtitle_source_t::none;

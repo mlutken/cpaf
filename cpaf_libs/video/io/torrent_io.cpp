@@ -19,6 +19,10 @@ torrent_io::torrent_io(std::atomic<stream_state_t>& stream_state,
 {
 }
 
+torrent_io::~torrent_io()
+{
+    close();
+}
 
 bool torrent_io::do_open(const std::string& resource_path)
 {
@@ -47,7 +51,7 @@ bool torrent_io::do_open(const std::string& resource_path)
     return true;
 }
 
-/// @note torrent::file::close() is not yet implemented!
+/// @todo torrent::file::close() is not yet implemented!
 void torrent_io::do_close()
 {
     if (!tor_file_.is_valid()) {

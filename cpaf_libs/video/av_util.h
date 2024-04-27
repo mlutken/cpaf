@@ -109,8 +109,7 @@ enum class stream_state_t : int8_t {
     open,
     playing,
     waiting_for_data,
-    playing_local,
-    finished
+    closing
 };
 
 enum class subtitle_file_state_t : int8_t {

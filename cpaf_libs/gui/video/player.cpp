@@ -26,7 +26,7 @@ player::player(cpaf::audio::device& audio_device, locale::translator& tr)
     : audio_device_(audio_device)
     , tr_(tr)
     , subtitle_downloader_thread_(*this)
-    // , play_handler_thread_(*this)
+    , play_handler_thread_(*this)
 {
     next_video_frame_ = av_frame::create_alloc();
     configuration.connect_for_changes([this]() {on_configuration_changed();});
@@ -40,7 +40,7 @@ void player::set_main_window(system_window& main_window)
 {
     main_window_ptr_ = &main_window;
     subtitle_downloader_thread_.start();
-    // play_handler_thread_.start();
+    play_handler_thread_.start();
 
     if (!video_controls_) {
         set_controls(std::make_unique<video::controls_default>(*this, configuration));
@@ -51,6 +51,8 @@ void player::set_main_window(system_window& main_window)
 /// @todo Make player::start_playing() private
 void player::start_playing(const std::chrono::microseconds& start_time_pos)
 {
+    std::cerr << fmt::format("\n---FIXMENM [{}] Start playing ---\n", to_string(primary_stream_state()));
+    std::cerr << fmt::format("FIXMENM path: {}\n----------------------\n\n", cur_playable().path());
     media_pipeline_threads_ = std::make_unique<pipeline_threads>(*this);
 
     audio_device_.play_callback_set(audio_callback_get());
@@ -75,14 +77,16 @@ void player::start_playing(const std::chrono::microseconds& start_time_pos)
     media_pipeline_threads().audio_resampler_set(audio_resampler_);
     video_fmt_ctx.read_packets_to_queues(video_fmt_ctx.primary_media_type(), 10);
 
-    cur_playable().dbg_print(); // FIXMENM
+    /// cur_playable().dbg_print(); // FIXMENM
 
     media_pipeline_threads().start();
+    std::this_thread::sleep_for(2ms);
     primary_stream_state() = stream_state_t::playing;
     check_activate_subtitle();
     resume_playback();
 }
 
+/// @todo This function as opposed to close() ? Figure out!
 void player::terminate()
 {
     close();
@@ -101,17 +105,16 @@ bool player::open(const std::string& resource_path)
 /// @todo Make private
 bool player::open(playable playab)
 {
+    std::cerr << fmt::format("\n---FIXMENM [{}] Open playable ---\n", to_string(primary_stream_state()));
+    std::cerr << fmt::format("FIXMENM path: {}\n--------------------------------\n\n", playab.path());
+    close();
     cur_playable_set(std::move(playab));
 
-    close();
+    stream_completely_downloaded_ = false;
     subtitle_selected_index_ = -1;
     subtitle_source_ = subtitle_source_t::none;
     primary_resource_path_ = cur_playable().path();
     pause_playback();
-
-
-    std::cerr << "\n---FIXMENM Open playable ---\n" << cur_playable().json().dump(4) << "\n FIXMENM\n";
-    //    configuration.dbg_print(); // FIXMENM
 
     start_time_pos_ = cur_playable().start_time();
     primary_source_stream_ = std::make_unique<cpaf::video::play_stream>([this]() {return torrents_get();}, &primary_stream_state_);
@@ -130,8 +133,9 @@ bool player::open(playable playab)
 
 void player::open_async(playable playab)
 {
-    open_thread_ = std::make_unique<std::thread>( [=,this]() { this->open(std::move(playab)); } );
-    open_thread_->detach();
+    play_handler_thread_.open_async(playab);
+    /// open_thread_ = std::make_unique<std::thread>( [=,this]() { this->open(std::move(playab)); } );
+    /// open_thread_->detach();
 }
 
 void player::open_async(const std::string& resource_path, std::chrono::microseconds start_time_pos)
@@ -152,7 +156,7 @@ void player::close()
     if (!primary_source_stream_) {
         return;
     }
-    primary_stream_state() = stream_state_t::finished;
+    primary_stream_state() = stream_state_t::closing;
     if (media_pipeline_threads_) {
         resume_playback();
         media_pipeline_threads_->terminate();
@@ -172,8 +176,9 @@ void player::close()
 
 void player::close_async()
 {
-    open_thread_ = std::make_unique<std::thread>( [=,this]() { this->close(); } );
-    open_thread_->detach();
+    play_handler_thread_.close_async();
+    /// open_thread_ = std::make_unique<std::thread>( [=,this]() { this->close(); } );
+    /// open_thread_->detach();
 }
 
 /// @todo This function most likely needs a more solid implementation.
@@ -451,7 +456,6 @@ void player::subtitle_select(int32_t selectable_subtitle_index, std::chrono::mic
 {
     subtitle_source_ = subtitle_source_t::none;
     if (set_subtitle_helper(selectable_subtitle_index)) {
-        std::cerr << fmt::format("FIXMENM adjust time for subtitle: {:%S}", subtitle_adjust_offset);
         const auto index = static_cast<uint32_t>(selectable_subtitle_index);
         auto entry = selectable_subtitles().at(index);
         if (entry.source == subtitle_source_t::text_file) {
@@ -766,10 +770,9 @@ void player::handle_stream_state()
 void player::torrent_finished_event(std::shared_ptr<cpaf::torrent::torrent> tor_file)
 {
     if (tor_file) {
-        auto stream_state_expected = stream_state_t::playing;
-        primary_stream_state().compare_exchange_strong(stream_state_expected, stream_state_t::playing_local);
+        auto expected = false;
+        stream_completely_downloaded_.compare_exchange_strong(expected, true);
     }
-
 }
 
 void player::on_configuration_changed()
@@ -807,7 +810,8 @@ void player::update_screen_size_factor()
 bool player::show_stream_state() const
 {
     const auto& ss = primary_stream_state();
-    return ss == stream_state_t::opening || ss == stream_state_t::waiting_for_data;
+    // return ss == stream_state_t::opening || ss == stream_state_t::waiting_for_data;
+    return ss == stream_state_t::opening || ss == stream_state_t::waiting_for_data || ss == stream_state_t::closing;
 }
 
 bool player::set_subtitle_helper(int32_t selectable_subtitle_index)

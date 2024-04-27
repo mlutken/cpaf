@@ -52,7 +52,10 @@ bool av_format_context::open(const std::string& resource_path)
         std::cerr << "LOG_ERR: Can't open '" <<  resource_path << "' while another open is in progress\n";
         return false;
     }
-    std::cerr << "FIXMENM: Start opening '" <<  resource_path << "'\n";
+
+    std::cerr << fmt::format("---FIXMENM [{}] format_context START Open ---\n", to_string(stream_state()));
+    std::cerr << fmt::format("FIXMENM path: {}\n", resource_path);
+
     resource_path_ = resource_path;
 
     const string protocol_name = protocol_from_uri(resource_path);

@@ -22,6 +22,7 @@ public:
     explicit torrent_io(std::atomic<stream_state_t>& stream_state,
                         std::shared_ptr<torrent::torrents> torrents_instance);
 
+    ~torrent_io() override;
 private:
 
     std::string     do_protocol_name        () const override { return "magnet"; }

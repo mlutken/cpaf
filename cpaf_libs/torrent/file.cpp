@@ -92,11 +92,12 @@ void file::request_pieces_from_offset()
     const bool is_valid_offset = (0 <= offsett_) && (offsett_ < size());
     if (is_valid_offset && streaming_mode_active()) {
         const auto read_ahead_range = get_pieces_read_ahead_range(offsett_);
-        fmt::println("FIXMENM: Seek: Request read ahead: {}", read_ahead_range.dbg_string());
+        // fmt::println("FIXMENM: Seek: Request read ahead: {}", read_ahead_range.dbg_string());
         parent_torrent_ptr_->request_pieces(read_ahead_range, 0);
     }
 }
 
+/// @todo cpaf::torrent::file::close() not implemented !!!
 void file::close()
 {
     std::cerr << "TODO TODO cpaf::torrent::file::close()\n";
