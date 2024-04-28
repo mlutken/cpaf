@@ -87,19 +87,21 @@ int32_t av_samples_queue::copy_audio_samples(
         const samples_queue_callback_t& queue_pop_callback)
 {
     auto bytes_left = bytes_to_copy;
-    while (!empty() && (bytes_left > 0)) {
-        av_samples_buffer& frnt = front();
-        if (queue_pop_callback) {
-            queue_pop_callback(frnt);
-        }
-        const auto bytes_copied = frnt.copy_out(dest_buf, bytes_left);
-        dest_buf += bytes_copied;
-        bytes_left -= bytes_copied;
-        if (frnt.empty()) {
-            pop();
+    {
+        std::scoped_lock<std::mutex> lock(fifo_mutex_);
+        while (!empty() && (bytes_left > 0)) {
+            av_samples_buffer& frnt = fifo_.front();
+            if (queue_pop_callback) {
+                queue_pop_callback(frnt);
+            }
+            const auto bytes_copied = frnt.copy_out(dest_buf, bytes_left);
+            dest_buf += bytes_copied;
+            bytes_left -= bytes_copied;
+            if (frnt.empty()) {
+                fifo_.pop();
+            }
         }
     }
-
     const auto bytes_actually_copied = bytes_to_copy - bytes_left;
     return bytes_actually_copied;
 }
