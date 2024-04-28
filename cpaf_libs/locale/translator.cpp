@@ -18,13 +18,13 @@ translator::translator(std::unique_ptr<translator_if> translator)
 
 void translator::set_translator(std::unique_ptr<translator_if> translator)
 {
-    std::lock_guard<std::mutex> access_lock(access_mutex_);
+    std::scoped_lock<std::mutex> access_lock(access_mutex_);
     translator_ = std::move(translator);
 }
 
 std::string translator::tr(const std::string& text) const
 {
-    std::lock_guard<std::mutex> access_lock(access_mutex_);
+    std::scoped_lock<std::mutex> access_lock(access_mutex_);
     return translator_->tr(text);
 }
 

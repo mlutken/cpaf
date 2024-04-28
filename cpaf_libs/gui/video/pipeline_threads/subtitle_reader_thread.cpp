@@ -51,7 +51,7 @@ void subtitle_reader_thread::run()
 
 void subtitle_reader_thread::subtitle_container_set(std::unique_ptr<subtitle_container> container)
 {
-    std::lock_guard<std::mutex> lg{ subtitle_container_mutex_ };
+    std::scoped_lock<std::mutex> lg{ subtitle_container_mutex_ };
     subtitle_container_ = std::move(container);
     if (subtitle_container_) {
         current_subtitle_iter_ = subtitle_container_->end();
@@ -70,7 +70,7 @@ void subtitle_reader_thread::flush_start()
 
 void subtitle_reader_thread::flush_done()
 {
-    std::lock_guard<std::mutex> lg{ subtitle_container_mutex_ };
+    std::scoped_lock<std::mutex> lg{ subtitle_container_mutex_ };
     if (!subtitle_container_) { return; }
     current_subtitle_iter_ = subtitle_container_->end();
 }
@@ -121,7 +121,7 @@ void subtitle_reader_thread::read_from_container()
         return;
     }
 
-    std::lock_guard<std::mutex> lg{ subtitle_container_mutex_ };
+    std::scoped_lock<std::mutex> lg{ subtitle_container_mutex_ };
     if (!subtitle_container_) {
         return;
     }

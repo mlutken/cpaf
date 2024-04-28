@@ -26,19 +26,19 @@ av_samples_queue::av_samples_queue(size_t queue_size)
 
 av_samples_buffer& av_samples_queue::front ()
 {
-    std::lock_guard<std::mutex> lock(fifo_mutex_);
+    std::scoped_lock<std::mutex> lock(fifo_mutex_);
     return fifo_.front();
 }
 
 const av_samples_buffer& av_samples_queue::front () const
 {
-    std::lock_guard<std::mutex> lock(fifo_mutex_);
+    std::scoped_lock<std::mutex> lock(fifo_mutex_);
     return fifo_.front();
 }
 
 void av_samples_queue::pop()
 {
-    std::lock_guard<std::mutex> lock(fifo_mutex_);
+    std::scoped_lock<std::mutex> lock(fifo_mutex_);
     fifo_.pop();
 }
 
@@ -48,7 +48,7 @@ av_samples_buffer av_samples_queue::pop_front ()
         return av_samples_buffer();
     }
 
-    std::lock_guard<std::mutex> lock(fifo_mutex_);
+    std::scoped_lock<std::mutex> lock(fifo_mutex_);
     if (fifo_.empty()) {
         return av_samples_buffer();
     }
@@ -59,13 +59,13 @@ av_samples_buffer av_samples_queue::pop_front ()
 
 bool av_samples_queue::push (av_samples_buffer buffer)
 {
-    std::lock_guard<std::mutex> lock(fifo_mutex_);
+    std::scoped_lock<std::mutex> lock(fifo_mutex_);
     return fifo_.push(std::move(buffer));
 }
 
 void av_samples_queue::flush ()
 {
-    std::lock_guard<std::mutex> lock(fifo_mutex_);
+    std::scoped_lock<std::mutex> lock(fifo_mutex_);
     fifo_.flush();
 }
 

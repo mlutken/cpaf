@@ -97,7 +97,7 @@ bool av_format_context::open(const std::string& resource_path)
 
 void av_format_context::close()
 {
-    const std::lock_guard<std::mutex> lock(packet_queues_mutex_);
+    const std::scoped_lock<std::mutex> lock(packet_queues_mutex_);
     for (media_type_t mt = media_type_t::video; mt != media_type_t::SIZE; ++mt) {
         auto media_index = to_size_t(mt);
         selected_stream_per_media_type_[media_index] = illegal_stream_index();
@@ -480,7 +480,7 @@ av_packet av_format_context::packet_queue_front(media_type_t mt)
 
 av_packet av_format_context::packet_queue_pop_front(media_type_t mt)
 {
-    const std::lock_guard<std::mutex> lock(packet_queues_mutex_);
+    const std::scoped_lock<std::mutex> lock(packet_queues_mutex_);
     packet_queue_t& queue = packet_queue_get(mt);
 
 //    if (mt == media_type::subtitle) {
@@ -518,7 +518,7 @@ std::chrono::microseconds av_format_context::packet_queue_pts(media_type_t mt) c
 
 void av_format_context::flush_packet_queues()
 {
-    const std::lock_guard<std::mutex> lock(packet_queues_mutex_);
+    const std::scoped_lock<std::mutex> lock(packet_queues_mutex_);
     for (auto& queue : packet_queue_per_media_type_) {
         queue.flush();
     }

@@ -20,7 +20,7 @@ audio_format_t device_base::audio_format() const
 
 void device_base::play_callback_set(play_callback_t&& cb)
 {
-    std::lock_guard<std::mutex> access_lock(access_mutex_);
+    std::scoped_lock<std::mutex> access_lock(access_mutex_);
     lock();
     play_callback_ = std::move(cb);
     unlock();
