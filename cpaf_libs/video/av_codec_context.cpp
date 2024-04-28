@@ -276,6 +276,7 @@ int av_codec_context::receive_frame(av_frame& frame) const
     return ret_val;
 }
 
+/// @todo Add support for a possible threads_started_ test
 std::vector<subtitle_frame> av_codec_context::read_subtitles() const
 {
     if (media_type_get() != media_type_t::subtitle){
