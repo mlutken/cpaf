@@ -35,9 +35,9 @@ public:
     void                        run                     ();
     void                        terminate               ();
     audio_play_callback_t       audio_callback_get      ();
-    const std::atomic_bool&     thread_is_running       () const { return thread_is_running_; }
-    const std::atomic_bool&     thread_is_stopped       () const { return thread_is_stopped_; }
-    const std::atomic_bool&     thread_is_paused        () const { return thread_is_paused_; }
+    bool                        thread_is_running       () const { return threads_running_; }
+    bool                        thread_is_stopped       () const { return !threads_started_; }
+    bool                        thread_is_paused        () const { return threads_paused_; }
     std::chrono::microseconds   front_presentation_time    () const;
 
 
@@ -55,9 +55,6 @@ private:
     const std::atomic_bool&                     threads_started_;
     const std::atomic_bool&                     threads_paused_;
     std::atomic<cpaf::video::seek_state_t>&     seek_state_;
-    std::atomic_bool                            thread_is_running_  = false;
-    std::atomic_bool                            thread_is_stopped_  = false;
-    std::atomic_bool                            thread_is_paused_   = false;
     std::chrono::microseconds                   sync_ok_interval_               = std::chrono::milliseconds(15);
     int                                         audio_callback_dbg_counter_     = 0;
 };

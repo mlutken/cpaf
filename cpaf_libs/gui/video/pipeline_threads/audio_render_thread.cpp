@@ -26,23 +26,20 @@ namespace cpaf::gui::video {
         : player_(owning_player),
           pipeline_threads_(pline_threads),
           audio_samples_queue_(audio_samples_queue),
-          seek_state_(seek_state),
           threads_running_(threads_running),
           threads_started_(threads_started),
-          threads_paused_(threads_paused)
-    {
+          threads_paused_(threads_paused),
+          seek_state_(seek_state)
+{
 
 }
 
 void audio_render_thread::run()
 {
-    thread_is_running_ = true;
-    thread_is_stopped_ = false;
 }
 
 void audio_render_thread::terminate()
 {
-    thread_is_running_ = false;
 }
 
 audio_render_thread::audio_play_callback_t audio_render_thread::audio_callback_get()
@@ -59,11 +56,7 @@ std::chrono::microseconds audio_render_thread::front_presentation_time() const
 
 void audio_render_thread::audio_callback_function(uint8_t* stream, int32_t length)
 {
-    thread_is_paused_  = (threads_paused_  == true);
-    thread_is_running_ = (threads_running_ == true);
-    thread_is_stopped_ = (threads_started_ == false);
-
-    const bool is_inactive = !thread_is_running_ || thread_is_stopped_;
+    const bool is_inactive = !threads_running_ || !threads_started_;
 
     if (is_inactive) {
         render_audio_silence(stream, length);
