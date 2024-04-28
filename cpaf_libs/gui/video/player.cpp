@@ -155,43 +155,50 @@ void player::open_async(const std::string& resource_path, std::chrono::microseco
 */
 void player::close()
 {
-    std::cerr << fmt::format("FIXMENM close 1 [{}]\n", to_string(primary_stream_state()));
+    std::cerr << fmt::format("\n\n*** FIXMENM close 1 [{}]\n", to_string(primary_stream_state()));
+    std::cerr << fmt::format("FIXMENM path: {}\n----------------------\n\n", cur_playable().path());
+
+    const auto start_close_tp = steady_clock::now();
+    primary_stream_state() = stream_state_t::closing;
     if (media_pipeline_threads_) {
         media_pipeline_threads_->stop();
-        std::this_thread::sleep_for(300ms); // FIXMNM
+        media_pipeline_threads_->wait_for_all_stopped();
     }
 
+    audio_device_.pause(); // Pause audio.
     if (!primary_source_stream_) {
+        primary_stream_state() = stream_state_t::inactive;
         return;
     }
 
-    std::cerr << fmt::format("FIXMENM close 2 [{}]\n", to_string(primary_stream_state()));
-    // [[maybe_unused]] estl::wait_for_expected_value(primary_stream_state(), stream_state_t::playing, 5s);
+    float cur_time_ms = (duration_cast<microseconds>( steady_clock::now() - start_close_tp)).count() / 1000.0f;
+    std::cerr << fmt::format("*** FIXMENM close 2 [{}] time: {} ms\n", to_string(primary_stream_state()), cur_time_ms);
 
-    // while (!(primary_stream_state() == stream_state_t::playing)) {
-    //     std::cerr << "FIXMENM waiting for ready to start closing\n";
-    //     std::this_thread::sleep_for(1ms);
-    // }
-    std::cerr << fmt::format("\n---FIXMENM close 3 [{}] Start closing ---\n", to_string(primary_stream_state()));
-    std::cerr << fmt::format("FIXMENM path: {}\n----------------------\n\n", cur_playable().path());
 
     pause_playback();
-    audio_device_.pause(); // Pause audio.
-    primary_stream_state() = stream_state_t::closing;
     if (media_pipeline_threads_) {
+        cur_time_ms = (duration_cast<microseconds>( steady_clock::now() - start_close_tp)).count() / 1000.0f;
+        std::cerr << fmt::format("*** FIXMENM close 3 [{}] time: {} ms\n", to_string(primary_stream_state()), cur_time_ms);
         media_pipeline_threads_->terminate();
         media_pipeline_threads_->wait_for_all_terminated();
+        cur_time_ms = (duration_cast<microseconds>( steady_clock::now() - start_close_tp)).count() / 1000.0f;
+        std::cerr << fmt::format("*** FIXMENM close 4 [{}] time: {} ms\n", to_string(primary_stream_state()), cur_time_ms);
         media_pipeline_threads_.reset(nullptr);
+        cur_time_ms = (duration_cast<microseconds>( steady_clock::now() - start_close_tp)).count() / 1000.0f;
+        std::cerr << fmt::format("*** FIXMENM close 5 [{}] time: {} ms\n", to_string(primary_stream_state()), cur_time_ms);
     }
     if (primary_source_stream_) {
         primary_source_stream_->close();
+        cur_time_ms = (duration_cast<microseconds>( steady_clock::now() - start_close_tp)).count() / 1000.0f;
+        std::cerr << fmt::format("*** FIXMENM close 6 [{}] time: {} ms\n", to_string(primary_stream_state()), cur_time_ms);
         primary_source_stream_.reset(nullptr);
     }
     primary_resource_path_.clear();
     video_codec_ctx_ = av_codec_context{};
     audio_codec_ctx_ = av_codec_context{};
     primary_stream_state() = stream_state_t::inactive;
-    std::cerr << fmt::format("FIXMENM close 4 [{}]\n", to_string(primary_stream_state()));
+    cur_time_ms = (duration_cast<microseconds>( steady_clock::now() - start_close_tp)).count() / 1000.0f;
+    std::cerr << fmt::format("*** FIXMENM close 7 [{}] time: {} ms\n", to_string(primary_stream_state()), cur_time_ms);
 }
 
 void player::close_async()
