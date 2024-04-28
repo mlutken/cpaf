@@ -55,10 +55,10 @@ private:
     const std::atomic_bool&                     threads_started_;
     const std::atomic_bool&                     threads_paused_;
     std::atomic<cpaf::video::seek_state_t>&     seek_state_;
-    std::atomic_bool                            thread_is_running_ = false;
-    std::atomic_bool                            thread_is_stopped_ = false;
-    std::atomic_bool                            thread_is_paused_ = false;
-    std::chrono::microseconds                   sync_ok_interval                = std::chrono::milliseconds(15);
+    std::atomic_bool                            thread_is_running_  = false;
+    std::atomic_bool                            thread_is_stopped_  = false;
+    std::atomic_bool                            thread_is_paused_   = false;
+    std::chrono::microseconds                   sync_ok_interval_               = std::chrono::milliseconds(15);
     int                                         audio_callback_dbg_counter_     = 0;
 };
 

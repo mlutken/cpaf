@@ -102,7 +102,7 @@ void audio_render_thread::audio_callback_function(uint8_t* stream, int32_t lengt
         stream,
         length,
         player_.cur_media_time().current_time_pos(),
-        sync_ok_interval,
+        sync_ok_interval_,
         queue_pop_callback);
     //    const auto bytes_copied = copy_audio_samples(stream, audio_samples_queue(), length);
     if (bytes_copied != length) {
