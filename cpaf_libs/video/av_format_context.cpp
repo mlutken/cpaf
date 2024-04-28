@@ -447,7 +447,9 @@ media_type_t av_format_context::max_packet_queue_type(const std::set<media_type_
  reached a size as specified. So we put in one queue for each media type: audio, video,
 subtitltes regardless of which primary media type we read. So even if we read video packets
 we still put audio packet (for the selected audio stream) into it's own queue as well. Same
-for subtitles. */
+for subtitles.
+@todo Add support for a possible threads_started_ test
+*/
 bool av_format_context::read_packets_to_queues(media_type_t mt, uint32_t fill_to_size)
 {
     const packet_queue_t& queue = packet_queue(mt);
@@ -505,13 +507,6 @@ av_format_context::get_packet_fun av_format_context::get_packet_function(media_t
 {
     get_packet_fun fn = [this, mt] () {
         return this->packet_queue_pop_front(mt);
-///        packet_queue_t& queue = packet_queue(mt);
-///        if (queue.empty()) {
-///            return av_packet{};
-///        }
-///        av_packet packet = std::move(queue.front());
-///        queue.pop();
-///        return packet;
     };
     return fn;
 }
@@ -520,11 +515,6 @@ std::chrono::microseconds av_format_context::packet_queue_pts(media_type_t mt) c
 {
     return presentation_time(packet_queue(mt).front());
 }
-
-// std::chrono::milliseconds av_format_context::packet_queue_pts_ms(media_type_t mt) const
-// {
-//     return std::chrono::duration_cast<std::chrono::milliseconds>(packet_queue_pts(mt));
-// }
 
 void av_format_context::flush_packet_queues()
 {
@@ -609,7 +599,7 @@ std::chrono::milliseconds av_format_context::best_effort_pts_ms(const av_frame& 
 std::chrono::microseconds av_format_context::total_time() const
 {
     if (!ff_format_context_) { return std::chrono::microseconds(0); }
-    static_assert(AV_TIME_BASE == 1'000'000, "av_format_context::total_time() AV_TIME_BASE Is expected to be 1,000,000! Please add if co compensate!");
+    static_assert(AV_TIME_BASE == 1'000'000, "av_format_context::total_time() AV_TIME_BASE Is expected to be 1,000,000! Please add 'if' to compensate!");
     return std::chrono::microseconds(ff_format_context_->duration);
 }
 
