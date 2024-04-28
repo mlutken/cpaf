@@ -179,17 +179,18 @@ void player::close()
         media_pipeline_threads_->stop();
         media_pipeline_threads_->wait_for_all_stopped();
     }
+    pause_playback();
 
     if (!primary_source_stream_) {
         primary_stream_state() = stream_state_t::inactive;
         return;
     }
-    pause_playback();
-    if (media_pipeline_threads_) {
-        media_pipeline_threads_->terminate();
-        media_pipeline_threads_->wait_for_all_terminated();
-        media_pipeline_threads_.reset(nullptr);
-    }
+
+//    if (media_pipeline_threads_) {
+//        media_pipeline_threads_->terminate();
+//        media_pipeline_threads_->wait_for_all_terminated();
+//        media_pipeline_threads_.reset(nullptr);
+//    }
     reset_primary_stream();
     primary_resource_path_.clear();
     float cur_time_ms = (duration_cast<microseconds>( steady_clock::now() - start_close_tp)).count() / 1000.0f;
