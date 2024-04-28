@@ -158,6 +158,7 @@ void player::close()
     std::cerr << fmt::format("FIXMENM close 1 [{}]\n", to_string(primary_stream_state()));
     if (media_pipeline_threads_) {
         media_pipeline_threads_->stop();
+        std::this_thread::sleep_for(300ms); // FIXMNM
     }
 
     if (!primary_source_stream_) {

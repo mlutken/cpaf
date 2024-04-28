@@ -47,8 +47,7 @@ void audio_resampler_thread::thread_function()
 
 void audio_resampler_thread::work_function()
 {
-    if (thread_is_stopped_) { return; }
-    if (thread_is_paused_)  { return; }
+    if (thread_is_paused_ || thread_is_stopped_ ) { return; }
     const auto cur_media_time_pos = player_.cur_media_time().current_time_pos();
     bool add_samples = true;
     while (add_samples) {
@@ -59,6 +58,9 @@ void audio_resampler_thread::work_function()
 void audio_resampler_thread::resample_frame(bool& add_samples,
                                             const std::chrono::microseconds& cur_media_time_pos)
 {
+    if (threads_paused_ || !threads_started_ || !thread_is_running_) {
+        return;
+    }
     add_samples = false;
 
     if (audio_samples_queue().full() || player_.format_context().packet_queue_const(cpaf::video::media_type_t::audio).empty()) {
