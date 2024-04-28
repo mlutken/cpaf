@@ -157,7 +157,7 @@ bool pipeline_threads::all_threads_stopped() const
     const bool audio_render_stopped = audio_render_thread_.thread_is_stopped();
     const bool subtitle_stopped = subtitle_reader_thread_.thread_is_stopped();
 
-    return  packet_stopped       &&
+    return packet_stopped       &&
            resampler_stopped    &&
            audio_render_stopped &&
            subtitle_stopped

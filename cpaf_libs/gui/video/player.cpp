@@ -177,9 +177,9 @@ void player::close()
 
     pause_playback();
     if (media_pipeline_threads_) {
+        media_pipeline_threads_->terminate();
         cur_time_ms = (duration_cast<microseconds>( steady_clock::now() - start_close_tp)).count() / 1000.0f;
         std::cerr << fmt::format("*** FIXMENM close 3 [{}] time: {} ms\n", to_string(primary_stream_state()), cur_time_ms);
-        media_pipeline_threads_->terminate();
         media_pipeline_threads_->wait_for_all_terminated();
         cur_time_ms = (duration_cast<microseconds>( steady_clock::now() - start_close_tp)).count() / 1000.0f;
         std::cerr << fmt::format("*** FIXMENM close 4 [{}] time: {} ms\n", to_string(primary_stream_state()), cur_time_ms);

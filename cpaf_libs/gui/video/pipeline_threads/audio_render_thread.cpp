@@ -63,11 +63,11 @@ std::chrono::microseconds audio_render_thread::dbg_audio_front_time() const
 
 void audio_render_thread::audio_callback_function(uint8_t* stream, int32_t length)
 {
+    thread_is_paused_  = (threads_paused_  == true);
     thread_is_running_ = (threads_running_ == true);
     thread_is_stopped_ = (threads_started_ == false);
 
     const bool is_inactive = !thread_is_running_ || thread_is_stopped_;
-    /// const bool is_inactive = !thread_is_running_ ;
 
     if (is_inactive) {
         render_audio_silence(stream, length);
@@ -80,11 +80,9 @@ void audio_render_thread::audio_callback_function(uint8_t* stream, int32_t lengt
     }
 
     if (threads_paused_) {
-        thread_is_paused_ = true;
         render_audio_silence(stream, length);
         return;
     }
-    thread_is_paused_ = false;
 
     if (audio_samples_queue().empty()) {
         render_audio_silence(stream, length);
@@ -110,7 +108,8 @@ void audio_render_thread::audio_callback_function(uint8_t* stream, int32_t lengt
     if (bytes_copied != length) {
         std::cerr << "ERROR: Not enough samples in queue for audio device callback!!\n";
     }
-    debug_audio_callback(stream, length);
+
+    //debug_audio_callback(stream, length);
 }
 
 void audio_render_thread::render_audio_silence(uint8_t* stream, int32_t length)
