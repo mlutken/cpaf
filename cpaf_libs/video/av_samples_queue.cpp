@@ -69,6 +69,15 @@ void av_samples_queue::flush ()
     fifo_.flush();
 }
 
+std::chrono::microseconds av_samples_queue::front_presentation_time() const
+{
+    std::scoped_lock<std::mutex> lock(fifo_mutex_);
+    if (fifo_.empty()) {
+        return cpaf::time::invalid_duration<std::chrono::microseconds>();
+    }
+    return fifo_.front().presentation_time();
+}
+
 
 /** Copy a number of bytes from the samples queue to the destination address.
     @return The number of bytes actually copied */

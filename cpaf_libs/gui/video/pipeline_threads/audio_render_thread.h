@@ -38,7 +38,7 @@ public:
     const std::atomic_bool&     thread_is_running       () const { return thread_is_running_; }
     const std::atomic_bool&     thread_is_stopped       () const { return thread_is_stopped_; }
     const std::atomic_bool&     thread_is_paused        () const { return thread_is_paused_; }
-    std::chrono::microseconds   dbg_audio_front_time    () const;
+    std::chrono::microseconds   front_presentation_time    () const;
 
 
 private:

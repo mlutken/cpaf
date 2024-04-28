@@ -37,6 +37,8 @@ public:
     av_samples_buffer           pop_front   ();
     void                        flush       ();
 
+    std::chrono::microseconds   front_presentation_time () const;
+
     int32_t                     copy_audio_samples  (uint8_t* dest_buf,  int32_t bytes_to_copy,
                                                      const samples_queue_callback_t& queue_pop_callback);
     int32_t                     copy_audio_samples  (uint8_t* dest_buf, int32_t bytes_to_copy,

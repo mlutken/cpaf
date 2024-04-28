@@ -52,13 +52,9 @@ audio_render_thread::audio_play_callback_t audio_render_thread::audio_callback_g
     };
 }
 
-/// Debug only: Not thread safe !!!
-std::chrono::microseconds audio_render_thread::dbg_audio_front_time() const
+std::chrono::microseconds audio_render_thread::front_presentation_time() const
 {
-    if (audio_samples_queue_.empty()) {
-        return std::chrono::microseconds(0);
-    }
-    return audio_samples_queue_.front().presentation_time();
+    return audio_samples_queue_.front_presentation_time();
 }
 
 void audio_render_thread::audio_callback_function(uint8_t* stream, int32_t length)
@@ -90,7 +86,7 @@ void audio_render_thread::audio_callback_function(uint8_t* stream, int32_t lengt
     }
 
 
-    player_.cur_media_time().adjust_time(audio_samples_queue().front().presentation_time());
+    player_.cur_media_time().adjust_time(audio_samples_queue_.front_presentation_time());
     pipeline_threads_.check_set_seek_in_sync();
 
     // Check adjust time on audio samples queue pop()

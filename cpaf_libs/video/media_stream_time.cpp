@@ -1,6 +1,7 @@
 
 #include "media_stream_time.h"
 
+#include <cpaf_libs/time/cpaf_time.h>
 #include <cpaf_libs/video/av_frame.h>
 
 using namespace std;
@@ -71,12 +72,18 @@ void media_stream_time::reset_start_time() {
 }
 
 void media_stream_time::reset_start_time(const std::chrono::microseconds& reset_offset) {
+    if (!cpaf::time::is_valid(reset_offset)) {
+        return;
+    }
     reset_offset_ = reset_offset;
     time_point_start_ = std::chrono::high_resolution_clock::now();
     start_time_was_reset_ = true;
 }
 
 void media_stream_time::adjust_time(const std::chrono::microseconds& reset_offset) {
+    if (!cpaf::time::is_valid(reset_offset)) {
+        return;
+    }
     reset_offset_ = reset_offset;
     time_point_start_ = std::chrono::high_resolution_clock::now();
     start_time_was_reset_ = false;
