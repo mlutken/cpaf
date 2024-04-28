@@ -46,8 +46,6 @@ private:
     void                        render_audio_silence    (uint8_t* stream, int32_t length);
     void                        debug_audio_callback    (uint8_t* stream, int32_t length);
 
-    cpaf::video::av_samples_queue&       audio_samples_queue     () { return audio_samples_queue_; }
-
     player&                                     player_;
     pipeline_threads&                           pipeline_threads_;
     cpaf::video::av_samples_queue&              audio_samples_queue_;
