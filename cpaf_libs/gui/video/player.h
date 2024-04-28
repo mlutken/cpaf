@@ -222,12 +222,13 @@ private:
     // ---------------------------------
     // --- PRIVATE: Helper functions ---
     // ---------------------------------
+    void                            reset_primary_stream    (std::unique_ptr<cpaf::video::play_stream> new_primary_stream = nullptr);
     bool                            all_initialized         () const;
     void                            init_video              (const system_window& main_window);
     bool                            open_stream             (const std::string& resource_path, cpaf::video::stream_type_t sti);
     bool                            open_primary_stream     (const std::string& resource_path);
     void                            check_activate_subtitle ();
-    void                            update_scaling_context  () const;
+    void                            update_scaling_context  (bool mutex_already_locked = false) const;
     pipeline_threads&               media_pipeline_threads  () { return *media_pipeline_threads_; }
     const pipeline_threads&         media_pipeline_threads  () const { return *media_pipeline_threads_; }
     void                            handle_internal_events  ();

@@ -53,9 +53,14 @@ void player::set_main_window(system_window& main_window)
 /// @todo Make player::start_playing() private
 void player::start_playing(const std::chrono::microseconds& start_time_pos)
 {
-    std::cerr << fmt::format("\n---FIXMENM [{}] Start playing ---\n", to_string(primary_stream_state()));
+    std::cerr << fmt::format("\n--- FIXMENM [{}] START Start playing ---\n", to_string(primary_stream_state()));
     std::cerr << fmt::format("FIXMENM path: {}\n----------------------\n\n", cur_playable().path());
-    media_pipeline_threads_ = std::make_unique<pipeline_threads>(*this);
+    if (!media_pipeline_threads_) {
+        media_pipeline_threads_ = std::make_unique<pipeline_threads>(*this);
+        media_pipeline_threads_->stop();
+        media_pipeline_threads_->run();
+    }
+    media_pipeline_threads_->stop();
 
     audio_device_.play_callback_set(audio_callback_get());
     audio_out_formats_set(to_ff_audio_format(audio_device_.audio_format()));
@@ -79,14 +84,12 @@ void player::start_playing(const std::chrono::microseconds& start_time_pos)
     media_pipeline_threads().audio_resampler_set(audio_resampler_);
     video_fmt_ctx.read_packets_to_queues(video_fmt_ctx.primary_media_type(), 10);
 
-    /// cur_playable().dbg_print(); // FIXMENM
-
-    media_pipeline_threads().run();
     media_pipeline_threads().start();
     std::this_thread::sleep_for(2ms);
     primary_stream_state() = stream_state_t::playing;
     check_activate_subtitle();
     resume_playback();
+    std::cerr << fmt::format("\n--- FIXMENM [{}] DONE Start playing ---\n", to_string(primary_stream_state()));
 }
 
 /// @todo This function as opposed to close() ? Figure out!
@@ -110,10 +113,12 @@ bool player::open(const std::string& resource_path)
 /// @todo Make private
 bool player::open(playable playab)
 {
-    std::cerr << fmt::format("\n---FIXMENM [{}] Open playable ---\n", to_string(primary_stream_state()));
+    std::cerr << fmt::format("\n---FIXMENM [{}] BEGIN Open playable ---\n", to_string(primary_stream_state()));
     std::cerr << fmt::format("FIXMENM path: {}\n--------------------------------\n\n", playab.path());
     close();
     cur_playable_set(std::move(playab));
+
+
 
     stream_completely_downloaded_ = false;
     subtitle_selected_index_ = -1;
@@ -123,6 +128,11 @@ bool player::open(playable playab)
 
     start_time_pos_ = cur_playable().start_time();
     primary_source_stream_ = std::make_unique<cpaf::video::play_stream>([this]() {return torrents_get();}, &primary_stream_state_);
+    if (media_pipeline_threads_) {
+        media_pipeline_threads_->stop();
+        media_pipeline_threads_->flush_queues();
+    }
+
     const bool ok = open_primary_stream(cur_playable().path());
 
     const bool force = true;
@@ -133,6 +143,7 @@ bool player::open(playable playab)
 
     subtitle_select(entry.language_code, entry.subtitle_adjust_offset);
 
+    std::cerr << fmt::format("\n---FIXMENM [{}] DONE Open playable ---\n", to_string(primary_stream_state()));
     return ok;
 }
 
@@ -173,21 +184,14 @@ void player::close()
         primary_stream_state() = stream_state_t::inactive;
         return;
     }
-
     pause_playback();
     if (media_pipeline_threads_) {
         media_pipeline_threads_->terminate();
         media_pipeline_threads_->wait_for_all_terminated();
         media_pipeline_threads_.reset(nullptr);
     }
-    if (primary_source_stream_) {
-        primary_source_stream_->close();
-        primary_source_stream_.reset(nullptr);
-    }
+    reset_primary_stream();
     primary_resource_path_.clear();
-    video_codec_ctx_ = av_codec_context{};
-    audio_codec_ctx_ = av_codec_context{};
-    primary_stream_state() = stream_state_t::inactive;
     float cur_time_ms = (duration_cast<microseconds>( steady_clock::now() - start_close_tp)).count() / 1000.0f;
     std::cerr << fmt::format("*** FIXMENM close DONE [{}] time: {} ms\n", to_string(primary_stream_state()), cur_time_ms);
 }
@@ -289,17 +293,18 @@ std::chrono::microseconds player::current_io_operation_duration() const
 // ----------------
 av_codec_context& player::video_codec_context() const
 {
+    std::scoped_lock<std::mutex> lock(video_codec_mutex_);
     if (!primary_source_stream_) {
         std::cerr << "LOG_CRITICAL: create_video_codec_ctx(), primary_source_stream_ is nullptr\n";
         return video_codec_ctx_;
     }
 
-    std::scoped_lock<std::mutex> lock(video_codec_mutex_);
     if (!video_codec_ctx_.is_valid()) {
         auto* video_stream = source_stream(stream_type_t::video);
         if (video_stream){
             video_codec_ctx_ = video_stream->codec_context(video_stream_index());
-            update_scaling_context();
+            const bool mutex_already_locked = true;
+            update_scaling_context(mutex_already_locked);
             av_format_context& video_fmt_ctx = primary_source_stream_->format_context(); // TODO: If we use multiple streams we need to get the right format ctx per stream here!
             video_codec_ctx_.get_packet_function_set(video_fmt_ctx.get_packet_function(media_type_t::video));
         }
@@ -314,7 +319,6 @@ av_codec_context& player::audio_codec_context() const
         return audio_codec_ctx_;
     }
 
-    std::scoped_lock<std::mutex> lock(audio_codec_mutex_);
     if (!audio_codec_ctx_.is_valid()) {
         auto* audio_stream = source_stream(stream_type_t::audio);
         if (audio_stream){
@@ -405,12 +409,13 @@ math::v2f player::video_src_dimensions_float() const
     return video_codec_context().dimensions_float();
 }
 
+
 surface_dimensions_t player::video_dst_dimensions() const
 {
-    if (video_codec_ctx_.is_valid()) {
-        return video_codec_ctx_.dst_dimensions();
+    if (video_codec_context().is_valid()) {
+        return video_codec_context().dst_dimensions();
     }
-    else if (video_dst_dimensions_requested_.x() <= 0 && video_dst_dimensions_requested_.y() <= 0 ) {
+    if (video_dst_dimensions_requested_.x() <= 0 && video_dst_dimensions_requested_.y() <= 0 ) {
         return video_src_dimensions();
     }
     return video_dst_dimensions_requested_;
@@ -729,14 +734,39 @@ std::chrono::microseconds player::dbg_audio_front_time() const
     return std::chrono::microseconds(0);
 }
 
+
+// ---------------------------------
+// --- PRIVATE: Helper functions ---
+// ---------------------------------
+
+
+void player::reset_primary_stream(std::unique_ptr<play_stream> new_primary_stream)
+{
+    if (primary_source_stream_) {
+        primary_source_stream_->close();
+    }
+
+    {
+        std::scoped_lock<std::mutex> lock(video_codec_mutex_);
+        video_codec_ctx_ = av_codec_context{};
+    }
+    {
+        std::scoped_lock<std::mutex> lock(audio_codec_mutex_);
+        audio_codec_ctx_ = av_codec_context{};
+    }
+    {
+        std::scoped_lock<std::mutex> lock(subtitle_codec_mutex_);
+        subtitle_codec_ctx_ = av_codec_context{};
+    }
+    primary_source_stream_ = std::move(new_primary_stream);
+    primary_stream_state() = stream_state_t::inactive;
+}
+
 bool player::all_initialized() const
 {
     return media_pipeline_threads_ != nullptr;
 }
 
-// ---------------------------------
-// --- PRIVATE: Helper functions ---
-// ---------------------------------
 void player::init_video(const system_window& main_window)
 {
     video_render_ = render::create_video_render(*this, configuration, main_window, video_dst_dimensions());
@@ -768,8 +798,16 @@ void player::check_activate_subtitle()
     }
 }
 
-void player::update_scaling_context() const
+void player::update_scaling_context(bool mutex_already_locked) const
 {
+    if (mutex_already_locked) {
+        if (video_codec_ctx_.is_valid()) {
+            video_codec_ctx_.init_scaling_context(ff_dst_pixel_format_, video_dst_dimensions_requested_, video_scaler_flags_, video_scaler_align_);
+        }
+        return;
+    }
+
+    std::scoped_lock<std::mutex> lock(video_codec_mutex_);
     if (video_codec_ctx_.is_valid()) {
         video_codec_ctx_.init_scaling_context(ff_dst_pixel_format_, video_dst_dimensions_requested_, video_scaler_flags_, video_scaler_align_);
     }
