@@ -69,10 +69,6 @@ void pipeline_threads::run()
 void pipeline_threads::terminate()
 {
     threads_running_ = false;
-///    bool expected_value = true;
-///    if (threads_running_.compare_exchange_strong(expected_value, false)) {
-///        std::cerr << "LOG_DEBUG pipeline_threads::terminate() called!\n";
-///    }
 }
 
 void pipeline_threads::start()
