@@ -77,11 +77,25 @@ invalid_duration()
     return std::chrono::duration<Rep, Period>::max();
 }
 
+template <class DURATION>
+constexpr DURATION
+invalid_duration()
+{
+    return DURATION::max();
+}
+
 template <class Rep, class Period>
 constexpr bool
 is_valid(std::chrono::duration<Rep, Period> d)
 {
-    return d == invalid_duration<Rep,Period>();
+    return !(d == invalid_duration<Rep,Period>());
+}
+
+template <class DURATION>
+constexpr bool
+is_valid(DURATION d)
+{
+    return !(d == DURATION::invalid_duration());
 }
 
 
