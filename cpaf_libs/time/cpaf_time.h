@@ -70,6 +70,21 @@ abs(std::chrono::duration<Rep, Period> d)
     return std::chrono::duration<Rep, Period>(x >= 0 ? x : -x);
 }
 
+template <class Rep, class Period>
+constexpr std::chrono::duration<Rep, Period>
+invalid_duration()
+{
+    return std::chrono::duration<Rep, Period>::max();
+}
+
+template <class Rep, class Period>
+constexpr bool
+is_valid(std::chrono::duration<Rep, Period> d)
+{
+    return d == invalid_duration<Rep,Period>();
+}
+
+
 // -----------------------------
 // --- Types and Definitions ---
 // -----------------------------
