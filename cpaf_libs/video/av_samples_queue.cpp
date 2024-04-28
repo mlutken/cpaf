@@ -26,16 +26,19 @@ av_samples_queue::av_samples_queue(size_t queue_size)
 
 av_samples_buffer& av_samples_queue::front ()
 {
+    std::lock_guard<std::mutex> lock(fifo_mutex_);
     return fifo_.front();
 }
 
 const av_samples_buffer& av_samples_queue::front () const
 {
+    std::lock_guard<std::mutex> lock(fifo_mutex_);
     return fifo_.front();
 }
 
 void av_samples_queue::pop()
 {
+    std::lock_guard<std::mutex> lock(fifo_mutex_);
     fifo_.pop();
 }
 
