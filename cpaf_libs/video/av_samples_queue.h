@@ -58,7 +58,7 @@ private:
     }
 
     estl::srsw_fifo<av_samples_buffer>  fifo_;
-    std::mutex                          fifo_mutex_;
+    mutable std::mutex                  fifo_mutex_;
 };
 
 

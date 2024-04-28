@@ -41,28 +41,28 @@ void av_samples_queue::pop()
 
 av_samples_buffer av_samples_queue::pop_front ()
 {
-    if (empty()) {
+    if (fifo_.empty()) {
         return av_samples_buffer();
     }
 
-    const std::lock_guard<std::mutex> lock(fifo_mutex_);
-    if (empty()) {
+    std::lock_guard<std::mutex> lock(fifo_mutex_);
+    if (fifo_.empty()) {
         return av_samples_buffer();
     }
-    auto buffer = std::move(front());
-    pop();
+    auto buffer = std::move(fifo_.front());
+    fifo_.pop();
     return buffer;
 }
 
 bool av_samples_queue::push (av_samples_buffer buffer)
 {
-    const std::lock_guard<std::mutex> lock(fifo_mutex_);
+    std::lock_guard<std::mutex> lock(fifo_mutex_);
     return fifo_.push(std::move(buffer));
 }
 
 void av_samples_queue::flush ()
 {
-    const std::lock_guard<std::mutex> lock(fifo_mutex_);
+    std::lock_guard<std::mutex> lock(fifo_mutex_);
     fifo_.flush();
 }
 
@@ -76,10 +76,10 @@ int32_t av_samples_queue::copy_audio_samples(
 {
     auto bytes_left = bytes_to_copy;
     while (!empty() && (bytes_left > 0)) {
-        if (queue_pop_callback) {
-            queue_pop_callback(front());
-        }
         av_samples_buffer& frnt = front();
+        if (queue_pop_callback) {
+            queue_pop_callback(frnt);
+        }
         const auto bytes_copied = frnt.copy_out(dest_buf, bytes_left);
         dest_buf += bytes_copied;
         bytes_left -= bytes_copied;
