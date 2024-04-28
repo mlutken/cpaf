@@ -79,23 +79,27 @@ void subtitle_reader_thread::thread_function()
 {
     thread_is_running_ = true;
     while(threads_running_) {
-        if (threads_paused_) {
-            thread_is_paused_ = true;
-        }
-        else
-        {
-            thread_is_paused_ = false;
-            if (player_.subtitle_source() == subtitle_source_t::stream) {
-                read_from_stream();
-            }
-            else if (player_.subtitle_source() == subtitle_source_t::text_file) {
-                read_from_container();
-            }
-        }
+        thread_is_paused_  = threads_paused_ == true;
+        thread_is_stopped_ = threads_started_ == false;
+        work_function();
         std::this_thread::sleep_for(thread_yield_time_);
     }
     std::cerr << "LOG_INFO: EXIT subtitle_reader_thread::thread_function()!!!\n";
     thread_is_running_ = false;
+}
+
+
+
+
+void subtitle_reader_thread::work_function()
+{
+    if (thread_is_paused_ || thread_is_stopped_ ) { return; }
+    if (player_.subtitle_source() == subtitle_source_t::stream) {
+        read_from_stream();
+    }
+    else if (player_.subtitle_source() == subtitle_source_t::text_file) {
+        read_from_container();
+    }
 }
 
 void subtitle_reader_thread::read_from_stream()
@@ -103,6 +107,7 @@ void subtitle_reader_thread::read_from_stream()
     if (player_.has_subtitle_stream()) {
         auto subtitles = player_.subtitle_codec_context().read_subtitles();
         for (auto& sub: subtitles) {
+            if (!threads_started_) { return; }
             if (!subtitles_queue_.push(std::move(sub)) ) {
                 std::cerr << "LOG_ERR: Can't push subtitle to queue!\n";
             }
@@ -134,7 +139,7 @@ void subtitle_reader_thread::read_from_container()
 //                  << "\n";
 //    }
 
-    while ((current_subtitle_iter_ < container_end) &&  subtitles_to_read > 0 ) {
+    while ( threads_started_ && (current_subtitle_iter_ < container_end) &&  (subtitles_to_read > 0) ) {
         enqueue_current_subtitle();
         ++current_subtitle_iter_;
         --subtitles_to_read;

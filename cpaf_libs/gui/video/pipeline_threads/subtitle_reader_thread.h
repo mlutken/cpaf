@@ -52,6 +52,7 @@ private:
     static constexpr int32_t            subtitles_read_ahead_size = 3;
 
     void                                thread_function         ();
+    void                                work_function           ();
     void                                read_from_stream        ();
     void                                read_from_container     ();
     void                                enqueue_current_subtitle();

@@ -60,7 +60,7 @@ private:
     queue_out_t                         queue_out_;
     std::atomic_bool                    thread_is_running_ = true;
 
-    std::chrono::microseconds           thread_yield_time_              = std::chrono::milliseconds(100);
+    std::chrono::microseconds           thread_yield_time_              = std::chrono::milliseconds(50);
     std::chrono::milliseconds           download_time_out_              = std::chrono::seconds(60);
 
     std::unique_ptr<std::thread>        thread_object_;
