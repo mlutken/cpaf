@@ -325,7 +325,7 @@ std::string to_utf8(const std::string& input, const std::string& charset) {
 
     // Reset the error status
     status = U_ZERO_ERROR;
-    std::u16string utf16String(unicodeLen, '\0');
+    std::u16string utf16String(static_cast<size_t>(unicodeLen), '\0');
     ucnv_toUChars(conv,
                   reinterpret_cast<UChar*>(utf16String.data()),
                   unicodeLen,
