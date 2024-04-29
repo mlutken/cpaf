@@ -21,6 +21,10 @@ std::filesystem::path               largest_file_local_file_path    (const libto
 bool                                has_meta_data                   (const libtorrent::torrent_handle& handle);
 bool                                is_fully_downloaded             (const libtorrent::torrent_handle& handle);
 
+void                                settings_set_default_bool       (libtorrent::settings_pack& settings, int name, bool value);
+void                                settings_set_default_int        (libtorrent::settings_pack& settings, int name, int value);
+void                                settings_set_default_str        (libtorrent::settings_pack& settings, int name, std::string value);
+
 
 struct cache_piece_data_t {
     cache_piece_data_t                          ()                      = default;

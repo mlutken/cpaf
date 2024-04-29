@@ -176,6 +176,27 @@ bool is_fully_downloaded(const libtorrent::torrent_handle& handle)
     }
 }
 
+void settings_set_default_bool(libtorrent::settings_pack& settings, int name, bool value)
+{
+    if (!settings.has_val(name)) {
+        settings.set_bool(name, value);
+    }
+}
+
+void settings_set_default_int(libtorrent::settings_pack& settings, int name, int value)
+{
+    if (!settings.has_val(name)) {
+        settings.set_int(name, value);
+    }
+}
+
+void settings_set_default_str(libtorrent::settings_pack& settings, int name, std::string value)
+{
+    if (!settings.has_val(name)) {
+        settings.set_str(name, value);
+    }
+}
+
 // ----------------------
 // --- cache_pieces_t ---
 // ----------------------
@@ -205,7 +226,6 @@ string pieces_range_t::dbg_string() const
 {
     return fmt::format("Piece begin;offset: {};{}, end: {}, file: {}, size: {:.4} Mb", (int)piece_begin, piece_begin_start_offset, (int)piece_end, (int)file_index, data_size/1e6 );
 }
-
 
 
 } // namespace cpaf::torrent
