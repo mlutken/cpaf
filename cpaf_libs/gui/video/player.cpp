@@ -102,6 +102,12 @@ bool player::open(const std::string& resource_path)
 bool player::open(playable playab)
 {
     close();
+    auto expected_state = stream_state_t::inactive;
+    if (!primary_stream_state().compare_exchange_strong(expected_state, stream_state_t::opening)) {
+        std::cerr << "LOG_ERR: Can't open '" <<  playab.path() << "' while another open is in progress\n";
+        return false;
+    }
+
     std::cerr << fmt::format("\n---FIXMENM [{}] BEGIN Open playable ---\n", to_string(primary_stream_state()));
     // std::cerr << fmt::format("FIXMENM path: {}\n--------------------------------\n\n", playab.path());
     cur_playable_set(std::move(playab));
@@ -120,7 +126,13 @@ bool player::open(playable playab)
         media_pipeline_threads_->flush_queues();
     }
 
-    const bool ok = open_primary_stream(cur_playable().path());
+    bool ok = open_primary_stream(cur_playable().path());
+    if (!ok) {
+        primary_stream_state() = stream_state_t::inactive;
+
+        // TODO: Some cleanup needed here perhaps ?
+        return false;
+    }
 
     const bool force = true;
     cur_playable_upd_calc(force);
@@ -130,6 +142,7 @@ bool player::open(playable playab)
 
     subtitle_select(entry.language_code, entry.subtitle_adjust_offset);
 
+    primary_stream_state() = stream_state_t::open;
     std::cerr << fmt::format("\n---FIXMENM [{}] DONE Open playable ---\n", to_string(primary_stream_state()));
     return ok;
 }
@@ -156,6 +169,11 @@ void player::close()
 {
     std::cerr << fmt::format("\n\n*** FIXMENM close BEGIN [{}]\n", to_string(primary_stream_state()));
 //    std::cerr << fmt::format("FIXMENM path: {}\n----------------------\n\n", cur_playable().path());
+    if (primary_stream_state() == stream_state_t::inactive ) {
+        media_pipeline_threads_->stop();    // We really should be stopeed already, but this will not hurt!
+        return;
+    }
+
 
     const auto start_close_tp = steady_clock::now();
     audio_device_.pause(); // Pause audio.

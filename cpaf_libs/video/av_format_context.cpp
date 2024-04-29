@@ -47,51 +47,35 @@ av_format_context::~av_format_context()
 
 bool av_format_context::open(const std::string& resource_path)
 {
-    auto expected_state = stream_state_t::inactive;
-    if (!stream_state().compare_exchange_strong(expected_state, stream_state_t::opening)) {
-        std::cerr << "LOG_ERR: Can't open '" <<  resource_path << "' while another open is in progress\n";
-        return false;
-    }
-
-    std::cerr << fmt::format("---FIXMENM [{}] format_context START Open ---\n", to_string(stream_state()));
-    std::cerr << fmt::format("FIXMENM path: {}\n", resource_path);
 
     resource_path_ = resource_path;
 
     const string protocol_name = protocol_from_uri(resource_path);
-    custom_io_ptr_ = custom_io_base::create(stream_state(), protocol_name, get_torrents_function_);
+    custom_io_ptr_ = custom_io_base::create(protocol_name, get_torrents_function_);
     if (custom_io_ptr_) {
         if (!custom_io_ptr_->open(resource_path)) {
-            stream_state() = stream_state_t::inactive;
             return false;
         }
         if (!(ff_format_context_ = avformat_alloc_context())) {
-            stream_state() = stream_state_t::inactive;
             return false;
         }
 
         if (!custom_io_ptr_->init(ff_format_context_)) {
-            stream_state() = stream_state_t::inactive;
             return false;
         }
         if ( avformat_open_input(&ff_format_context_, nullptr, nullptr, nullptr) != 0) {
-            stream_state() = stream_state_t::inactive;
             return false;
         }
     }
     else if ( avformat_open_input(&ff_format_context_, resource_path_.c_str(), nullptr, nullptr) != 0) {
-        stream_state() = stream_state_t::inactive;
         return false; // Couldn't open resource/file
     }
 
     if ( avformat_find_stream_info(ff_format_context_, nullptr) <0 ) {
-        stream_state() = stream_state_t::inactive;
         return false; // Couldn't find stream information
     }
     read_codec_contexts();
     set_default_selected_streams();
-    stream_state() = stream_state_t::open;
-    std::cerr << "!!!! FIXMENM: DONE opening '" <<  resource_path << "'\n";
     return true;
 }
 
