@@ -77,10 +77,12 @@ void packet_reader_thread::thread_function()
 
 void packet_reader_thread::work_function()
 {
-    if (thread_is_stopped_) { return; }
+    if (!threads_started_) {
+        return;
+    }
     check_seek_position();
     check_seek_completed();
-    if (thread_is_paused_)  { return; }
+    if (threads_paused_)  { return; }
 
     const auto mt = player_.format_context().primary_media_type();
     player_.format_context().read_packets_to_queues(mt, primary_queue_fill_level_);

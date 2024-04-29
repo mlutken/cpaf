@@ -1,5 +1,7 @@
 #include "audio_resampler_thread.h"
 
+#include <fmt/format.h>
+#include <cpaf_libs/video/media_stream_time.h>
 #include <cpaf_libs/video/media_stream_time.h>
 #include <cpaf_libs/video/av_format_context.h>
 #include <cpaf_libs/video/av_codec_context.h>
@@ -47,7 +49,9 @@ void audio_resampler_thread::thread_function()
 
 void audio_resampler_thread::work_function()
 {
-    if (thread_is_paused_ || thread_is_stopped_ ) { return; }
+    if (threads_paused_ || !threads_started_ ) {
+        return;
+    }
     const auto cur_media_time_pos = player_.cur_media_time().current_time_pos();
     bool add_samples = true;
     while (add_samples) {

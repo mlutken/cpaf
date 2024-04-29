@@ -93,7 +93,7 @@ void subtitle_reader_thread::thread_function()
 
 void subtitle_reader_thread::work_function()
 {
-    if (thread_is_paused_ || thread_is_stopped_ ) { return; }
+    if (threads_paused_ || !threads_started_) { return; }
     if (player_.subtitle_source() == subtitle_source_t::stream) {
         read_from_stream();
     }
