@@ -44,7 +44,7 @@ public:
     explicit player(cpaf::audio::device& audio_device, cpaf::locale::translator& tr);
     ~player();
     void                            set_main_window         (system_window& main_window);
-    void                            start_playing           (const std::chrono::microseconds& start_time_pos = std::chrono::microseconds(0));
+    void                            start_playing           ();
     void                            terminate               ();
     bool                            open                    (const std::string& resource_path);
     bool                            open                    (playable playab);
@@ -243,7 +243,7 @@ private:
     void                            internal_paused_set     (bool is_paused);
     void                            push_paused             ();
     void                            pop_paused              ();
-    void                            cur_playable_set        (playable&& playab);
+    void                            cur_playable_set        (playable playab);
 
 
     // ----------------------------
