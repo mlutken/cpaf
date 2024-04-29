@@ -12,8 +12,8 @@ using namespace std::chrono_literals;
 namespace cpaf::video {
 
 #if 1
-my_file_io::my_file_io(std::atomic<stream_state_t>& stream_state)
-    : custom_io_base(stream_state)
+my_file_io::my_file_io()
+    : custom_io_base()
 {
 
 }

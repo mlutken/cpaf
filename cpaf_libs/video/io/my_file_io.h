@@ -10,7 +10,7 @@ namespace cpaf::video {
 class my_file_io : public custom_io_base
 {
 public:
-    explicit my_file_io(std::atomic<stream_state_t>& stream_state);
+    explicit my_file_io();
 
 private:
     std::string             resource_file_path_;

@@ -28,11 +28,10 @@ class custom_io_base
 {
 public:
     static std::unique_ptr<custom_io_base>  create (
-                                        std::atomic<stream_state_t>& stream_state,
                                         const std::string& protocol_name,
                                         get_torrents_fn get_torrents_function);
 
-    explicit custom_io_base(std::atomic<stream_state_t>&stream_state);
+    explicit custom_io_base();
     virtual ~custom_io_base();
     std::string         protocol_name           () const { return do_protocol_name(); }
     bool                open                    (const std::string& resource_path);
@@ -49,7 +48,6 @@ public:
 //    AVIOContext*        ff_avio_context         () const { return ff_avio_context_; }
 
 protected:
-    std::atomic<stream_state_t>&   stream_state_;
 
 //    bool                use_blocking_seek_      = true;
 

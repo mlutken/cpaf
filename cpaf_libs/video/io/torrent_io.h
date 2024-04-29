@@ -19,8 +19,7 @@ namespace cpaf::video {
 class torrent_io : public custom_io_base
 {
 public:
-    explicit torrent_io(std::atomic<stream_state_t>& stream_state,
-                        std::shared_ptr<torrent::torrents> torrents_instance);
+    explicit torrent_io(std::shared_ptr<torrent::torrents> torrents_instance);
 
     ~torrent_io() override;
 private:

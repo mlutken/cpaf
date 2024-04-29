@@ -7,21 +7,18 @@ using namespace std::chrono;
 
 namespace cpaf::video {
 
-std::unique_ptr<custom_io_base> custom_io_base::create(
-    std::atomic<stream_state_t>& stream_state,
-    const std::string& protocol_name,
+std::unique_ptr<custom_io_base> custom_io_base::create(const std::string& protocol_name,
     get_torrents_fn get_torrents_function)
 {
     std::unique_ptr<custom_io_base> ptr;
     if (protocol_name == "magnet") {
-        ptr = std::make_unique<torrent_io>(stream_state, get_torrents_function());
+        ptr = std::make_unique<torrent_io>(get_torrents_function());
     }
-    else if (protocol_name == "myfile") { ptr = std::make_unique<my_file_io>(stream_state); }
+    else if (protocol_name == "myfile") { ptr = std::make_unique<my_file_io>(); }
     return ptr;
 }
 
-custom_io_base::custom_io_base(std::atomic<stream_state_t>& stream_state)
-    : stream_state_(stream_state)
+custom_io_base::custom_io_base()
 {
 
 }
