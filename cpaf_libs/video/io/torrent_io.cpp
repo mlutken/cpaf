@@ -26,7 +26,7 @@ torrent_io::~torrent_io()
 /// @todo torrent::file::close() is not yet implemented!
 void torrent_io::torrent_cleanup()
 {
-    tor_file_.close();
+    tor_file_.remove_parent_torrent();
 }
 
 bool torrent_io::do_open(const std::string& resource_path)
