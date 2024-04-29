@@ -31,6 +31,9 @@ player::player(cpaf::audio::device& audio_device, locale::translator& tr)
 {
     next_video_frame_ = av_frame::create_alloc();
     configuration.connect_for_changes([this]() {on_configuration_changed();});
+    media_pipeline_threads_ = std::make_unique<pipeline_threads>(*this);
+    media_pipeline_threads_->stop();
+    media_pipeline_threads_->run();
 }
 
 player::~player()
