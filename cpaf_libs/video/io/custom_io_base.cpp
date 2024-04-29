@@ -7,9 +7,12 @@ using namespace std::chrono;
 
 namespace cpaf::video {
 
-std::unique_ptr<custom_io_base> custom_io_base::create(const std::string& protocol_name,
-    get_torrents_fn get_torrents_function)
+std::unique_ptr<custom_io_base> custom_io_base::create( const std::string& resource_path,
+                                                        get_torrents_fn get_torrents_function
+                                                       )
 {
+    const std::string protocol_name = protocol_from_uri(resource_path);
+
     std::unique_ptr<custom_io_base> ptr;
     if (protocol_name == "magnet") {
         ptr = std::make_unique<torrent_io>(get_torrents_function());
@@ -20,16 +23,7 @@ std::unique_ptr<custom_io_base> custom_io_base::create(const std::string& protoc
 
 custom_io_base::custom_io_base()
 {
-
 }
-
-//std::unique_ptr<custom_io_base>  custom_io_base::creator::create  (const std::string& protocol_name)
-//{
-//    std::unique_ptr<custom_io_base> ptr;
-//    if      (protocol_name == "magnet") { ptr = std::make_unique<torrent_io>(); }
-//    else if (protocol_name == "myfile") { ptr = std::make_unique<my_file_io>(); }
-//    return ptr;
-//}
 
 
 custom_io_base::~custom_io_base()

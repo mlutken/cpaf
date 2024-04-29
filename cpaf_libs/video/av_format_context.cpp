@@ -50,8 +50,7 @@ bool av_format_context::open(const std::string& resource_path)
 
     resource_path_ = resource_path;
 
-    const string protocol_name = protocol_from_uri(resource_path);
-    custom_io_ptr_ = custom_io_base::create(protocol_name, get_torrents_function_);
+    custom_io_ptr_ = custom_io_base::create(resource_path, get_torrents_function_);
     if (custom_io_ptr_) {
         if (!custom_io_ptr_->open(resource_path)) {
             return false;

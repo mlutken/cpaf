@@ -27,9 +27,8 @@ namespace cpaf::video {
 class custom_io_base
 {
 public:
-    static std::unique_ptr<custom_io_base>  create (
-                                        const std::string& protocol_name,
-                                        get_torrents_fn get_torrents_function);
+    static std::unique_ptr<custom_io_base>  create (const std::string& resource_path,
+                                                    get_torrents_fn get_torrents_function);
 
     explicit custom_io_base();
     virtual ~custom_io_base();
@@ -41,7 +40,6 @@ public:
     size_t              buffer_size             () const noexcept { return do_buffer_size(); };
     const std::string&  resource_path           () const { return resource_path_; }
     bool                init                    (AVFormatContext*  ff_format_context);
-
 
     std::chrono::microseconds
                         current_io_operation_duration() const;
