@@ -107,6 +107,7 @@ enum class stream_state_t : int8_t {
     inactive,
     opening,
     open,
+    start_playing,
     playing,
     closing
 };
