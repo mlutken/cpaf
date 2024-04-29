@@ -66,6 +66,8 @@ void pipeline_threads::run()
 
 void pipeline_threads::terminate()
 {
+    threads_paused_ = true;
+    threads_started_ = false;
     threads_running_ = false;
 }
 
