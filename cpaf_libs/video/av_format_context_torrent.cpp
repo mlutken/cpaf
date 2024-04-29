@@ -1,3 +1,4 @@
+#error REMOVE_ME
 
 //namespace cpaf::video {
 
