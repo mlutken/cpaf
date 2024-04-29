@@ -57,32 +57,16 @@ void player::set_main_window(system_window& main_window)
 void player::start_playing(const std::chrono::microseconds& start_time_pos)
 {
     std::cerr << fmt::format("\n--- FIXMENM [{}] START Start playing ---\n", to_string(primary_stream_state()));
-///    std::cerr << fmt::format("FIXMENM path: {}\n----------------------\n\n", cur_playable().path());
-///    if (!media_pipeline_threads_) {
-///        media_pipeline_threads_ = std::make_unique<pipeline_threads>(*this);
-///        media_pipeline_threads_->stop();
-///        media_pipeline_threads_->run();
-///    }
-///    media_pipeline_threads_->stop();
 
     audio_device_.play_callback_set(audio_callback_get());
     audio_out_formats_set(to_ff_audio_format(audio_device_.audio_format()));
 
-
-    seek_position(start_time_pos);
-
-///    auto&  audio_fmt_ctx = primary_stream().format_context(); // TODO: If we use multiple streams we need to get the right format ctx per stream here!
-///    auto&  subtitle_fmt_ctx = primary_stream().format_context(); // TODO: If we use multiple streams we need to get the right format ctx per stream here!
-///    video_fmt_ctx.seek_time_pos(start_time_pos);
-///    audio_fmt_ctx.seek_time_pos(start_time_pos);
-///    subtitle_fmt_ctx.seek_time_pos(start_time_pos);
-
     audio_resampler_.in_formats_set(audio_codec_context());
     audio_resampler_.init();
     media_pipeline_threads().audio_resampler_set(audio_resampler_);
-    ////auto&  video_fmt_ctx = primary_stream().format_context(); // TODO: If we use multiple streams we need to get the right format ctx per stream here!
-    format_context().read_packets_to_queues(format_context().primary_media_type(), 10);
 
+    seek_position(start_time_pos);
+    format_context().read_packets_to_queues(format_context().primary_media_type(), 10);
 
     audio_device_.play();
     if (has_video_stream()) {
@@ -92,7 +76,7 @@ void player::start_playing(const std::chrono::microseconds& start_time_pos)
     resume_playback();
     primary_stream_state() = stream_state_t::playing;
 
-    //    check_activate_subtitle();
+    ///  check_activate_subtitle();
     std::cerr << fmt::format("\n--- FIXMENM [{}] DONE Start playing ---\n", to_string(primary_stream_state()));
 }
 
@@ -119,7 +103,7 @@ bool player::open(playable playab)
 {
     close();
     std::cerr << fmt::format("\n---FIXMENM [{}] BEGIN Open playable ---\n", to_string(primary_stream_state()));
-    std::cerr << fmt::format("FIXMENM path: {}\n--------------------------------\n\n", playab.path());
+    // std::cerr << fmt::format("FIXMENM path: {}\n--------------------------------\n\n", playab.path());
     cur_playable_set(std::move(playab));
 
     stream_completely_downloaded_ = false;
@@ -131,7 +115,6 @@ bool player::open(playable playab)
     start_time_pos_ = cur_playable().start_time();
     reset_primary_stream(std::make_unique<cpaf::video::play_stream>([this]() {return torrents_get();}, &primary_stream_state_));
 
-    /// primary_source_stream_ = std::make_unique<cpaf::video::play_stream>([this]() {return torrents_get();}, &primary_stream_state_);
     if (media_pipeline_threads_) {
         media_pipeline_threads_->stop();
         media_pipeline_threads_->flush_queues();
@@ -198,16 +181,6 @@ void player::close()
     }
     pause_playback();
 
-///    if (!primary_source_stream_) {
-///        primary_stream_state() = stream_state_t::inactive;
-///        return;
-///    }
-
-///    if (media_pipeline_threads_) {
-///        media_pipeline_threads_->terminate();
-///        media_pipeline_threads_->wait_for_all_terminated();
-///        media_pipeline_threads_.reset(nullptr);
-///    }
     reset_primary_stream();
     primary_resource_path_.clear();
     primary_stream_state() = stream_state_t::inactive;
@@ -645,6 +618,7 @@ void player::seek_position(const std::chrono::microseconds& stream_pos, seek_dir
     }
 }
 
+/// @todo If we use multiple streams we need to get the right format ctx per stream here!
 void player::seek_position(const std::chrono::microseconds& stream_pos)
 {
     if (!ui_events_enabled_) { return; }
