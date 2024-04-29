@@ -57,40 +57,42 @@ void player::set_main_window(system_window& main_window)
 void player::start_playing(const std::chrono::microseconds& start_time_pos)
 {
     std::cerr << fmt::format("\n--- FIXMENM [{}] START Start playing ---\n", to_string(primary_stream_state()));
-//    std::cerr << fmt::format("FIXMENM path: {}\n----------------------\n\n", cur_playable().path());
-    if (!media_pipeline_threads_) {
-        media_pipeline_threads_ = std::make_unique<pipeline_threads>(*this);
-        media_pipeline_threads_->stop();
-        media_pipeline_threads_->run();
-    }
-    media_pipeline_threads_->stop();
+///    std::cerr << fmt::format("FIXMENM path: {}\n----------------------\n\n", cur_playable().path());
+///    if (!media_pipeline_threads_) {
+///        media_pipeline_threads_ = std::make_unique<pipeline_threads>(*this);
+///        media_pipeline_threads_->stop();
+///        media_pipeline_threads_->run();
+///    }
+///    media_pipeline_threads_->stop();
 
     audio_device_.play_callback_set(audio_callback_get());
     audio_out_formats_set(to_ff_audio_format(audio_device_.audio_format()));
 
-    audio_device_.play();
 
-    if (has_video_stream()) {
-        init_video(*main_window_ptr_);
-    }
+    seek_position(start_time_pos);
 
-    auto&  video_fmt_ctx = primary_stream().format_context(); // TODO: If we use multiple streams we need to get the right format ctx per stream here!
-    auto&  audio_fmt_ctx = primary_stream().format_context(); // TODO: If we use multiple streams we need to get the right format ctx per stream here!
-    auto&  subtitle_fmt_ctx = primary_stream().format_context(); // TODO: If we use multiple streams we need to get the right format ctx per stream here!
-    video_fmt_ctx.seek_time_pos(start_time_pos);
-    audio_fmt_ctx.seek_time_pos(start_time_pos);
-    subtitle_fmt_ctx.seek_time_pos(start_time_pos);
+///    auto&  audio_fmt_ctx = primary_stream().format_context(); // TODO: If we use multiple streams we need to get the right format ctx per stream here!
+///    auto&  subtitle_fmt_ctx = primary_stream().format_context(); // TODO: If we use multiple streams we need to get the right format ctx per stream here!
+///    video_fmt_ctx.seek_time_pos(start_time_pos);
+///    audio_fmt_ctx.seek_time_pos(start_time_pos);
+///    subtitle_fmt_ctx.seek_time_pos(start_time_pos);
 
     audio_resampler_.in_formats_set(audio_codec_context());
     audio_resampler_.init();
-
     media_pipeline_threads().audio_resampler_set(audio_resampler_);
-    video_fmt_ctx.read_packets_to_queues(video_fmt_ctx.primary_media_type(), 10);
+    ////auto&  video_fmt_ctx = primary_stream().format_context(); // TODO: If we use multiple streams we need to get the right format ctx per stream here!
+    format_context().read_packets_to_queues(format_context().primary_media_type(), 10);
 
+
+    audio_device_.play();
+    if (has_video_stream()) {
+        init_video(*main_window_ptr_);
+    }
     media_pipeline_threads().start();
-    primary_stream_state() = stream_state_t::playing;
-    check_activate_subtitle();
     resume_playback();
+    primary_stream_state() = stream_state_t::playing;
+
+    //    check_activate_subtitle();
     std::cerr << fmt::format("\n--- FIXMENM [{}] DONE Start playing ---\n", to_string(primary_stream_state()));
 }
 
@@ -196,10 +198,10 @@ void player::close()
     }
     pause_playback();
 
-//    if (!primary_source_stream_) {
-//        primary_stream_state() = stream_state_t::inactive;
-//        return;
-//    }
+///    if (!primary_source_stream_) {
+///        primary_stream_state() = stream_state_t::inactive;
+///        return;
+///    }
 
 ///    if (media_pipeline_threads_) {
 ///        media_pipeline_threads_->terminate();
