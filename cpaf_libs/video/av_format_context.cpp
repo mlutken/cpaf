@@ -98,6 +98,13 @@ void av_format_context::close()
     custom_io_ptr_.reset();
 }
 
+void av_format_context::cancel_current_io()
+{
+    if (custom_io_ptr_) {
+        custom_io_ptr_->cancel_current_io();
+    }
+}
+
 void av_format_context::selected_media_index_set(media_type_t mt, size_t stream_index)
 {
     selected_stream_per_media_type_[to_size_t(mt)] = stream_index;

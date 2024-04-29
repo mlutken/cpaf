@@ -4,6 +4,7 @@
 #include <filesystem>
 #include <span>
 #include <array>
+#include <atomic>
 
 #include "custom_io_base.h"
 
@@ -31,6 +32,7 @@ private:
     void            do_close                () override;
     bool            do_is_open              () const override;
     int64_t         do_size                 () const noexcept override;
+    void            do_cancel_current_io    () override;
     int             do_read_packet          (uint8_t* buf, int buf_size) override;
 //    int       do_write_packet         (uint8_t* buf, int buf_size) override;
     int64_t         do_seek                 (int64_t offset, int whence) override;
@@ -39,6 +41,7 @@ private:
     torrent::file                           tor_file_;
     std::shared_ptr<torrent::torrents>      torrents_instance_;
     std::shared_ptr<torrent::torrent>       torrent_;
+    std::atomic<bool>                       io_cancel_requested_{false};
 };
 
 } //END namespace cpaf::video

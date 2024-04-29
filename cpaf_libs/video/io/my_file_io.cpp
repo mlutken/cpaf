@@ -43,6 +43,11 @@ int64_t my_file_io::do_size() const noexcept
     return static_cast<int64_t>(std::filesystem::file_size(resource_file_path_));
 }
 
+void my_file_io::do_cancel_current_io()
+{
+
+}
+
 int my_file_io::do_read_packet(uint8_t* buf, int buf_size)
 {
     const auto bytes_read = fread(buf, sizeof(uint8_t), static_cast<size_t>(buf_size), file_);

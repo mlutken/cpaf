@@ -31,6 +31,11 @@ void play_stream::close()
     format_context_.close();
 }
 
+void play_stream::cancel_current_io()
+{
+    format_context_.cancel_current_io();
+}
+
 std::chrono::microseconds play_stream::current_io_operation_duration() const
 {
     return format_context_.current_io_operation_duration();

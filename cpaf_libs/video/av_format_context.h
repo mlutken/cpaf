@@ -45,6 +45,7 @@ public:
     ~av_format_context();
     bool                    open                        (const std::string& resource_path);
     void                    close                       ();
+    void                    cancel_current_io           ();
     void                    selected_media_index_set    (media_type_t mt, size_t stream_index);
     size_t                  media_type_to_index         (media_type_t mt) const { return selected_stream_per_media_type_[to_size_t(mt)]; }
     size_t                  primary_index               () const { return primary_stream_index_; }

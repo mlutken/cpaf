@@ -26,19 +26,26 @@ torrent_io::~torrent_io()
 /// @todo torrent::file::close() is not yet implemented!
 void torrent_io::torrent_cleanup()
 {
-    tor_file_.remove_parent_torrent();
+    if (torrent_) {
+        tor_file_.remove_parent_torrent();
+    }
 }
 
 bool torrent_io::do_open(const std::string& resource_path)
 {
     torrent_ = torrents_instance_->add_torrent(resource_path);
+    io_cancel_requested_ = false;
 
     if (!torrent_) {
         return false;
     }
 
     std::cerr << "!! Waiting for meta data for '" << torrent_->name() << "' ...\n";
-    torrent_->wait_for_meta_data();
+    if (!torrent_->wait_for_meta_data(io_timeout_)) {
+        std::cerr << "LOG_INFO: Timeout/abort reached while waiting for meta data for '" << torrent_->name() << "' ...\n";
+
+        return false;
+    }
     std::cerr << " !! Waiting for meta data done!\n";
 
     cerr << "Largest file index         : '" << torrent_->largest_file_index() << "'\n";
@@ -73,6 +80,12 @@ int64_t torrent_io::do_size() const noexcept
         return 0;
     }
     return tor_file_.size();
+}
+
+/// @todo torrent_io::do_cancel_current_io()
+void torrent_io::do_cancel_current_io()
+{
+    std::cerr << "FIXMENM TODO: IMPLEMENT! torrent_io::do_cancel_current_io()\n";
 }
 
 int torrent_io::do_read_packet(uint8_t* buf, int buf_size)

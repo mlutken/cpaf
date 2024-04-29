@@ -213,6 +213,9 @@ void player::close_async()
         std::cerr << fmt::format("FIXMENM path: {}\n----------------------\n\n", cur_playable().path());
 
     }
+    if (primary_source_stream_) {
+        primary_source_stream_->cancel_current_io();
+    }
     play_handler_thread_.close_async();
 }
 

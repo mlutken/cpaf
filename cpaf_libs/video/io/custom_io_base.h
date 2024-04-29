@@ -36,8 +36,9 @@ public:
     bool                open                    (const std::string& resource_path);
     void                close                   ();
     bool                is_open                 () { return do_is_open(); }
-    int64_t             size                    () const noexcept { return do_size(); }
-    size_t              buffer_size             () const noexcept { return do_buffer_size(); };
+    int64_t             size                    () const noexcept   { return do_size(); }
+    void                cancel_current_io       ()                  { do_cancel_current_io(); }
+    size_t              buffer_size             () const noexcept   { return do_buffer_size(); };
     const std::string&  resource_path           () const { return resource_path_; }
     bool                init                    (AVFormatContext*  ff_format_context);
 
@@ -46,8 +47,10 @@ public:
 //    AVIOContext*        ff_avio_context         () const { return ff_avio_context_; }
 
 protected:
+    std::chrono::milliseconds   io_timeout_     = std::chrono::minutes(1);
 
-//    bool                use_blocking_seek_      = true;
+    bool                keep_downloaded_      = false;
+    //    bool                use_blocking_seek_      = true;
 
 private:
     using time_point_t = std::chrono::steady_clock::time_point;
@@ -70,6 +73,7 @@ private:
     virtual void            do_close                () = 0;
     virtual bool            do_is_open              () const = 0;
     virtual int64_t         do_size                 () const noexcept = 0;
+    virtual void            do_cancel_current_io    () = 0;
     virtual size_t          do_buffer_size          () const noexcept { return 4096; };
 
     virtual int             do_read_packet          (uint8_t* buf, int buf_size) = 0;
