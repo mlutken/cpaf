@@ -1,6 +1,7 @@
 #include "torrents.h"
 
 #include <iostream>
+#include <fmt/format.h>>
 #include <libtorrent/magnet_uri.hpp>
 #include <libtorrent/alert_types.hpp>
 #include <cpaf_libs/torrent/torrent_utils.h>
@@ -32,11 +33,13 @@ torrents::~torrents()
 
 void torrents::start()
 {
-    if (!base_torrents_path_.empty()) {
-        create_directories(base_torrents_path_);
+    if (!base_torrents_dir_.empty()) {
+        create_directories(base_torrents_dir_);
     }
 
+    add_default_settings(settings_pack_);
     session_params_ = lt::session_params(settings_pack_);
+
     lt::session_params ses_params(settings_pack_);
     if (storage_mode() == storage_mode_t::memory) {
         ses_params.disk_io_constructor = temp_disk_constructor;
@@ -47,6 +50,9 @@ void torrents::start()
     }
     session_ptr_ = make_unique<lt::session>(ses_params);
     background_process_thread_ = make_unique<jthread>( [this] () {this->background_process_fun(); });
+
+    cerr << fmt::format("FIXMENM torrents dth mode active: '{}'", session_ptr_->is_dht_running()) << "\n";
+
 }
 
 void torrents::stop()
@@ -76,10 +82,10 @@ std::shared_ptr<torrent> torrents::find_torrent(const std::string& uri_or_name)
     return nullptr;
 }
 
-std::shared_ptr<torrent> torrents::add_torrent(const std::string& uri_or_name)
+std::shared_ptr<torrent> torrents::add_torrent(const std::string& uri_or_name, const std::filesystem::path& base_dir)
 {
      if (!has_torrent(uri_or_name)) {
-        return create(uri_or_name);
+        return create(uri_or_name, base_dir);
     }
     else {
          for (auto [hash, tor_ptr]: torrents_map_) {
@@ -91,8 +97,17 @@ std::shared_ptr<torrent> torrents::add_torrent(const std::string& uri_or_name)
     return nullptr;
 }
 
+void torrents::remove_torrent(const torrent& tor)
+{
+    std::cerr << fmt::format( "FIXMENM Remove torrent: {}\n", tor.local_file_path().string() );
+    std::cerr << fmt::format( "FIXMENM Remove base_local_file_dir: {}\n", tor.base_local_file_dir().string() );
+    const auto thash = lt::hash_value(tor.handle_);
+    torrents_map_.erase(thash);
+    session_ptr_->remove_torrent(tor.handle_);
+}
 
-void torrents::delete_torrent(const std::string& uri_or_name)
+/// @todo Implement torrents::delete_torrent()
+void torrents::remove_torrent(const std::string& uri_or_name)
 {
     const auto name = torrent_name(uri_or_name);
     // TODO:
@@ -100,7 +115,6 @@ void torrents::delete_torrent(const std::string& uri_or_name)
 
 bool torrents::has_torrent(const std::string& uri_or_name) const
 {
-//    return torrents_map_.contains(torrent_name(uri_or_name));
     for (auto [hash, tor_ptr]: torrents_map_) {
         if (tor_ptr->name() == torrent_name(uri_or_name)) {
             return true;
@@ -120,16 +134,19 @@ void torrents::debug_print_alerts_set(bool newDebug_print_alerts)
 // --- PRIVATE: Helper functions ---
 // ---------------------------------
 
-std::shared_ptr<torrent> torrents::create(const std::string& uri_or_name)
+std::shared_ptr<torrent> torrents::create(const std::string& uri_or_name, path base_dir)
 {
     lt::error_code ec;
     lt::add_torrent_params add_torrent_params;
+    if (base_dir.empty()) {
+        base_dir = base_torrents_dir_;
+    }
 
     lt::parse_magnet_uri(uri_or_name, add_torrent_params, ec);
-    add_torrent_params.save_path = base_torrents_path_.string();
+    add_torrent_params.save_path = base_dir.string();
     add_torrent_params.storage_mode = lt::storage_mode_t::storage_mode_sparse; // storage_mode_sparse, storage_mode_allocate
     lt::torrent_handle handle = session_ptr_->add_torrent(std::move(add_torrent_params));
-//    handle.set_flags(lt::torrent_flags::sequential_download);
+    ///    handle.set_flags(lt::torrent_flags::sequential_download);
 
     const auto tor_ptr = std::shared_ptr<torrent>( new torrent(uri_or_name, handle, this));
     auto tor_name = tor_ptr->name();
@@ -137,6 +154,14 @@ std::shared_ptr<torrent> torrents::create(const std::string& uri_or_name)
     cerr << "FIXMENM torrents::create(), torrent_name '" << tor_name << "'  thash: '" << thash << "'\n";
     torrents_map_[thash] = tor_ptr;
     return tor_ptr;
+}
+
+void torrents::add_default_settings(libtorrent::settings_pack& settings) const
+{
+    settings_set_default_bool(settings, libtorrent::settings_pack::enable_dht, true); // Enable DHT
+    settings_set_default_bool(settings, libtorrent::settings_pack::enable_lsd, true); // Enable local service discovery
+    settings_set_default_bool(settings, libtorrent::settings_pack::enable_upnp, true); // Enable UPnP
+    settings_set_default_bool(settings, libtorrent::settings_pack::enable_natpmp, true); // Enable NAT-PMP
 }
 
 void torrents::background_process_fun()

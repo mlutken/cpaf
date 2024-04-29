@@ -97,6 +97,11 @@ void file::request_pieces_from_offset()
     }
 }
 
+void file::remove_parent_torrent()
+{
+    parent_torrent_ptr_->remove();
+}
+
 /// @todo cpaf::torrent::file::close() not implemented !!!
 void file::close()
 {

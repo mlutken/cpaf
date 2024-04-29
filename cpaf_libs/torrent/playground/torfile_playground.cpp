@@ -112,7 +112,7 @@ int main(int argc, char const* argv[])
 
 
     tor::torrents my_torrents;
-    my_torrents.base_torrents_path_set(base_torrents_path);
+    my_torrents.base_torrents_dir_set(base_torrents_path);
     my_torrents.debug_print_alerts_set(false);
     my_torrents.start();
     auto my_torrent_ptr = my_torrents.add_torrent(magnet_url);

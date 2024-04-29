@@ -27,6 +27,7 @@ public:
 
     torrent&                            operator=                       (const torrent& other) = delete;
 
+    void                                remove                          ();
     file                                open                            (lt::file_index_t file_index);
     file                                open                            (std::string_view file_path);
     file                                open_streaming                  (lt::file_index_t file_index, size_t read_ahead_size);
@@ -43,7 +44,9 @@ public:
     lt::file_index_t                    largest_file_index              () const;
     std::int64_t                        file_size                       (lt::file_index_t file_index) const;
     std::int64_t                        largest_file_size               () const                                    { return file_size(largest_file_index()); };
+    std::filesystem::path               base_local_file_dir             () const;
     std::filesystem::path               largest_file_local_file_path    () const;
+    std::filesystem::path               local_file_path                 () const;
     lt::index_range<lt::file_index_t>   all_file_indices                () const;
     std::vector<std::string>            all_file_names                  () const;
     std::vector<std::string>            all_file_paths                  () const;

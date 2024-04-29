@@ -25,6 +25,11 @@ torrent::torrent(const std::string& uri_or_name, libtorrent::torrent_handle hand
     cerr << "torrent::CONSTRUCTOR: '" << name_ << "'\n";
 }
 
+void torrent::remove()
+{
+    parent_torrents_ptr_->remove_torrent(*this);
+}
+
 file torrent::open(libtorrent::file_index_t file_index)
 {
     return file(file_index, handle_, this);
@@ -89,9 +94,19 @@ int64_t torrent::file_size(libtorrent::file_index_t file_index) const
     return cpaf::torrent::file_size(handle_, file_index);
 }
 
+std::filesystem::path torrent::base_local_file_dir() const
+{
+    return cpaf::torrent::base_local_file_dir(handle_);
+}
+
 std::filesystem::path torrent::largest_file_local_file_path() const
 {
-    return cpaf::torrent::largest_file_local_file_path(handle_, parent_torrents_ptr_->base_torrents_path());
+    return cpaf::torrent::largest_file_local_file_path(handle_);
+}
+
+std::filesystem::path torrent::local_file_path() const
+{
+    return cpaf::torrent::torrent_local_file_path(handle_);
 }
 
 lt::index_range<libtorrent::file_index_t> torrent::all_file_indices() const
