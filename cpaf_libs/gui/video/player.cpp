@@ -81,18 +81,11 @@ void player::terminate()
     }
 }
 
-/// @todo need to support reading "hybrid" resources that (potentially) specify different streams
-///       for video, audio, key_frames etc.. For now we simply open a single primary stream with this.
-bool player::open(const std::string& resource_path)
-{
-    auto playab = cpaf::gui::video::playable(resource_path);
-    return open(playab);
-}
-
 /// @todo Make private
 bool player::open(playable playab)
 {
     close();
+    abort_current_open_ = false;
     auto expected_state = stream_state_t::inactive;
     if (!primary_stream_state().compare_exchange_strong(expected_state, stream_state_t::opening)) {
         std::cerr << "LOG_ERR: Can't open '" <<  playab.path() << "' while another open is in progress\n";
@@ -100,6 +93,7 @@ bool player::open(playable playab)
     }
 
     std::cerr << fmt::format("\n---FIXMENM [{}] BEGIN Open playable ---\n", to_string(primary_stream_state()));
+    const auto start_close_tp = steady_clock::now();
     // std::cerr << fmt::format("FIXMENM path: {}\n--------------------------------\n\n", playab.path());
     cur_playable_set(playab);
     media_pipeline_threads().stop();
@@ -113,7 +107,14 @@ bool player::open(playable playab)
     reset_primary_stream(std::make_unique<cpaf::video::play_stream>([this]() {return torrents_get();}, &primary_stream_state_));
     media_pipeline_threads().flush_queues();
 
+    float cur_time_ms = (duration_cast<microseconds>( steady_clock::now() - start_close_tp)).count() / 1000.0f; // FIXMENM
+    std::cerr << fmt::format("---FIXMENM [{}]  START Open primary stream time: {} ms\n", to_string(primary_stream_state()), cur_time_ms);
+
     bool ok = open_primary_stream(cur_playable().path());
+
+    cur_time_ms = (duration_cast<microseconds>( steady_clock::now() - start_close_tp)).count() / 1000.0f; // FIXMENM
+    std::cerr << fmt::format("---FIXMENM [{}]  COMPLETED Open primary stream time: {} ms\n", to_string(primary_stream_state()), cur_time_ms);
+
     if (!ok) {
         primary_stream_state() = stream_state_t::inactive;
 
@@ -141,7 +142,8 @@ bool player::open(playable playab)
     format_context().read_packets_to_queues(format_context().primary_media_type(), 10);
 
     primary_stream_state() = stream_state_t::open;
-    std::cerr << fmt::format("\n---FIXMENM [{}] DONE Open playable ---\n", to_string(primary_stream_state()));
+    cur_time_ms = (duration_cast<microseconds>( steady_clock::now() - start_close_tp)).count() / 1000.0f; // FIXMENM
+    std::cerr << fmt::format("---FIXMENM DONE [{}]  Open playable time: {} ms\n", to_string(primary_stream_state()), cur_time_ms);
     return ok;
 }
 
@@ -217,7 +219,6 @@ void player::close_async()
 /// @todo This function most likely needs a more solid implementation.
 ///       I expect that it will crash often if called
 void player::cancel_async_open() {
-    primary_stream_state() = stream_state_t::inactive;
 }
 
 /// @todo Most likely we need to test this and make an async version!
@@ -770,7 +771,6 @@ void player::reset_primary_stream(std::unique_ptr<play_stream> new_primary_strea
         subtitle_codec_ctx_ = av_codec_context{};
     }
     primary_source_stream_ = std::move(new_primary_stream);
-    primary_stream_state() = stream_state_t::inactive;
 }
 
 bool player::all_initialized() const
@@ -794,6 +794,7 @@ bool player::open_stream(const std::string& resource_path, stream_type_t sti)
     return open_ok;
 }
 
+/// @todo Make private
 bool player::open_primary_stream(const std::string& resource_path)
 {
     primary_resource_path_ = resource_path;

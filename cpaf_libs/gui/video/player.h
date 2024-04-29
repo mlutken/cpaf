@@ -46,7 +46,6 @@ public:
     void                            set_main_window         (system_window& main_window);
     void                            start_playing           ();
     void                            terminate               ();
-    bool                            open                    (const std::string& resource_path);
     bool                            open                    (playable playab);
     void                            open_async              (playable playab);
     void                            open_async              (const std::string& resource_path, std::chrono::microseconds start_time_pos = {});
@@ -251,6 +250,7 @@ private:
     // ----------------------------
     using source_streams_array_t = std::array<std::unique_ptr<cpaf::video::play_stream>, cpaf::video::stream_type_index_size()>;
     std::atomic<stream_state_t>                     primary_stream_state_           = stream_state_t::inactive;
+    std::atomic<bool>                               abort_current_open_             = false;
     cpaf::audio::device&                            audio_device_;
     cpaf::locale::translator&                       tr_;
     subtitle_downloader_thread                      subtitle_downloader_thread_;
