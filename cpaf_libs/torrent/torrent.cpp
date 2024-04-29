@@ -25,10 +25,6 @@ torrent::torrent(const std::string& uri_or_name, libtorrent::torrent_handle hand
     cerr << "torrent::CONSTRUCTOR: '" << name_ << "'\n";
 }
 
-void torrent::remove()
-{
-    parent_torrents_ptr_->remove_torrent(*this);
-}
 
 file torrent::open(libtorrent::file_index_t file_index)
 {
@@ -69,6 +65,22 @@ bool torrent::wait_for_meta_data(std::chrono::milliseconds timeout)
 
     return false;
 }
+
+void torrent::remove()
+{
+    parent_torrents_ptr_->remove_torrent(*this);
+}
+
+
+/// @todo	Torrents that are auto-managed may be automatically resumed again. It
+/// 	does not make sense to pause an auto-managed torrent without making it
+/// 	not auto-managed first. Torrents are auto-managed by default when added
+/// 	to the session. For more information, see queuing_.
+void torrent::pause()
+{
+    handle_.pause();
+}
+
 
 string torrent::name() const
 {

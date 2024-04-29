@@ -28,6 +28,7 @@ public:
     void                                read_ahead_size_set             (size_t read_ahead_size)        { read_ahead_size_ = read_ahead_size; }
     void                                request_pieces_from_offset      ();
     void                                remove_parent_torrent           ();
+    void                                pause_parent_torrent            ();
     void                                close                           ();
 
     void                                use_blocking_seek_set           (bool bs) { use_blocking_seek_ = bs; }

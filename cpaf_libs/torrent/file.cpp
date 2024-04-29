@@ -102,6 +102,11 @@ void file::remove_parent_torrent()
     parent_torrent_ptr_->remove();
 }
 
+void file::pause_parent_torrent()
+{
+    parent_torrent_ptr_->pause();
+}
+
 /// @todo cpaf::torrent::file::close() not implemented !!!
 void file::close()
 {
