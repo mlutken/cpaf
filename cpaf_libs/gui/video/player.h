@@ -295,8 +295,6 @@ private:
     std::atomic<subtitle_source_t>                  subtitle_source_                = subtitle_source_t::none;
     int32_t                                         subtitle_selected_index_        = -1;
     std::function<void ()>                          cb_start_playing_;
-    std::unique_ptr<std::thread>                    open_thread_                    = nullptr;
-    std::unique_ptr<std::thread>                    open_subtitle_thread_           = nullptr;
     cpaf::math::v2f                                 screen_size_factor_use_         {1,1};
     cpaf::math::v2f                                 screen_size_factor_raw_         {1,1};
 };

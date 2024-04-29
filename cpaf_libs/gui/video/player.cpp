@@ -181,34 +181,37 @@ void player::close()
     }
     pause_playback();
 
-    if (!primary_source_stream_) {
-        primary_stream_state() = stream_state_t::inactive;
-        return;
-    }
-
-//    if (media_pipeline_threads_) {
-//        media_pipeline_threads_->terminate();
-//        media_pipeline_threads_->wait_for_all_terminated();
-//        media_pipeline_threads_.reset(nullptr);
+//    if (!primary_source_stream_) {
+//        primary_stream_state() = stream_state_t::inactive;
+//        return;
 //    }
+
+///    if (media_pipeline_threads_) {
+///        media_pipeline_threads_->terminate();
+///        media_pipeline_threads_->wait_for_all_terminated();
+///        media_pipeline_threads_.reset(nullptr);
+///    }
     reset_primary_stream();
     primary_resource_path_.clear();
+    primary_stream_state() = stream_state_t::inactive;
     float cur_time_ms = (duration_cast<microseconds>( steady_clock::now() - start_close_tp)).count() / 1000.0f;
     std::cerr << fmt::format("*** FIXMENM close DONE [{}] time: {} ms\n", to_string(primary_stream_state()), cur_time_ms);
 }
 
 void player::close_async()
 {
+    if (primary_stream_state() == stream_state_t::opening) {
+        std::cerr << fmt::format("\n\n ### FIXMENM Close requested [{}] ###\n", to_string(primary_stream_state()));
+        std::cerr << fmt::format("FIXMENM path: {}\n----------------------\n\n", cur_playable().path());
+
+    }
     play_handler_thread_.close_async();
-    /// open_thread_ = std::make_unique<std::thread>( [=,this]() { this->close(); } );
-    /// open_thread_->detach();
 }
 
 /// @todo This function most likely needs a more solid implementation.
 ///       I expect that it will crash often if called
 void player::cancel_async_open() {
     primary_stream_state() = stream_state_t::inactive;
-    open_thread_.reset(nullptr);
 }
 
 /// @todo Most likely we need to test this and make an async version!
