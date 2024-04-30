@@ -113,6 +113,16 @@ void file::close()
     std::cerr << "TODO TODO cpaf::torrent::file::close()\n";
 }
 
+void file::cancel_current_io_operation()
+{
+    parent_torrent_ptr_->cancel_current_io_operation();
+}
+
+bool file::cancel_io_completed() const
+{
+    return parent_torrent_ptr_->cancel_io_completed();
+}
+
 /** Is file is ready for streaming?
  *  Test if given the current file offset and read_ahead_size_ are the pieces then ready in the cache, so we can start streaming this file.
  *  @note This function only makes sense if the file is in streaming mode!

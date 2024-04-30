@@ -1,6 +1,7 @@
 #include "torrent_io.h"
 
 #include <fstream>
+#include <fmt/format.h>
 #include <cpaf_libs/torrent/torrents.h>
 #include <cpaf_libs/unicode/cpaf_u8string_utils.h>
 //#include <cpaf_libs/torrent/>
@@ -42,7 +43,7 @@ bool torrent_io::do_open(const std::string& resource_path)
 
     std::cerr << "!! Waiting for meta data for '" << torrent_->name() << "' ...\n";
     if (!torrent_->wait_for_meta_data(io_timeout_)) {
-        std::cerr << "LOG_INFO: Timeout/abort reached while waiting for meta data for '" << torrent_->name() << "' ...\n";
+        std::cerr << fmt::format("LOG_INFO: Timeout/abort reached while waiting for meta data for hash: {}\nuri:'{}'\n", torrent_->hash_value(), torrent_->uri());
 
         return false;
     }
@@ -54,6 +55,7 @@ bool torrent_io::do_open(const std::string& resource_path)
     cerr << "End piece                  : " << torrent_->piece_index_end() << "\n";
     cerr << "Piece len                  : " << torrent_->piece_length() << "\n";
     cerr << "Torrent name               : " << torrent_->name() << "\n";
+    cerr << "Torrent hash               : " << torrent_->hash_value() << "\n";
 
     tor_file_ = torrent_->open_largest_file_streaming(torrents_instance_->default_read_ahead_size());
     if (!tor_file_.is_valid()) {

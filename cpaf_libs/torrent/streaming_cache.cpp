@@ -1,6 +1,7 @@
 #include "streaming_cache.h"
 
 #include <iostream>
+#include <thread>
 
 using namespace std;
 using namespace std::filesystem;
@@ -90,6 +91,7 @@ bool streaming_cache::are_pieces_in_cache(const pieces_range_t& range) const
 /// Will block current thread until data ready or timeout reached
 cache_pieces_t streaming_cache::get_pieces_data(const pieces_range_t& range, std::chrono::milliseconds timeout) const
 {
+    cancel_io_state_ = cancel_io_state_t::not_requested;
     request_pieces(range, 0);   // Make sure we start a request for the data first!
     const auto timeout_point = steady_clock::now() + timeout;
     do {
@@ -97,8 +99,12 @@ cache_pieces_t streaming_cache::get_pieces_data(const pieces_range_t& range, std
         if (pieces_data.is_valid()) {
             return pieces_data;
         }
-        this_thread::sleep_for(50ms);
-    } while(timeout_point > steady_clock::now());
+        if (cancel_io_state_ == cancel_io_state_t::requested) {
+            cancel_io_state_ = cancel_io_state_t::completed;
+            return cache_pieces_t();
+        }
+        this_thread::sleep_for(io_yield_time_);
+    } while( timeout_point > steady_clock::now() );
 
     return cache_pieces_t();
 }
@@ -196,9 +202,6 @@ void streaming_cache::dbg_print_piece_indices() const
 void streaming_cache::insert_piece_data_impl(const libtorrent::read_piece_alert* rpa)
 {
     const auto piece = rpa->piece;
-//    if (piece == 0) {
-//        std::cerr << "FIXMENM breakpoint only\n";
-//    }
     cache_piece_data_t cpd(rpa);
     cache_map_[piece] = std::move(cpd);
 }

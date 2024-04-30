@@ -1,7 +1,7 @@
 #include "torrents.h"
 
 #include <iostream>
-#include <fmt/format.h>>
+#include <fmt/format.h>
 #include <libtorrent/magnet_uri.hpp>
 #include <libtorrent/alert_types.hpp>
 #include <cpaf_libs/torrent/torrent_utils.h>
@@ -50,9 +50,6 @@ void torrents::start()
     }
     session_ptr_ = make_unique<lt::session>(ses_params);
     background_process_thread_ = make_unique<jthread>( [this] () {this->background_process_fun(); });
-
-    cerr << fmt::format("FIXMENM torrents dth mode active: '{}'", session_ptr_->is_dht_running()) << "\n";
-
 }
 
 void torrents::stop()
@@ -85,7 +82,7 @@ std::shared_ptr<torrent> torrents::find_torrent(const std::string& uri_or_name)
 std::shared_ptr<torrent> torrents::add_torrent(const std::string& uri_or_name, const std::filesystem::path& base_dir)
 {
      if (!has_torrent(uri_or_name)) {
-        return create(uri_or_name, base_dir);
+        return construct_torrent(uri_or_name, base_dir);
     }
     else {
          for (auto [hash, tor_ptr]: torrents_map_) {
@@ -134,7 +131,7 @@ void torrents::debug_print_alerts_set(bool newDebug_print_alerts)
 // --- PRIVATE: Helper functions ---
 // ---------------------------------
 
-std::shared_ptr<torrent> torrents::create(const std::string& uri_or_name, path base_dir)
+std::shared_ptr<torrent> torrents::construct_torrent(const std::string& uri_or_name, path base_dir)
 {
     lt::error_code ec;
     lt::add_torrent_params add_torrent_params;
@@ -151,7 +148,7 @@ std::shared_ptr<torrent> torrents::create(const std::string& uri_or_name, path b
     const auto tor_ptr = std::shared_ptr<torrent>( new torrent(uri_or_name, handle, this));
     auto tor_name = tor_ptr->name();
     const auto thash = lt::hash_value(handle);
-    cerr << "FIXMENM torrents::create(), torrent_name '" << tor_name << "'  thash: '" << thash << "'\n";
+    cerr << fmt::format("FIXMENM construct_torrent(), dht: {} torrent_name: '{}'  thash: '{}'\n", session_ptr_->is_dht_running(), tor_name, thash);
     torrents_map_[thash] = tor_ptr;
     return tor_ptr;
 }

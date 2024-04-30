@@ -58,7 +58,7 @@ public:
 private:
     using torrents_map_t = std::unordered_map<std::size_t, std::shared_ptr<torrent>>;
 
-    std::shared_ptr<torrent>        create                      (const std::string& uri_or_name, std::filesystem::path base_dir);
+    std::shared_ptr<torrent>        construct_torrent           (const std::string& uri_or_name, std::filesystem::path base_dir);
     void                            add_default_settings        (lt::settings_pack& settings) const;
     void                            background_process_fun      ();
     void                            handle_alerts               ();

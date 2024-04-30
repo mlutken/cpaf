@@ -30,6 +30,8 @@ public:
     void                                remove_parent_torrent           ();
     void                                pause_parent_torrent            ();
     void                                close                           ();
+    void                                cancel_current_io_operation     ();
+    bool                                cancel_io_completed             () const;
 
     void                                use_blocking_seek_set           (bool bs) { use_blocking_seek_ = bs; }
     bool                                use_blocking_seek               () const { return use_blocking_seek_; }

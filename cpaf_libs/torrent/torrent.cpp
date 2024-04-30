@@ -22,7 +22,6 @@ torrent::torrent(const std::string& uri_or_name, libtorrent::torrent_handle hand
         uri_ = uri_or_name;
     }
     name_ = torrent_name(uri_or_name);
-    cerr << "torrent::CONSTRUCTOR: '" << name_ << "'\n";
 }
 
 
@@ -55,15 +54,47 @@ file torrent::open_largest_file_streaming(size_t read_ahead_size)
 
 bool torrent::wait_for_meta_data(std::chrono::milliseconds timeout)
 {
+    cancel_io_state_ = cancel_io_state_t::not_requested;
     const auto timeout_point = steady_clock::now() + timeout;
     do {
         if (has_meta_data()) {
             return true;
         }
-        this_thread::sleep_for(10ms);
+        if (cancel_io_state_ == cancel_io_state_t::requested) {
+            cancel_io_state_ = cancel_io_state_t::completed;
+            return false;
+        }
+        this_thread::sleep_for(io_yield_time_);
     } while(timeout_point > steady_clock::now());
 
     return false;
+}
+
+/** Request to cancel ongoing IO operation.
+ *
+ *  Both the wait_for_meta_data() and/or get_pieces_data() will be cancelled.
+ *  Most likely you only have either of these two blocking operations outstanding.
+ *
+ *  Call torrent::cancel_io_completed() if you want to know if this was the cause.
+ *
+ *  @return True if either wait_for_meta_data() or get_pieces_data() was cancelled.
+ *  */
+void torrent::cancel_current_io_operation()
+{
+    piece_data_cache_.cancel_current_io_operation();
+    cancel_io_state_ = cancel_io_state_t::requested;
+}
+
+/** Return true in when requested cancel is completed.
+ *  @note Only makes sense to call if one just previously has called cancel_current_io_operation()
+ *
+ *  @return True if either wait_for_meta_data() or get_pieces_data() was cancelled.
+ *  */
+bool torrent::cancel_io_completed() const
+{
+    return  piece_data_cache_.cancel_io_state() == cancel_io_state_t::completed ||
+            cancel_io_state_ == cancel_io_state_t::completed
+        ;
 }
 
 void torrent::remove()
@@ -82,6 +113,7 @@ void torrent::pause()
 }
 
 
+/// @todo This name thing does not really work as it should. Think we need to wait for metadata
 string torrent::name() const
 {
     const auto torinfo_ptr = handle_.torrent_file();

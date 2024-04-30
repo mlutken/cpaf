@@ -33,11 +33,14 @@ public:
     file                                open_streaming                  (std::string_view file_path, size_t read_ahead_size);
     file                                open_largest_file_streaming     (size_t read_ahead_size);
     bool                                wait_for_meta_data              (std::chrono::milliseconds timeout = std::chrono::minutes(1));
+    void                                cancel_current_io_operation     ();
+    bool                                cancel_io_completed             () const;
     void                                remove                          ();
     void                                pause                           ();
 
     const std::string&                  uri                             () const                                    { return uri_; }
     std::string                         name                            () const;
+    std::size_t                         hash_value                      () const                                    { return lt::hash_value(handle_); }
     lt::torrent_status::state_t         state                           () const                                    { return handle_.status().state;   }
 
 
@@ -78,6 +81,7 @@ public:
     lt::peer_request                    file_offset_to_peer_request     (lt::file_index_t file_index, std::int64_t offset, size_t size) const;
     cache_pieces_t                      get_pieces_data                 (lt::file_index_t file_index, int64_t offset, size_t size, std::chrono::milliseconds timeout = std::chrono::minutes(2)) const;
 
+
     pieces_range_t                      get_pieces_range                (lt::file_index_t file_index, std::int64_t offset, size_t size) const;
     pieces_range_t                      get_pieces_read_ahead_range     (lt::file_index_t file_index, lt::piece_index_t from_piece, size_t read_ahead_size) const;
     pieces_range_t                      get_pieces_read_ahead_range     (lt::file_index_t file_index, std::int64_t offset, size_t read_ahead_size) const;
@@ -96,12 +100,14 @@ private:
     using pieces_downloaded_set_t = std::unordered_set<lt::piece_index_t>;
     const lt::file_storage&             files_storage                   () const;
 
-    lt::torrent_handle                  handle_;
-    streaming_cache                     piece_data_cache_;
-    std::string                         uri_;
-    std::string                         name_;
-    torrents*                           parent_torrents_ptr_        = nullptr;
-    size_t                              default_read_ahead_size_    = 10'000'000; // 10 Mb
+    lt::torrent_handle                      handle_                     {};
+    streaming_cache                         piece_data_cache_;
+    std::string                             uri_                        {};
+    std::string                             name_                       {};
+    torrents*                               parent_torrents_ptr_        = nullptr;
+    size_t                                  default_read_ahead_size_    = 10'000'000; // 10 Mb
+    mutable std::atomic<cancel_io_state_t>  cancel_io_state_            {cancel_io_state_t::not_requested};
+    std::chrono::microseconds               io_yield_time_              = std::chrono::milliseconds(10);
 };
 
 } // namespace cpaf::torrent

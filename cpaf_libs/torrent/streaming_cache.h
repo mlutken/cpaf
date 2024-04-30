@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <chrono>
+#include <atomic>
 #include <libtorrent/alert_types.hpp>
 #include <cpaf_libs/torrent/torrent_utils.h>
 
@@ -15,13 +16,14 @@ namespace cpaf::torrent {
 class streaming_cache
 {
 public:
-
     explicit streaming_cache(lt::torrent_handle handle);
 
     void                                insert_piece_data               (const lt::read_piece_alert* rpa);
     void                                update_current_streaming_piece  (lt::piece_index_t piece);
     void                                update_current_streaming_range  (pieces_range_t range, int32_t deadline_in_ms);
     void                                clear_current_streaming_range   ();
+    void                                cancel_current_io_operation     () { cancel_io_state_ = cancel_io_state_t::requested; }
+    cancel_io_state_t                   cancel_io_state                 () const { return cancel_io_state_.load(); }
 
 
     bool                                is_piece_requested              (lt::piece_index_t piece) const;
@@ -46,7 +48,6 @@ public:
     void                                dbg_print_piece_indices         () const;
 
 private:
-
     bool                                is_piece_requested_impl         (lt::piece_index_t piece) const { return pieces_requested_.contains(piece); }
     bool                                is_piece_downloaded_impl        (lt::piece_index_t piece) const { return pieces_downloaded_.contains(piece); }
     bool                                is_piece_in_cache_impl          (lt::piece_index_t piece) const { return cache_map_[piece].is_valid(); }
@@ -68,14 +69,15 @@ private:
 
     using pieces_indices_set_t = std::unordered_set<lt::piece_index_t>;
 
-    lt::torrent_handle                                                  torrent_handle_;
-    mutable std::unordered_map<lt::piece_index_t, cache_piece_data_t>   cache_map_;
-    pieces_indices_set_t                                                pieces_downloaded_;
-    mutable pieces_indices_set_t                                        pieces_requested_;
-    mutable std::mutex                                                  cache_mutex_;
-    lt::piece_index_t                                                   cur_streaming_piece_ = 0;
-    pieces_range_t                                                      cur_streaming_range_;
-
+    lt::torrent_handle                                                  torrent_handle_         {};
+    mutable std::unordered_map<lt::piece_index_t, cache_piece_data_t>   cache_map_              {};
+    pieces_indices_set_t                                                pieces_downloaded_      {};
+    mutable pieces_indices_set_t                                        pieces_requested_       {};
+    mutable std::mutex                                                  cache_mutex_            {};
+    lt::piece_index_t                                                   cur_streaming_piece_    = 0;
+    pieces_range_t                                                      cur_streaming_range_    {};
+    mutable std::atomic<cancel_io_state_t>                              cancel_io_state_        {cancel_io_state_t::not_requested};
+    std::chrono::microseconds                                           io_yield_time_          = std::chrono::milliseconds(50);
 };
 
 } // namespace cpaf::torrent
