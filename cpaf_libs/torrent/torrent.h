@@ -33,6 +33,8 @@ public:
     file                                open_streaming                  (std::string_view file_path, size_t read_ahead_size);
     file                                open_largest_file_streaming     (size_t read_ahead_size);
     bool                                wait_for_meta_data              (std::chrono::milliseconds timeout = std::chrono::minutes(1));
+    void                                meta_data_progress_callback_set (progress_callback_fn cb) { meta_data_progress_callback_ = std::move(cb); }
+    void                                data_progress_callback_set      (progress_callback_fn cb);
     void                                cancel_current_io_operation     ();
     bool                                cancel_io_completed             () const;
     void                                remove                          ();
@@ -108,6 +110,7 @@ private:
     size_t                                  default_read_ahead_size_    = 10'000'000; // 10 Mb
     mutable std::atomic<cancel_io_state_t>  cancel_io_state_            {cancel_io_state_t::not_requested};
     std::chrono::microseconds               io_yield_time_              = std::chrono::milliseconds(10);
+    progress_callback_fn                    meta_data_progress_callback_{};
 };
 
 } // namespace cpaf::torrent

@@ -24,7 +24,7 @@ public:
     void                                clear_current_streaming_range   ();
     void                                cancel_current_io_operation     () { cancel_io_state_ = cancel_io_state_t::requested; }
     cancel_io_state_t                   cancel_io_state                 () const { return cancel_io_state_.load(); }
-
+    void                                progress_callback_set           (progress_callback_fn cb) { progress_callback_ = std::move(cb); }
 
     bool                                is_piece_requested              (lt::piece_index_t piece) const;
     bool                                is_piece_downloaded             (lt::piece_index_t piece) const;
@@ -78,6 +78,7 @@ private:
     pieces_range_t                                                      cur_streaming_range_    {};
     mutable std::atomic<cancel_io_state_t>                              cancel_io_state_        {cancel_io_state_t::not_requested};
     std::chrono::microseconds                                           io_yield_time_          = std::chrono::milliseconds(50);
+    progress_callback_fn                                                progress_callback_      {};
 };
 
 } // namespace cpaf::torrent

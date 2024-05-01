@@ -99,6 +99,12 @@ cache_pieces_t streaming_cache::get_pieces_data(const pieces_range_t& range, std
         if (pieces_data.is_valid()) {
             return pieces_data;
         }
+        if (progress_callback_) {
+            const bool should_abort = progress_callback_(-1); // -1 Means we do not know the progress
+            if (should_abort) {
+                break;
+            }
+        }
         if (cancel_io_state_ == cancel_io_state_t::requested) {
             cancel_io_state_ = cancel_io_state_t::completed;
             return cache_pieces_t();

@@ -32,15 +32,17 @@ public:
 
     explicit custom_io_base();
     virtual ~custom_io_base();
-    std::string         protocol_name           () const { return do_protocol_name(); }
-    bool                open                    (const std::string& resource_path);
-    void                close                   ();
-    bool                is_open                 () { return do_is_open(); }
-    int64_t             size                    () const noexcept   { return do_size(); }
-    void                cancel_current_io       ()                  { do_cancel_current_io(); }
-    size_t              buffer_size             () const noexcept   { return do_buffer_size(); };
-    const std::string&  resource_path           () const { return resource_path_; }
-    bool                init                    (AVFormatContext*  ff_format_context);
+    std::string         protocol_name               () const { return do_protocol_name(); }
+    bool                open                        (const std::string& resource_path);
+    void                close                       ();
+    bool                is_open                     () { return do_is_open(); }
+    int64_t             size                        () const noexcept   { return do_size(); }
+    void                cancel_current_io           ()                  { do_cancel_current_io(); }
+    size_t              buffer_size                 () const noexcept   { return do_buffer_size(); };
+    void                open_progress_callback_set  (progress_callback_fn cb) { do_open_progress_cb_set(std::move(cb)); }
+    void                data_progress_callback_set  (progress_callback_fn cb) { do_data_progress_cb_set(std::move(cb)); }
+    const std::string&  resource_path               () const { return resource_path_; }
+    bool                init                        (AVFormatContext*  ff_format_context);
 
     std::chrono::microseconds
                         current_io_operation_duration() const;
@@ -75,6 +77,8 @@ private:
     virtual int64_t         do_size                 () const noexcept = 0;
     virtual void            do_cancel_current_io    () = 0;
     virtual size_t          do_buffer_size          () const noexcept { return 4096; };
+    virtual void            do_open_progress_cb_set (progress_callback_fn cb) = 0;
+    virtual void            do_data_progress_cb_set (progress_callback_fn cb) = 0;
 
     virtual int             do_read_packet          (uint8_t* buf, int buf_size) = 0;
     virtual int             do_write_packet         (uint8_t* buf, int buf_size);

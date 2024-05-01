@@ -52,6 +52,7 @@ bool av_format_context::open(const std::string& resource_path)
 
     custom_io_ptr_ = custom_io_base::create(resource_path, get_torrents_function_);
     if (custom_io_ptr_) {
+        custom_io_ptr_->open_progress_callback_set([this](float progress) -> bool { return custom_io_open_progress_cb(progress);});
         if (!custom_io_ptr_->open(resource_path)) {
             return false;
         }
@@ -680,5 +681,16 @@ const AVCodec* av_format_context::ff_find_decoder(size_t stream_index) const
     return avcodec_find_decoder(codec_id(stream_index));
 }
 
+bool av_format_context::custom_io_open_progress_cb(float progress)
+{
+    std::cerr << fmt::format("FIXMENM custom_io_open_progress_cb({})", progress);
+    return false;
+}
+
+bool av_format_context::custom_io_data_progress_cb(float progress)
+{
+    std::cerr << fmt::format("FIXMENM custom_io_data_progress_cb({})", progress);
+    return false;
+}
 
 } //END namespace cpaf::video

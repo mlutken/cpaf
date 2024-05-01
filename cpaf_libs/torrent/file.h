@@ -30,6 +30,8 @@ public:
     void                                remove_parent_torrent           ();
     void                                pause_parent_torrent            ();
     void                                close                           ();
+    void                                meta_data_progress_callback_set (progress_callback_fn cb);
+    void                                data_progress_callback_set      (progress_callback_fn cb);
     void                                cancel_current_io_operation     ();
     bool                                cancel_io_completed             () const;
 
@@ -42,6 +44,7 @@ public:
     int64_t                             offset                          () const                        { return offsett_; }
     lt::file_index_t                    file_index                      () const { return file_index_; }
 
+    bool                                is_open                         () const;
     std::string                         name                            () const;
     std::string                         path                            () const;
 

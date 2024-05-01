@@ -26,6 +26,8 @@ void                                settings_set_default_bool       (libtorrent:
 void                                settings_set_default_int        (libtorrent::settings_pack& settings, int name, int value);
 void                                settings_set_default_str        (libtorrent::settings_pack& settings, int name, std::string value);
 
+using progress_callback_fn = std::function<bool (float progress)>;
+
 enum class cancel_io_state_t : uint8_t {
     not_requested,
     requested,

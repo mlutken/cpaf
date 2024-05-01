@@ -60,6 +60,12 @@ bool torrent::wait_for_meta_data(std::chrono::milliseconds timeout)
         if (has_meta_data()) {
             return true;
         }
+        if (meta_data_progress_callback_) {
+            const bool should_abort = meta_data_progress_callback_(-1); // -1 Means we do not know the progress
+            if (should_abort) {
+                break;
+            }
+        }
         if (cancel_io_state_ == cancel_io_state_t::requested) {
             cancel_io_state_ = cancel_io_state_t::completed;
             return false;
@@ -68,6 +74,11 @@ bool torrent::wait_for_meta_data(std::chrono::milliseconds timeout)
     } while(timeout_point > steady_clock::now());
 
     return false;
+}
+
+void torrent::data_progress_callback_set(progress_callback_fn cb)
+{
+    piece_data_cache_.progress_callback_set(std::move(cb));
 }
 
 /** Request to cancel ongoing IO operation.
@@ -103,7 +114,7 @@ void torrent::remove()
 }
 
 
-/// @todo	Torrents that are auto-managed may be automatically resumed again. It
+/// @todo Torrents that are auto-managed may be automatically resumed again. It
 /// 	does not make sense to pause an auto-managed torrent without making it
 /// 	not auto-managed first. Torrents are auto-managed by default when added
 /// 	to the session. For more information, see queuing_.
@@ -271,25 +282,32 @@ void torrent::request_pieces(const pieces_range_t& range, int32_t deadline_in_ms
     piece_data_cache_.request_pieces(range, deadline_in_ms);
 }
 
-libtorrent::piece_index_t torrent::file_offset_to_piece_index(libtorrent::file_index_t file_index, int64_t offset) const
+libtorrent::piece_index_t torrent::file_offset_to_piece_index(libtorrent::file_index_t file_index,
+                                                              int64_t offset) const
 {
     lt::peer_request pr = files_storage().map_file(file_index, offset, 1);
     return pr.piece;
 }
 
-libtorrent::peer_request torrent::file_offset_to_peer_request(libtorrent::file_index_t file_index, int64_t offset, size_t size) const
+libtorrent::peer_request torrent::file_offset_to_peer_request(libtorrent::file_index_t file_index,
+                                                              int64_t offset,
+                                                              size_t size) const
 {
     return files_storage().map_file(file_index, offset, size);
 }
 
 /// Will block current thread until data ready or timeout reached
-cache_pieces_t torrent::get_pieces_data(libtorrent::file_index_t file_index, int64_t offset, size_t size, std::chrono::milliseconds timeout) const
+cache_pieces_t torrent::get_pieces_data(libtorrent::file_index_t file_index,
+                                        int64_t offset, size_t size,
+                                        std::chrono::milliseconds timeout) const
 {
     const auto range = get_pieces_range(file_index, offset, size);
     return piece_data_cache_.get_pieces_data(range, timeout);
 }
 
-pieces_range_t torrent::get_pieces_range(libtorrent::file_index_t file_index, int64_t offset, size_t size) const
+pieces_range_t torrent::get_pieces_range(libtorrent::file_index_t file_index,
+                                         int64_t offset,
+                                         size_t size) const
 {
     const auto piece_len = piece_length();
     if (piece_len <= 0) { return pieces_range_t(); }

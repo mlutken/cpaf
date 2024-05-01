@@ -147,6 +147,9 @@ private:
     AVCodecParameters*          ff_codec_parameters         (size_t stream_index) const;
     const AVCodec*              ff_find_decoder             (size_t stream_index) const;
     AVRational                  stream_time_base            (size_t stream_index) const { return ff_format_context_->streams[stream_index]->time_base; }
+    bool                        custom_io_open_progress_cb  (float progress);
+    bool                        custom_io_data_progress_cb  (float progress);
+
 
     get_torrents_fn                                         get_torrents_function_;
     std::atomic<stream_state_t>*                            global_stream_state_ptr_= nullptr;

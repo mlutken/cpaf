@@ -113,6 +113,16 @@ void file::close()
     std::cerr << "TODO TODO cpaf::torrent::file::close()\n";
 }
 
+void file::meta_data_progress_callback_set(progress_callback_fn cb)
+{
+    parent_torrent_ptr_->meta_data_progress_callback_set(std::move(cb));
+}
+
+void file::data_progress_callback_set(progress_callback_fn cb)
+{
+    parent_torrent_ptr_->data_progress_callback_set(std::move(cb));
+}
+
 void file::cancel_current_io_operation()
 {
     parent_torrent_ptr_->cancel_current_io_operation();
@@ -137,6 +147,12 @@ std::int64_t file::size() const
 {
     return files_storage().file_size(file_index_);
 }
+
+bool file::is_open() const
+{
+    return is_valid();
+}
+
 
 std::string file::name() const
 {

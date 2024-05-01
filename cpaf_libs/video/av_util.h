@@ -30,6 +30,8 @@ namespace cpaf::video {
 using av_base_duration = std::chrono::duration<int64_t, std::ratio<1, AV_TIME_BASE>>;
 using surface_dimensions_t = cpaf::math::v2<int32_t>;
 using get_torrents_fn = std::function<std::shared_ptr<cpaf::torrent::torrents> ()>;
+using progress_callback_fn = std::function<bool (float progress)>;
+
 
 constexpr int32_t surface_dimension_auto = -1;
 static constexpr size_t no_stream_index = std::numeric_limits<size_t>::max();

@@ -42,6 +42,9 @@ bool torrent_io::do_open(const std::string& resource_path)
     }
 
     std::cerr << "!! Waiting for meta data for '" << torrent_->name() << "' ...\n";
+
+    torrent_->meta_data_progress_callback_set(open_progress_callback_);
+
     if (!torrent_->wait_for_meta_data(io_timeout_)) {
         std::cerr << fmt::format("LOG_INFO: Timeout/abort reached while waiting for meta data for hash: {}\nuri:'{}'\n", torrent_->hash_value(), torrent_->uri());
 
@@ -61,6 +64,7 @@ bool torrent_io::do_open(const std::string& resource_path)
     if (!tor_file_.is_valid()) {
         return false;
     }
+    torrent_->data_progress_callback_set(data_progress_callback_);
 
     return true;
 }
@@ -73,7 +77,7 @@ void torrent_io::do_close()
 
 bool torrent_io::do_is_open() const
 {
-    return tor_file_.is_valid();
+    return torrent_ && tor_file_.is_open();
 }
 
 int64_t torrent_io::do_size() const noexcept
@@ -88,6 +92,19 @@ int64_t torrent_io::do_size() const noexcept
 void torrent_io::do_cancel_current_io()
 {
     std::cerr << "FIXMENM TODO: IMPLEMENT! torrent_io::do_cancel_current_io()\n";
+}
+
+void torrent_io::do_open_progress_cb_set(progress_callback_fn cb)
+{
+    open_progress_callback_ = std::move(cb); // Save here for forwarding to torrent_ in open()
+}
+
+void torrent_io::do_data_progress_cb_set(progress_callback_fn cb)
+{
+    open_progress_callback_ = std::move(cb); // Save here for forwarding to torrent_ in open()
+    if (torrent_ && tor_file_.is_open()) {
+        torrent_->data_progress_callback_set(open_progress_callback_);
+    }
 }
 
 int torrent_io::do_read_packet(uint8_t* buf, int buf_size)
