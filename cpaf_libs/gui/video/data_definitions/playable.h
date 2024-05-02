@@ -36,6 +36,7 @@ public:
     playable(std::string path, std::string subtitle_path, const std::string& language_code);
 
 
+    void                            clear                   ();
     const nlohmann::json&           json                    () const { return jo_;  }
 
     void                            update_calculated       (const cpaf::locale::translator& tr,

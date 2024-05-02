@@ -86,6 +86,11 @@ playable::playable(std::string path, std::string subtitle_path, const std::strin
     add_subtitle(subtitle_path, language_code);
 }
 
+void playable::clear()
+{
+    jo_ = playable::create_json();
+}
+
 /// @todo If we have multiple subtitles with same language we now add all. Do we still want this?
 /// @todo User selected subtitle should be able to set custom subtitle time offset?
 void playable::update_calculated(const locale::translator& tr,
