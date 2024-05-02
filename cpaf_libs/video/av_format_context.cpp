@@ -47,12 +47,13 @@ av_format_context::~av_format_context()
 
 bool av_format_context::open(const std::string& resource_path)
 {
-
+    cancel_current_io_ = false;
     resource_path_ = resource_path;
     custom_io_ptr_.reset();
     auto custom_io_ptr = custom_io_base::create(resource_path, get_torrents_function_);
     if (custom_io_ptr) {
         custom_io_ptr->open_progress_callback_set([this](float progress) -> bool { return custom_io_open_progress_cb(progress);});
+        custom_io_ptr->data_progress_callback_set([this](float progress) -> bool { return custom_io_data_progress_cb(progress);});
         if (!custom_io_ptr->open(resource_path)) {
             return false;
         }
@@ -102,9 +103,11 @@ void av_format_context::close()
 
 void av_format_context::cancel_current_io()
 {
-    if (custom_io_ptr_) {
-        custom_io_ptr_->cancel_current_io();
-    }
+    std::cout << "\n ****** FIXMENM av_format_context::cancel_current_io() ****\n\n";
+    cancel_current_io_ = true;
+//    if (custom_io_ptr_) {
+//        custom_io_ptr_->cancel_current_io();
+//    }
 }
 
 void av_format_context::selected_media_index_set(media_type_t mt, size_t stream_index)
@@ -687,11 +690,14 @@ bool av_format_context::custom_io_open_progress_cb(float progress)
     static int FIXMENM_counter = 0;
     FIXMENM_counter++;
 
-    const auto max_dur = steady_clock::time_point::max() - steady_clock::time_point();
-    const auto max_days = duration_cast<years>(max_dur);
+//    const auto max_dur = steady_clock::time_point::max() - steady_clock::time_point();
+//    const auto max_days = duration_cast<years>(max_dur);
+//    std::cerr << fmt::format("FIXMENM clock_max: {} years\n", max_days.count());
 
-    std::cerr << fmt::format("FIXMENM clock_max: {} years\n", max_days.count());
-    std::cerr << fmt::format("FIXMENM custom_io_open_progress_cb({})\n", FIXMENM_counter);
+    string ss = global_stream_state_ptr_? to_string(*global_stream_state_ptr_) : "?";
+
+    std::cerr << fmt::format("[{}] FIXMENM OPEN PROGRESS({})\n", ss, FIXMENM_counter);
+    return cancel_current_io_;
     // if (FIXMENM_counter == 1) {
     //     return true;
     // }
@@ -701,7 +707,16 @@ bool av_format_context::custom_io_open_progress_cb(float progress)
 
 bool av_format_context::custom_io_data_progress_cb(float progress)
 {
-    std::cerr << fmt::format("FIXMENM custom_io_data_progress_cb({})\n", progress);
+    static int FIXMENM_counter = 0;
+    FIXMENM_counter++;
+    string ss = global_stream_state_ptr_? to_string(*global_stream_state_ptr_) : "?";
+    std::cerr << fmt::format("[{}] FIXMENM DATA PROGRESS({})\n", ss, FIXMENM_counter);
+    return cancel_current_io_;
+//    return false;
+//    std::cerr << fmt::format("FIXMENM custom_io_data_progress_cb({})\n", progress);
+    if (FIXMENM_counter >= 1) {
+        return true;
+    }
     return false;
 }
 

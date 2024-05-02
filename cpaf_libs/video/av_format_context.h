@@ -155,6 +155,7 @@ private:
     std::atomic<stream_state_t>*                            global_stream_state_ptr_= nullptr;
     std::unique_ptr<custom_io_base>                         custom_io_ptr_;
     std::atomic<stream_state_t>                             local_stream_state_     = stream_state_t::inactive;
+    std::atomic<bool>                                       cancel_current_io_      = false;
     AVFormatContext*                                        ff_format_context_      = nullptr;
     std::array<size_t, media_type_size()>                   selected_stream_per_media_type_;
     std::array<std::vector<size_t>, media_type_size()>      stream_indices_per_media_type_;
