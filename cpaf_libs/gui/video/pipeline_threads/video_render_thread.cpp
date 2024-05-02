@@ -179,7 +179,7 @@ void video_render_thread::debug_video_frame_update(cpaf::video::av_frame& curren
         auto time_dist_to_cur_frame_ms = duration_cast<milliseconds>(cur_frame_time - cur_video_time);
 
         std::cerr
-                << "LOG_DBG VIDEO [" << video_to_media_ms << "/" << video_to_audio_ms << " ms]"
+                << "LOG_DEBUG: Video [" << video_to_media_ms << "/" << video_to_audio_ms << " ms]"
                 << " current media time: " << player_.cur_media_time().current_time_pos_ms().count() << " ms"
                 << ", audio frm t: " << audio_samples_queue().front().presentation_time_ms().count() << " ms"
                 << ", video frm t: " << current_frame.presentation_time_ms().count() << " ms"
