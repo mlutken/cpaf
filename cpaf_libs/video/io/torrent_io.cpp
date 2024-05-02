@@ -41,7 +41,7 @@ bool torrent_io::do_open(const std::string& resource_path)
         return false;
     }
 
-    std::cerr << "!! Waiting for meta data for '" << torrent_->name() << "' ...\n";
+    std::cerr << "LOG_DEBUG: Waiting for meta data for '" << torrent_->name() << "' ...\n";
 
     torrent_->meta_data_progress_callback_set(open_progress_callback_);
 
@@ -50,22 +50,21 @@ bool torrent_io::do_open(const std::string& resource_path)
 
         return false;
     }
-    std::cerr << " !! Waiting for meta data done!\n";
+    std::cerr << "LOG_DEBUG: Waiting for meta data done!\n";
 
-    cerr << "Largest file index         : '" << torrent_->largest_file_index() << "'\n";
-    cerr << "Largest file               : '" << torrent_->largest_file_local_file_path() << "'\n";
-    cerr << "Number of pieces           : " << torrent_->num_pieces() << "\n";
-    cerr << "End piece                  : " << torrent_->piece_index_end() << "\n";
-    cerr << "Piece len                  : " << torrent_->piece_length() << "\n";
-    cerr << "Torrent name               : " << torrent_->name() << "\n";
-    cerr << "Torrent hash               : " << torrent_->hash_value() << "\n";
+    cerr << "LOG_DEBUG: Largest file index         : '" << torrent_->largest_file_index() << "'\n";
+    cerr << "LOG_DEBUG: Largest file               : '" << torrent_->largest_file_local_file_path() << "'\n";
+    cerr << "LOG_DEBUG: Number of pieces           : " << torrent_->num_pieces() << "\n";
+    cerr << "LOG_DEBUG: End piece                  : " << torrent_->piece_index_end() << "\n";
+    cerr << "LOG_DEBUG: Piece len                  : " << torrent_->piece_length() << "\n";
+    cerr << "LOG_DEBUG: Torrent name               : " << torrent_->name() << "\n";
+    cerr << "LOG_DEBUG: Torrent hash               : " << torrent_->hash_value() << "\n";
 
     tor_file_ = torrent_->open_largest_file_streaming(torrents_instance_->default_read_ahead_size());
     if (!tor_file_.is_valid()) {
         return false;
     }
     torrent_->data_progress_callback_set(data_progress_callback_);
-
     return true;
 }
 
@@ -115,6 +114,9 @@ int torrent_io::do_read_packet(uint8_t* buf, int buf_size)
         return AVERROR_EOF;
     }
     const auto ret = tor_file_.read(buf, static_cast<size_t>(buf_size));
+    if (ret == -1) {
+        return AVERROR_EOF; // TODO: AVERROR_EXIT perhaps ?
+    }
     return ret;
 }
 
