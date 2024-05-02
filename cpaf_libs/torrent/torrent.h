@@ -36,6 +36,7 @@ public:
     void                                meta_data_progress_callback_set (progress_callback_fn cb) { meta_data_progress_callback_ = std::move(cb); }
     void                                data_progress_callback_set      (progress_callback_fn cb);
     void                                cancel_current_io_operation     ();
+    void                                clear_cancel_io_state           ();
     bool                                cancel_io_completed             () const;
     void                                remove                          ();
     void                                pause                           ();

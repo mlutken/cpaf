@@ -24,6 +24,7 @@ public:
     void                                clear_current_streaming_range   ();
     void                                cancel_current_io_operation     () { cancel_io_state_ = cancel_io_state_t::requested; }
     cancel_io_state_t                   cancel_io_state                 () const { return cancel_io_state_.load(); }
+    void                                clear_cancel_io_state           () { cancel_io_state_ = cancel_io_state_t::not_requested; }
     void                                progress_callback_set           (progress_callback_fn cb) { progress_callback_ = std::move(cb); }
 
     bool                                is_piece_requested              (lt::piece_index_t piece) const;

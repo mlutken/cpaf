@@ -95,19 +95,20 @@ cache_pieces_t streaming_cache::get_pieces_data(const pieces_range_t& range, std
     request_pieces(range, 0);   // Make sure we start a request for the data first!
     const auto timeout_point = steady_clock::now() + timeout;
     do {
-        const cache_pieces_t pieces_data = try_get_pieces_data_impl(range);
-        if (pieces_data.is_valid()) {
-            return pieces_data;
-        }
         if (progress_callback_) {
             const bool should_abort = progress_callback_(-1); // -1 Means we do not know the progress
             if (should_abort) {
-                break;
+                return cache_pieces_t::create_abort_request();
             }
         }
-        if (cancel_io_state_ == cancel_io_state_t::requested) {
+        if (cancel_io_state_ != cancel_io_state_t::not_requested){
             cancel_io_state_ = cancel_io_state_t::completed;
-            return cache_pieces_t();
+            return cache_pieces_t::create_abort_request();
+        }
+
+        const cache_pieces_t pieces_data = try_get_pieces_data_impl(range);
+        if (pieces_data.is_valid()) {
+            return pieces_data;
         }
         this_thread::sleep_for(io_yield_time_);
     } while( timeout_point > steady_clock::now() );

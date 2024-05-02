@@ -63,10 +63,10 @@ bool torrent::wait_for_meta_data(std::chrono::milliseconds timeout)
         if (meta_data_progress_callback_) {
             const bool should_abort = meta_data_progress_callback_(-1); // -1 Means we do not know the progress
             if (should_abort) {
-                break;
+                return false;
             }
         }
-        if (cancel_io_state_ == cancel_io_state_t::requested) {
+        if (cancel_io_state_ != cancel_io_state_t::not_requested){
             cancel_io_state_ = cancel_io_state_t::completed;
             return false;
         }
@@ -94,6 +94,11 @@ void torrent::cancel_current_io_operation()
 {
     piece_data_cache_.cancel_current_io_operation();
     cancel_io_state_ = cancel_io_state_t::requested;
+}
+
+void torrent::clear_cancel_io_state() {
+    cancel_io_state_ = cancel_io_state_t::not_requested;
+    piece_data_cache_.clear_cancel_io_state();
 }
 
 /** Return true in when requested cancel is completed.
