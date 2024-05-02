@@ -449,7 +449,7 @@ void controls_default::render_menu_window()
     if (ImGuiFileDialog::Instance()->Display("ChooseMediaFileDlgKey", ImGuiWindowFlags_NoCollapse, file_dialog_min_size_ )) {
         if (ImGuiFileDialog::Instance()->IsOk()) { // action if OK
             do_render_menu_window_ = false;
-            player_.open_async(ImGuiFileDialog::Instance()->GetFilePathName());
+            player_.open_media(ImGuiFileDialog::Instance()->GetFilePathName());
         }
         ImGuiFileDialog::Instance()->Close();
     }
@@ -470,7 +470,7 @@ void controls_default::render_menu_window()
         if (ImGui::AlignedButton(tr().tr("Ok"), 0.2, 0.3)) {
             ImGui::CloseCurrentPopup();
             do_render_menu_window_ = false;
-            player_.open_async(new_user_media_file_);
+            player_.open_media(new_user_media_file_);
         }
         ImGui::SetItemDefaultFocus();
         ImGui::SameLine();

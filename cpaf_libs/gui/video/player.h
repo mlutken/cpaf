@@ -44,13 +44,10 @@ public:
     explicit player(cpaf::audio::device& audio_device, cpaf::locale::translator& tr);
     ~player();
     void                            set_main_window         (system_window& main_window);
-    void                            start_playing           ();
     void                            terminate               ();
-    void                            open_async              (playable playab);
-    void                            open_async              (const std::string& resource_path, std::chrono::microseconds start_time_pos = {});
-    void                            close_async             ();
-    void                            test_command            ();
-    void                            cancel_async_open       ();
+    void                            open_media              (playable playab);
+    void                            open_media              (const std::string& resource_path, std::chrono::microseconds start_time_pos = {});
+    void                            close_current_media     ();
 
     bool                            open_secondary          (const std::string& resource_path, cpaf::video::stream_type_t sti);
 
@@ -221,6 +218,7 @@ private:
     // --- PRIVATE: Helper functions ---
     // ---------------------------------
     bool                            open_command            (playable playab);
+    void                            start_playing           ();
     void                            close_command           ();
 
 

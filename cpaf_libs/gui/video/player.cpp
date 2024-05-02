@@ -55,25 +55,6 @@ void player::set_main_window(system_window& main_window)
     update_screen_size_factor();
 }
 
-/// @todo Make player::start_playing() private
-void player::start_playing()
-{
-    std::cerr << fmt::format("\n--- FIXMENM [{}] START Start playing ---\n", to_string(primary_stream_state()));
-
-    audio_device_.play();
-    if (has_video_stream()) {
-        init_video(*main_window_ptr_);
-
-        auto language_code = configuration.str("subtitles", "language_code");
-        const auto entry = cur_playable().find_best_subtitle(language_code);
-        subtitle_select(entry.language_code, entry.subtitle_adjust_offset);
-    }
-    media_pipeline_threads().start();
-    resume_playback();
-    primary_stream_state() = stream_state_t::playing;
-
-    std::cerr << fmt::format("\n--- FIXMENM [{}] DONE Start playing ---\n", to_string(primary_stream_state()));
-}
 
 /// @todo This function as opposed to close() ? Figure out!
 void player::terminate()
@@ -86,40 +67,21 @@ void player::terminate()
 }
 
 
-void player::open_async(playable playab)
+void player::open_media(playable playab)
 {
     play_handler_thread_.open_async(playab);
 }
 
-void player::open_async(const std::string& resource_path, std::chrono::microseconds start_time_pos)
+void player::open_media(const std::string& resource_path, std::chrono::microseconds start_time_pos)
 {
     auto playab = cpaf::gui::video::playable(resource_path);
     playab.set_start_time(start_time_pos);
-    open_async(playab);
+    open_media(playab);
 }
 
-
-void player::close_async()
-{
-    if (primary_stream_state() == stream_state_t::opening) {
-        std::cerr << fmt::format("\n\n ### FIXMENM Close requested [{}] ###\n", to_string(primary_stream_state()));
-        std::cerr << fmt::format("FIXMENM path: {}\n----------------------\n\n", cur_playable().path());
-
-    }
-    if (primary_source_stream_) {
-        primary_source_stream_->cancel_current_io();
-    }
-    play_handler_thread_.close_async();
-}
-
-void player::test_command()
+void player::close_current_media()
 {
     close_media_requested_ = true;
-}
-
-/// @todo This function most likely needs a more solid implementation.
-///       I expect that it will crash often if called
-void player::cancel_async_open() {
 }
 
 /// @todo Most likely we need to test this and make an async version!
@@ -652,6 +614,9 @@ std::chrono::microseconds player::dbg_audio_front_time() const
 // --- PRIVATE: Helper functions ---
 // ---------------------------------
 
+/**
+ *  * Called from play_handler_thread
+*/
 bool player::open_command(playable playab)
 {
     close_command();
@@ -713,6 +678,25 @@ bool player::open_command(playable playab)
     return ok;
 }
 
+/// @todo Make player::start_playing() private
+void player::start_playing()
+{
+    std::cerr << fmt::format("\n--- FIXMENM [{}] START Start playing ---\n", to_string(primary_stream_state()));
+
+    audio_device_.play();
+    if (has_video_stream()) {
+        init_video(*main_window_ptr_);
+
+        auto language_code = configuration.str("subtitles", "language_code");
+        const auto entry = cur_playable().find_best_subtitle(language_code);
+        subtitle_select(entry.language_code, entry.subtitle_adjust_offset);
+    }
+    media_pipeline_threads().start();
+    resume_playback();
+    primary_stream_state() = stream_state_t::playing;
+
+    std::cerr << fmt::format("\n--- FIXMENM [{}] DONE Start playing ---\n", to_string(primary_stream_state()));
+}
 
 /**
 * Called from play_handler_thread
