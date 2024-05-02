@@ -22,7 +22,7 @@ public:
 
     file&                               operator=                       (const file& other) = default;
 
-    std::size_t                         read                            (void* buffer, std::size_t bytes_to_read, std::chrono::milliseconds timeout = std::chrono::minutes(2));
+    int64_t                             read                            (void* buffer, std::size_t bytes_to_read, std::chrono::milliseconds timeout = std::chrono::minutes(2));
     int                                 seek                            (int64_t offset, int whence);
     size_t                              read_ahead_size                 () const                        { return read_ahead_size_; }
     void                                read_ahead_size_set             (size_t read_ahead_size)        { read_ahead_size_ = read_ahead_size; }
@@ -60,13 +60,13 @@ public:
 private:
     const lt::file_storage&             files_storage                   () const;
 
-    lt::file_index_t                    file_index_         = -1;
+    lt::file_index_t                    file_index_             = -1;
     lt::torrent_handle                  handle_;
-    torrent*                            parent_torrent_ptr_ = nullptr;
-    int64_t                             offsett_ =0;
-    size_t                              read_ahead_size_    = 0;
-    std::chrono::milliseconds           blocking_seek_timeout_ = std::chrono::minutes(2);
-    bool                                use_blocking_seek_  = true;
+    torrent*                            parent_torrent_ptr_     = nullptr;
+    int64_t                             offsett_                = 0;
+    size_t                              read_ahead_size_        = 0;
+    std::chrono::milliseconds           blocking_seek_timeout_  = std::chrono::minutes(2);
+    bool                                use_blocking_seek_      = true;
 
 //    std::string                         name_;
 

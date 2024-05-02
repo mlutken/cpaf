@@ -18,14 +18,20 @@ file::file(libtorrent::file_index_t file_index, libtorrent::torrent_handle handl
 
 }
 
-size_t file::read(void* buffer, const std::size_t bytes_to_read, const std::chrono::milliseconds timeout)
+int64_t file::read(void* buffer, const std::size_t bytes_to_read, const std::chrono::milliseconds timeout)
 {
     if (!parent_torrent_ptr_) {
         return 0;
     }
 
-    size_t bytes_stil_to_copy = bytes_to_read;
+    int64_t bytes_stil_to_copy = static_cast<int64_t>(bytes_to_read);
     const auto data_pieces = get_pieces_data(offsett_, bytes_to_read, timeout); // Will block current thread until data ready or timeout reached
+    if (!data_pieces.is_valid()) {
+        if (data_pieces.abort_requested) {
+            return -1;
+        }
+        return 0;
+    }
     auto* byte_buf = static_cast<std::byte*>(buffer);
 
     for (const auto& data_piece : data_pieces.pieces) {
@@ -37,8 +43,8 @@ size_t file::read(void* buffer, const std::size_t bytes_to_read, const std::chro
             std::cerr << "ERROR file::read() data_piece is invalid!\n";
             return 0;
         }
-        const size_t bytes_to_copy = std::min(static_cast<size_t>(data_piece.bytes_left()), bytes_stil_to_copy);
-        std::memcpy(byte_buf, data_piece.buffer_begin(), bytes_to_copy);
+        const int64_t bytes_to_copy = std::min(static_cast<int64_t>(data_piece.bytes_left()), bytes_stil_to_copy);
+        std::memcpy(byte_buf, data_piece.buffer_begin(), static_cast<size_t>(bytes_to_copy));
         byte_buf += bytes_to_copy;  // Move destination buffer pointer
         bytes_stil_to_copy -= bytes_to_copy;
         if (bytes_stil_to_copy == 0) {
@@ -52,8 +58,8 @@ size_t file::read(void* buffer, const std::size_t bytes_to_read, const std::chro
         parent_torrent_ptr_->request_pieces(read_ahead_range, 0);
     }
 
-    const size_t bytes_read = bytes_to_read - bytes_stil_to_copy;
-    offsett_ += static_cast<int64_t>(bytes_read);
+    const int64_t bytes_read = static_cast<int64_t>(bytes_to_read) - bytes_stil_to_copy;
+    offsett_ += bytes_read;
     return bytes_read;
 }
 
