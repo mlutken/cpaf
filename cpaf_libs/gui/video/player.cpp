@@ -90,6 +90,7 @@ bool player::open(playable playab)
 {
     close();
     abort_current_open_ = false;
+    close_media_requested_ = false;
     auto expected_state = stream_state_t::inactive;
     if (!primary_stream_state().compare_exchange_strong(expected_state, stream_state_t::opening)) {
         std::cerr << "LOG_ERR: Can't open '" <<  playab.path() << "' while another open is in progress\n";
@@ -106,7 +107,7 @@ bool player::open(playable playab)
     stream_completely_downloaded_ = false;
     subtitle_selected_index_ = -1;
     subtitle_source_ = subtitle_source_t::none;
-    primary_resource_path_ = cur_playable().path();
+    ////primary_resource_path_ = cur_playable().path();
 
     reset_primary_stream(std::make_unique<cpaf::video::play_stream>([this]() {return torrents_get();}, &primary_stream_state_));
     media_pipeline_threads().flush_queues();
@@ -199,7 +200,8 @@ void player::close()
     pause_playback();
 
     reset_primary_stream();
-    primary_resource_path_.clear();
+    ////primary_resource_path_.clear();
+    current_playable_.clear();
     primary_stream_state() = stream_state_t::inactive;
     float cur_time_ms = (duration_cast<microseconds>( steady_clock::now() - start_close_tp)).count() / 1000.0f;
     std::cerr << fmt::format("*** FIXMENM close DONE [{}] time: {} ms\n", to_string(primary_stream_state()), cur_time_ms);
@@ -216,6 +218,11 @@ void player::close_async()
         primary_source_stream_->cancel_current_io();
     }
     play_handler_thread_.close_async();
+}
+
+void player::test_command()
+{
+    close_media_requested_ = true;
 }
 
 /// @todo This function most likely needs a more solid implementation.
@@ -796,10 +803,9 @@ bool player::open_stream(const std::string& resource_path, stream_type_t sti)
     return open_ok;
 }
 
-/// @todo Make private
 bool player::open_primary_stream(const std::string& resource_path)
 {
-    primary_resource_path_ = resource_path;
+///    primary_resource_path_ = resource_path;
     const auto open_ok = primary_stream().open(resource_path);
     return open_ok;
 }
@@ -829,7 +835,12 @@ void player::update_scaling_context(bool mutex_already_locked) const
 
 void player::handle_internal_events()
 {
-    handle_stream_state();
+    if (close_media_requested_) {
+        handle_close_media();
+    }
+    else {
+        handle_stream_state();
+    }
 }
 
 void player::handle_stream_state()
@@ -841,6 +852,18 @@ void player::handle_stream_state()
     if (primary_stream_state().compare_exchange_strong(stream_state_expected, stream_state_t::start_playing)) {
         start_playing();
         if (cb_start_playing_) { cb_start_playing_(); }
+    }
+}
+
+void player::handle_close_media()
+{
+    std::cerr << "!!!! FIXMENM player::handle_close_media() !!!!\n";
+    close_media_requested_ = false;
+    if (media_pipeline_threads_) {
+        media_pipeline_threads_->stop();
+    }
+    if (primary_source_stream_) {
+        primary_source_stream_->cancel_current_io();
     }
 }
 

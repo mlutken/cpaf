@@ -51,6 +51,7 @@ public:
     void                            open_async              (const std::string& resource_path, std::chrono::microseconds start_time_pos = {});
     void                            close                   ();
     void                            close_async             ();
+    void                            test_command            ();
     void                            cancel_async_open       ();
 
     bool                            open_secondary          (const std::string& resource_path, cpaf::video::stream_type_t sti);
@@ -71,7 +72,7 @@ public:
 
     cpaf::video::play_stream&       primary_stream          ()       { return *primary_source_stream_; }
     const cpaf::video::play_stream& primary_stream          () const { return *primary_source_stream_; }
-    const std::string&              primary_resource_path	() const { return primary_resource_path_; }
+    std::string                     primary_resource_path	() const { return cur_playable().path(); }
     std::string                     video_resource_path     () const { return video_stream() ? video_stream()->resource_path() : ""; }
     std::string                     audio_resource_path     () const { return audio_stream() ? audio_stream()->resource_path() : ""; }
     std::string                     subtitle_resource_path  () const { return subtitle_stream() ? subtitle_stream()->resource_path() : ""; }
@@ -232,6 +233,7 @@ private:
     const pipeline_threads&         media_pipeline_threads  () const { return *media_pipeline_threads_; }
     void                            handle_internal_events  ();
     void                            handle_stream_state     ();
+    void                            handle_close_media      ();
     void                            torrent_finished_event  (std::shared_ptr<cpaf::torrent::torrent> tor_file);
     void                            on_configuration_changed();
     void                            cur_playable_upd_calc   (bool force);
@@ -279,7 +281,7 @@ private:
     mutable std::mutex                              current_playable_mutex_;
     cpaf::video::audio_resampler                    audio_resampler_;
 
-    std::string                                     primary_resource_path_;
+    ////std::string                                     primary_resource_path_;
     mutable std::shared_ptr<torrent::torrents>      torrents_;
     cpaf::video::media_stream_time                  cur_media_time_;
     std::unique_ptr<video::render>                  video_render_;
@@ -297,6 +299,9 @@ private:
     std::function<void ()>                          cb_start_playing_;
     cpaf::math::v2f                                 screen_size_factor_use_         {1,1};
     cpaf::math::v2f                                 screen_size_factor_raw_         {1,1};
+
+    std::atomic<bool>                               close_media_requested_          = false;
+
 };
 
 } //END namespace cpaf::gui::video
