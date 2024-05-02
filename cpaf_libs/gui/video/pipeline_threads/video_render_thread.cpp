@@ -54,6 +54,7 @@ void video_render_thread::video_frame_update(
     cpaf::gui::video::render& video_render)
 {
     if (thread_is_stopped()) {
+        video_render.clear_screen();
         return;
     }
     [[maybe_unused]] bool new_frame_was_read = video_frame_do_render(current_frame, video_render);
