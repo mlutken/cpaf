@@ -92,7 +92,7 @@ void play_handler_thread::perform_close(job_t job)
 {
     std::cerr << "FIXMENM: 1 play_handler_thread::perform_close()!!!\n";
     set_current_job(std::move(job));
-    player_.close();
+    player_.close_command();
     set_current_job_done();
     std::cerr << "FIXMENM: 2 play_handler_thread::perform_close()!!!\n";
 }

@@ -78,7 +78,7 @@ void player::start_playing()
 /// @todo This function as opposed to close() ? Figure out!
 void player::terminate()
 {
-    close();
+    close_command();
     if (media_pipeline_threads_) {
         media_pipeline_threads().terminate();
         media_pipeline_threads().wait_for_all_terminated(1s);
@@ -88,7 +88,7 @@ void player::terminate()
 /// @todo Make private
 bool player::open(playable playab)
 {
-    close();
+    close_command();
     abort_current_open_ = false;
     close_media_requested_ = false;
     auto expected_state = stream_state_t::inactive;
@@ -163,7 +163,7 @@ void player::open_async(const std::string& resource_path, std::chrono::microseco
 /**
  *
 */
-void player::close()
+void player::close_command()
 {
     std::cerr << fmt::format("\n\n*** FIXMENM close BEGIN [{}]\n", to_string(primary_stream_state()));
 //    std::cerr << fmt::format("FIXMENM path: {}\n----------------------\n\n", cur_playable().path());

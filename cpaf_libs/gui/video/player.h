@@ -49,7 +49,7 @@ public:
     bool                            open                    (playable playab);
     void                            open_async              (playable playab);
     void                            open_async              (const std::string& resource_path, std::chrono::microseconds start_time_pos = {});
-    void                            close                   ();
+    void                            close_command           ();
     void                            close_async             ();
     void                            test_command            ();
     void                            cancel_async_open       ();
