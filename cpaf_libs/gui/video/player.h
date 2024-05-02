@@ -227,6 +227,7 @@ private:
     void                            init_video              (const system_window& main_window);
     bool                            open_stream             (const std::string& resource_path, cpaf::video::stream_type_t sti);
     bool                            open_primary_stream     (const std::string& resource_path);
+    void                            close_media             (bool wait_for_threads_to_stop = false);
     void                            check_activate_subtitle ();
     void                            update_scaling_context  (bool mutex_already_locked = false) const;
     pipeline_threads&               media_pipeline_threads  () { return *media_pipeline_threads_; }

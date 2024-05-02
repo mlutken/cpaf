@@ -810,6 +810,25 @@ bool player::open_primary_stream(const std::string& resource_path)
     return open_ok;
 }
 
+void player::close_media(bool wait_for_threads_to_stop)
+{
+    std::cerr << "!!!! FIXMENM player::close_media() !!!!\n";
+    audio_device_.pause(); // Pause audio.
+
+    if (media_pipeline_threads_) {
+        media_pipeline_threads_->stop();
+    }
+    if (primary_source_stream_) {
+        primary_source_stream_->cancel_current_io();
+    }
+
+    if (media_pipeline_threads_ && wait_for_threads_to_stop) {
+        media_pipeline_threads_->wait_for_all_stopped();
+    }
+
+    primary_stream_state() = stream_state_t::inactive;
+}
+
 void player::check_activate_subtitle()
 {
     if (subtitle_downloader_thread_.has_subtitle()) {
@@ -836,6 +855,7 @@ void player::update_scaling_context(bool mutex_already_locked) const
 void player::handle_internal_events()
 {
     if (close_media_requested_) {
+        close_media_requested_ = false;
         handle_close_media();
     }
     else {
@@ -857,14 +877,7 @@ void player::handle_stream_state()
 
 void player::handle_close_media()
 {
-    std::cerr << "!!!! FIXMENM player::handle_close_media() !!!!\n";
-    close_media_requested_ = false;
-    if (media_pipeline_threads_) {
-        media_pipeline_threads_->stop();
-    }
-    if (primary_source_stream_) {
-        primary_source_stream_->cancel_current_io();
-    }
+    close_media();
 }
 
 void player::torrent_finished_event(std::shared_ptr<cpaf::torrent::torrent> tor_file)
