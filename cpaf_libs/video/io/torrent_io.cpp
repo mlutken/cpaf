@@ -101,9 +101,9 @@ void torrent_io::do_open_progress_cb_set(progress_callback_fn cb)
 
 void torrent_io::do_data_progress_cb_set(progress_callback_fn cb)
 {
-    open_progress_callback_ = std::move(cb); // Save here for forwarding to torrent_ in open()
+    data_progress_callback_ = std::move(cb); // Save here for forwarding to torrent_ in open()
     if (torrent_ && tor_file_.is_open()) {
-        torrent_->data_progress_callback_set(open_progress_callback_);
+        torrent_->data_progress_callback_set(data_progress_callback_);
     }
 }
 
