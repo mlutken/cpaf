@@ -52,10 +52,12 @@ struct cache_piece_data_t {
 };
 
 struct cache_pieces_t {
+    static cache_pieces_t create_abort_request ();
     std::vector<cache_piece_data_t>     pieces;
     size_t                              data_size                   = 0;
-    bool                                is_valid                        () const;
-    lt::piece_index_t                   last_piece_index                () const;
+    bool                                abort_requested             = false;    // Use this to signal aboort requested from progress cb
+    bool                                is_valid                    () const;
+    lt::piece_index_t                   last_piece_index            () const;
 };
 
 struct pieces_range_t {

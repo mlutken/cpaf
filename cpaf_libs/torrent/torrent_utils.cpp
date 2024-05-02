@@ -197,9 +197,15 @@ void settings_set_default_str(libtorrent::settings_pack& settings, int name, std
 // --- cache_pieces_t ---
 // ----------------------
 
+cache_pieces_t cache_pieces_t::create_abort_request()
+{
+    return cache_pieces_t{std::vector<cache_piece_data_t>(), 0, true};
+}
+
 bool cache_pieces_t::is_valid() const
 {
-    if (pieces.empty()) { return false; }
+    return !abort_requested && !pieces.empty();
+
     for (const auto& cache_piece_data : pieces) {
         if (!cache_piece_data.is_valid()) {
             return false;
