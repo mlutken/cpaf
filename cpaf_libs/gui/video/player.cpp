@@ -825,6 +825,7 @@ void player::close_media(bool wait_for_threads_to_stop)
     if (media_pipeline_threads_ && wait_for_threads_to_stop) {
         media_pipeline_threads_->wait_for_all_stopped();
     }
+    current_playable_.clear();
 
     primary_stream_state() = stream_state_t::inactive;
 }
