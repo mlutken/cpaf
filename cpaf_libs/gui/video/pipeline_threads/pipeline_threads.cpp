@@ -160,6 +160,23 @@ bool pipeline_threads::all_threads_stopped() const
         ;
 }
 
+bool pipeline_threads::all_threads_started() const
+{
+    if (!threads_running_) {
+        return false;
+    }
+    const bool packet_started = !packet_reader_thread_.thread_is_stopped();
+    const bool resampler_started = !audio_resampler_thread_.thread_is_stopped();
+    const bool audio_render_started = !audio_render_thread_.thread_is_stopped();
+    const bool subtitle_started = !subtitle_reader_thread_.thread_is_stopped();
+
+    return packet_started       &&
+           resampler_started    &&
+           audio_render_started &&
+           subtitle_started
+        ;
+}
+
 bool pipeline_threads::all_threads_terminated() const
 {
     if (threads_running_) {
@@ -175,6 +192,14 @@ bool pipeline_threads::all_threads_terminated() const
            audio_render_terminated &&
            subtitle_terminated
         ;
+}
+
+bool pipeline_threads::has_active_media() const
+{
+    if (!threads_running_) {
+        return false;
+    }
+    return threads_started_ && all_threads_started();
 }
 
 bool pipeline_threads::wait_for_all_paused(std::chrono::milliseconds max_wait_time) const

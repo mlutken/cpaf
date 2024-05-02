@@ -60,7 +60,9 @@ public:
     bool                        playback_paused         () const { return threads_paused_; }
     bool                        all_threads_paused      () const;
     bool                        all_threads_stopped     () const;
+    bool                        all_threads_started     () const;
     bool                        all_threads_terminated  () const;
+    bool                        has_active_media        () const;
     bool                        wait_for_all_paused     (std::chrono::milliseconds max_wait_time = std::chrono::seconds{5}) const;
     bool                        wait_for_all_stopped    (std::chrono::milliseconds max_wait_time = std::chrono::seconds{5}) const;
     bool                        wait_for_all_terminated (std::chrono::milliseconds max_wait_time = std::chrono::seconds{5}) const;
