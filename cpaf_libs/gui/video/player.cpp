@@ -63,6 +63,10 @@ void player::start_playing()
     audio_device_.play();
     if (has_video_stream()) {
         init_video(*main_window_ptr_);
+
+        auto language_code = configuration.str("subtitles", "language_code");
+        const auto entry = cur_playable().find_best_subtitle(language_code);
+        subtitle_select(entry.language_code, entry.subtitle_adjust_offset);
     }
     media_pipeline_threads().start();
     resume_playback();
@@ -125,11 +129,6 @@ bool player::open(playable playab)
     const bool force = true;
     cur_playable_upd_calc(force);
 
-    auto language_code = configuration.str("subtitles", "language_code");
-    const auto entry = cur_playable().find_best_subtitle(language_code);
-
-    subtitle_select(entry.language_code, entry.subtitle_adjust_offset);
-
     // --- Prepare audio ---
     audio_device_.play_callback_set(audio_callback_get());
     audio_out_formats_set(to_ff_audio_format(audio_device_.audio_format()));
@@ -137,9 +136,9 @@ bool player::open(playable playab)
     audio_resampler_.init();
     media_pipeline_threads().audio_resampler_set(audio_resampler_);
 
-    // --- Read packets to queues ---
+    // --- Seek postion ---
     seek_position(cur_playable().start_time());
-    format_context().read_packets_to_queues(format_context().primary_media_type(), 10);
+    /// format_context().read_packets_to_queues(format_context().primary_media_type(), 10);
 
     primary_stream_state() = stream_state_t::open;
     cur_time_ms = (duration_cast<microseconds>( steady_clock::now() - start_close_tp)).count() / 1000.0f; // FIXMENM

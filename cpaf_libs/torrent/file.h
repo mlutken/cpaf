@@ -37,7 +37,7 @@ public:
 
     void                                use_blocking_seek_set           (bool bs) { use_blocking_seek_ = bs; }
     bool                                use_blocking_seek               () const { return use_blocking_seek_; }
-    bool                                is_valid                        () const { return file_index_ >= 0; }
+    bool                                is_valid                        () const { return parent_torrent_ptr_ && file_index_ >= 0; }
     bool                                are_streaming_pieces_in_cache   () const;
     bool                                streaming_mode_active           () const                        { return read_ahead_size_ > 0; }
     int64_t                             size                            () const;

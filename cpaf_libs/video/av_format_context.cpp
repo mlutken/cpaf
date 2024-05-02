@@ -49,18 +49,18 @@ bool av_format_context::open(const std::string& resource_path)
 {
 
     resource_path_ = resource_path;
-
-    custom_io_ptr_ = custom_io_base::create(resource_path, get_torrents_function_);
-    if (custom_io_ptr_) {
-        custom_io_ptr_->open_progress_callback_set([this](float progress) -> bool { return custom_io_open_progress_cb(progress);});
-        if (!custom_io_ptr_->open(resource_path)) {
+    custom_io_ptr_.reset();
+    auto custom_io_ptr = custom_io_base::create(resource_path, get_torrents_function_);
+    if (custom_io_ptr) {
+        custom_io_ptr->open_progress_callback_set([this](float progress) -> bool { return custom_io_open_progress_cb(progress);});
+        if (!custom_io_ptr->open(resource_path)) {
             return false;
         }
         if (!(ff_format_context_ = avformat_alloc_context())) {
             return false;
         }
 
-        if (!custom_io_ptr_->init(ff_format_context_)) {
+        if (!custom_io_ptr->init(ff_format_context_)) {
             return false;
         }
         if ( avformat_open_input(&ff_format_context_, nullptr, nullptr, nullptr) != 0) {
@@ -74,6 +74,7 @@ bool av_format_context::open(const std::string& resource_path)
     if ( avformat_find_stream_info(ff_format_context_, nullptr) <0 ) {
         return false; // Couldn't find stream information
     }
+    custom_io_ptr_ = std::move(custom_io_ptr);
     read_codec_contexts();
     set_default_selected_streams();
     return true;
@@ -683,13 +684,24 @@ const AVCodec* av_format_context::ff_find_decoder(size_t stream_index) const
 
 bool av_format_context::custom_io_open_progress_cb(float progress)
 {
-    std::cerr << fmt::format("FIXMENM custom_io_open_progress_cb({})", progress);
+    static int FIXMENM_counter = 0;
+    FIXMENM_counter++;
+
+    const auto max_dur = steady_clock::time_point::max() - steady_clock::time_point();
+    const auto max_days = duration_cast<years>(max_dur);
+
+    std::cerr << fmt::format("FIXMENM clock_max: {} years\n", max_days.count());
+    std::cerr << fmt::format("FIXMENM custom_io_open_progress_cb({})\n", FIXMENM_counter);
+    // if (FIXMENM_counter == 1) {
+    //     return true;
+    // }
+    // std::cerr << fmt::format("FIXMENM custom_io_open_progress_cb({})\n", progress);
     return false;
 }
 
 bool av_format_context::custom_io_data_progress_cb(float progress)
 {
-    std::cerr << fmt::format("FIXMENM custom_io_data_progress_cb({})", progress);
+    std::cerr << fmt::format("FIXMENM custom_io_data_progress_cb({})\n", progress);
     return false;
 }
 

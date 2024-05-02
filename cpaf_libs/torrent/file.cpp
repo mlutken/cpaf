@@ -20,6 +20,10 @@ file::file(libtorrent::file_index_t file_index, libtorrent::torrent_handle handl
 
 size_t file::read(void* buffer, const std::size_t bytes_to_read, const std::chrono::milliseconds timeout)
 {
+    if (!parent_torrent_ptr_) {
+        return 0;
+    }
+
     size_t bytes_stil_to_copy = bytes_to_read;
     const auto data_pieces = get_pieces_data(offsett_, bytes_to_read, timeout); // Will block current thread until data ready or timeout reached
     auto* byte_buf = static_cast<std::byte*>(buffer);
@@ -60,6 +64,10 @@ size_t file::read(void* buffer, const std::size_t bytes_to_read, const std::chro
 
 int file::seek(int64_t offset, int whence)
 {
+    if (!parent_torrent_ptr_) {
+        return -1;
+    }
+
     const auto filesize = size();
     switch (whence) {
     case SEEK_SET:
@@ -99,12 +107,16 @@ void file::request_pieces_from_offset()
 
 void file::remove_parent_torrent()
 {
-    parent_torrent_ptr_->remove();
+    if (parent_torrent_ptr_) {
+        parent_torrent_ptr_->remove();
+    }
 }
 
 void file::pause_parent_torrent()
 {
-    parent_torrent_ptr_->pause();
+    if (parent_torrent_ptr_) {
+        parent_torrent_ptr_->pause();
+    }
 }
 
 /// @todo cpaf::torrent::file::close() not implemented !!!
@@ -115,21 +127,30 @@ void file::close()
 
 void file::meta_data_progress_callback_set(progress_callback_fn cb)
 {
-    parent_torrent_ptr_->meta_data_progress_callback_set(std::move(cb));
+    if (parent_torrent_ptr_) {
+        parent_torrent_ptr_->meta_data_progress_callback_set(std::move(cb));
+    }
 }
 
 void file::data_progress_callback_set(progress_callback_fn cb)
 {
-    parent_torrent_ptr_->data_progress_callback_set(std::move(cb));
+    if (parent_torrent_ptr_) {
+        parent_torrent_ptr_->data_progress_callback_set(std::move(cb));
+    }
 }
 
 void file::cancel_current_io_operation()
 {
-    parent_torrent_ptr_->cancel_current_io_operation();
+    if (parent_torrent_ptr_) {
+        parent_torrent_ptr_->cancel_current_io_operation();
+    }
 }
 
 bool file::cancel_io_completed() const
 {
+    if (!parent_torrent_ptr_) {
+        return false;
+    }
     return parent_torrent_ptr_->cancel_io_completed();
 }
 
@@ -139,6 +160,9 @@ bool file::cancel_io_completed() const
 */
 bool file::are_streaming_pieces_in_cache() const
 {
+    if (!parent_torrent_ptr_) {
+        return false;
+    }
     const auto read_ahead_range = get_pieces_read_ahead_range(offsett_);
     return parent_torrent_ptr_->are_pieces_in_cache(read_ahead_range);
 }
