@@ -85,67 +85,6 @@ void player::terminate()
     }
 }
 
-/// @todo Make private
-bool player::open(playable playab)
-{
-    close_command();
-    abort_current_open_ = false;
-    close_media_requested_ = false;
-    auto expected_state = stream_state_t::inactive;
-    if (!primary_stream_state().compare_exchange_strong(expected_state, stream_state_t::opening)) {
-        std::cerr << "LOG_ERR: Can't open '" <<  playab.path() << "' while another open is in progress\n";
-        return false;
-    }
-
-    std::cerr << fmt::format("\n---FIXMENM [{}] BEGIN Open playable ---\n", to_string(primary_stream_state()));
-    const auto start_close_tp = steady_clock::now();
-    // std::cerr << fmt::format("FIXMENM path: {}\n--------------------------------\n\n", playab.path());
-    cur_playable_set(playab);
-    media_pipeline_threads().stop();
-    pause_playback();
-
-    stream_completely_downloaded_ = false;
-    subtitle_selected_index_ = -1;
-    subtitle_source_ = subtitle_source_t::none;
-    ////primary_resource_path_ = cur_playable().path();
-
-    reset_primary_stream(std::make_unique<cpaf::video::play_stream>([this]() {return torrents_get();}, &primary_stream_state_));
-    media_pipeline_threads().flush_queues();
-
-    float cur_time_ms = (duration_cast<microseconds>( steady_clock::now() - start_close_tp)).count() / 1000.0f; // FIXMENM
-    std::cerr << fmt::format("---FIXMENM [{}]  START Open primary stream time: {} ms\n", to_string(primary_stream_state()), cur_time_ms);
-
-    bool ok = open_primary_stream(cur_playable().path());
-
-    cur_time_ms = (duration_cast<microseconds>( steady_clock::now() - start_close_tp)).count() / 1000.0f; // FIXMENM
-    std::cerr << fmt::format("---FIXMENM [{}]  COMPLETED Open primary stream time: {} ms\n", to_string(primary_stream_state()), cur_time_ms);
-
-    if (!ok) {
-        primary_stream_state() = stream_state_t::inactive;
-
-        // TODO: Some cleanup needed here perhaps ?
-        return false;
-    }
-
-    const bool force = true;
-    cur_playable_upd_calc(force);
-
-    // --- Prepare audio ---
-    audio_device_.play_callback_set(audio_callback_get());
-    audio_out_formats_set(to_ff_audio_format(audio_device_.audio_format()));
-    audio_resampler_.in_formats_set(audio_codec_context());
-    audio_resampler_.init();
-    media_pipeline_threads().audio_resampler_set(audio_resampler_);
-
-    // --- Seek postion ---
-    seek_position(cur_playable().start_time());
-    /// format_context().read_packets_to_queues(format_context().primary_media_type(), 10);
-
-    primary_stream_state() = stream_state_t::open;
-    cur_time_ms = (duration_cast<microseconds>( steady_clock::now() - start_close_tp)).count() / 1000.0f; // FIXMENM
-    std::cerr << fmt::format("---FIXMENM DONE [{}]  Open playable time: {} ms\n", to_string(primary_stream_state()), cur_time_ms);
-    return ok;
-}
 
 void player::open_async(playable playab)
 {
@@ -159,53 +98,6 @@ void player::open_async(const std::string& resource_path, std::chrono::microseco
     open_async(playab);
 }
 
-
-/**
- *
-*/
-void player::close_command()
-{
-    std::cerr << fmt::format("\n\n*** FIXMENM close BEGIN [{}]\n", to_string(primary_stream_state()));
-//    std::cerr << fmt::format("FIXMENM path: {}\n----------------------\n\n", cur_playable().path());
-
-    const auto start_close_tp = steady_clock::now();
-
-    audio_device_.pause(); // Pause audio.
-    if (media_pipeline_threads_) {
-        media_pipeline_threads_->stop();
-    }
-    if (primary_stream_state() == stream_state_t::inactive ) {
-        return;
-    }
-
-
-    if (primary_stream_state() == stream_state_t::start_playing ) {
-        std::cerr << fmt::format("\n !!!!!!!!!!! FIXMENM close called while starting previous  [{}] !!!!!!!! \n\n", to_string(primary_stream_state()));
-
-        estl::wait_for_expected_value(primary_stream_state(), stream_state_t::playing, 1s);
-
-        float cur_time_ms = (duration_cast<microseconds>( steady_clock::now() - start_close_tp)).count() / 1000.0f;
-        std::cerr << fmt::format("*** FIXMENM PREVIOUS IS NOW PLAYING [{}] time waited: {} ms\n", to_string(primary_stream_state()), cur_time_ms);
-    }
-
-
-    if (primary_stream_state() == stream_state_t::opening || primary_stream_state() == stream_state_t::open) {
-        std::cerr << fmt::format("\n !!!!!!!!!!! FIXMENM close called while opening previous  [{}] !!!!!!!! \n\n", to_string(primary_stream_state()));
-    }
-
-    primary_stream_state() = stream_state_t::closing;
-    if (media_pipeline_threads_) {
-        media_pipeline_threads_->wait_for_all_stopped();
-    }
-    pause_playback();
-
-    reset_primary_stream();
-    ////primary_resource_path_.clear();
-    current_playable_.clear();
-    primary_stream_state() = stream_state_t::inactive;
-    float cur_time_ms = (duration_cast<microseconds>( steady_clock::now() - start_close_tp)).count() / 1000.0f;
-    std::cerr << fmt::format("*** FIXMENM close DONE [{}] time: {} ms\n", to_string(primary_stream_state()), cur_time_ms);
-}
 
 void player::close_async()
 {
@@ -760,6 +652,114 @@ std::chrono::microseconds player::dbg_audio_front_time() const
 // --- PRIVATE: Helper functions ---
 // ---------------------------------
 
+bool player::open_command(playable playab)
+{
+    close_command();
+    abort_current_open_ = false;
+    close_media_requested_ = false;
+    auto expected_state = stream_state_t::inactive;
+    if (!primary_stream_state().compare_exchange_strong(expected_state, stream_state_t::opening)) {
+        std::cerr << "LOG_ERR: Can't open '" <<  playab.path() << "' while another open is in progress\n";
+        return false;
+    }
+
+    std::cerr << fmt::format("\n---FIXMENM [{}] BEGIN Open playable ---\n", to_string(primary_stream_state()));
+    const auto start_close_tp = steady_clock::now();
+    // std::cerr << fmt::format("FIXMENM path: {}\n--------------------------------\n\n", playab.path());
+    cur_playable_set(playab);
+    media_pipeline_threads().stop();
+    pause_playback();
+
+    stream_completely_downloaded_ = false;
+    subtitle_selected_index_ = -1;
+    subtitle_source_ = subtitle_source_t::none;
+    ////primary_resource_path_ = cur_playable().path();
+
+    reset_primary_stream(std::make_unique<cpaf::video::play_stream>([this]() {return torrents_get();}, &primary_stream_state_));
+    media_pipeline_threads().flush_queues();
+
+    float cur_time_ms = (duration_cast<microseconds>( steady_clock::now() - start_close_tp)).count() / 1000.0f; // FIXMENM
+    std::cerr << fmt::format("---FIXMENM [{}]  START Open primary stream time: {} ms\n", to_string(primary_stream_state()), cur_time_ms);
+
+    bool ok = open_primary_stream(cur_playable().path());
+
+    cur_time_ms = (duration_cast<microseconds>( steady_clock::now() - start_close_tp)).count() / 1000.0f; // FIXMENM
+    std::cerr << fmt::format("---FIXMENM [{}]  COMPLETED Open primary stream time: {} ms\n", to_string(primary_stream_state()), cur_time_ms);
+
+    if (!ok) {
+        primary_stream_state() = stream_state_t::inactive;
+
+        // TODO: Some cleanup needed here perhaps ?
+        return false;
+    }
+
+    const bool force = true;
+    cur_playable_upd_calc(force);
+
+    // --- Prepare audio ---
+    audio_device_.play_callback_set(audio_callback_get());
+    audio_out_formats_set(to_ff_audio_format(audio_device_.audio_format()));
+    audio_resampler_.in_formats_set(audio_codec_context());
+    audio_resampler_.init();
+    media_pipeline_threads().audio_resampler_set(audio_resampler_);
+
+    // --- Seek postion ---
+    seek_position(cur_playable().start_time());
+    /// format_context().read_packets_to_queues(format_context().primary_media_type(), 10);
+
+    primary_stream_state() = stream_state_t::open;
+    cur_time_ms = (duration_cast<microseconds>( steady_clock::now() - start_close_tp)).count() / 1000.0f; // FIXMENM
+    std::cerr << fmt::format("---FIXMENM DONE [{}]  Open playable time: {} ms\n", to_string(primary_stream_state()), cur_time_ms);
+    return ok;
+}
+
+
+/**
+* Called from play_handler_thread
+*/
+void player::close_command()
+{
+    std::cerr << fmt::format("\n\n*** FIXMENM close BEGIN [{}]\n", to_string(primary_stream_state()));
+    //    std::cerr << fmt::format("FIXMENM path: {}\n----------------------\n\n", cur_playable().path());
+
+    const auto start_close_tp = steady_clock::now();
+
+    audio_device_.pause(); // Pause audio.
+    if (media_pipeline_threads_) {
+        media_pipeline_threads_->stop();
+    }
+    if (primary_stream_state() == stream_state_t::inactive ) {
+        return;
+    }
+
+
+    if (primary_stream_state() == stream_state_t::start_playing ) {
+        std::cerr << fmt::format("\n !!!!!!!!!!! FIXMENM close called while starting previous  [{}] !!!!!!!! \n\n", to_string(primary_stream_state()));
+
+        estl::wait_for_expected_value(primary_stream_state(), stream_state_t::playing, 1s);
+
+        float cur_time_ms = (duration_cast<microseconds>( steady_clock::now() - start_close_tp)).count() / 1000.0f;
+        std::cerr << fmt::format("*** FIXMENM PREVIOUS IS NOW PLAYING [{}] time waited: {} ms\n", to_string(primary_stream_state()), cur_time_ms);
+    }
+
+
+    if (primary_stream_state() == stream_state_t::opening || primary_stream_state() == stream_state_t::open) {
+        std::cerr << fmt::format("\n !!!!!!!!!!! FIXMENM close called while opening previous  [{}] !!!!!!!! \n\n", to_string(primary_stream_state()));
+    }
+
+    primary_stream_state() = stream_state_t::closing;
+    if (media_pipeline_threads_) {
+        media_pipeline_threads_->wait_for_all_stopped();
+    }
+    pause_playback();
+
+    reset_primary_stream();
+    ////primary_resource_path_.clear();
+    current_playable_.clear();
+    primary_stream_state() = stream_state_t::inactive;
+    float cur_time_ms = (duration_cast<microseconds>( steady_clock::now() - start_close_tp)).count() / 1000.0f;
+    std::cerr << fmt::format("*** FIXMENM close DONE [{}] time: {} ms\n", to_string(primary_stream_state()), cur_time_ms);
+}
 
 void player::reset_primary_stream(std::unique_ptr<play_stream> new_primary_stream)
 {

@@ -76,7 +76,7 @@ void play_handler_thread::perform_open(job_t job)
 {
     std::cerr << "FIXMENM: 1 play_handler_thread::perform_open()!!!\n";
     set_current_job(std::move(job));
-    player_.open(current_playable());
+    player_.open_command(current_playable());
 
     // auto stream_state_expected = stream_state_t::open;
     // if (player_.primary_stream_state().compare_exchange_strong(stream_state_expected, stream_state_t::playing)) {

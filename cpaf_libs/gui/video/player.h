@@ -46,10 +46,8 @@ public:
     void                            set_main_window         (system_window& main_window);
     void                            start_playing           ();
     void                            terminate               ();
-    bool                            open                    (playable playab);
     void                            open_async              (playable playab);
     void                            open_async              (const std::string& resource_path, std::chrono::microseconds start_time_pos = {});
-    void                            close_command           ();
     void                            close_async             ();
     void                            test_command            ();
     void                            cancel_async_open       ();
@@ -222,6 +220,10 @@ private:
     // ---------------------------------
     // --- PRIVATE: Helper functions ---
     // ---------------------------------
+    bool                            open_command            (playable playab);
+    void                            close_command           ();
+
+
     void                            reset_primary_stream    (std::unique_ptr<cpaf::video::play_stream> new_primary_stream = nullptr);
     bool                            all_initialized         () const;
     void                            init_video              (const system_window& main_window);
