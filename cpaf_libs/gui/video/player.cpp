@@ -620,7 +620,6 @@ std::chrono::microseconds player::dbg_audio_front_time() const
 bool player::open_command(playable playab)
 {
     close_command();
-    abort_current_open_ = false;
     close_media_requested_ = false;
     auto expected_state = stream_state_t::inactive;
     if (!primary_stream_state().compare_exchange_strong(expected_state, stream_state_t::opening)) {
@@ -638,7 +637,6 @@ bool player::open_command(playable playab)
     stream_completely_downloaded_ = false;
     subtitle_selected_index_ = -1;
     subtitle_source_ = subtitle_source_t::none;
-    ////primary_resource_path_ = cur_playable().path();
 
     reset_primary_stream(std::make_unique<cpaf::video::play_stream>([this]() {return torrents_get();}, &primary_stream_state_));
     media_pipeline_threads().flush_queues();
@@ -738,11 +736,30 @@ void player::close_command()
     pause_playback();
 
     reset_primary_stream();
-    ////primary_resource_path_.clear();
     current_playable_.clear();
     primary_stream_state() = stream_state_t::inactive;
     float cur_time_ms = (duration_cast<microseconds>( steady_clock::now() - start_close_tp)).count() / 1000.0f;
     std::cerr << fmt::format("*** FIXMENM close DONE [{}] time: {} ms\n", to_string(primary_stream_state()), cur_time_ms);
+}
+
+void player::close_media(std::chrono::milliseconds wait_for_threads_to_stop_time)
+{
+    std::cerr << "!!!! FIXMENM player::close_media() !!!!\n";
+    audio_device_.pause(); // Pause audio.
+
+    if (media_pipeline_threads_) {
+        media_pipeline_threads_->stop();
+    }
+    if (primary_source_stream_) {
+        primary_source_stream_->cancel_current_io();
+    }
+
+    if (media_pipeline_threads_ ) {
+        media_pipeline_threads_->wait_for_all_stopped(wait_for_threads_to_stop_time);
+    }
+    current_playable_.clear();
+
+    primary_stream_state() = stream_state_t::inactive;
 }
 
 void player::reset_primary_stream(std::unique_ptr<play_stream> new_primary_stream)
@@ -789,29 +806,8 @@ bool player::open_stream(const std::string& resource_path, stream_type_t sti)
 
 bool player::open_primary_stream(const std::string& resource_path)
 {
-///    primary_resource_path_ = resource_path;
     const auto open_ok = primary_stream().open(resource_path);
     return open_ok;
-}
-
-void player::close_media(bool wait_for_threads_to_stop)
-{
-    std::cerr << "!!!! FIXMENM player::close_media() !!!!\n";
-    audio_device_.pause(); // Pause audio.
-
-    if (media_pipeline_threads_) {
-        media_pipeline_threads_->stop();
-    }
-    if (primary_source_stream_) {
-        primary_source_stream_->cancel_current_io();
-    }
-
-    if (media_pipeline_threads_ && wait_for_threads_to_stop) {
-        media_pipeline_threads_->wait_for_all_stopped();
-    }
-    current_playable_.clear();
-
-    primary_stream_state() = stream_state_t::inactive;
 }
 
 void player::check_activate_subtitle()

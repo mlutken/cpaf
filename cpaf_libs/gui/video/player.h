@@ -220,6 +220,7 @@ private:
     bool                            open_command            (playable playab);
     void                            start_playing           ();
     void                            close_command           ();
+    void                            close_media             (std::chrono::milliseconds wait_for_threads_to_stop_time = std::chrono::milliseconds(0));
 
 
     void                            reset_primary_stream    (std::unique_ptr<cpaf::video::play_stream> new_primary_stream = nullptr);
@@ -227,7 +228,6 @@ private:
     void                            init_video              (const system_window& main_window);
     bool                            open_stream             (const std::string& resource_path, cpaf::video::stream_type_t sti);
     bool                            open_primary_stream     (const std::string& resource_path);
-    void                            close_media             (bool wait_for_threads_to_stop = false);
     void                            check_activate_subtitle ();
     void                            update_scaling_context  (bool mutex_already_locked = false) const;
     pipeline_threads&               media_pipeline_threads  () { return *media_pipeline_threads_; }
@@ -253,7 +253,6 @@ private:
     // ----------------------------
     using source_streams_array_t = std::array<std::unique_ptr<cpaf::video::play_stream>, cpaf::video::stream_type_index_size()>;
     std::atomic<stream_state_t>                     primary_stream_state_           = stream_state_t::inactive;
-    std::atomic<bool>                               abort_current_open_             = false;
     cpaf::audio::device&                            audio_device_;
     cpaf::locale::translator&                       tr_;
     subtitle_downloader_thread                      subtitle_downloader_thread_;
@@ -282,7 +281,6 @@ private:
     mutable std::mutex                              current_playable_mutex_;
     cpaf::video::audio_resampler                    audio_resampler_;
 
-    ////std::string                                     primary_resource_path_;
     mutable std::shared_ptr<torrent::torrents>      torrents_;
     cpaf::video::media_stream_time                  cur_media_time_;
     std::unique_ptr<video::render>                  video_render_;
