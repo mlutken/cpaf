@@ -69,7 +69,7 @@ void player::terminate()
 
 void player::open_media(playable playab)
 {
-    close_media();  // Abort any current media that might be opening or waiting for data while playing!
+    close_media(5ms);  // Abort any current media that might be opening or waiting for data while playing!
     play_handler_thread_.open_async(playab);
 }
 
