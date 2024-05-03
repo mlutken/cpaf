@@ -685,10 +685,9 @@ const AVCodec* av_format_context::ff_find_decoder(size_t stream_index) const
     return avcodec_find_decoder(codec_id(stream_index));
 }
 
-bool av_format_context::custom_io_open_progress_cb(float progress)
+bool av_format_context::custom_io_open_progress_cb(float /*progress*/)
 {
     static int FIXMENM_counter = 0;
-    FIXMENM_counter++;
 
 //    const auto max_dur = steady_clock::time_point::max() - steady_clock::time_point();
 //    const auto max_days = duration_cast<years>(max_dur);
@@ -696,7 +695,11 @@ bool av_format_context::custom_io_open_progress_cb(float progress)
 
     string ss = global_stream_state_ptr_? to_string(*global_stream_state_ptr_) : "?";
 
-    std::cerr << fmt::format("[{}] FIXMENM OPEN PROGRESS({})\n", ss, FIXMENM_counter);
+    if (FIXMENM_counter % 100 == 0) {
+        std::cerr << fmt::format("[{}] FIXMENM OPEN PROGRESS({})\n", ss, FIXMENM_counter);
+    }
+    ++FIXMENM_counter;
+
     return cancel_current_io_;
     // if (FIXMENM_counter == 1) {
     //     return true;
@@ -705,12 +708,17 @@ bool av_format_context::custom_io_open_progress_cb(float progress)
     return false;
 }
 
-bool av_format_context::custom_io_data_progress_cb(float progress)
+bool av_format_context::custom_io_data_progress_cb(float /*progress*/)
 {
     static int FIXMENM_counter = 0;
-    FIXMENM_counter++;
+    const auto state = global_stream_state_ptr_ ? global_stream_state_ptr_->load() : stream_state_t::inactive;
     string ss = global_stream_state_ptr_? to_string(*global_stream_state_ptr_) : "?";
-    std::cerr << fmt::format("[{}] FIXMENM DATA PROGRESS({})\n", ss, FIXMENM_counter);
+
+    if (FIXMENM_counter % 100 == 0 && (state != stream_state_t::playing)) {
+        std::cerr << fmt::format("[{}] FIXMENM DATA PROGRESS({})\n", ss, FIXMENM_counter);
+    }
+    ++FIXMENM_counter;
+
     return cancel_current_io_;
 //    return false;
 //    std::cerr << fmt::format("FIXMENM custom_io_data_progress_cb({})\n", progress);
