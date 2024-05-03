@@ -619,17 +619,13 @@ std::chrono::microseconds player::dbg_audio_front_time() const
 */
 bool player::open_command(playable playab)
 {
+    std::cerr << fmt::format("\n---FIXMENM [{}] BEGIN Open playable ---\n", to_string(primary_stream_state()));
+//    std::cerr << fmt::format("FIXMENM path: {}\n--------------------------------\n\n", playab.path());
     close_command();
     close_media_requested_ = false;
-    auto expected_state = stream_state_t::inactive;
-    if (!primary_stream_state().compare_exchange_strong(expected_state, stream_state_t::opening)) {
-        std::cerr << "LOG_ERR: Can't open '" <<  playab.path() << "' while another open is in progress\n";
-        return false;
-    }
+    primary_stream_state_ = stream_state_t::opening;
 
-    std::cerr << fmt::format("\n---FIXMENM [{}] BEGIN Open playable ---\n", to_string(primary_stream_state()));
     const auto start_close_tp = steady_clock::now();
-    // std::cerr << fmt::format("FIXMENM path: {}\n--------------------------------\n\n", playab.path());
     cur_playable_set(playab);
     media_pipeline_threads().stop();
     pause_playback();
@@ -650,6 +646,8 @@ bool player::open_command(playable playab)
     std::cerr << fmt::format("---FIXMENM [{}]  COMPLETED Open primary stream time: {} ms\n", to_string(primary_stream_state()), cur_time_ms);
 
     if (!ok) {
+        cur_time_ms = (duration_cast<microseconds>( steady_clock::now() - start_close_tp)).count() / 1000.0f; // FIXMENM
+        std::cerr << fmt::format("---FIXMENM [{}]  ABORTED During Open primary stream time: {} ms\n", to_string(primary_stream_state()), cur_time_ms);
         primary_stream_state() = stream_state_t::inactive;
 
         // TODO: Some cleanup needed here perhaps ?
@@ -705,42 +703,12 @@ void player::close_command()
     //    std::cerr << fmt::format("FIXMENM path: {}\n----------------------\n\n", cur_playable().path());
 
     const auto start_close_tp = steady_clock::now();
-
-    audio_device_.pause(); // Pause audio.
-    if (media_pipeline_threads_) {
-        media_pipeline_threads_->stop();
-    }
-    if (primary_stream_state() == stream_state_t::inactive ) {
-        return;
-    }
-
-
-    if (primary_stream_state() == stream_state_t::start_playing ) {
-        std::cerr << fmt::format("\n !!!!!!!!!!! FIXMENM close called while starting previous  [{}] !!!!!!!! \n\n", to_string(primary_stream_state()));
-
-        estl::wait_for_expected_value(primary_stream_state(), stream_state_t::playing, 1s);
-
-        float cur_time_ms = (duration_cast<microseconds>( steady_clock::now() - start_close_tp)).count() / 1000.0f;
-        std::cerr << fmt::format("*** FIXMENM PREVIOUS IS NOW PLAYING [{}] time waited: {} ms\n", to_string(primary_stream_state()), cur_time_ms);
-    }
-
-
-    if (primary_stream_state() == stream_state_t::opening || primary_stream_state() == stream_state_t::open) {
-        std::cerr << fmt::format("\n !!!!!!!!!!! FIXMENM close called while opening previous  [{}] !!!!!!!! \n\n", to_string(primary_stream_state()));
-    }
-
-    primary_stream_state() = stream_state_t::closing;
-    if (media_pipeline_threads_) {
-        media_pipeline_threads_->wait_for_all_stopped();
-    }
-    pause_playback();
-
+    close_media(2s);
     reset_primary_stream();
-    current_playable_.clear();
-    primary_stream_state() = stream_state_t::inactive;
     float cur_time_ms = (duration_cast<microseconds>( steady_clock::now() - start_close_tp)).count() / 1000.0f;
     std::cerr << fmt::format("*** FIXMENM close DONE [{}] time: {} ms\n", to_string(primary_stream_state()), cur_time_ms);
 }
+
 
 void player::close_media(std::chrono::milliseconds wait_for_threads_to_stop_time)
 {
