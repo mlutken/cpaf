@@ -59,8 +59,8 @@ public:
 
     // --- Video info functions ---
     AVCodecContext*         ff							() const { return ff_codec_context_; }
-    int32_t                 width						() const { return ff_codec_context_->width; }
-    int32_t                 height						() const { return ff_codec_context_->height; }
+    int32_t                 width						() const { return ff_codec_context_ ? ff_codec_context_->width : 0; }
+    int32_t                 height						() const { return ff_codec_context_ ? ff_codec_context_->height : 0; }
     surface_dimensions_t    dimensions                  () const { return {width(), height()}; }
     cpaf::math::v2f         dimensions_float            () const { return {static_cast<float>(width()), static_cast<float>(height())}; }
     int32_t                 dst_width					() const { return dst_width_ <= 0 ? width() : dst_width_; }
