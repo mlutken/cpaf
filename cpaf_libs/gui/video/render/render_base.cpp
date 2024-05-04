@@ -21,16 +21,6 @@ void render_base::render_geometry_set(const rect& render_geom)
     on_render_geometry_changed();
 }
 
-void render_base::video_codec_ctx_set(cpaf::video::av_codec_context* ctx)
-{
-    video_codec_ctx_ptr_ = ctx;
-}
-
-void render_base::video_codec_ctx_set(cpaf::video::av_codec_context& ctx)
-{
-    video_codec_ctx_ptr_ = &ctx;
-}
-
 void render_base::init(const system_window& win,
                        const rect& render_geom,
                        const cpaf::video::surface_dimensions_t& video_src_dimensions)

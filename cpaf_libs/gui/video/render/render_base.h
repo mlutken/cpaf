@@ -43,11 +43,6 @@ public:
     rect                        render_geometry             () const { return render_geometry_; }
     rect                        video_render_geometry       () const { return video_render_geometry_; }
     void                        render_geometry_set         (const rect& render_geom);
-    void                        format_context_set          (cpaf::video::av_format_context* ctx)        { format_context_ptr_ = ctx; }
-    void                        format_context_set          (cpaf::video::av_format_context& ctx)        { format_context_ptr_ = &ctx; }
-    void                        video_codec_ctx_set         (cpaf::video::av_codec_context* ctx);
-    void                        video_codec_ctx_set         (cpaf::video::av_codec_context& ctx);
-
     void                        init                        (const system_window& win,
                                                              const rect& render_geom,
                                                              const surface_dimensions_t& video_src_dimensions);
@@ -74,9 +69,6 @@ protected:
     static constexpr float                  general_margin              {4};
 
     cpaf::locale::translator&               tr                          ();
-    cpaf::video::av_format_context&         format_context              () { return *format_context_ptr_; }
-    const cpaf::video::av_format_context&   format_context              () const { return *format_context_ptr_; }
-    cpaf::video::av_codec_context&          video_codec_ctx             () { return *video_codec_ctx_ptr_; }
     bool                                    subtitle_within_display_time(const cpaf::video::subtitle_frame& subtitle) const;
     const surface_dimensions_t&             video_src_dimensions        () const { return video_src_dimensions_; }
 
@@ -91,9 +83,6 @@ protected:
     const system_window*                    main_window_ptr_            = nullptr;
     bool                                    keep_aspect_ratio_          {true};
 private:
-    cpaf::video::av_format_context*         format_context_ptr_         = nullptr;
-    cpaf::video::av_codec_context*          video_codec_ctx_ptr_        = nullptr;
-    cpaf::video::media_stream_time*         current_media_time_ptr_     = nullptr;
     AVPixelFormat                           ff_pixel_format_            = AV_PIX_FMT_YUV420P;
     rect                                    render_geometry_            {};
     rect                                    video_render_geometry_      {};

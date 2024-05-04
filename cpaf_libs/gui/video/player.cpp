@@ -754,8 +754,6 @@ bool player::all_initialized() const
 void player::init_video(const system_window& main_window)
 {
     video_render_ = render::create_video_render(*this, configuration, main_window, render_geometry(), video_src_dimensions());
-    video_render_->video_codec_ctx_set(video_codec_context());
-    /// video_render_->render_geometry_set(render_geometry());
 }
 
 bool player::open_stream(const std::string& resource_path, stream_type_t sti)
