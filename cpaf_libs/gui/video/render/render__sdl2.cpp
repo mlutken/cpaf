@@ -239,11 +239,6 @@ void render_platform::do_init(std::shared_ptr<system_render> sys_renderer)
     ensure_valid_render_texture();
 }
 
-void render_platform::do_render_dimensions_set(const cpaf::video::surface_dimensions_t& /*dimensions*/)
-{
-    ensure_valid_render_texture();
-}
-
 void render_platform::do_clear_screen()
 {
     auto dst_rect = to_sdl_rect(render_geometry());
@@ -254,9 +249,8 @@ bool render_platform::do_render_video_frame(const cpaf::video::av_frame& frame)
 {
     fill_native_video_frame(frame);
 
-    auto dst_rect = to_sdl_rect(render_geometry());
-    SDL_RenderCopy(get_sdl_renderer(), sdl_frame_render_texture_, NULL, &dst_rect);
-
+    const auto video_dst_rect = to_sdl_rect(video_render_geometry());
+    SDL_RenderCopy(get_sdl_renderer(), sdl_frame_render_texture_, NULL, &video_dst_rect);
 
     if (subtitle_within_display_time(current_subtitle_frame_)) {
         if (current_subtitle_frame_.format() == subtitle_frame::format_t::text) {

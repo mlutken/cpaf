@@ -64,6 +64,7 @@ public:
     float                       subtitles_relative_ypos     () const;
     bool                        subtitles_has_background    () const;
     bool                        subtitles_show              () const;
+    bool                        keep_aspect_ratio           () const;
 
 protected:
     static constexpr float                  general_margin              {4};
@@ -71,6 +72,7 @@ protected:
     cpaf::locale::translator&               tr                          ();
     bool                                    subtitle_within_display_time(const cpaf::video::subtitle_frame& subtitle) const;
     const surface_dimensions_t&             video_src_dimensions        () const { return video_src_dimensions_; }
+    void                                    update_video_render_geometry();
 
 //    void                                    on_configuration_changed    ();
 
@@ -81,7 +83,6 @@ protected:
 
     cpaf::video::subtitle_frame             current_subtitle_frame_     {};
     const system_window*                    main_window_ptr_            = nullptr;
-    bool                                    keep_aspect_ratio_          {true};
 private:
     AVPixelFormat                           ff_pixel_format_            = AV_PIX_FMT_YUV420P;
     rect                                    render_geometry_            {};
@@ -90,7 +91,6 @@ private:
 
     virtual void                do_init                             (const system_window& win) = 0;
     virtual void                do_init                             (std::shared_ptr<cpaf::gui::system_render> sys_renderer) = 0;
-    virtual void                do_render_dimensions_set            (const cpaf::video::surface_dimensions_t& dimensions ) = 0;
     virtual void                do_clear_screen                     () = 0;
     virtual bool                do_render_video_frame               (const cpaf::video::av_frame& frame) = 0;
     virtual void                on_render_geometry_changed          () = 0;

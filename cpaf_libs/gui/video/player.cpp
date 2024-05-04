@@ -309,6 +309,14 @@ rect player::render_geometry() const
     return rect();
 }
 
+rect player::video_render_geometry() const
+{
+    if (video_render_) {
+        return video_render_->video_render_geometry();
+    }
+    return render_geometry();
+}
+
 // ---------------------------
 // --- Audio setup/control ---
 // ---------------------------

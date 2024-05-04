@@ -114,6 +114,7 @@ public:
     cpaf::video::surface_dimensions_t   video_dst_dimensions        () const;
     size_t                              video_stream_index          () const;
     rect                                render_geometry             () const;
+    rect                                video_render_geometry       () const;
 
     // ---------------------------
     // --- Audio setup/control ---

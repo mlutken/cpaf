@@ -17,7 +17,7 @@ render_base::render_base(player& owning_player, config& cfg)
 void render_base::render_geometry_set(const rect& render_geom)
 {
     render_geometry_ = render_geom;
-    video_render_geometry_ = render_geom;
+    update_video_render_geometry();
     on_render_geometry_changed();
 }
 
@@ -102,8 +102,11 @@ bool render_base::subtitles_has_background() const
 bool render_base::subtitles_show() const
 {
     return config_.bool_val("subtitles", "show");
-///    return (player_.seek_state() == seek_state_t::ready) &&
-    ///            config_.bool_val("subtitles", "show");
+}
+
+bool render_base::keep_aspect_ratio() const
+{
+    return config_.bool_val("video", "keep_aspect_ratio");
 }
 
 locale::translator& render_base::tr()
@@ -114,6 +117,21 @@ locale::translator& render_base::tr()
 bool render_base::subtitle_within_display_time(const cpaf::video::subtitle_frame& subtitle) const
 {
     return subtitle.subtitle_within_display_time(player_.cur_media_time().subtitles_time_pos());
+}
+
+void render_base::update_video_render_geometry()
+{
+    video_render_geometry_ = render_geometry_;
+    if (keep_aspect_ratio()) {
+        video_render_geometry_.size() = video_src_dimensions().uniform_scale_x(render_geometry_.size().width());
+        if (video_render_geometry_.size().height() > render_geometry_.size().height()) {
+            video_render_geometry_.size() = video_src_dimensions().uniform_scale_y(render_geometry_.size().height());
+        }
+
+        // Center video in render area
+        const auto translate_vec = render_geometry_.center() - video_render_geometry_.center();
+        video_render_geometry_.translate(translate_vec);
+    }
 }
 
 //void render_base::on_configuration_changed()
