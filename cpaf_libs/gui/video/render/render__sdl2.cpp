@@ -19,12 +19,11 @@ namespace cpaf::gui::video {
         player& owning_player,
         config& cfg,
         const cpaf::gui::system_window& win,
-        const cpaf::video::surface_dimensions_t& render_dimensions,
-        const cpaf::video::surface_dimensions_t& video_src_dimensions
-        )
+        const rect& render_geom,
+        const cpaf::video::surface_dimensions_t& video_src_dimensions)
     {
         auto video_renderer = std::make_unique<render>(owning_player, cfg);
-        video_renderer->init(win, render_dimensions, video_src_dimensions);
+        video_renderer->init(win, render_geom, video_src_dimensions);
 
         return video_renderer;
 }
@@ -56,8 +55,8 @@ void render_platform::fill_native_video_frame(
     SDL_Rect r;
     r.x = 0;
     r.y = 0;
-    r.w = texture_render_dimensions().x();
-    r.h = texture_render_dimensions().y();
+    r.w = video_src_dimensions().x();
+    r.h = video_src_dimensions().y();
 
     // update the texture with the new pixel data
 
@@ -109,23 +108,20 @@ void render_platform::fill_native_subtitle_texture()
     SDL_UnlockTexture(sdl_subtitles_render_texture_);
 }
 
-void render_platform::ensure_valid_render_texture(const cpaf::video::surface_dimensions_t& texture_dimensions)
+void render_platform::ensure_valid_render_texture()
 {
-    if (texture_dimensions != texture_render_dimensions_) {
-        if (sdl_frame_render_texture_) {
-            SDL_DestroyTexture(sdl_frame_render_texture_);
-        }
-        texture_render_dimensions_ = texture_dimensions;
-
-        sdl_frame_render_texture_ = SDL_CreateTexture(
-            get_sdl_renderer(),
-            SDL_PIXELFORMAT_YV12,
-            SDL_TEXTUREACCESS_STREAMING,
-            texture_dimensions.width(),
-            texture_dimensions.height()
-        );
-        SDL_SetTextureBlendMode(sdl_frame_render_texture_, SDL_BLENDMODE_BLEND);
+    if (sdl_frame_render_texture_) {
+        SDL_DestroyTexture(sdl_frame_render_texture_);
     }
+
+    sdl_frame_render_texture_ = SDL_CreateTexture(
+        get_sdl_renderer(),
+        SDL_PIXELFORMAT_YV12,
+        SDL_TEXTUREACCESS_STREAMING,
+        video_src_dimensions().width(),
+        video_src_dimensions().height()
+    );
+    SDL_SetTextureBlendMode(sdl_frame_render_texture_, SDL_BLENDMODE_BLEND);
 }
 
 void render_platform::ensure_valid_subtitles_graphics_texture(const subtitle_frame& subtitle)
@@ -248,21 +244,21 @@ SDL_Renderer* render_platform::get_sdl_renderer() {
 // --- Platform overides ---
 // -------------------------
 
-void render_platform::do_init(const system_window& win, const cpaf::video::surface_dimensions_t& dimensions)
+void render_platform::do_init(const system_window& win)
 {
     system_renderer_ = win.renderer_shared();
-    ensure_valid_render_texture(dimensions);
+    ensure_valid_render_texture();
 }
 
-void render_platform::do_init(std::shared_ptr<system_render> sys_renderer, const cpaf::video::surface_dimensions_t& dimensions)
+void render_platform::do_init(std::shared_ptr<system_render> sys_renderer)
 {
     system_renderer_ = sys_renderer;
-    ensure_valid_render_texture(dimensions);
+    ensure_valid_render_texture();
 }
 
-void render_platform::do_render_dimensions_set(const cpaf::video::surface_dimensions_t& dimensions)
+void render_platform::do_render_dimensions_set(const cpaf::video::surface_dimensions_t& /*dimensions*/)
 {
-    ensure_valid_render_texture(dimensions);
+    ensure_valid_render_texture();
 }
 
 void render_platform::do_clear_screen()
@@ -314,6 +310,17 @@ void render_platform::on_subtitle_changed()
 }
 
 
+// if (keep_aspect_ratio_) {
+//     const float wfac = static_cast<float>(video_src_dimensions().width()) / static_cast<float>(dimensions.width());
+//     const float hfac = static_cast<float>(video_src_dimensions().height()) / static_cast<float>(dimensions.height());
+//     dimensions = video_src_dimensions().uniform_scale_x(dimensions.x());
+//     // if (wfac > hfac) {
+//     //     dimensions = video_src_dimensions().uniform_scale_x(dimensions.x());
+//     // }
+//     // else {
+//     //     dimensions = video_src_dimensions().uniform_scale_y(dimensions.y());
+//     // }
+// }
 
 
 

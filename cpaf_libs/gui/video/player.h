@@ -98,8 +98,8 @@ public:
     // ---------------------------
     // --- Video setup/control ---
     // ---------------------------
-    void                                video_dimensions_set    (int32_t width, int32_t height = cpaf::video::surface_dimension_auto);
-    void                                video_dimensions_set    (surface_dimensions_t dimensions);
+    void                                player_geometry_set     (int32_t width, int32_t height);
+    void                                player_geometry_set     (const rect& render_geom);
     void                                video_scaler_flags_set  (int32_t flags);
     void                                video_scaler_align_set  (int32_t align);
     void                                ff_dst_pixel_format_set (AVPixelFormat pixel_format);
@@ -296,6 +296,7 @@ private:
     std::atomic<subtitle_source_t>                  subtitle_source_                = subtitle_source_t::none;
     int32_t                                         subtitle_selected_index_        = -1;
     std::function<void ()>                          cb_start_playing_;
+    cpaf::gui::rect                                 player_render_geometry_         {0,0,0,0};
     cpaf::math::v2f                                 screen_size_factor_use_         {1,1};
     cpaf::math::v2f                                 screen_size_factor_raw_         {1,1};
 

@@ -26,7 +26,7 @@ public:
     static std::unique_ptr<render> create_video_render(player& owning_player,
                                                        config& cfg,
                                                        const system_window& win,
-                                                       const cpaf::video::surface_dimensions_t& render_dimensions,
+                                                       const rect& render_geom,
                                                        const surface_dimensions_t& video_src_dimensions);
 
     ~render_platform();
@@ -41,7 +41,7 @@ private:
     void            fill_native_video_frame                     (const cpaf::video::av_frame& frame,
                                                                  cpaf::video::av_frame& frame_display);
     void            fill_native_subtitle_texture                ();
-    void            ensure_valid_render_texture                 (const cpaf::video::surface_dimensions_t& texture_dimensions);
+    void            ensure_valid_render_texture                 ();
     void            ensure_valid_subtitles_graphics_texture     (const cpaf::video::subtitle_frame& subtitle);
     void            calc_subtitle_geometry                      ();
 
@@ -51,9 +51,8 @@ private:
 
     SDL_Renderer*   get_sdl_renderer            ();
 
-    void            do_init                     (const system_window& win, const cpaf::video::surface_dimensions_t& dimensions ) override;
-    void            do_init                     (std::shared_ptr<cpaf::gui::system_render> sys_renderer,
-                                                const cpaf::video::surface_dimensions_t& dimensions ) override;
+    void            do_init                     (const system_window& win) override;
+    void            do_init                     (std::shared_ptr<cpaf::gui::system_render> sys_renderer) override;
     void            do_render_dimensions_set    (const cpaf::video::surface_dimensions_t& dimensions ) override;
     void            do_clear_screen             () override;
     bool            do_render_video_frame       (const cpaf::video::av_frame& frame) override;

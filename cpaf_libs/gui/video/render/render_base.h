@@ -42,19 +42,19 @@ public:
     explicit render_base(player& owning_player, config& cfg);
     rect                        render_geometry             () const { return render_geometry_; }
     rect                        video_render_geometry       () const { return video_render_geometry_; }
-    void                        render_geometry_set         (rect render_geom);
+    void                        render_geometry_set         (const rect& render_geom);
     void                        format_context_set          (cpaf::video::av_format_context* ctx)        { format_context_ptr_ = ctx; }
     void                        format_context_set          (cpaf::video::av_format_context& ctx)        { format_context_ptr_ = &ctx; }
     void                        video_codec_ctx_set         (cpaf::video::av_codec_context* ctx);
     void                        video_codec_ctx_set         (cpaf::video::av_codec_context& ctx);
 
     void                        init                        (const system_window& win,
-                                                             const cpaf::video::surface_dimensions_t& render_dimensions,
+                                                             const rect& render_geom,
                                                              const surface_dimensions_t& video_src_dimensions);
     void                        ff_pixel_format_set         (AVPixelFormat pf)              { ff_pixel_format_ = pf;        }
     AVPixelFormat               ff_pixel_format             () const                        { return ff_pixel_format_;      }
 
-    const surface_dimensions_t& texture_render_dimensions   () const                        { return texture_render_dimensions_;      }
+///    const surface_dimensions_t& texture_render_dimensions   () const                        { return texture_render_dimensions_;      }
 
     void                        clear_screen                ()                              { do_clear_screen();  }
     bool                        render_video_frame          (const cpaf::video::av_frame& frame);
@@ -63,7 +63,7 @@ public:
     void                        set_current_subtitle        (cpaf::video::subtitle_frame&& subtitle);
 
     /// @todo Currently unused, See render_geometry_set()
-    void                        texture_render_dimensions_set(const cpaf::video::surface_dimensions_t& dimensions );
+    /// void                        texture_render_dimensions_set(const cpaf::video::surface_dimensions_t& dimensions );
 
     std::string                 subtitles_font_name         () const;
     int32_t                     subtitles_font_size         () const;
@@ -87,7 +87,7 @@ protected:
     const surface_dimensions_t&             video_src_dimensions        () const { return video_src_dimensions_; }
 
     cpaf::video::av_frame                   frame_display_;
-    cpaf::video::surface_dimensions_t       texture_render_dimensions_  {0,0};
+    /// cpaf::video::surface_dimensions_t       texture_render_dimensions_  {0,0};
 //    void                                    on_configuration_changed    ();
 
     player&                                 player_;
@@ -109,8 +109,8 @@ private:
 
     void                        create_frame_display                ();
 
-    virtual void                do_init                             (const system_window& win, const cpaf::video::surface_dimensions_t& dimensions ) = 0;
-    virtual void                do_init                             (std::shared_ptr<cpaf::gui::system_render> sys_renderer, const cpaf::video::surface_dimensions_t& dimensions ) = 0;
+    virtual void                do_init                             (const system_window& win) = 0;
+    virtual void                do_init                             (std::shared_ptr<cpaf::gui::system_render> sys_renderer) = 0;
     virtual void                do_render_dimensions_set            (const cpaf::video::surface_dimensions_t& dimensions ) = 0;
     virtual void                do_clear_screen                     () = 0;
     virtual bool                do_render_video_frame               (const cpaf::video::av_frame& frame) = 0;

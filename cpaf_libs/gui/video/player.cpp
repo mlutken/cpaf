@@ -228,36 +228,22 @@ av_codec_context& player::subtitle_codec_context() const
 // ---------------------------
 // --- Video setup/control ---
 // ---------------------------
-void player::video_dimensions_set(int32_t width, int32_t height)
+void player::player_geometry_set(int32_t width, int32_t height)
 {
-    video_dimensions_set({width, height});
+    player_geometry_set(rect{surface_dimensions_t{width, height}});
 }
 
-void player::video_dimensions_set(surface_dimensions_t dimensions)
+void player::player_geometry_set(const rect& render_geom)
 {
+    player_render_geometry_ = render_geom;
     if (video_render_) {
-        // if (keep_aspect_ratio_) {
-        //     const float wfac = static_cast<float>(video_src_dimensions().width()) / static_cast<float>(dimensions.width());
-        //     const float hfac = static_cast<float>(video_src_dimensions().height()) / static_cast<float>(dimensions.height());
-        //     dimensions = video_src_dimensions().uniform_scale_x(dimensions.x());
-        //     // if (wfac > hfac) {
-        //     //     dimensions = video_src_dimensions().uniform_scale_x(dimensions.x());
-        //     // }
-        //     // else {
-        //     //     dimensions = video_src_dimensions().uniform_scale_y(dimensions.y());
-        //     // }
-        // }
-///        math::v2i32 delta {150, 100};
-///        math::v2i32 size = dimensions - 2*delta;
-///        rect r(delta, size);
-///        video_render_->render_geometry_set(r); // FIXMENM
-
-        video_render_->render_geometry_set(rect(dimensions));
+        ///        math::v2i32 delta {150, 100};
+        ///        math::v2i32 size = dimensions - 2*delta;
+        ///        rect r(delta, size);
+        ///        video_render_->render_geometry_set(r); // FIXMENM
+        video_render_->render_geometry_set(player_render_geometry_);
     }
     update_screen_size_factor();
-
-//    video_dst_dimensions_requested_ = dimensions; // TODO: This is currently not working as intended!
-//    update_scaling_context(); // TODO: This is currently not working as intended!
 }
 
 void player::video_scaler_flags_set(int32_t flags)
@@ -312,8 +298,8 @@ size_t player::video_stream_index() const
 
 rect player::render_geometry() const
 {
-    if (video_render_) {
-        return video_render_->render_geometry();
+    if (player_render_geometry_.area() > 0) {
+        return player_render_geometry_;
     }
     else if (main_window_ptr_) {
         const auto size = main_window_ptr_->size();
@@ -767,9 +753,9 @@ bool player::all_initialized() const
 
 void player::init_video(const system_window& main_window)
 {
-    video_render_ = render::create_video_render(*this, configuration, main_window, video_dst_dimensions(), video_src_dimensions());
+    video_render_ = render::create_video_render(*this, configuration, main_window, render_geometry(), video_src_dimensions());
     video_render_->video_codec_ctx_set(video_codec_context());
-    video_render_->render_geometry_set(rect(main_window.size()));
+    /// video_render_->render_geometry_set(render_geometry());
 }
 
 bool player::open_stream(const std::string& resource_path, stream_type_t sti)

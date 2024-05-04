@@ -14,7 +14,7 @@ render_base::render_base(player& owning_player, config& cfg)
     std::cerr << "FIXMENM render_base::render_base CONSTRUCTOR\n";
 }
 
-void render_base::render_geometry_set(rect render_geom)
+void render_base::render_geometry_set(const rect& render_geom)
 {
     render_geometry_ = render_geom;
     video_render_geometry_ = render_geom;
@@ -34,13 +34,14 @@ void render_base::video_codec_ctx_set(cpaf::video::av_codec_context& ctx)
 }
 
 void render_base::init(const system_window& win,
-                       const cpaf::video::surface_dimensions_t& render_dimensions,
+                       const rect& render_geom,
                        const cpaf::video::surface_dimensions_t& video_src_dimensions)
 {
     main_window_ptr_ = &win;
     video_src_dimensions_ =  video_src_dimensions;
-    do_init(win, render_dimensions);
-    texture_render_dimensions_ = render_dimensions;
+    do_init(win);
+    render_geometry_set(render_geom);
+    ////texture_render_dimensions_ = render_dimensions;
 }
 
 
@@ -83,10 +84,10 @@ void render_base::set_current_subtitle(cpaf::video::subtitle_frame&& subtitle)
     }
 }
 
-void render_base::texture_render_dimensions_set(const surface_dimensions_t& dimensions) {
-    do_render_dimensions_set(dimensions);
-    texture_render_dimensions_ = dimensions;
-}
+/// void render_base::texture_render_dimensions_set(const surface_dimensions_t& dimensions) {
+///     do_render_dimensions_set(dimensions);
+///     /// texture_render_dimensions_ = dimensions;
+/// }
 
 std::string render_base::subtitles_font_name() const
 {
