@@ -640,20 +640,10 @@ bool player::open_command(playable playab)
     reset_primary_stream(std::make_unique<cpaf::video::play_stream>([this]() {return torrents_get();}, &primary_stream_state_));
     media_pipeline_threads().flush_queues();
 
-    float cur_time_ms = (duration_cast<microseconds>( steady_clock::now() - start_close_tp)).count() / 1000.0f; // FIXMENM
-    std::cerr << fmt::format("---FIXMENM [{}]  START Open primary stream time: {} ms\n", to_string(primary_stream_state()), cur_time_ms);
-
     bool ok = open_primary_stream(cur_playable().path());
 
-    cur_time_ms = (duration_cast<microseconds>( steady_clock::now() - start_close_tp)).count() / 1000.0f; // FIXMENM
-    std::cerr << fmt::format("---FIXMENM [{}]  COMPLETED Open primary stream time: {} ms\n", to_string(primary_stream_state()), cur_time_ms);
-
     if (!ok) {
-        cur_time_ms = (duration_cast<microseconds>( steady_clock::now() - start_close_tp)).count() / 1000.0f; // FIXMENM
-        std::cerr << fmt::format("---FIXMENM [{}]  ABORTED During Open primary stream time: {} ms\n", to_string(primary_stream_state()), cur_time_ms);
         primary_stream_state() = stream_state_t::inactive;
-
-        // TODO: Some cleanup needed here perhaps ?
         return false;
     }
 
@@ -669,11 +659,8 @@ bool player::open_command(playable playab)
 
     // --- Seek postion ---
     seek_position(cur_playable().start_time());
-    /// format_context().read_packets_to_queues(format_context().primary_media_type(), 10);
 
     primary_stream_state() = stream_state_t::open;
-    cur_time_ms = (duration_cast<microseconds>( steady_clock::now() - start_close_tp)).count() / 1000.0f; // FIXMENM
-    std::cerr << fmt::format("---FIXMENM DONE [{}]  Open playable time: {} ms\n", to_string(primary_stream_state()), cur_time_ms);
     return ok;
 }
 
@@ -690,6 +677,10 @@ void player::start_playing()
         const auto entry = cur_playable().find_best_subtitle(language_code);
         subtitle_select(entry.language_code, entry.subtitle_adjust_offset);
     }
+    if (video_render_) {
+        video_render_->clear_screen();
+    }
+    next_video_frame_ = cpaf::video::av_frame(); // Make current frame invalid to avoid rendering an old frame from previous media
     media_pipeline_threads().start();
     resume_playback();
     primary_stream_state() = stream_state_t::playing;
@@ -717,10 +708,12 @@ void player::close_media(std::chrono::milliseconds wait_for_threads_to_stop_time
 {
     std::cerr << "!!!! FIXMENM player::close_media() !!!!\n";
     audio_device_.pause(); // Pause audio.
+    next_video_frame_ = cpaf::video::av_frame(); // Make current frame invalid
 
     if (media_pipeline_threads_) {
         media_pipeline_threads_->stop();
     }
+    media_stream_time().reset();
     if (primary_source_stream_) {
         primary_source_stream_->cancel_current_io();
     }
