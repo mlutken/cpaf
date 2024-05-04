@@ -872,10 +872,7 @@ void player::update_screen_size_factor()
 
 bool player::should_show_stream_state() const
 {
-            return true; // FIXMENM
-    const auto& ss = primary_stream_state();
-    return ss == stream_state_t::opening || is_waiting_for_io();
-    // return ss == stream_state_t::opening || ss == stream_state_t::closing || is_waiting_for_io();
+    return (primary_stream_state() == stream_state_t::opening) || is_waiting_for_io();
 }
 
 bool player::set_subtitle_helper(int32_t selectable_subtitle_index)
