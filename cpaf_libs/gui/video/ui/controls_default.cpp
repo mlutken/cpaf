@@ -147,7 +147,6 @@ void controls_default::do_calc_geometry()
     stream_state_pos_.x = render_geometry_center.x();
     stream_state_pos_.y = render_geometry_center.y();
 
-
 }
 
 void controls_default::do_render()
@@ -201,7 +200,7 @@ void controls_default::do_render_stream_state()
     ///    ImGui::SetNextWindowSize(stream_state_size_, ImGuiCond_::ImGuiCond_Always);
 
     ImGui::Begin("stream_state", &visible, window_flags);
-    ImGui::TextUnformatted(stream_state_str.c_str());
+    ImGui::TextCentered(stream_state_str.c_str());
     ImGui::End();
 }
 
