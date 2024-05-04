@@ -94,12 +94,12 @@ public:
         return *this;
     }
 
-    /** Assignment. Initializtion with general (v2<T1>) vector.
+    /** Assignment. Initialization with general (v2<T1>) vector.
         Also work as casting operator from general v2<>.*/
     template <typename T1>
     constexpr v2& operator=(v2<T1>&& v)
     {
-        if (&v != this) {
+        if (reinterpret_cast<void*>(&v) != reinterpret_cast<void*>(this)) {
             m_d[X] = static_cast<T>(v.x());
             m_d[Y] = static_cast<T>(v.y());
         }
@@ -670,7 +670,7 @@ inline std::string to_string(const v2<T>& v)
 
 /// The general version of this would not work with integers.
 template<>
-inline v2<int_t>&	v2<int_t>::operator/=(int_t Val)
+constexpr inline v2<int_t>&	v2<int_t>::operator/=(int_t Val)
 {
     m_d[X] /= Val;
     m_d[Y] /= Val;
@@ -679,7 +679,7 @@ inline v2<int_t>&	v2<int_t>::operator/=(int_t Val)
 
 /// The general version of this would not work with integers.
 template<>
-inline v2<int_t>	v2<int_t>::operator/(int_t Val) const
+constexpr inline v2<int_t>	v2<int_t>::operator/(int_t Val) const
 {
     return v2<int_t>( x() / Val, y() / Val );
 }
