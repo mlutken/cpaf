@@ -626,7 +626,7 @@ bool player::open_command(playable playab)
 //    std::cerr << fmt::format("FIXMENM path: {}\n--------------------------------\n\n", playab.path());
     close_command();
     close_media_requested_ = false;
-    can_show_stream_state_opening_time_ = steady_clock::now() + 100ms;
+    can_show_stream_state_opening_time_ = steady_clock::now() + 500ms;
     primary_stream_state_ = stream_state_t::opening;
 
     cur_playable_set(playab);
