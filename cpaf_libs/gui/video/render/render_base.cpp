@@ -41,7 +41,6 @@ void render_base::init(const system_window& win,
     video_src_dimensions_ =  video_src_dimensions;
     do_init(win);
     render_geometry_set(render_geom);
-    ////texture_render_dimensions_ = render_dimensions;
 }
 
 
@@ -65,29 +64,11 @@ void render_base::clear_current_subtitle()
 
 void render_base::set_current_subtitle(cpaf::video::subtitle_frame&& subtitle)
 {
-//    if (subtitle.sequence_number != current_subtitle_frame_.sequence_number ||
-//        subtitle.presentation_time != current_subtitle_frame_.presentation_time ||
-//        subtitle.should_show() != current_subtitle_frame_.should_show() ) {
-//        current_subtitle_frame_ = std::move(subtitle);
-//        on_render_geometry_changed();
-//    }
-
     current_subtitle_frame_ = std::move(subtitle);
     if (current_subtitle_frame_.should_show()) {
-
-// DEBUG ONLY BEGIN
-//        std::cerr << "FIXMENM set_current_subtitle: " << current_subtitle_frame_.dbg_str() << "\n";
-//        current_subtitle_frame_.lines.push_back(cpaf::time::format_h_m_s(current_subtitle_frame_.presentation_time));
-//        current_subtitle_frame_.format_set(subtitle_frame::format_t::text);
-// DEBUG ONLY BEGIN END
         on_render_geometry_changed();
     }
 }
-
-/// void render_base::texture_render_dimensions_set(const surface_dimensions_t& dimensions) {
-///     do_render_dimensions_set(dimensions);
-///     /// texture_render_dimensions_ = dimensions;
-/// }
 
 std::string render_base::subtitles_font_name() const
 {

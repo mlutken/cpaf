@@ -54,16 +54,11 @@ public:
     void                        ff_pixel_format_set         (AVPixelFormat pf)              { ff_pixel_format_ = pf;        }
     AVPixelFormat               ff_pixel_format             () const                        { return ff_pixel_format_;      }
 
-///    const surface_dimensions_t& texture_render_dimensions   () const                        { return texture_render_dimensions_;      }
-
     void                        clear_screen                ()                              { do_clear_screen();  }
     bool                        render_video_frame          (const cpaf::video::av_frame& frame);
     const subtitle_frame&       current_subtitle            () const { return current_subtitle_frame_; }
     void                        clear_current_subtitle      ();
     void                        set_current_subtitle        (cpaf::video::subtitle_frame&& subtitle);
-
-    /// @todo Currently unused, See render_geometry_set()
-    /// void                        texture_render_dimensions_set(const cpaf::video::surface_dimensions_t& dimensions );
 
     std::string                 subtitles_font_name         () const;
     int32_t                     subtitles_font_size         () const;
@@ -87,7 +82,6 @@ protected:
     const surface_dimensions_t&             video_src_dimensions        () const { return video_src_dimensions_; }
 
     cpaf::video::av_frame                   frame_display_;
-    /// cpaf::video::surface_dimensions_t       texture_render_dimensions_  {0,0};
 //    void                                    on_configuration_changed    ();
 
     player&                                 player_;
