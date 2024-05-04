@@ -77,11 +77,9 @@ protected:
     cpaf::video::av_format_context&         format_context              () { return *format_context_ptr_; }
     const cpaf::video::av_format_context&   format_context              () const { return *format_context_ptr_; }
     cpaf::video::av_codec_context&          video_codec_ctx             () { return *video_codec_ctx_ptr_; }
-    cpaf::video::av_frame&                  frame_display               () { return frame_display_; }
     bool                                    subtitle_within_display_time(const cpaf::video::subtitle_frame& subtitle) const;
     const surface_dimensions_t&             video_src_dimensions        () const { return video_src_dimensions_; }
 
-    cpaf::video::av_frame                   frame_display_;
 //    void                                    on_configuration_changed    ();
 
     player&                                 player_;
@@ -100,8 +98,6 @@ private:
     rect                                    render_geometry_            {};
     rect                                    video_render_geometry_      {};
     cpaf::video::surface_dimensions_t       video_src_dimensions_       {0,0};
-
-    void                        create_frame_display                ();
 
     virtual void                do_init                             (const system_window& win) = 0;
     virtual void                do_init                             (std::shared_ptr<cpaf::gui::system_render> sys_renderer) = 0;

@@ -38,8 +38,7 @@ protected:
 private:
     using subtitle_render_geometries_t = std::array<rect, cpaf::video::subtitle_frame::max_lines>;
 
-    void            fill_native_video_frame                     (const cpaf::video::av_frame& frame,
-                                                                 cpaf::video::av_frame& frame_display);
+    void            fill_native_video_frame                     (const cpaf::video::av_frame& frame);
     void            fill_native_subtitle_texture                ();
     void            ensure_valid_render_texture                 ();
     void            ensure_valid_subtitles_graphics_texture     (const cpaf::video::subtitle_frame& subtitle);

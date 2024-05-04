@@ -45,13 +45,8 @@ render_platform::render_platform(player& owning_player, config& cfg)
 }
 
 
-void render_platform::fill_native_video_frame(
-    const cpaf::video::av_frame& frame,
-    cpaf::video::av_frame& frame_display
-)
+void render_platform::fill_native_video_frame(const cpaf::video::av_frame& frame)
 {
-    video_codec_ctx().scale_video_frame(frame_display, frame);
-    // the area of the texture to be updated
     SDL_Rect r;
     r.x = 0;
     r.y = 0;
@@ -59,28 +54,16 @@ void render_platform::fill_native_video_frame(
     r.h = video_src_dimensions().y();
 
     // update the texture with the new pixel data
-
     SDL_UpdateYUVTexture(
         sdl_frame_render_texture_,
         &r,
-        frame_display.ff_frame()->data[0],
-        frame_display.ff_frame()->linesize[0],
-        frame_display.ff_frame()->data[1],
-        frame_display.ff_frame()->linesize[1],
-        frame_display.ff_frame()->data[2],
-        frame_display.ff_frame()->linesize[2]
-    );
-
-    // SDL_UpdateYUVTexture(
-    //     sdl_frame_render_texture_,
-    //     &r,
-    //     frame.ff_frame()->data[0],
-    //     frame.ff_frame()->linesize[0],
-    //     frame.ff_frame()->data[1],
-    //     frame.ff_frame()->linesize[1],
-    //     frame.ff_frame()->data[2],
-    //     frame.ff_frame()->linesize[2]
-    //     );
+        frame.ff_frame()->data[0],
+        frame.ff_frame()->linesize[0],
+        frame.ff_frame()->data[1],
+        frame.ff_frame()->linesize[1],
+        frame.ff_frame()->data[2],
+        frame.ff_frame()->linesize[2]
+        );
 
     SDL_SetRenderTarget( get_sdl_renderer(), sdl_frame_render_texture_ );
 }
@@ -269,7 +252,7 @@ void render_platform::do_clear_screen()
 
 bool render_platform::do_render_video_frame(const cpaf::video::av_frame& frame)
 {
-    fill_native_video_frame(frame, frame_display());
+    fill_native_video_frame(frame);
 
     auto dst_rect = to_sdl_rect(render_geometry());
     SDL_RenderCopy(get_sdl_renderer(), sdl_frame_render_texture_, NULL, &dst_rect);

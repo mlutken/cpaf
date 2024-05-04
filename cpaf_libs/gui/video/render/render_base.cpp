@@ -24,13 +24,11 @@ void render_base::render_geometry_set(const rect& render_geom)
 void render_base::video_codec_ctx_set(cpaf::video::av_codec_context* ctx)
 {
     video_codec_ctx_ptr_ = ctx;
-    create_frame_display();
 }
 
 void render_base::video_codec_ctx_set(cpaf::video::av_codec_context& ctx)
 {
     video_codec_ctx_ptr_ = &ctx;
-    create_frame_display();
 }
 
 void render_base::init(const system_window& win,
@@ -126,11 +124,6 @@ locale::translator& render_base::tr()
 bool render_base::subtitle_within_display_time(const cpaf::video::subtitle_frame& subtitle) const
 {
     return subtitle.subtitle_within_display_time(player_.cur_media_time().subtitles_time_pos());
-}
-
-void render_base::create_frame_display()
-{
-    frame_display_ = video_codec_ctx().create_scaling_dst_frame();
 }
 
 //void render_base::on_configuration_changed()
