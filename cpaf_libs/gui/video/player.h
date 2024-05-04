@@ -241,7 +241,7 @@ private:
     void                            cur_playable_upd_calc   (bool force);
 
     void                            update_screen_size_factor();
-    bool                            should_show_stream_state       () const;
+    bool                            should_show_stream_state() const;
     bool                            set_subtitle_helper     (int32_t selectable_subtitle_index);
     void                            internal_paused_set     (bool is_paused);
     void                            push_paused             ();
@@ -286,7 +286,7 @@ private:
     cpaf::video::media_stream_time                  cur_media_time_;
     std::unique_ptr<video::render>                  video_render_;
     std::unique_ptr<video::controls>                video_controls_;
-    /// bool                                            keep_aspect_ratio_              = true;
+    std::chrono::steady_clock::time_point           can_show_stream_state_opening_time_;
     bool                                            show_controls_                  = false;
     bool                                            resume_from_pause_on_seek_      = true;
 

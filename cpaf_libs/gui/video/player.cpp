@@ -626,9 +626,9 @@ bool player::open_command(playable playab)
 //    std::cerr << fmt::format("FIXMENM path: {}\n--------------------------------\n\n", playab.path());
     close_command();
     close_media_requested_ = false;
+    can_show_stream_state_opening_time_ = steady_clock::now() + 100ms;
     primary_stream_state_ = stream_state_t::opening;
 
-    const auto start_close_tp = steady_clock::now();
     cur_playable_set(playab);
     media_pipeline_threads().stop();
     pause_playback();
@@ -872,7 +872,12 @@ void player::update_screen_size_factor()
 
 bool player::should_show_stream_state() const
 {
-    return (primary_stream_state() == stream_state_t::opening) || is_waiting_for_io();
+    if (is_waiting_for_io()) {
+        return true;
+    }
+
+    return (primary_stream_state() == stream_state_t::opening)  &&
+           (steady_clock::now() > can_show_stream_state_opening_time_);
 }
 
 bool player::set_subtitle_helper(int32_t selectable_subtitle_index)
