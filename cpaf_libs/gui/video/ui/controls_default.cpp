@@ -156,13 +156,16 @@ void controls_default::do_render()
         do_calc_geometry();
     }
 
-
-    render_player_controls();
+    update_prevent_hiding();
     render_menu_buttons();
+    render_menu_window();
+    if (!player_.is_playing()) {
+        return;
+    }
+    render_player_controls();
+    render_media_buttons();
     render_slider();
     render_player_time();
-    update_prevent_hiding();
-    render_menu_window();
     render_subtitles_window();
 
     //    render_debug_window();
@@ -277,27 +280,6 @@ void controls_default::render_menu_buttons()
         .StyleColor(ImGuiCol_ButtonHovered, reinterpret_cast<const ImVec4&>(buttons_hover_col_))
         ;
 
-    // ------------------------
-    // --- Subtitles button ---
-    // ------------------------
-    ImGui::SetNextWindowPos(subtitles_btn_pos_, ImGuiCond_::ImGuiCond_Always, {0.5, 0.5} );
-    ImGui::SetNextWindowSize(menu_buttons_window_size_, ImGuiCond_::ImGuiCond_Always);
-
-    ImGui::Begin("###subtitles_btn_win", &visible_, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
-    set_cursor_pos_image_buttons();
-
-    bool cur_show_subtitles = config_.bool_val("subtitles", "show");
-    const auto subtitles_uv0 = cur_show_subtitles ? subtitles_on_uv0.to_struct<ImVec2>() : subtitles_off_uv0.to_struct<ImVec2>();
-    const auto subtitles_uv1 = cur_show_subtitles ? subtitles_on_uv1.to_struct<ImVec2>() : subtitles_off_uv1.to_struct<ImVec2>();
-
-    // Simple selection popup (if you want to show the current selection inside the Button itself,
-    // you may want to build a string using the "###" operator to preserve a constant ID with a variable label)
-    if (ImGui::ImageButton("###subtitles_btn", buttons_texture_ptr, menu_buttons_size_, subtitles_uv0, subtitles_uv1, {0,0,0,0}, {1,1,1,1})) {
-        do_render_subtitles_window_ = true;
-    }
-    ImGui::End();
-
-
     // -------------------
     // --- Menu button ---
     // -------------------
@@ -327,6 +309,40 @@ void controls_default::render_menu_buttons()
 
 }
 
+void controls_default::render_media_buttons()
+{
+    auto buttons_texture_ptr = control_icons_texture_->native_texture<void>();
+
+    ImGui::Rai imrai;
+    imrai.StyleVar(ImGuiStyleVar_WindowPadding, {0,0})
+                                                        // .StyleColor(ImGuiCol_WindowBg, {1,1,1,1}) // FIXMENM
+        .StyleColor(ImGuiCol_WindowBg, {0,0,0,0})
+        .StyleColor(ImGuiCol_Border, {0,0,0,0})
+        .StyleColor(ImGuiCol_Button, {0,0,0,0})
+        .StyleColor(ImGuiCol_ButtonActive, reinterpret_cast<const ImVec4&>(buttons_active_col_))
+        .StyleColor(ImGuiCol_ButtonHovered, reinterpret_cast<const ImVec4&>(buttons_hover_col_))
+        ;
+
+    // ------------------------
+    // --- Subtitles button ---
+    // ------------------------
+    ImGui::SetNextWindowPos(subtitles_btn_pos_, ImGuiCond_::ImGuiCond_Always, {0.5, 0.5} );
+    ImGui::SetNextWindowSize(menu_buttons_window_size_, ImGuiCond_::ImGuiCond_Always);
+
+    ImGui::Begin("###subtitles_btn_win", &visible_, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoSavedSettings);
+    set_cursor_pos_image_buttons();
+
+    bool cur_show_subtitles = config_.bool_val("subtitles", "show");
+    const auto subtitles_uv0 = cur_show_subtitles ? subtitles_on_uv0.to_struct<ImVec2>() : subtitles_off_uv0.to_struct<ImVec2>();
+    const auto subtitles_uv1 = cur_show_subtitles ? subtitles_on_uv1.to_struct<ImVec2>() : subtitles_off_uv1.to_struct<ImVec2>();
+
+    // Simple selection popup (if you want to show the current selection inside the Button itself,
+    // you may want to build a string using the "###" operator to preserve a constant ID with a variable label)
+    if (ImGui::ImageButton("###subtitles_btn", buttons_texture_ptr, menu_buttons_size_, subtitles_uv0, subtitles_uv1, {0,0,0,0}, {1,1,1,1})) {
+        do_render_subtitles_window_ = true;
+    }
+    ImGui::End();
+}
 
 void controls_default::render_slider()
 {

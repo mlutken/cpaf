@@ -18,6 +18,7 @@ private:
 
     void    render_player_controls          ();
     void    render_menu_buttons             ();
+    void    render_media_buttons            ();
     void    render_slider                   ();
     void    render_player_time              ();
 
