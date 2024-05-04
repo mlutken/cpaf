@@ -15,16 +15,18 @@ using namespace cpaf::video;
 
 namespace cpaf::gui::video {
 
-std::unique_ptr<render> render_platform::create_video_render(
-    player& owning_player,
-    config& cfg,
-    const cpaf::gui::system_window& win,
-    const cpaf::video::surface_dimensions_t& dimensions)
-{
-    auto video_renderer = std::make_unique<render>(owning_player, cfg);
-    video_renderer->init(win, dimensions);
+    std::unique_ptr<render> render_platform::create_video_render(
+        player& owning_player,
+        config& cfg,
+        const cpaf::gui::system_window& win,
+        const cpaf::video::surface_dimensions_t& render_dimensions,
+        const cpaf::video::surface_dimensions_t& video_src_dimensions
+        )
+    {
+        auto video_renderer = std::make_unique<render>(owning_player, cfg);
+        video_renderer->init(win, render_dimensions, video_src_dimensions);
 
-    return video_renderer;
+        return video_renderer;
 }
 
 render_platform::~render_platform()
@@ -58,6 +60,7 @@ void render_platform::fill_native_video_frame(
     r.h = texture_render_dimensions().y();
 
     // update the texture with the new pixel data
+
     SDL_UpdateYUVTexture(
         sdl_frame_render_texture_,
         &r,
@@ -68,6 +71,17 @@ void render_platform::fill_native_video_frame(
         frame_display.ff_frame()->data[2],
         frame_display.ff_frame()->linesize[2]
     );
+
+    // SDL_UpdateYUVTexture(
+    //     sdl_frame_render_texture_,
+    //     &r,
+    //     frame.ff_frame()->data[0],
+    //     frame.ff_frame()->linesize[0],
+    //     frame.ff_frame()->data[1],
+    //     frame.ff_frame()->linesize[1],
+    //     frame.ff_frame()->data[2],
+    //     frame.ff_frame()->linesize[2]
+    //     );
 
     SDL_SetRenderTarget( get_sdl_renderer(), sdl_frame_render_texture_ );
 }

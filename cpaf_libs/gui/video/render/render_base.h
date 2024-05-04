@@ -41,6 +41,7 @@ public:
     using surface_dimensions_t = cpaf::video::surface_dimensions_t;
     explicit render_base(player& owning_player, config& cfg);
     rect                        render_geometry             () const { return render_geometry_; }
+    rect                        video_render_geometry       () const { return video_render_geometry_; }
     void                        render_geometry_set         (rect render_geom);
     void                        format_context_set          (cpaf::video::av_format_context* ctx)        { format_context_ptr_ = ctx; }
     void                        format_context_set          (cpaf::video::av_format_context& ctx)        { format_context_ptr_ = &ctx; }
@@ -48,9 +49,8 @@ public:
     void                        video_codec_ctx_set         (cpaf::video::av_codec_context& ctx);
 
     void                        init                        (const system_window& win,
-                                                             const cpaf::video::surface_dimensions_t& dimensions );
-    void                        init_only_for_old_playground(std::shared_ptr<cpaf::gui::system_render> sys_renderer,
-                                                             const cpaf::video::surface_dimensions_t& dimensions );
+                                                             const cpaf::video::surface_dimensions_t& render_dimensions,
+                                                             const surface_dimensions_t& video_src_dimensions);
     void                        ff_pixel_format_set         (AVPixelFormat pf)              { ff_pixel_format_ = pf;        }
     AVPixelFormat               ff_pixel_format             () const                        { return ff_pixel_format_;      }
 
@@ -84,7 +84,7 @@ protected:
     cpaf::video::av_codec_context&          video_codec_ctx             () { return *video_codec_ctx_ptr_; }
     cpaf::video::av_frame&                  frame_display               () { return frame_display_; }
     bool                                    subtitle_within_display_time(const cpaf::video::subtitle_frame& subtitle) const;
-
+    const surface_dimensions_t&             video_src_dimensions        () const { return video_src_dimensions_; }
 
     cpaf::video::av_frame                   frame_display_;
     cpaf::video::surface_dimensions_t       texture_render_dimensions_  {0,0};
@@ -97,12 +97,15 @@ protected:
 
     cpaf::video::subtitle_frame             current_subtitle_frame_     {};
     const system_window*                    main_window_ptr_            = nullptr;
+    bool                                    keep_aspect_ratio_          {true};
 private:
     cpaf::video::av_format_context*         format_context_ptr_         = nullptr;
     cpaf::video::av_codec_context*          video_codec_ctx_ptr_        = nullptr;
     cpaf::video::media_stream_time*         current_media_time_ptr_     = nullptr;
     AVPixelFormat                           ff_pixel_format_            = AV_PIX_FMT_YUV420P;
     rect                                    render_geometry_            {};
+    rect                                    video_render_geometry_      {};
+    cpaf::video::surface_dimensions_t       video_src_dimensions_       {0,0};
 
     void                        create_frame_display                ();
 

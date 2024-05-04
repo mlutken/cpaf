@@ -236,9 +236,17 @@ void player::video_dimensions_set(int32_t width, int32_t height)
 void player::video_dimensions_set(surface_dimensions_t dimensions)
 {
     if (video_render_) {
-        if (keep_aspect_ratio_) {
-            dimensions = video_src_dimensions().uniform_scale_x(dimensions.x());
-        }
+        // if (keep_aspect_ratio_) {
+        //     const float wfac = static_cast<float>(video_src_dimensions().width()) / static_cast<float>(dimensions.width());
+        //     const float hfac = static_cast<float>(video_src_dimensions().height()) / static_cast<float>(dimensions.height());
+        //     dimensions = video_src_dimensions().uniform_scale_x(dimensions.x());
+        //     // if (wfac > hfac) {
+        //     //     dimensions = video_src_dimensions().uniform_scale_x(dimensions.x());
+        //     // }
+        //     // else {
+        //     //     dimensions = video_src_dimensions().uniform_scale_y(dimensions.y());
+        //     // }
+        // }
 ///        math::v2i32 delta {150, 100};
 ///        math::v2i32 size = dimensions - 2*delta;
 ///        rect r(delta, size);
@@ -759,7 +767,7 @@ bool player::all_initialized() const
 
 void player::init_video(const system_window& main_window)
 {
-    video_render_ = render::create_video_render(*this, configuration, main_window, video_dst_dimensions());
+    video_render_ = render::create_video_render(*this, configuration, main_window, video_dst_dimensions(), video_src_dimensions());
     video_render_->video_codec_ctx_set(video_codec_context());
     video_render_->render_geometry_set(rect(main_window.size()));
 }

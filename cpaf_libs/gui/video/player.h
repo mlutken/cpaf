@@ -285,7 +285,7 @@ private:
     cpaf::video::media_stream_time                  cur_media_time_;
     std::unique_ptr<video::render>                  video_render_;
     std::unique_ptr<video::controls>                video_controls_;
-    bool                                            keep_aspect_ratio_              = false;
+    /// bool                                            keep_aspect_ratio_              = true;
     bool                                            show_controls_                  = false;
     bool                                            resume_from_pause_on_seek_      = true;
 

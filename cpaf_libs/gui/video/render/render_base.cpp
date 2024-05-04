@@ -17,6 +17,7 @@ render_base::render_base(player& owning_player, config& cfg)
 void render_base::render_geometry_set(rect render_geom)
 {
     render_geometry_ = render_geom;
+    video_render_geometry_ = render_geom;
     on_render_geometry_changed();
 }
 
@@ -32,19 +33,16 @@ void render_base::video_codec_ctx_set(cpaf::video::av_codec_context& ctx)
     create_frame_display();
 }
 
-void render_base::init(const system_window& win, const cpaf::video::surface_dimensions_t& dimensions)
+void render_base::init(const system_window& win,
+                       const cpaf::video::surface_dimensions_t& render_dimensions,
+                       const cpaf::video::surface_dimensions_t& video_src_dimensions)
 {
     main_window_ptr_ = &win;
-    do_init(win, dimensions);
-    texture_render_dimensions_ = dimensions;
+    video_src_dimensions_ =  video_src_dimensions;
+    do_init(win, render_dimensions);
+    texture_render_dimensions_ = render_dimensions;
 }
 
-void render_base::init_only_for_old_playground(std::shared_ptr<cpaf::gui::system_render> sys_renderer,
-                                               const cpaf::video::surface_dimensions_t& dimensions)
-{
-    do_init(sys_renderer, dimensions);
-    texture_render_dimensions_ = dimensions;
-}
 
 bool render_base::render_video_frame(const cpaf::video::av_frame& frame) {
     if (!frame) {
@@ -147,8 +145,6 @@ bool render_base::subtitle_within_display_time(const cpaf::video::subtitle_frame
 {
     return subtitle.subtitle_within_display_time(player_.cur_media_time().subtitles_time_pos());
 }
-
-
 
 void render_base::create_frame_display()
 {
