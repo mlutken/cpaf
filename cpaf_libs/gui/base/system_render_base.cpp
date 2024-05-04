@@ -1,6 +1,6 @@
 #include "system_render_base.h"
 
-#include <fmt/format.h>>
+#include <fmt/format.h>
 
 using namespace std;
 namespace cpaf::gui {
