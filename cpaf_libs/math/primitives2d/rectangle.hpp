@@ -120,22 +120,22 @@ public:
     // ----------------------------
 
     /** Set rectangle with  points. */
-    void		set(v2_const_reference tl,		///< [in] Rectangle upper left corner
-                    v2_const_reference sz)		///< [in] Rectangle size
+    void		set(v2_const_reference rect_top_left,		///< [in] Rectangle upper left corner
+                    v2_const_reference rect_size)		///< [in] Rectangle size
     {
-        top_left() = tl;
-        size() = sz;
+        top_left() = rect_top_left;
+        size() = rect_size;
     }
 
 
     /** Set rectangle with 4 values. */
-    void		set(T x,			///< [in] Rectangle upper left corner, X-coordinate.
-                    T y,			///< [in] Rectangle upper left corner, Y-coordinate.
-                    T w,			///< [in] Rectangle width.
-                    T h)			///< [in] Rectangle height.
+    void		set(T top_left_x,			///< [in] Rectangle upper left corner, X-coordinate.
+                    T top_left_y,			///< [in] Rectangle upper left corner, Y-coordinate.
+                    T width,			///< [in] Rectangle width.
+                    T height)			///< [in] Rectangle height.
     {
-        top_left().set(x, y);
-        size().set(w, h);
+        top_left().set(top_left_x, top_left_y);
+        size().set(width, height);
     }
 
 
@@ -155,6 +155,18 @@ public:
         size() = rect.size();
         return *this;
     }
+
+    // ------------------------------------
+    // --- ---
+    // ------------------------------------
+   /** Translate rectangle to other position.
+       \return Reference to "this".*/
+   reference			translate(v2_value_type v)		///< [in] Vector to translate with.
+   {
+       top_left() += v;
+       return *this;
+   }
+
 
     // ------------------------------------
     // --- Add/Substract math operators ---
@@ -261,15 +273,15 @@ public:
         return w()*h();
     }
 
-//    /** Test if point is inside rectangle.
-//    \return True if point given is inside the rectangle. */
-//    bool_t			point_inside(v2_const_reference p0	///< [in] Point to test
-//                                ) const
-//    {
-//        v2_value_type p0T = p0 - center();	// Simulate that rectangle has center in origo.
-////		return (Abs(p0T.x()) <= (w() / T(2)) ) && (Abs(p0T.y()) <= (h() / T(2)) );
-//        return (Abs(T(2)*p0T.x()) <= w() ) && (Abs(T(2)*p0T.y()) <= h() );
-//    }
+   /** Test if point is inside rectangle.
+   \return True if point given is inside the rectangle. */
+   bool_t			point_inside(v2_const_reference p0	///< [in] Point to test
+                               ) const
+   {
+       v2_value_type p0T = p0 - center();	// Simulate that rectangle has center in origo.
+//		return (std::abs(p0T.x()) <= (w() / T(2)) ) && (std::abs(p0T.y()) <= (h() / T(2)) );
+       return (std::abs(T(2)*p0T.x()) <= w() ) && (std::abs(T(2)*p0T.y()) <= h() );
+   }
 
     // -------------------------
     // --- Compare operators ---
