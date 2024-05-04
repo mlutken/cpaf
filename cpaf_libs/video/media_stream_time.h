@@ -25,7 +25,8 @@ public:
 
     const time_point& time_point_start () const { return time_point_start_; }
 
-    void release_after_reset ();
+    void                        reset                       ();
+    void                        release_after_reset         ();
 
     std::chrono::microseconds   time_to_next_frame          (const av_frame& next_frame) const;
     std::chrono::microseconds   time_to_next_frame          (const std::chrono::microseconds& next_time_pos) const;
@@ -49,9 +50,9 @@ public:
 
 
 private:
-    time_point                  time_point_start_;
-    time_point                  time_point_paused_;
-    time_point                  test_time_point_start_;
+    time_point                  time_point_start_           {};
+    time_point                  time_point_paused_          {};
+    time_point                  test_time_point_start_      {};
     std::chrono::microseconds   reset_offset_               {0};
     std::chrono::microseconds   paused_time_pos_            {0};
     std::chrono::microseconds   video_offset_               {0};

@@ -15,6 +15,12 @@ media_stream_time::media_stream_time(const std::chrono::microseconds& reset_offs
     reset_start_time(reset_offset);
 }
 
+void media_stream_time::reset()
+{
+    pause_time();
+    reset_start_time();
+}
+
 void media_stream_time::release_after_reset() {
     start_time_was_reset_ = false;
 }
