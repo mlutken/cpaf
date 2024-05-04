@@ -116,9 +116,9 @@ string to_string(stream_state_t ss)
 {
     switch (ss) {
     case stream_state_t::inactive :         return "inactive"; break;
-    case stream_state_t::opening :          return "opening stream ..."; break;
+    case stream_state_t::opening :          return "opening stream"; break;
     case stream_state_t::open :             return "open"; break;
-    case stream_state_t::start_playing :    return "start_playing"; break;
+    case stream_state_t::start_playing :    return "start playing"; break;
     case stream_state_t::playing :          return "playing"; break;
     case stream_state_t::closing:           return "closing"; break;
     }
