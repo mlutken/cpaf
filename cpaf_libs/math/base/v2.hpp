@@ -8,6 +8,7 @@
 
 // --- Include files ---
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <cstdint>
 
@@ -117,6 +118,12 @@ public:
                  const T fy) 								///< [in] y value.
     {
         m_d[X] = fx; m_d[Y] = fy;
+    }
+
+    template <typename T1>
+    constexpr v2<T1> cast_to() const
+    {
+        return v2<T1>{ static_cast<T1>(x()), static_cast<T1>(y())};
     }
 
 
@@ -298,21 +305,21 @@ public:
     /** Sets the x-value of the vector and scales the y value uniformly in accordance.
         \return Vector holding the result of the scaling. */
     constexpr value_type		uniform_scale_x (T x_value			///< [in] Set this x value and scale uniformly accordingly.
-                                     ) const
+                                                ) const
     {
-        const double scale_fac = static_cast<double>(x_value)/ static_cast<double>(x());
-        const v2<double_t> temp  = v2<double>(x(),y())*scale_fac;
-        return value_type( static_cast<T>(temp.x()), static_cast<T>(temp.y()) );
+        const double scale_fac = static_cast<double>(x_value) / static_cast<double>(x());
+        const double yf = static_cast<double>(y()) * scale_fac;
+        return value_type(x_value, static_cast<T>(yf) );
     }
 
     /** Sets the y-value of the vector and scales the x value uniformly in accordance.
         \return Vector holding the result of the scaling. */
     constexpr value_type		uniform_scale_y (T y_value			///< [in] Set this y value and scale uniformly accordingly.
-                                     ) const
+                                                ) const
     {
-        const double scale_fac = static_cast<double>(y_value)/ static_cast<double>(y());
-        const v2<double_t> temp  = v2<double>(x(),y())*scale_fac;
-        return value_type( static_cast<T>(temp.x()), static_cast<T>(temp.y()) );
+        const double scale_fac = static_cast<double>(y_value) / static_cast<double>(y());
+        const double xf = static_cast<double>(x()) * scale_fac;
+        return value_type(static_cast<T>(xf), y_value);
     }
 
     /** '/' operator, Divides the vector with a scalar
@@ -327,6 +334,15 @@ public:
     // -----------------------------
     // --- Member Math functions ---
     // -----------------------------
+    /** Aspect ratio.
+        \return Aspect ratio width() / height(). */
+    template <typename T1>
+    constexpr T1	aspect_ratio() const
+    {
+        const auto w1 = static_cast<T1>(width());
+        const auto h1 = static_cast<T1>(height());
+        return w1/h1;
+    }
 
     /** Length of vector (squared).
         \return Eucludian (XX how to spell) length (squared) of the vector. */
@@ -547,6 +563,12 @@ public:
                 ( Abs(y() - v.y()) <= epsilon );
     }
 
+    std::string to_string() const
+    {
+        std::stringstream ss;
+        ss << *this;
+        return ss.str();
+    }
 
     // -----------------------
     // --- Debug Functions ---
@@ -637,6 +659,11 @@ inline std::istream&		operator >>(std::istream& is,		///< [in]  Input stream to 
     return is;
 }
 
+template <typename T>
+inline std::string to_string(const v2<T>& v)
+{
+    return v.to_string();
+}
 
 // --- Specializations of selected functions ---
 
