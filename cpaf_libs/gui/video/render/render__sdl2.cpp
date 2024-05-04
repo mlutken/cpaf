@@ -242,6 +242,7 @@ void render_platform::do_init(std::shared_ptr<system_render> sys_renderer)
 void render_platform::do_clear_screen()
 {
     auto dst_rect = to_sdl_rect(render_geometry());
+    SDL_SetRenderDrawColor(get_sdl_renderer(), 0, 0, 0, 255);
     SDL_RenderFillRect(get_sdl_renderer(), &dst_rect);
 }
 
