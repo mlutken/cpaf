@@ -44,6 +44,9 @@ static const auto default_config = nlohmann::json::parse(
         },
         "ui": {
             "language_code": "en"
+        },
+        "video": {
+            "keep_aspect_ratio": true
         }
     }
     )");
