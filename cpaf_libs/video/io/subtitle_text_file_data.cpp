@@ -224,7 +224,7 @@ bool subtitle_text_file_data::download_and_open_file(
     local_download_path_ = special_dirs::temp() / sha1(resource_path);
     const auto download_url = get_archive_path(resource_path);
 
-    auto cb = [](float progress) -> bool {
+    auto cb = [](float /*progress*/) -> bool {
 //        std::cerr << "FIXMENM Progress " << progress * 100 << " %\n";
         return false;
     };
