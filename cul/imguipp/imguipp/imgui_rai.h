@@ -96,7 +96,12 @@ inline bool Selectable(std::string_view label, bool* p_selected, ImGuiSelectable
     return Selectable(label.data(), p_selected, flags, size);
 }
 
-inline void TextUnformatted(std::string_view text) { ImGui::TextUnformatted(text.data(), text.data() + text.size()); }
+// -------------------
+// --- Text output ---
+// -------------------
+inline void TextUnformatted (std::string_view text) { ImGui::TextUnformatted(text.data(), text.data() + text.size()); }
+void        TextCentered    (std::string_view text);
+
 
 // -------------
 // --- Menus ---

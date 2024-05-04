@@ -165,6 +165,17 @@ bool InputTextWithHint(std::string_view label, std::string_view hint, std::strin
     return InputTextWithHint(label.data(), hint.data(), const_cast<char*>(str.c_str()), str.capacity() + 1, flags, InputTextCallback, &cb_user_data);
 }
 
+// -------------------
+// --- Text output ---
+// -------------------
+void TextCentered(std::string_view text) {
+    auto windowWidth = ImGui::GetWindowSize().x;
+    auto textWidth   = ImGui::CalcTextSize(text.data()).x;
+
+    ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f);
+    ImGui::TextUnformatted(text);
+}
+
 // ------------------------
 // --- Window positions ---
 // ------------------------
