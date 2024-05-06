@@ -5,6 +5,10 @@
 #if (CPAF_GUI_SYSTEM_ID == CPAF_SYSTEM_ID_SDL2)
 #include <cpaf_libs/gui/base/app__sdl2.h>
 #endif
+#include <cpaf_libs/gui/system.h>
+#include <cpaf_libs/audio/cpaf_audio_system.h>
+
+
 namespace cpaf::gui {
 
 

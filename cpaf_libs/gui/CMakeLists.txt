@@ -93,6 +93,7 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/video/render/render.h
     ${CMAKE_CURRENT_LIST_DIR}/video/render/render_base.h
     ${CMAKE_CURRENT_LIST_DIR}/video/render/render__sdl2.h
+    ${CMAKE_CURRENT_LIST_DIR}/video/demo_player_app.h
     ${CMAKE_CURRENT_LIST_DIR}/video/player.h
     ${CMAKE_CURRENT_LIST_DIR}/video/playlist_control.h
     ${CMAKE_CURRENT_LIST_DIR}/video/ui/controls.h
@@ -172,6 +173,7 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/video/render/render.cpp
     ${CMAKE_CURRENT_LIST_DIR}/video/render/render_base.cpp
     ${CMAKE_CURRENT_LIST_DIR}/video/render/render__sdl2.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/video/demo_player_app.cpp
     ${CMAKE_CURRENT_LIST_DIR}/video/player.cpp
     ${CMAKE_CURRENT_LIST_DIR}/video/playlist_control.cpp
     ${CMAKE_CURRENT_LIST_DIR}/video/ui/controls.cpp
