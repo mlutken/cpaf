@@ -29,6 +29,7 @@ void render_base::init(const system_window& win,
     video_src_dimensions_ =  video_src_dimensions;
     do_init(win);
     render_geometry_set(render_geom);
+    create_frame_display();
 }
 
 
@@ -99,6 +100,11 @@ bool render_base::subtitles_has_background() const
     return config_.bool_val("subtitles", "has_background");
 }
 
+av_codec_context& render_base::video_codec_ctx()
+{
+    return player_.video_codec_context();
+}
+
 bool render_base::subtitles_show() const
 {
     return config_.bool_val("subtitles", "show");
@@ -132,6 +138,11 @@ void render_base::update_video_render_geometry()
         const auto translate_vec = render_geometry_.center() - video_render_geometry_.center();
         video_render_geometry_.translate(translate_vec);
     }
+}
+
+void render_base::create_frame_display()
+{
+    frame_display_ = video_codec_ctx().create_scaling_dst_frame();
 }
 
 //void render_base::on_configuration_changed()

@@ -70,10 +70,13 @@ protected:
     static constexpr float                  general_margin              {4};
 
     cpaf::locale::translator&               tr                          ();
+    cpaf::video::av_codec_context&          video_codec_ctx             ();
+    cpaf::video::av_frame&                  frame_display               () { return frame_display_; }
     bool                                    subtitle_within_display_time(const cpaf::video::subtitle_frame& subtitle) const;
     const surface_dimensions_t&             video_src_dimensions        () const { return video_src_dimensions_; }
     void                                    update_video_render_geometry();
 
+    cpaf::video::av_frame                   frame_display_;
 //    void                                    on_configuration_changed    ();
 
     player&                                 player_;
@@ -88,6 +91,8 @@ private:
     rect                                    render_geometry_            {};
     rect                                    video_render_geometry_      {};
     cpaf::video::surface_dimensions_t       video_src_dimensions_       {0,0};
+
+    void                        create_frame_display                ();
 
     virtual void                do_init                             (const system_window& win) = 0;
     virtual void                do_init                             (std::shared_ptr<cpaf::gui::system_render> sys_renderer) = 0;
