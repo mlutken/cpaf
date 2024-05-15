@@ -8,9 +8,7 @@ target_sources(${library_name}
     PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/audio_resampler.h
     ${CMAKE_CURRENT_LIST_DIR}/audio_types_convert.h
-    ${CMAKE_CURRENT_LIST_DIR}/av_codec.h
     ${CMAKE_CURRENT_LIST_DIR}/av_codec_context.h
-    ${CMAKE_CURRENT_LIST_DIR}/av_codec_parameters.h
     ${CMAKE_CURRENT_LIST_DIR}/av_frame.h
     ${CMAKE_CURRENT_LIST_DIR}/av_format_context.h
     ${CMAKE_CURRENT_LIST_DIR}/av_options.h
@@ -31,9 +29,7 @@ target_sources(${library_name}
     PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/audio_resampler.cpp
     ${CMAKE_CURRENT_LIST_DIR}/audio_types_convert.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/av_codec.cpp
     ${CMAKE_CURRENT_LIST_DIR}/av_codec_context.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/av_codec_parameters.cpp
     ${CMAKE_CURRENT_LIST_DIR}/av_frame.cpp
     ${CMAKE_CURRENT_LIST_DIR}/av_format_context.cpp
     ${CMAKE_CURRENT_LIST_DIR}/av_options.cpp

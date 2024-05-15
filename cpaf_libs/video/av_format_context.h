@@ -19,9 +19,7 @@ extern "C"
 #include <thread>
 
 #include <cpaf_libs/video/av_util.h>
-#include <cpaf_libs/video/av_codec.h>
 #include <cpaf_libs/video/av_codec_context.h>
-#include <cpaf_libs/video/av_codec_parameters.h>
 #include <cpaf_libs/video/av_packet.h>
 
 
@@ -88,7 +86,6 @@ public:
     bool                    seek_time_pos               (media_type_t mt, std::chrono::microseconds stream_pos, seek_dir dir);
 
     // --- Codec Functions ---
-    av_codec_parameters     codec_parameters            (size_t stream_index) const;
     av_codec_context		codec_context               (size_t stream_index) const;
     av_codec_context		codec_context               (media_type_t selected_media) const;
     av_codec_context		codec_context_video         () const    { return codec_context(media_type_t::video); }

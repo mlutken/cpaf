@@ -268,12 +268,6 @@ bool av_format_context::seek_time_pos(media_type_t mt, std::chrono::microseconds
 // --- XXX Functions ---
 // ---------------------
 
-av_codec_parameters av_format_context::codec_parameters(size_t stream_index) const
-{
-    if (stream_index >= streams_count()) { return av_codec_parameters(nullptr);   }
-    return av_codec_parameters(ff_format_context_->streams[stream_index]->codecpar);
-}
-
 av_codec_context av_format_context::codec_context(size_t stream_index) const
 {
     if (stream_index == no_stream_index) {

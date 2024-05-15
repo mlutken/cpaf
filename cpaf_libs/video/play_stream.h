@@ -58,7 +58,6 @@ public:
     // ---------------------
     av_format_context&          format_context          ()                          { return format_context_; }
     const av_format_context&	format_context          () const                    { return format_context_; }
-    av_codec_parameters         codec_parameters        (size_t stream_index) const { return format_context_.codec_parameters(stream_index);}
     av_codec_context            codec_context			(size_t stream_index) const { return format_context_.codec_context(stream_index); }
     av_codec_context            codec_context           (media_type_t selected_media) const { return format_context_.codec_context(selected_media); }
     av_codec_context            codec_context_video     () const    { return format_context_.codec_context_video(); }
