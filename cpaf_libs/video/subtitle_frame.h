@@ -103,7 +103,7 @@ private:
     format_t                        format_                      = format_t::text;
 };
 
-using subtitles_queue = estl::srsw_fifo<subtitle_frame>;
+using subtitles_queue = lue::srsw_fifo<subtitle_frame>;
 
 } //END namespace cpaf::video
 

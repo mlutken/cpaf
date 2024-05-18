@@ -35,7 +35,7 @@ private:
         bool        done = false;
     };
 
-    using job_queue_t = estl::mutex_fifo<job_t>;
+    using job_queue_t = lue::mutex_fifo<job_t>;
 
     void                                thread_function     ();
     void                                perform_open        (job_t job);

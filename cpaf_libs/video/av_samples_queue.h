@@ -59,7 +59,7 @@ private:
         }
     }
 
-    estl::srsw_fifo<av_samples_buffer>  fifo_;
+    lue::srsw_fifo<av_samples_buffer>  fifo_;
     mutable std::mutex                  fifo_mutex_;
 };
 

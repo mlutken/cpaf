@@ -3,19 +3,19 @@
 #include <mutex>
 #include <concurrent/srsw_fifo.hpp>
 
-namespace estl {
+namespace lue {
 
 
 /**
 Mutex protected fifo.
-@sa estl::srsw_fifo which is the same using a lockless approach, but only
+@sa lue::srsw_fifo which is the same using a lockless approach, but only
     supporting one reader and one writer.
 */
 template <typename T, class Allocator = std::allocator<T>, size_t ALIGN_SIZE = 128 >
 class mutex_fifo
 {
 public:
-    using underlying_fifo_t =  estl::srsw_fifo<T, Allocator, ALIGN_SIZE>;
+    using underlying_fifo_t =  lue::srsw_fifo<T, Allocator, ALIGN_SIZE>;
     // ------------------------
     // --- PUBLIC: Typedefs ---
     // ------------------------
@@ -169,9 +169,9 @@ private:
     // ------------------------
     // PRIVATE: Member data ---
     // ------------------------
-    estl::srsw_fifo<T, Allocator, ALIGN_SIZE>   fifo_;
+    lue::srsw_fifo<T, Allocator, ALIGN_SIZE>   fifo_;
     alignas(ALIGN_SIZE) mutable std::mutex      mutex_;   // Aligning to avoid "false sharing"
 };
 
 
-} // END namespace estl
+} // END namespace lue

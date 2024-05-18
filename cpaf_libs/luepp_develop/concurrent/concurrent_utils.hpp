@@ -4,7 +4,7 @@
 #include <thread>
 #include <atomic>
 
-namespace estl {
+namespace lue {
 
 
 /**
@@ -79,4 +79,4 @@ bool wait_for_expected (
     return std::chrono::steady_clock::now() < ts_end;
 }
 
-} // END namespace estl
+} // END namespace lue

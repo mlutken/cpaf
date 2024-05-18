@@ -75,7 +75,7 @@ private:
     std::chrono::microseconds   presentation_time_  = illegal_timestamp();
 };
 
-using packet_queue_t = estl::srsw_fifo<av_packet>;
+using packet_queue_t = lue::srsw_fifo<av_packet>;
 
 inline bool operator< (const av_packet& lhs, const av_packet& rhs)
 {

@@ -47,8 +47,8 @@ private:
         std::string                 language_code           {};
         std::chrono::microseconds   subtitle_adjust_offset  {};
     };
-    using queue_in_t  = estl::srsw_fifo<job_t>;
-    using queue_out_t = estl::srsw_fifo<std::unique_ptr<subtitle_container>>;
+    using queue_in_t  = lue::srsw_fifo<job_t>;
+    using queue_out_t = lue::srsw_fifo<std::unique_ptr<subtitle_container>>;
 
     void                                thread_function         ();
     void                                download_subtitle       (const std::string& subtitle_path,
