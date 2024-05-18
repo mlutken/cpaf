@@ -1,6 +1,4 @@
-#ifndef ESTL_VECTOR_S_HPP
-#define ESTL_VECTOR_S_HPP
-#include <luepp_platform_definitions.h>
+#pragma once
 #include <luepp_default_config.h>
 #include <cstdint>
 #include <utility>
@@ -9,7 +7,7 @@
 #include <algorithm>
 
 
-namespace estl {
+namespace lue {
 /**
  * A static implementation of std::vector<T>
  *
@@ -28,7 +26,7 @@ namespace estl {
 #include <iostream>
 #include <containers/vector_s.hpp>
 
-using namespace estl;
+using namespace lue;
 
 template <class CONTAINER>
 void debug_print(const CONTAINER& container) {
@@ -696,6 +694,5 @@ constexpr bool operator!=( const vector_s<T, CAP_LHS>& lhs, const vector_s<T, CA
     return !(lhs == rhs);
 }
 
-} // END namespace estl
+} // END namespace lue
 
-#endif // ESTL_VECTOR_S_HPP

@@ -1,23 +1,21 @@
-#ifndef ESTL_SRSW_FIFO_HPP
-#define ESTL_SRSW_FIFO_HPP
+#pragma once
 
-#include <luepp_platform_definitions.h>
 #include <luepp_default_config.h>
-#include <atomic/atomic_use.hpp>
+#include <atomic>
 #include <vector>
 #include <cstdint>
 
 // ----------------------------------------------
 // --- srsw_fifo.h ---
 // ----------------------------------------------
-namespace estl {
+namespace lue {
 template <typename T1, size_t BUFFER_SIZE1, size_t ALIGN_SIZE1 >
 class srmw_fifo;
 
 /**
 Single reader, single writer lockless fifo.
 Uses atomics for the read and write indices internally.
-@sa estl::srsw_fifo_s which is the same using the static vector_s as "backend"
+@sa lue::srsw_fifo_s which is the same using the static vector_s as "backend"
 */
 
 template <typename T, class Allocator = std::allocator<T>, size_t ALIGN_SIZE = 128 >
@@ -34,7 +32,7 @@ public:
     // ------------------------
     typedef T                                       value_type;
     typedef std::size_t                             size_type;
-    typedef estl_use::atomic<size_type>             atomic_size_type;
+    typedef std::atomic<size_type>                  atomic_size_type;
     typedef Allocator                               allocator_type;
     typedef typename queue_vec_t::difference_type   difference_type;
     typedef typename queue_vec_t::reference         reference;
@@ -213,6 +211,4 @@ private:
     alignas(ALIGN_SIZE) atomic_size_type    m_read_index;    // Aligning to avoid "false sharing"
 };
 
-} // END namespace estl
-
-#endif // ESTL_SRSW_FIFO_HPP
+} // END namespace lue
