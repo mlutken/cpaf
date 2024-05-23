@@ -85,6 +85,9 @@ bool audio_resampler::init()
 
 void audio_resampler::in_formats_set(const av_codec_context& audio_codec_ctx)
 {
+    if (!audio_codec_ctx.is_valid()) {
+        return;
+    }
     // Set input channel layout
     const int32_t codec_channels = audio_codec_ctx.channels();
     const uint64_t codec_channel_layout = audio_codec_ctx.channel_layout();
