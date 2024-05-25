@@ -13,6 +13,9 @@ If you need to do a similar import of a new subtree git project simply use
 ## luepp update
 - *Update to latest:* *cpaf$* git subtree pull --prefix cul/luepp https://github.com/mlutken/luepp.git main --squash
 
+## KZip update
+- *Update to latest:* *cpaf$* git subtree pull --prefix cul/KZip https://github.com/troldal/KZip.git master --squash
+
 ## ImGuiFileDialog update
 - *Update to latest:* *cpaf$* git subtree pull --prefix cul/ImGuiFileDialog https://github.com/aiekick/ImGuiFileDialog.git master --squash
 
