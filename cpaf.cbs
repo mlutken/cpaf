@@ -1,3 +1,4 @@
+# TODO: Remove this file: Not used anymore!!!
 
 #ADD_FORCE_INCLUDE ( ${CBS_ROOT_DIR}/compatibility/msvc/msvc_recommended_pragmas.h	WINDOWS )
 

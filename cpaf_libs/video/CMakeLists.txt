@@ -2,7 +2,7 @@ set (library_name cpaf_video)
 find_package(Boost ${BOOST_MIN_VERSION} REQUIRED)
 add_library(${library_name} STATIC "")
 
-find_package(ffmpeg REQUIRED)
+find_package(FFMPEG REQUIRED)
 
 target_sources(${library_name}
     PUBLIC
@@ -53,20 +53,32 @@ target_sources(${library_name}
 
 get_filename_component(PARENT_DIR ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
 get_filename_component(PARENT2_DIR ${PARENT_DIR} DIRECTORY)
-target_link_libraries(${library_name} "cpaf_locale")
-target_link_libraries(${library_name} "cpaf_crypto")
-target_link_libraries(${library_name} "cpaf_net")
-target_link_libraries(${library_name} "cpaf_streams")
-target_link_libraries(${library_name} "cpaf_audio")
-target_link_libraries(${library_name} "cpaf_unicode;")
-target_link_libraries(${library_name} "cpaf_utils")
-target_link_libraries(${library_name} "cpaf_math")
-target_link_libraries(${library_name} "cpaf_time")
-target_link_libraries(${library_name} "luepp_concurrent")
-target_link_libraries(${library_name} "luepp_containers")
-target_link_libraries(${library_name} "cpaf_torrent")
-target_link_libraries(${library_name} "cpaf_compression")
-target_link_libraries(${library_name} ffmpeg::ffmpeg )
+target_link_libraries(${library_name} PUBLIC "cpaf_locale")
+target_link_libraries(${library_name} PUBLIC "cpaf_crypto")
+target_link_libraries(${library_name} PUBLIC "cpaf_net")
+target_link_libraries(${library_name} PUBLIC "cpaf_streams")
+target_link_libraries(${library_name} PUBLIC "cpaf_audio")
+target_link_libraries(${library_name} PUBLIC "cpaf_unicode;")
+target_link_libraries(${library_name} PUBLIC "cpaf_utils")
+target_link_libraries(${library_name} PUBLIC "cpaf_math")
+target_link_libraries(${library_name} PUBLIC "cpaf_time")
+target_link_libraries(${library_name} PUBLIC "luepp_concurrent")
+target_link_libraries(${library_name} PUBLIC "luepp_containers")
+target_link_libraries(${library_name} PUBLIC "cpaf_torrent")
+target_link_libraries(${library_name} PUBLIC "cpaf_compression")
+
+message ("FFMPEG_INCLUDE_DIRS: ${FFMPEG_INCLUDE_DIRS}")
+message ("FFMPEG_LIBRARY_DIRS: ${FFMPEG_LIBRARY_DIRS}")
+message ("FFMPEG_LIBRARY_DIRS: ${FFMPEG_LIBRARY_DIRS}")
+message ("FFMPEG_LIBRARY_DIRS: ${FFMPEG_LIBRARY_DIRS}")
+message ("FFMPEG_LIBRARIES: ${FFMPEG_LIBRARIES}")
+
+target_include_directories( ${library_name} PUBLIC "${FFMPEG_INCLUDE_DIRS}")
+target_link_directories( ${library_name} PUBLIC "${FFMPEG_LIBRARY_DIRS}")
+target_link_libraries( ${library_name} PUBLIC "${FFMPEG_LIBRARIES}")
+
+### target_link_libraries(${library_name} ffmpeg::ffmpeg )
+
 #target_link_libraries(${library_name} date::date)
 
 set_target_properties(${library_name} PROPERTIES LINKER_LANGUAGE CXX)

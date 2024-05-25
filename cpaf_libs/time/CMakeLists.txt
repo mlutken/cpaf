@@ -1,5 +1,5 @@
 set (library_name cpaf_time)
-find_package(Boost ${BOOST_MIN_VERSION} REQUIRED)
+find_package(Boost COMPONENTS date_time REQUIRED)
 add_library(${library_name} STATIC "")
 
 target_sources(${library_name}

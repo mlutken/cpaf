@@ -1,5 +1,5 @@
 set (library_name cpaf_streams)
-find_package(Boost ${BOOST_MIN_VERSION} REQUIRED)
+find_package(Boost COMPONENTS iostreams REQUIRED)
 find_package(ZLIB REQUIRED)
 add_library(${library_name} STATIC "")
 
