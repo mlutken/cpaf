@@ -4,7 +4,7 @@
 #include <sstream>
 #include <fmt/format.h>
 
-#include <Zippy.hpp>
+#include <KZip.hpp>
 #include <cpaf_libs/time/cpaf_time.h>
 #include <cpaf_libs/unicode/cpaf_u8string_utils.h>
 #include <cpaf_libs/video/io/subtitle_text_file_data.h>

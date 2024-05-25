@@ -7,7 +7,7 @@
 #include <cpaf_libs/net/cpaf_http_convenience.h>
 #include <cpaf_libs/video/av_util.h>
 
-namespace Zippy {
+namespace KZip {
 class ZipArchive;
 }
 
@@ -86,7 +86,7 @@ private:
     mutable std::string                         archive_info_file_path_;
     mutable std::string                         srt_file_data_;
     mutable std::string                         info_file_data_;
-    std::unique_ptr<Zippy::ZipArchive>          zip_archive_;
+    std::unique_ptr<KZip::ZipArchive>           zip_archive_;
     cpaf::net::curl                             curl_;
 };
 

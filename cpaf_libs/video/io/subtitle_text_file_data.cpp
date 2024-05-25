@@ -1,7 +1,7 @@
 #include "subtitle_text_file_data.h"
 #include <filesystem>
 #include <thread>
-#include <Zippy.hpp>
+#include <KZip.hpp>
 #include <fmt/format.h>
 
 #include <cpaf_libs/unicode/cpaf_u8string_utils.h>
@@ -66,8 +66,8 @@ bool subtitle_text_file_data::open(const std::string& resource_path, std::chrono
     }
     else if ( std::filesystem::exists(archive_path_) ) {
         if (cpaf::compression::detect_is_zip_file(archive_path_)) {
-            zip_archive_ = std::make_unique<Zippy::ZipArchive>();
-            zip_archive_->Open(archive_path_);
+            zip_archive_ = std::make_unique<KZip::ZipArchive>();
+            zip_archive_->open(archive_path_);
         }
         return true;
     }
@@ -114,7 +114,7 @@ bool subtitle_text_file_data::is_zip_archive() const
 size_t subtitle_text_file_data::zip_num_entries() const
 {
     if (zip_archive_) {
-        return static_cast<size_t>(zip_archive_->GetNumEntries(false, true));
+        return static_cast<size_t>(zip_archive_->entryCount(KZip::ZipFlags::Files));
     }
     return 0u;
 }
@@ -122,7 +122,7 @@ size_t subtitle_text_file_data::zip_num_entries() const
 std::vector<string> subtitle_text_file_data::zip_entry_names() const
 {
     if (zip_archive_) {
-        return zip_archive_->GetEntryNames(false, true);
+        return zip_archive_->entryNames(KZip::ZipFlags::Files);
     }
     return {};
 }
@@ -156,7 +156,7 @@ bool subtitle_text_file_data::has_file_in_zip(const std::string& file_path_in_ar
     if (!zip_archive_) {
         return false;
     }
-    return zip_archive_->HasEntry(file_path_in_archive);
+    return zip_archive_->hasEntry(file_path_in_archive);
 }
 
 net::curl::state_t subtitle_text_file_data::download_state() const
@@ -233,8 +233,8 @@ bool subtitle_text_file_data::download_and_open_file(
     const auto res = curl_.timeout(timeout).init_url(download_url).file_path(local_download_path_).progress_callback(std::move(cb)).download_file();
     if (res == CURLE_OK) {
         if (cpaf::compression::detect_is_zip_file(local_download_path_)) {
-            zip_archive_ = std::make_unique<Zippy::ZipArchive>();
-            zip_archive_->Open(local_download_path_);
+            zip_archive_ = std::make_unique<KZip::ZipArchive>();
+            zip_archive_->open(local_download_path_);
         }
         return true;
     }
@@ -275,7 +275,7 @@ string subtitle_text_file_data::read_text_file_from_zip(const std::string& file_
 
     std::string str;
     try {
-        str = zip_archive_->GetEntry(file_path_in_archive).GetDataAsString();
+        str = zip_archive_->entry(file_path_in_archive).getData<std::string>();
     } catch (...) {
         str.clear();
     }

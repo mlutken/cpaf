@@ -9,6 +9,12 @@ target_include_directories(${ImGuiFileDialog_library_name} PUBLIC ${CMAKE_CURREN
 target_link_libraries(${ImGuiFileDialog_library_name} imgui::imgui )
 target_compile_options(${ImGuiFileDialog_library_name} PRIVATE ${STANDARD_COMPILE_FLAGS})
 
+# --- KZip ---
+set (BUILD_TESTS OFF)
+set (BUILD_SAMPLES OFF)
+set (CREATE_DOCS OFF)
+add_subdirectory(KZip)
+
 add_subdirectory(luepp)
 add_subdirectory(imguipp)
 add_subdirectory(IconFontCppHeaders)
