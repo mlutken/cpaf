@@ -1,11 +1,3 @@
-message("FIXMEMN: -------------------")
-message("FIXMEMN: -------------------")
-message("FIXMEMN: -------------------")
-message("FIXMEMN: -------------------")
-message("FIXMEMN: -------------------")
-message("FIXMEMN: -------------------")
-
-
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO ffmpeg/ffmpeg

@@ -1,19 +1,19 @@
 set (library_name cpaf_video)
-find_package(Boost ${BOOST_MIN_VERSION} REQUIRED)
 add_library(${library_name} STATIC "")
 
+#  ffmpeg: https://github.com/Microsoft/vcpkg/issues/1379
 
-set(ENABLE_AVDEVICE OFF) # FFMPEG_FIND(libavdevice   avdevice   avdevice.h)
-set(ENABLE_AVFILTER OFF) # FFMPEG_FIND(libavfilter   avfilter   avfilter.h)
-set(ENABLE_AVFORMAT ON) # FFMPEG_FIND(libavformat   avformat   avformat.h)
-set(ENABLE_AVCODEC ON) # FFMPEG_FIND(libavcodec    avcodec    avcodec.h)
-set(ENABLE_POSTPROC OFF) # FFMPEG_FIND(libpostproc   postproc   postprocess.h)
-set(ENABLE_SWRESAMPLE ON) # FFMPEG_FIND(libswresample swresample swresample.h)
-set(ENABLE_SWSCALE ON) # FFMPEG_FIND(libswscale    swscale    swscale.h)
+# Not working: See cpaf/local-vcpkg-ports/ffmpeg/FindFFMPEG.cmake.in
+#
+# set(ENABLE_AVDEVICE OFF) # FFMPEG_FIND(libavdevice   avdevice   avdevice.h)
+# set(ENABLE_AVFILTER OFF) # FFMPEG_FIND(libavfilter   avfilter   avfilter.h)
+# set(ENABLE_AVFORMAT ON) # FFMPEG_FIND(libavformat   avformat   avformat.h)
+# set(ENABLE_AVCODEC ON) # FFMPEG_FIND(libavcodec    avcodec    avcodec.h)
+# set(ENABLE_POSTPROC OFF) # FFMPEG_FIND(libpostproc   postproc   postprocess.h)
+# set(ENABLE_SWRESAMPLE ON) # FFMPEG_FIND(libswresample swresample swresample.h)
+# set(ENABLE_SWSCALE ON) # FFMPEG_FIND(libswscale    swscale    swscale.h)
 
 find_package(FFMPEG REQUIRED)
-
-# set (FFMPEG_LIBRARIES
 
 target_sources(${library_name}
     PUBLIC
@@ -58,8 +58,6 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/io/my_file_io.cpp
     ${CMAKE_CURRENT_LIST_DIR}/io/subtitle_container.cpp
     ${CMAKE_CURRENT_LIST_DIR}/io/subtitle_text_file_data.cpp
-
-
 )
 
 get_filename_component(PARENT_DIR ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
@@ -78,6 +76,7 @@ target_link_libraries(${library_name} PUBLIC "luepp_containers")
 target_link_libraries(${library_name} PUBLIC "cpaf_torrent")
 target_link_libraries(${library_name} PUBLIC "cpaf_compression")
 
+# Remove strange non libs added from the vcpkg ffmpeg recipe
 list(REMOVE_ITEM FFMPEG_LIBRARIES optimized )
 list(REMOVE_ITEM FFMPEG_LIBRARIES debug )
 
@@ -93,10 +92,7 @@ target_link_libraries( ${library_name} PUBLIC "${FFMPEG_LIBRARIES}")
 
 ### target_link_libraries(${library_name} ffmpeg::ffmpeg )
 
-#target_link_libraries(${library_name} date::date)
-
 set_target_properties(${library_name} PROPERTIES LINKER_LANGUAGE CXX)
-target_include_directories(${library_name} INTERFACE ${Boost_INCLUDE_DIRS} ${PARENT2_DIR} ${PARENT_DIR})
 target_compile_options(${library_name} PRIVATE ${STANDARD_COMPILE_FLAGS})
 
 add_subdirectories_standard()

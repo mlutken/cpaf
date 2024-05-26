@@ -1,7 +1,6 @@
 
 set (library_name cpaf_gui)
-add_library(${library_name} STATIC ""
-)
+add_library(${library_name} STATIC "")
 
 find_package(fmt REQUIRED)
 find_package(imgui REQUIRED)
