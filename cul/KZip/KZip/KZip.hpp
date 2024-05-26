@@ -1,6 +1,8 @@
 #ifndef KZIP_HPP
 #define KZIP_HPP
 
+#if defined(_MSC_VER) && !defined(__clang__)
+// code for msvc compiler
 #pragma warning(push)
 #pragma warning(disable : 4334)
 #pragma warning(disable : 4996)
@@ -11,10 +13,20 @@
 #pragma warning(disable : 4267)
 #pragma warning(disable : 4242)
 #pragma warning(disable : 4244)
+#endif
+
+#if defined (__GNUC__) || defined (__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconversion"
+#pragma GCC diagnostic ignored "-Wsign-conversion"
+#endif
 
 // ===== External Includes =====
 #include "deps/miniz.h"
 
+#if defined (__GNUC__)
+#pragma GCC diagnostic pop
+#endif
 // ===== Standard Includes =====
 #include <algorithm>
 #include <cstddef>
@@ -945,5 +957,9 @@ namespace KZip
     };
 }    // namespace KZip
 
+#if defined(_MSC_VER) && !defined(__clang__)
+// code for msvc compiler
 #pragma warning(pop)
+#endif
+
 #endif    // KZIP_HPP
