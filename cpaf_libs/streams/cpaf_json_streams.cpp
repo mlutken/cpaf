@@ -22,8 +22,8 @@ void to_file(const std::filesystem::path& file_path, const nlohmann::json& jobje
     to_file(file_path.string(), jobject, indentation);
 }
 
-auto to_json(const std::string& resource_path,
-                       const nlohmann::json& default_jo) -> nlohmann::json
+nlohmann::json to_json(const std::string& resource_path,
+                       const nlohmann::json& default_jo)
 {
     if (!fs::exists(resource_path)) {
         return default_jo;
@@ -42,11 +42,11 @@ auto to_json(const std::string& resource_path,
     return default_jo;
 }
 
-auto to_json(const std::filesystem::path& file_path,
-                       const nlohmann::json& default_jo) -> nlohmann::json
-{
-    return to_json(file_path.string(), default_jo);
-}
+// nlohmann::json to_json(const std::filesystem::path& file_path,
+//                        const nlohmann::json& default_jo)
+// {
+//     return to_json(file_path.string(), default_jo);
+// }
 
 
 } //END namespace cpaf::streams

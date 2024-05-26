@@ -201,13 +201,13 @@ libtorrent::file_index_t torrent::file_path_to_index(std::string_view file_path)
     const auto all_paths = all_file_paths();
     const auto path_it = std::ranges::find(all_paths, file_path);
     if (path_it != all_paths.end()) {
-        return path_it - all_paths.begin();
+        return libtorrent::file_index_t(path_it - all_paths.begin());
     }
 
     const auto all_names = all_file_names();
     const auto name_it = std::ranges::find(all_names, file_path);
     if (name_it != all_names.end()) {
-        return name_it - all_names.begin();
+        return libtorrent::file_index_t(name_it - all_names.begin());
     }
     return libtorrent::file_index_t(-1);
 }
@@ -215,7 +215,7 @@ libtorrent::file_index_t torrent::file_path_to_index(std::string_view file_path)
 libtorrent::file_index_t torrent::file_index_at_offset(int64_t offset) const
 {
     const auto torinfo_ptr = handle_.torrent_file();
-    if (!torinfo_ptr) { return -1; }
+    if (!torinfo_ptr) { return libtorrent::file_index_t(-1); }
     return files_storage().file_index_at_offset(offset);
 
 }
@@ -223,7 +223,7 @@ libtorrent::file_index_t torrent::file_index_at_offset(int64_t offset) const
 libtorrent::file_index_t torrent::file_index_at_piece(libtorrent::piece_index_t piece) const
 {
     const auto torinfo_ptr = handle_.torrent_file();
-    if (!torinfo_ptr) { return -1; }
+    if (!torinfo_ptr) { return libtorrent::file_index_t(-1); }
     return files_storage().file_index_at_piece(piece);
 }
 
@@ -252,7 +252,7 @@ int torrent::num_pieces() const
 libtorrent::piece_index_t torrent::piece_index_end() const
 {
     const auto torinfo_ptr = handle_.torrent_file();
-    if (!torinfo_ptr) { return 0; }
+    if (!torinfo_ptr) { return libtorrent::piece_index_t(0); }
     return torinfo_ptr->last_piece();
 }
 
@@ -351,7 +351,8 @@ pieces_range_t torrent::get_pieces_range(libtorrent::file_index_t file_index,
     }
 
     // Increase range
-    range.piece_end = range.piece_end + lt::piece_index_t(additional_pieces_to_get);
+    /// OLD: range.piece_end = range.piece_end + lt::piece_index_t(additional_pieces_to_get);
+    range.piece_end = range.piece_end + static_cast<lt::piece_index_t::diff_type>(additional_pieces_to_get);
     ensure_piece_range_valid(range);
     return range;
 }
@@ -379,7 +380,8 @@ pieces_range_t torrent::get_pieces_read_ahead_range(libtorrent::file_index_t fil
     }
 
 
-    range.piece_end = range.piece_end + lt::piece_index_t(additional_pieces_to_get);
+    /// OLD: range.piece_end = range.piece_end + lt::piece_index_t(additional_pieces_to_get);
+    range.piece_end = range.piece_end + static_cast<lt::piece_index_t::diff_type>(additional_pieces_to_get);
     ensure_piece_range_valid(range);
     return range;
 }

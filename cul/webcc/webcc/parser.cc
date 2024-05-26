@@ -78,7 +78,7 @@ bool FileBodyHandler::OpenFile() {
     LOG_VERB("Generate a temp path for streaming: %s",
              temp_path_.string().c_str());
 
-  } catch (const bfs::filesystem_error&) {
+  } catch (...) {
     LOG_ERRO("Failed to generate temp path for streaming.");
     return false;
   }

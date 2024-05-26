@@ -1,5 +1,4 @@
-#ifndef CPAF_JSON_STREAMS_H
-#define CPAF_JSON_STREAMS_H
+#pragma once
 
 #include <filesystem>
 #include <utils/cpaf_json_utils.h>
@@ -15,11 +14,7 @@ void            to_file (const std::string& resource_path, const nlohmann::json&
 void            to_file (const std::filesystem::path& file_path, const nlohmann::json& jobject, int indentation = 0);
 
 nlohmann::json  to_json (const std::string& resource_path, const nlohmann::json& default_jo = {});
-nlohmann::json  to_json (const std::filesystem::path& file_path, const nlohmann::json& default_jo = {});
+// nlohmann::json  to_json (const std::filesystem::path& file_path, const nlohmann::json& default_jo = {});
 
 } //END namespace cpaf::streams
-
-
-#endif //CPAF_JSON_STREAMS_H
-
 

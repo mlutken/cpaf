@@ -35,9 +35,9 @@ string torrent_name(const std::string& uri_or_name)
 
 std::string largest_file_name(const libtorrent::torrent_handle& handle)
 {
-    const auto largest = largest_file_index(handle);
+    const lt::file_index_t largest = largest_file_index(handle);
 
-    if (largest != -1) {
+    if (largest != lt::file_index_t(-1)) {
         const auto& storage = handle.torrent_file()->files();
         return string(storage.file_name(largest));
     }
@@ -95,9 +95,9 @@ path base_local_file_dir(const libtorrent::torrent_handle& handle)
 
 std::filesystem::path largest_file_local_file_path(const libtorrent::torrent_handle& handle)
 {
-    const auto largest = largest_file_index(handle);
+    const lt::file_index_t largest = largest_file_index(handle);
 
-    if (largest != -1) {
+    if (largest != lt::file_index_t(-1)) {
         const auto& storage = handle.torrent_file()->files();
         return base_local_file_dir(handle) / path(storage.file_path(largest));
     }
@@ -150,7 +150,7 @@ int64_t file_size(const libtorrent::torrent_handle& handle, libtorrent::file_ind
 bool has_meta_data(const libtorrent::torrent_handle& handle)
 {
     switch (handle.status().state) {
-        case lt::torrent_status::state_t::queued_for_checking:
+        /// case lt::torrent_status::state_t::queued_for_checking:
         case lt::torrent_status::state_t::checking_files:
         case lt::torrent_status::state_t::downloading_metadata:
             return false;
@@ -216,13 +216,20 @@ bool cache_pieces_t::is_valid() const
 
 libtorrent::piece_index_t cache_pieces_t::last_piece_index() const
 {
-    if (pieces.empty()) { return -1; }
+    if (pieces.empty()) { return libtorrent::piece_index_t(-1); }
     return pieces.back().piece;
 }
 
 // ----------------------
 // --- pieces_range_t ---
 // ----------------------
+
+pieces_range_t::pieces_range_t(libtorrent::piece_index_t begin)
+    : piece_begin(begin),
+      piece_end(++begin) // PREVIOUS: piece_end(begin + lt::piece_index_t(1))
+{
+
+}
 
 string pieces_range_t::dbg_string() const
 {

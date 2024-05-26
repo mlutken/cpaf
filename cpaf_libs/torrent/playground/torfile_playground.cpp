@@ -149,7 +149,7 @@ int main(int argc, char const* argv[])
     cout << "file_index_at_offset(130)  : " << my_torrent_ptr->file_index_at_offset(130) << "\n";
     cerr << std::flush; cout << std::flush;
 
-    dbg_read_from_file(my_torrent_ptr, 1);
+    dbg_read_from_file(my_torrent_ptr, lt::file_index_t(1));
 
 
     tor::file file_0 = my_torrent_ptr->open(lt::file_index_t(0));
@@ -174,7 +174,7 @@ int main(int argc, char const* argv[])
         fmt::println ("File 0 begin: {}, end: {}, offset: {}, size: {}", (int)range1.piece_begin, (int)range1.piece_end, range1.piece_begin_data_start_offset(), range1.data_size);
     }
     {
-        tor::file file = my_torrent_ptr->open(1);
+        tor::file file = my_torrent_ptr->open(libtorrent::file_index_t(1));
         tor::pieces_range_t range  = file.get_pieces_range(0, 10);
         fmt::println ("File 1 begin: {}, end: {}, offset: {}, size: {}", (int)range.piece_begin, (int)range.piece_end, range.piece_begin_data_start_offset(), range.data_size);
     }
@@ -188,7 +188,7 @@ int main(int argc, char const* argv[])
         fmt::println ("get_pieces_range            begin: {}, end: {}, offset: {}, size: {}", (int)range1.piece_begin, (int)range1.piece_end, range1.piece_begin_data_start_offset(), range1.data_size);
     }
     {
-        tor::pieces_range_t range1  = largest_file.get_pieces_read_ahead_range(2, 3'000'000);
+        tor::pieces_range_t range1  = largest_file.get_pieces_read_ahead_range(libtorrent::piece_index_t(2), 3'000'000);
         fmt::println ("get_pieces_read_ahead_range begin: {}, end: {}, offset: {}, size: {}", (int)range1.piece_begin, (int)range1.piece_end, range1.piece_begin_data_start_offset(), range1.data_size);
     }
     cerr << std::endl << std::flush; cout << std::endl << std::flush;

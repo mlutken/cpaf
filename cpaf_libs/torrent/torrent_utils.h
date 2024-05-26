@@ -63,18 +63,18 @@ struct cache_pieces_t {
 struct pieces_range_t {
 
                 pieces_range_t  () = default;
-    explicit    pieces_range_t  (lt::piece_index_t begin) : piece_begin(begin), piece_end(begin + lt::piece_index_t(1)) {}
+    explicit    pieces_range_t  (lt::piece_index_t begin);
                 pieces_range_t  (lt::piece_index_t begin, lt::piece_index_t end) : piece_begin(begin), piece_end(end) {}
 
-    lt::piece_index_t                   piece_begin                 = -1;
-    lt::piece_index_t                   piece_end                   = -1;
+    lt::piece_index_t                   piece_begin                 = lt::piece_index_t{-1};
+    lt::piece_index_t                   piece_end                   = lt::piece_index_t{-1};
 
     int64_t                             piece_begin_start_offset    = -1;
     size_t                              data_size                   = 0;
-    lt::file_index_t                    file_index                  = -1;
+    lt::file_index_t                    file_index                  = lt::file_index_t{-1};
 
     int64_t                             piece_begin_data_start_offset   () const    { return piece_begin_start_offset; }
-    bool                                is_valid                        () const    { return piece_begin != -1; }
+    bool                                is_valid                        () const    { return piece_begin != lt::piece_index_t{-1}; }
     std::string                         dbg_string                      () const;
 };
 

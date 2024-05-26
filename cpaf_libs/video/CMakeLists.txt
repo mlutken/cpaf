@@ -2,7 +2,18 @@ set (library_name cpaf_video)
 find_package(Boost ${BOOST_MIN_VERSION} REQUIRED)
 add_library(${library_name} STATIC "")
 
+
+set(ENABLE_AVDEVICE OFF) # FFMPEG_FIND(libavdevice   avdevice   avdevice.h)
+set(ENABLE_AVFILTER OFF) # FFMPEG_FIND(libavfilter   avfilter   avfilter.h)
+set(ENABLE_AVFORMAT ON) # FFMPEG_FIND(libavformat   avformat   avformat.h)
+set(ENABLE_AVCODEC ON) # FFMPEG_FIND(libavcodec    avcodec    avcodec.h)
+set(ENABLE_POSTPROC OFF) # FFMPEG_FIND(libpostproc   postproc   postprocess.h)
+set(ENABLE_SWRESAMPLE ON) # FFMPEG_FIND(libswresample swresample swresample.h)
+set(ENABLE_SWSCALE ON) # FFMPEG_FIND(libswscale    swscale    swscale.h)
+
 find_package(FFMPEG REQUIRED)
+
+# set (FFMPEG_LIBRARIES
 
 target_sources(${library_name}
     PUBLIC
@@ -66,6 +77,9 @@ target_link_libraries(${library_name} PUBLIC "luepp_concurrent")
 target_link_libraries(${library_name} PUBLIC "luepp_containers")
 target_link_libraries(${library_name} PUBLIC "cpaf_torrent")
 target_link_libraries(${library_name} PUBLIC "cpaf_compression")
+
+list(REMOVE_ITEM FFMPEG_LIBRARIES optimized )
+list(REMOVE_ITEM FFMPEG_LIBRARIES debug )
 
 message ("FFMPEG_INCLUDE_DIRS: ${FFMPEG_INCLUDE_DIRS}")
 message ("FFMPEG_LIBRARY_DIRS: ${FFMPEG_LIBRARY_DIRS}")

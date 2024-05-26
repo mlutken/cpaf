@@ -5,7 +5,6 @@
 #include <variant>
 #include <cstdio>
 #include <filesystem>
-#include <boost/filesystem/convenience.hpp>
 extern "C" {
 #include <zlib.h>
 }

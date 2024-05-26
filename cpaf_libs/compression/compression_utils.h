@@ -5,7 +5,6 @@
 #include <variant>
 #include <cstdio>
 #include <filesystem>
-#include <boost/filesystem/convenience.hpp>
 
 #include <containers/cpaf_container_utils.h>
 #include <containers/cpaf_dynamic_array.hpp>

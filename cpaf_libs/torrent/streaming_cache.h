@@ -75,7 +75,7 @@ private:
     pieces_indices_set_t                                                pieces_downloaded_      {};
     mutable pieces_indices_set_t                                        pieces_requested_       {};
     mutable std::mutex                                                  cache_mutex_            {};
-    lt::piece_index_t                                                   cur_streaming_piece_    = 0;
+    lt::piece_index_t                                                   cur_streaming_piece_    = lt::piece_index_t{0};
     pieces_range_t                                                      cur_streaming_range_    {};
     mutable std::atomic<cancel_io_state_t>                              cancel_io_state_        {cancel_io_state_t::not_requested};
     std::chrono::microseconds                                           io_yield_time_          = std::chrono::milliseconds(50);

@@ -2,7 +2,6 @@
 
 #include <iostream>
 #include <fstream>
-#include <boost/filesystem/convenience.hpp>
 #include <utils/cpaf_string_utils.hpp>
 #include <config/cpaf_platform_definitions.h>
 

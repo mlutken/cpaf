@@ -164,7 +164,7 @@ void streaming_cache::request_pieces(const pieces_range_t& range, int32_t deadli
 void streaming_cache::handle_piece_finished(const libtorrent::piece_finished_alert* pfa)
 {
     const auto piece = pfa->piece_index;
-    if (piece < dbg_print_pieces_lower_than ) {
+    if (piece < lt::piece_index_t{dbg_print_pieces_lower_than} ) {
         std::cerr << "!!! handle_piece_finished !!!  index: " << piece << " is_requested: '" << is_piece_requested_impl(piece) << "'\n";
     }
 
@@ -180,7 +180,7 @@ void streaming_cache::handle_piece_finished(const libtorrent::piece_finished_ale
 void streaming_cache::handle_piece_read(const libtorrent::read_piece_alert* rpa)
 {
     const auto piece = rpa->piece;
-    if (piece < dbg_print_pieces_lower_than ) {
+    if (piece < lt::piece_index_t{dbg_print_pieces_lower_than} ) {
         std::cerr << "!!! handle_piece_read !!! index: " << piece << "\n";
     }
     scoped_lock lock(cache_mutex_);
