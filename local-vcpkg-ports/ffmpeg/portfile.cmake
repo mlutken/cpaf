@@ -605,7 +605,7 @@ set(OPTIONS_RELEASE "--enable-optimizations")
 set(OPTIONS "${OPTIONS} ${OPTIONS_CROSS}")
 
 #if(VCPKG_LIBRARY_LINKAGE STREQUAL "dynamic")
-#    set(OPTIONS "${OPTIONS} --disable-static --enable-shared")
+   set(OPTIONS "${OPTIONS} --disable-static --enable-shared")
 #endif()
 
 if(VCPKG_TARGET_IS_MINGW)
