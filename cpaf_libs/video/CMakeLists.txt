@@ -76,15 +76,82 @@ target_link_libraries(${library_name} PUBLIC "luepp_containers")
 target_link_libraries(${library_name} PUBLIC "cpaf_torrent")
 target_link_libraries(${library_name} PUBLIC "cpaf_compression")
 
-# Remove strange non libs added from the vcpkg ffmpeg recipe
+# ---------------------------------------------------------------------------------------------------
+# --- Remove strange non libs, duplicates and debug or release added from the vcpkg ffmpeg recipe ---
+# ---------------------------------------------------------------------------------------------------
 list(REMOVE_ITEM FFMPEG_LIBRARIES optimized )
 list(REMOVE_ITEM FFMPEG_LIBRARIES debug )
+list(REMOVE_DUPLICATES FFMPEG_LIBRARIES)
+list(REMOVE_DUPLICATES FFMPEG_LIBRARY_DIRS)
+list(REMOVE_DUPLICATES FFMPEG_INCLUDE_DIRS)
+
+# Sorry for all the mess below. We should fix the
+# cpaf/local-vcpkg-ports/ffmpeg/FindFFMPEG.cmake.in, but I am too lazy today :(
+# The problem is that the FindFFMPEG.cmake.in finds both debug and release versions of
+# the libraries and the library search paths. Also it add som strange "debug", "optimized"
+# "library" names that does not exist at all.
+# The below code tries to clean all this out.... sigh...
+# -------------------------------------
+# --- CLEAN out in FFMPEG_LIBRARIES ---
+# -------------------------------------
+set(FFMPEG_LIBRARIES_list)
+
+set(remove_debug_libs TRUE)
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  set(remove_debug_libs FALSE)
+endif()
+
+# Iterate through the original FFMPEG_LIBRARIES list
+foreach(item IN LISTS FFMPEG_LIBRARIES)
+    string(FIND "${item}" "/debug/" found_index)
+
+    if (remove_debug_libs)
+      if(found_index EQUAL -1)
+          list(APPEND FFMPEG_LIBRARIES_list "${item}")
+      endif()
+    else()
+      if(NOT found_index EQUAL -1)
+          list(APPEND FFMPEG_LIBRARIES_list "${item}")
+      endif()
+    endif()
+endforeach()
+set(FFMPEG_LIBRARIES ${FFMPEG_LIBRARIES_list})
+
+# ----------------------------------------
+# --- CLEAN out in FFMPEG_LIBRARY_DIRS ---
+# ----------------------------------------
+set(FFMPEG_LIBRARY_DIRS_list)
+
+set(remove_debug_libs TRUE)
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  message("-- FIXMENM Bullet: Debug build")
+  set(remove_debug_libs FALSE)
+endif()
+
+# Iterate through the original FFMPEG_LIBRARY_DIRS list
+foreach(item IN LISTS FFMPEG_LIBRARY_DIRS)
+    string(FIND "${item}" "/debug/" found_index)
+
+    if (remove_debug_libs)
+      if(found_index EQUAL -1)
+          list(APPEND FFMPEG_LIBRARY_DIRS_list "${item}")
+      endif()
+    else()
+      if(NOT found_index EQUAL -1)
+          list(APPEND FFMPEG_LIBRARY_DIRS_list "${item}")
+      endif()
+    endif()
+endforeach()
+set(FFMPEG_LIBRARY_DIRS ${FFMPEG_LIBRARY_DIRS_list})
+
+set(FFMPEG_LIBRARIES ${FFMPEG_LIBRARIES} CACHE STRING "")
+set(FFMPEG_INCLUDE_DIRS ${FFMPEG_INCLUDE_DIRS} CACHE STRING "")
+set(FFMPEG_LIBRARY_DIRS ${FFMPEG_LIBRARY_DIRS} CACHE STRING "")
+# ---
 
 message ("FFMPEG_INCLUDE_DIRS: ${FFMPEG_INCLUDE_DIRS}")
 message ("FFMPEG_LIBRARY_DIRS: ${FFMPEG_LIBRARY_DIRS}")
-message ("FFMPEG_LIBRARY_DIRS: ${FFMPEG_LIBRARY_DIRS}")
-message ("FFMPEG_LIBRARY_DIRS: ${FFMPEG_LIBRARY_DIRS}")
-message ("FFMPEG_LIBRARIES: ${FFMPEG_LIBRARIES}")
+message ("FFMPEG_LIBRARIES   : ${FFMPEG_LIBRARIES}")
 
 target_include_directories( ${library_name} PUBLIC "${FFMPEG_INCLUDE_DIRS}")
 target_link_directories( ${library_name} PUBLIC "${FFMPEG_LIBRARY_DIRS}")
