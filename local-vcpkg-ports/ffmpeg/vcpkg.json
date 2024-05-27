@@ -537,7 +537,7 @@
     "qsv": {
       "description": "Intel QSV Codec",
       "dependencies": [
-        "mfx-dispatch"
+
       ]
     },
     "sdl2": {

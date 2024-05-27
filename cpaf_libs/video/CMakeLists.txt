@@ -2,6 +2,7 @@ set (library_name cpaf_video)
 add_library(${library_name} STATIC "")
 
 #  ffmpeg: https://github.com/Microsoft/vcpkg/issues/1379
+# https://trac.ffmpeg.org/wiki/CompilationGuide
 
 # Not working: See cpaf/local-vcpkg-ports/ffmpeg/FindFFMPEG.cmake.in
 #
@@ -124,7 +125,6 @@ set(FFMPEG_LIBRARY_DIRS_list)
 
 set(remove_debug_libs TRUE)
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-  message("-- FIXMENM Bullet: Debug build")
   set(remove_debug_libs FALSE)
 endif()
 
