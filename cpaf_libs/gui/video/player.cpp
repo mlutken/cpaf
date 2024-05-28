@@ -337,7 +337,10 @@ bool player::audio_out_formats_set(const ff_audio_format_t& ff_audio_format)
 
 size_t player::audio_stream_index() const
 {
-    return audio_stream_index_ != no_stream_index ? audio_stream_index_ : source_stream(stream_type_t::audio)->first_audio_index();
+    if (audio_stream_index_ != no_stream_index) { return audio_stream_index_; }
+    const auto strm_ptr = source_stream(stream_type_t::audio);
+    if (!strm_ptr) { return no_stream_index; }
+    return strm_ptr->first_audio_index();
 }
 
 // -------------------------------
