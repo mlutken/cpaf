@@ -1,6 +1,4 @@
-#ifndef CPAF_PLATFORM_DEFINITIONS_H
-#define CPAF_PLATFORM_DEFINITIONS_H
-
+#pragma once
 
 // IMPORTANT: Must match the definitions set in [cpaf/]tools/cmake/platform_definitions.cmake
 //            The reason for the redundancy is to make it easier for users that do not want
@@ -25,5 +23,3 @@
 #define CPAF_SYSTEM_ID_SDL2				30
 #define CPAF_SYSTEM_ID_GODOT			31
 #define CPAF_SYSTEM_ID_QT				32
-
-#endif // CPAF_PLATFORM_DEFINITIONS_H

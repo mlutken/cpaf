@@ -1,5 +1,4 @@
 #include "keyboard__sdl2.h"
-#include <unordered_map>
 
 
 namespace cpaf::gui {
