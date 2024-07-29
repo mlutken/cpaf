@@ -9,8 +9,9 @@
 #include <cpaf_libs/gui/video/render/render.h>
 #include <cpaf_libs/gui/video/player.h>
 
+#if (CPAF_GRAPHICS_SYSTEM_ID == CPAF_SYSTEM_ID_SDL2)
 #include <imguipp/imgui_rai.h>  // FIXMENM DEBUG ONLY !
-
+#endif
 
 using namespace std::chrono_literals;
 using namespace std::chrono;
@@ -219,6 +220,8 @@ void video_render_thread::flush_queues()
     flush_requested_ = false;
 }
 
+#if (CPAF_GRAPHICS_SYSTEM_ID == CPAF_SYSTEM_ID_SDL2)
+
 void video_render_thread::debug_gui()
 {
     std::string subtitle = "seek: " +  to_string(player_.seek_state()) + " ";
@@ -252,5 +255,9 @@ void video_render_thread::debug_gui()
     ImGui::End();
 
 }
+#else
+void video_render_thread::debug_gui()
+{}
+#endif
 
 } // namespace cpaf::gui::video

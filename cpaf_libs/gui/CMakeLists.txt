@@ -29,6 +29,8 @@ if ( (CPAF_GRAPHICS_SYSTEM_NAME MATCHES "sdl2") )
         ${CMAKE_CURRENT_LIST_DIR}/platform_utils/sdl_convert.h
         ${CMAKE_CURRENT_LIST_DIR}/assets/fonts/imgui_fonts.h
 
+        ${CMAKE_CURRENT_LIST_DIR}/video/demo_player_app.h
+
         PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}/platform_utils/sdl_convert.cpp
         ${CMAKE_CURRENT_LIST_DIR}/assets/fonts/imgui_fonts.cpp
@@ -37,6 +39,8 @@ if ( (CPAF_GRAPHICS_SYSTEM_NAME MATCHES "sdl2") )
         ${CMAKE_CURRENT_LIST_DIR}/assets/fonts/manrope_ttf.cpp
         ${CMAKE_CURRENT_LIST_DIR}/assets/icons/fa_regular_400.cpp
         ${CMAKE_CURRENT_LIST_DIR}/assets/icons/fa_solid_900.cpp
+
+        ${CMAKE_CURRENT_LIST_DIR}/video/demo_player_app.cpp
     )
 endif()
 
@@ -110,7 +114,6 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/subtitle_reader_thread.h
     ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/video_render_thread.h
 
-    ${CMAKE_CURRENT_LIST_DIR}/video/demo_player_app.h
     ${CMAKE_CURRENT_LIST_DIR}/video/player.h
     ${CMAKE_CURRENT_LIST_DIR}/video/playlist_control.h
 
@@ -189,7 +192,6 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/subtitle_reader_thread.cpp
     ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/video_render_thread.cpp
 
-    ${CMAKE_CURRENT_LIST_DIR}/video/demo_player_app.cpp
     ${CMAKE_CURRENT_LIST_DIR}/video/player.cpp
     ${CMAKE_CURRENT_LIST_DIR}/video/playlist_control.cpp
 

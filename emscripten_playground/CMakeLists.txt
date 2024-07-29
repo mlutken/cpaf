@@ -15,10 +15,9 @@ set_target_properties(${library_name} PROPERTIES LINKER_LANGUAGE CXX)
 target_include_directories(${library_name} INTERFACE ${PARENT2_DIR} ${PARENT_DIR} )
 target_compile_options(${library_name} PRIVATE ${STANDARD_COMPILE_FLAGS})
 
-
-# TODO: Get rid of this if
-if ( NOT (CMAKE_SYSTEM_NAME MATCHES "Emscripten") )
+if ( (CPAF_GRAPHICS_SYSTEM_NAME MATCHES "sdl2") )
     target_link_libraries(${library_name} "cpaf_sdl2")
 endif()
+
 
 add_subdirectories_standard()

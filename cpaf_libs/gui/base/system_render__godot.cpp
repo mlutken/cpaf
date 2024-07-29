@@ -1,6 +1,5 @@
 #include "system_render__godot.h"
 #include <fmt/format.h>
-#include <cpaf_libs/gui/platform_utils/sdl_convert.h>
 #include <cpaf_libs/gui/texture.h>
 
 

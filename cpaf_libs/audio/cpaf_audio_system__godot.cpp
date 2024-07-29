@@ -16,49 +16,30 @@ int32_t system_platform::do_init()
 
 int32_t system_platform::do_play_devices_count() const
 {
-	constexpr int iscapture = 0;
-	return SDL_GetNumAudioDevices(iscapture);
+    return -1;
 }
 
 int32_t system_platform::do_capture_devices_count() const
 {
-	constexpr int iscapture = 1;
-	return SDL_GetNumAudioDevices(iscapture);
+    return -1;
 }
 
-std::string system_platform::do_play_device_name(int32_t device_index) const
+std::string system_platform::do_play_device_name(int32_t /*device_index*/) const
 {
-	constexpr int iscapture = 0;
-	const char* name = SDL_GetAudioDeviceName(device_index, iscapture);
-	if (name == nullptr) return "";
-	return name;
+    return "";
 }
 
-std::string system_platform::do_capture_device_name(int32_t device_index) const
+std::string system_platform::do_capture_device_name(int32_t /*device_index*/) const
 {
-	constexpr int iscapture = 1;
-	const char* name = SDL_GetAudioDeviceName(device_index, iscapture);
-	if (name == nullptr) return "";
-	return name;
+    return "";
 }
 
 // ------------------------
 // --- PRIVATE: Helpers ---
 // ------------------------
-void system_platform::populate_device_lists()
-{
-    play_device_names_.clear();
-    capture_device_names_.clear();
-	const int32_t COUNT_PLAY = play_devices_count();
-	for (int32_t n = 0; n < COUNT_PLAY; ++n) {
-		play_device_names_.push_back(play_device_name(n));
-	}
-
-	const int32_t COUNT_CAPTURE = capture_devices_count();
-	for (int32_t n = 0; n < COUNT_CAPTURE; ++n) {
-		capture_device_names_.push_back(capture_device_name(n));
-	}
-}
+// void system_platform::populate_device_lists()
+// {
+// }
 
 
 } // END namespace cpaf::audio

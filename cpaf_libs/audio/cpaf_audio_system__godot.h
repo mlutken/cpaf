@@ -24,7 +24,7 @@ private:
 	std::string		do_capture_device_name		(int32_t device_index) const override;
 
 	// --- PRIVATE: Helpers  ---
-	void			populate_device_lists		();
+    // void			populate_device_lists		();
 };
 
 

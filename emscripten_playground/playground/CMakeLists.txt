@@ -1,7 +1,10 @@
 add_playground_cpp_exe(emscripten1 "emscripten_playground")
 add_playground_cpp_exe(emscripten2 "emscripten_playground")
-add_playground_cpp_exe(emscripten3 "emscripten_playground")
-add_playground_cpp_exe(emscripten4 "emscripten_playground")
+
+if ( (CPAF_GRAPHICS_SYSTEM_NAME MATCHES "sdl2") )
+    add_playground_cpp_exe(emscripten3 "emscripten_playground")
+    add_playground_cpp_exe(emscripten4 "emscripten_playground")
+endif()
 
 
 if ( CMAKE_SYSTEM_NAME MATCHES "Emscripten" )
