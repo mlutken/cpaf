@@ -26,11 +26,17 @@ if ( (CPAF_GRAPHICS_SYSTEM_NAME MATCHES "sdl2") )
 
     target_sources(${library_name}
         PUBLIC
-
         ${CMAKE_CURRENT_LIST_DIR}/platform_utils/sdl_convert.h
-        PRIVATE
+        ${CMAKE_CURRENT_LIST_DIR}/assets/fonts/imgui_fonts.h
 
+        PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}/platform_utils/sdl_convert.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/assets/fonts/imgui_fonts.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/assets/fonts/abeezee_regular.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/assets/fonts/abeezee_italic.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/assets/fonts/manrope_ttf.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/assets/icons/fa_regular_400.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/assets/icons/fa_solid_900.cpp
     )
 endif()
 
@@ -74,6 +80,10 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/video/ui/controls.h
     ${CMAKE_CURRENT_LIST_DIR}/video/ui/controls_default__${CPAF_GUI_SYSTEM_NAME}.h
 
+    ${CMAKE_CURRENT_LIST_DIR}/video/render/render.h
+    ${CMAKE_CURRENT_LIST_DIR}/video/render/render_base.h
+    ${CMAKE_CURRENT_LIST_DIR}/video/render/render__${CPAF_GUI_SYSTEM_NAME}.h
+
     ${CMAKE_CURRENT_LIST_DIR}/events/base_events.h
     ${CMAKE_CURRENT_LIST_DIR}/events/display_events.h
     ${CMAKE_CURRENT_LIST_DIR}/events/joystick_events.h
@@ -99,19 +109,15 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/subtitle_downloader_thread.h
     ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/subtitle_reader_thread.h
     ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/video_render_thread.h
-    ${CMAKE_CURRENT_LIST_DIR}/video/render/render.h
-    ${CMAKE_CURRENT_LIST_DIR}/video/render/render_base.h
-    ${CMAKE_CURRENT_LIST_DIR}/video/render/render__sdl2.h
+
     ${CMAKE_CURRENT_LIST_DIR}/video/demo_player_app.h
     ${CMAKE_CURRENT_LIST_DIR}/video/player.h
     ${CMAKE_CURRENT_LIST_DIR}/video/playlist_control.h
 
     ${CMAKE_CURRENT_LIST_DIR}/video/ui/assets/video_player_data.h
 
-    ${CMAKE_CURRENT_LIST_DIR}/resources.h
     ${CMAKE_CURRENT_LIST_DIR}/utils.h
 
-    ${CMAKE_CURRENT_LIST_DIR}/assets/fonts/imgui_fonts.h
     ${CMAKE_CURRENT_LIST_DIR}/assets/icons/icons_data.h
 
     PRIVATE
@@ -152,6 +158,10 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/video/ui/controls.cpp
     ${CMAKE_CURRENT_LIST_DIR}/video/ui/controls_default__${CPAF_GUI_SYSTEM_NAME}.cpp
 
+    ${CMAKE_CURRENT_LIST_DIR}/video/render/render.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/video/render/render_base.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/video/render/render__${CPAF_GUI_SYSTEM_NAME}.cpp
+
     ${CMAKE_CURRENT_LIST_DIR}/events/event.cpp
     ${CMAKE_CURRENT_LIST_DIR}/events/base_events.cpp
     ${CMAKE_CURRENT_LIST_DIR}/events/display_events.cpp
@@ -178,26 +188,16 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/subtitle_downloader_thread.cpp
     ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/subtitle_reader_thread.cpp
     ${CMAKE_CURRENT_LIST_DIR}/video/pipeline_threads/video_render_thread.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/video/render/render.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/video/render/render_base.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/video/render/render__sdl2.cpp
+
     ${CMAKE_CURRENT_LIST_DIR}/video/demo_player_app.cpp
     ${CMAKE_CURRENT_LIST_DIR}/video/player.cpp
     ${CMAKE_CURRENT_LIST_DIR}/video/playlist_control.cpp
 
     ${CMAKE_CURRENT_LIST_DIR}/video/ui/assets/video_player_control_icons.cpp
 
-    ${CMAKE_CURRENT_LIST_DIR}/${CMAKE_SYSTEM_NAME}/resources.cpp
     ${CMAKE_CURRENT_LIST_DIR}/utils.cpp
 
-    ${CMAKE_CURRENT_LIST_DIR}/assets/fonts/imgui_fonts.cpp
     ${CMAKE_CURRENT_LIST_DIR}/assets/icons/icons_data.cpp
-
-    ${CMAKE_CURRENT_LIST_DIR}/assets/icons/fa_regular_400.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/assets/icons/fa_solid_900.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/assets/fonts/abeezee_regular.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/assets/fonts/abeezee_italic.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/assets/fonts/manrope_ttf.cpp
 
     ${CMAKE_CURRENT_LIST_DIR}/assets/icons/256/circle_pause_256.cpp
     ${CMAKE_CURRENT_LIST_DIR}/assets/icons/256/circle_play_256.cpp
