@@ -47,7 +47,6 @@ private:
     void            render_subtitle_graphics    ();
 
 
-    SDL_Renderer*   get_sdl_renderer            ();
 
     void            do_init                     (const system_window& win) override;
     void            do_init                     (std::shared_ptr<cpaf::gui::system_render> sys_renderer) override;
@@ -58,10 +57,7 @@ private:
 
 
     std::shared_ptr<system_render>      system_renderer_;
-    SDL_Texture*                        sdl_frame_render_texture_       {nullptr};
-    SDL_Texture*                        sdl_subtitles_render_texture_   {nullptr};
     subtitle_render_geometries_t        subtitle_render_geometries_;
-    SDL_Rect                            subtitles_dst_rect_;
 };
 
 } //END namespace cpaf::gui::video

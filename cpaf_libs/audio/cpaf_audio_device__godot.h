@@ -44,13 +44,11 @@ private:
     void                do_unlock         			() override;
 
     // --- PRIVATE: Helpers  ---
-    static sample_format_t	to_sample_format_t			(SDL_AudioFormat sdl_format);
-    static SDL_AudioFormat	to_sdl_sample_format		(sample_format_t format);
+    // static sample_format_t	to_sample_format_t			(SDL_AudioFormat sdl_format);
+    // static SDL_AudioFormat	to_sdl_sample_format		(sample_format_t format);
 
     void					set_default_audio_format	();
 
-    SDL_AudioSpec		sdl_audio_spec_;
-    SDL_AudioDeviceID	native_device_id_;
 };
 
 

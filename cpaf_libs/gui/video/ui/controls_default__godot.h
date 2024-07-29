@@ -5,8 +5,8 @@
 
 #include <config/cpaf_platform_definitions.h>
 
-#if (CPAF_GRAPHICS_SYSTEM_ID != CPAF_SYSTEM_ID_SDL2)
-#error Only include cpaf_libs/gui/video/render/render__sdl2.h when CPAF_GRAPHICS_SYSTEM_ID is CPAF_SYSTEM_ID_SDL2
+#if (CPAF_GRAPHICS_SYSTEM_ID != CPAF_SYSTEM_ID_GODOT)
+#error Only include cpaf_libs/gui/video/render/render__godot.h when CPAF_GRAPHICS_SYSTEM_ID is CPAF_SYSTEM_ID_GODOT
 #endif
 
 namespace cpaf::gui::video {
