@@ -4,6 +4,8 @@
 
 #if (CPAF_GUI_SYSTEM_ID == CPAF_SYSTEM_ID_SDL2)
 #include <cpaf_libs/gui/base/system_window__sdl2.h>
+#elif (CPAF_GUI_SYSTEM_ID == CPAF_SYSTEM_ID_GODOT)
+#include <cpaf_libs/gui/base/system_window__godot.h>
 #endif
 namespace cpaf::gui {
 

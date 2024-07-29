@@ -2,11 +2,18 @@
 set (library_name cpaf_gui)
 add_library(${library_name} STATIC "")
 
-find_package(fmt REQUIRED)
-find_package(imgui REQUIRED)
-find_package(PNG REQUIRED)
+set (CPAF_GUI_USE_IMGUI False)
+if ( (CPAF_GRAPHICS_SYSTEM_NAME MATCHES "sdl2") )
+    set (CPAF_GUI_USE_IMGUI True)
+endif()
 
-set (IMGUI_BACKEND_DIR "${CMAKE_CURRENT_LIST_DIR}/imgui_backends/backends")
+if ( CPAF_GUI_USE_IMGUI )
+    find_package(imgui REQUIRED)
+    set (IMGUI_BACKEND_DIR "${CMAKE_CURRENT_LIST_DIR}/imgui_backends/backends")
+endif()
+
+find_package(fmt REQUIRED)
+find_package(PNG REQUIRED)
 
 set (CPAF_GUI_LINK_LIBS "")
 set (CPAF_GUI_INCLUDE_DIRS "")
@@ -25,7 +32,6 @@ if ( (CPAF_GRAPHICS_SYSTEM_NAME MATCHES "sdl2") )
 
         ${CMAKE_CURRENT_LIST_DIR}/platform_utils/sdl_convert.cpp
     )
-
 endif()
 
 
@@ -64,6 +70,10 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/base/texture_base.h
     ${CMAKE_CURRENT_LIST_DIR}/base/texture__${CPAF_GUI_SYSTEM_NAME}.h
 
+    ${CMAKE_CURRENT_LIST_DIR}/video/ui/controls_default.h
+    ${CMAKE_CURRENT_LIST_DIR}/video/ui/controls.h
+    ${CMAKE_CURRENT_LIST_DIR}/video/ui/controls_default__${CPAF_GUI_SYSTEM_NAME}.h
+
     ${CMAKE_CURRENT_LIST_DIR}/events/base_events.h
     ${CMAKE_CURRENT_LIST_DIR}/events/display_events.h
     ${CMAKE_CURRENT_LIST_DIR}/events/joystick_events.h
@@ -95,8 +105,6 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/video/demo_player_app.h
     ${CMAKE_CURRENT_LIST_DIR}/video/player.h
     ${CMAKE_CURRENT_LIST_DIR}/video/playlist_control.h
-    ${CMAKE_CURRENT_LIST_DIR}/video/ui/controls.h
-    ${CMAKE_CURRENT_LIST_DIR}/video/ui/controls_default.h
 
     ${CMAKE_CURRENT_LIST_DIR}/video/ui/assets/video_player_data.h
 
@@ -143,6 +151,10 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/base/texture_base.cpp
     ${CMAKE_CURRENT_LIST_DIR}/base/texture__${CPAF_GUI_SYSTEM_NAME}.cpp
 
+    ${CMAKE_CURRENT_LIST_DIR}/video/ui/controls_default.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/video/ui/controls.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/video/ui/controls_default__${CPAF_GUI_SYSTEM_NAME}.cpp
+
     ${CMAKE_CURRENT_LIST_DIR}/events/event.cpp
     ${CMAKE_CURRENT_LIST_DIR}/events/base_events.cpp
     ${CMAKE_CURRENT_LIST_DIR}/events/display_events.cpp
@@ -175,8 +187,6 @@ target_sources(${library_name}
     ${CMAKE_CURRENT_LIST_DIR}/video/demo_player_app.cpp
     ${CMAKE_CURRENT_LIST_DIR}/video/player.cpp
     ${CMAKE_CURRENT_LIST_DIR}/video/playlist_control.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/video/ui/controls.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/video/ui/controls_default.cpp
 
     ${CMAKE_CURRENT_LIST_DIR}/video/ui/assets/video_player_control_icons.cpp
 
@@ -203,17 +213,21 @@ target_sources(${library_name}
 get_filename_component(PARENT_DIR ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
 get_filename_component(PARENT2_DIR ${PARENT_DIR} DIRECTORY)
 set_target_properties(${library_name} PROPERTIES LINKER_LANGUAGE CXX)
-target_link_libraries(${library_name} ImGuiFileDialog )
+
+if ( CPAF_GUI_USE_IMGUI )
+    target_link_libraries(${library_name} ImGuiFileDialog )
+    target_link_libraries(${library_name} imgui::imgui )
+    target_link_libraries(${library_name} imguipp )
+endif()
+
 target_link_libraries(${library_name} cpaf_config )
 target_link_libraries(${library_name} cpaf_locale )
 target_link_libraries(${library_name} cpaf_math )
 target_link_libraries(${library_name} cpaf_system )
 target_link_libraries(${library_name} cpaf_filesystem )
-target_link_libraries(${library_name} imguipp )
 target_link_libraries(${library_name} cpaf_video )
 target_link_libraries(${library_name} ${CPAF_GUI_LINK_LIBS} )
 target_link_libraries(${library_name} PNG::PNG )
-target_link_libraries(${library_name} imgui::imgui )
 target_link_libraries(${library_name} IconFontCppHeaders )
 target_link_libraries(${library_name} fmt::fmt)
 target_include_directories(${library_name} INTERFACE  ${PARENT2_DIR} ${PARENT_DIR})

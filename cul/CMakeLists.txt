@@ -1,13 +1,26 @@
+
+# ------------------------
+# --- ImGui Use or Not ---
+# ------------------------
+set (CPAF_GUI_USE_IMGUI False)
+if ( (CPAF_GRAPHICS_SYSTEM_NAME MATCHES "sdl2") )
+    set (CPAF_GUI_USE_IMGUI True)
+endif()
+
+
+
 # -----------------------
 # --- ImGuiFileDialog ---
 # -----------------------
-find_package(imgui REQUIRED)
-add_subdirectory(ImGuiFileDialog)
-set (ImGuiFileDialog_library_name ImGuiFileDialog)
-set_target_properties(${ImGuiFileDialog_library_name} PROPERTIES LINKER_LANGUAGE CXX)
-target_include_directories(${ImGuiFileDialog_library_name} PUBLIC ${CMAKE_CURRENT_LIST_DIR})
-target_link_libraries(${ImGuiFileDialog_library_name} imgui::imgui )
-target_compile_options(${ImGuiFileDialog_library_name} PRIVATE ${STANDARD_COMPILE_FLAGS})
+if ( CPAF_GUI_USE_IMGUI )
+    find_package(imgui REQUIRED)
+    add_subdirectory(ImGuiFileDialog)
+    set (ImGuiFileDialog_library_name ImGuiFileDialog)
+    set_target_properties(${ImGuiFileDialog_library_name} PROPERTIES LINKER_LANGUAGE CXX)
+    target_include_directories(${ImGuiFileDialog_library_name} PUBLIC ${CMAKE_CURRENT_LIST_DIR})
+    target_link_libraries(${ImGuiFileDialog_library_name} imgui::imgui )
+    target_compile_options(${ImGuiFileDialog_library_name} PRIVATE ${STANDARD_COMPILE_FLAGS})
+endif()
 
 # --- KZip ---
 set (BUILD_TESTS OFF)
@@ -16,8 +29,12 @@ set (CREATE_DOCS OFF)
 add_subdirectory(KZip)
 
 add_subdirectory(luepp)
-add_subdirectory(imguipp)
 add_subdirectory(IconFontCppHeaders)
+
+if ( CPAF_GUI_USE_IMGUI )
+    add_subdirectory(imguipp)
+endif()
+
 #add_subdirectory(date)
 if ( NOT (CMAKE_SYSTEM_NAME MATCHES "Emscripten") )
 

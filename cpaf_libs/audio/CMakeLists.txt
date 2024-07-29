@@ -43,7 +43,7 @@ get_filename_component(PARENT2_DIR ${PARENT_DIR} DIRECTORY)
 set_target_properties(${library_name} PROPERTIES LINKER_LANGUAGE CXX)
 target_link_libraries(${library_name} "cpaf_config;${CPAF_AUDIO_LINK_LIBS}" )
 target_include_directories(${library_name} INTERFACE  ${PARENT2_DIR} ${PARENT_DIR})
-target_include_directories(${library_name} PRIVATE ${CPAF_AUDIO_INCLUDE_DIRS} ${PARENT_DIR})
+target_include_directories(${library_name} PRIVATE ${CPAF_AUDIO_INCLUDE_DIRS} ${PARENT_DIR} ${PARENT2_DIR})
 target_compile_options(${library_name} PRIVATE ${STANDARD_COMPILE_FLAGS})
 
 add_subdirectories_standard()

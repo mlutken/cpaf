@@ -59,7 +59,7 @@ if ( NOT (CMAKE_SYSTEM_NAME MATCHES "Emscripten") )
 endif()
 
 # Set some default platform/system names
-if ( (CPAF_AUDIO_SYSTEM_NAME MATCHES "") )
+if ( (CPAF_AUDIO_SYSTEM_NAME STREQUAL "") )
     set (CPAF_AUDIO_SYSTEM_NAME "sdl2")
 endif()
 
