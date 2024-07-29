@@ -108,11 +108,8 @@ target_sources(${library_name}
 
     ${CMAKE_CURRENT_LIST_DIR}/video/ui/assets/video_player_data.h
 
-    ${CMAKE_CURRENT_LIST_DIR}/application.h
-    ${CMAKE_CURRENT_LIST_DIR}/dpi_handler.h
     ${CMAKE_CURRENT_LIST_DIR}/resources.h
     ${CMAKE_CURRENT_LIST_DIR}/utils.h
-    ${CMAKE_CURRENT_LIST_DIR}/window.h
 
     ${CMAKE_CURRENT_LIST_DIR}/assets/fonts/imgui_fonts.h
     ${CMAKE_CURRENT_LIST_DIR}/assets/icons/icons_data.h
@@ -190,11 +187,8 @@ target_sources(${library_name}
 
     ${CMAKE_CURRENT_LIST_DIR}/video/ui/assets/video_player_control_icons.cpp
 
-    ${CMAKE_CURRENT_LIST_DIR}/application.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/${CMAKE_SYSTEM_NAME}/dpi_handler.cpp
     ${CMAKE_CURRENT_LIST_DIR}/${CMAKE_SYSTEM_NAME}/resources.cpp
     ${CMAKE_CURRENT_LIST_DIR}/utils.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/window.cpp
 
     ${CMAKE_CURRENT_LIST_DIR}/assets/fonts/imgui_fonts.cpp
     ${CMAKE_CURRENT_LIST_DIR}/assets/icons/icons_data.cpp

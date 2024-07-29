@@ -4,7 +4,6 @@
 
 #include <imgui.h>
 
-#include <cpaf_libs/gui/application.h>
 #include <cpaf_libs/gui/system.h>
 #include <cpaf_libs/gui/app.h>
 
