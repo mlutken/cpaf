@@ -25,3 +25,5 @@ If you need to do a similar import of a new subtree git project simply use
 ## IconFontCppHeaders update
 - *Update to latest:* *cpaf$* git subtree pull --prefix cul/IconFontCppHeaders/IconFontCppHeaders https://github.com/juliettef/IconFontCppHeaders.git main --squash
 
+
+git subtree add --prefix 3rdparty/gtest/googletest https://github.com/google/googletest.git main --squash
