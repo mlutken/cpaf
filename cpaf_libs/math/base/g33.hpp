@@ -456,7 +456,8 @@ public:
         \return The transposed 2x2 matrix and the negated translation 2D vector (column Z). */
     value_type			get_transpose() const
     {
-        return value_type(m_m22.get_transpose(), -m_v2);
+        const auto m22T = m_m22.get_transpose();
+        return value_type(m22T, -m22T*m_v2);
     }
 
 

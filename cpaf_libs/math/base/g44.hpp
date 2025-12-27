@@ -644,7 +644,7 @@ private:
 		};
 		struct 
 		{
-			vec_value_type m_ColX, m_ColY, m_ColZ, , m_ColW;
+			vec_value_type m_ColX, m_ColY, m_ColZ, m_ColW;
 		};
 		struct 
 		{
